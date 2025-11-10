@@ -1,0 +1,294 @@
+<svg width="1440" height="1024" viewBox="0 0 1440 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1440" height="1024" fill="#FFFFFF"/>
+
+  <!-- Dimmed Background Overlay -->
+  <rect width="1440" height="1024" fill="#000000" opacity="0.5"/>
+
+  <!-- Export Modal -->
+  <g transform="translate(320, 120)">
+    <rect width="800" height="784" rx="12" fill="#FFFFFF" style="filter:drop-shadow(0 24px 48px rgba(0,0,0,0.24))"/>
+
+    <!-- Modal Header -->
+    <g>
+      <rect width="800" height="72" rx="12" fill="#FAFAFA"/>
+      <rect y="72" width="800" height="1" fill="#E0E0E0"/>
+
+      <!-- Title -->
+      <text x="32" y="44" font-family="IBM Plex Sans, sans-serif" font-size="22" font-weight="700" fill="#1A1A1A">Export Keywords</text>
+
+      <!-- Close Button -->
+      <g transform="translate(748, 24)">
+        <circle cx="12" cy="12" r="12" fill="#F5F5F5"/>
+        <line x1="8" y1="8" x2="16" y2="16" stroke="#4A4A4A" stroke-width="2"/>
+        <line x1="16" y1="8" x2="8" y2="16" stroke="#4A4A4A" stroke-width="2"/>
+      </g>
+
+      <!-- Selection Count -->
+      <text x="32" y="60" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="400" fill="#6D6D6D">45 keywords selected</text>
+    </g>
+
+    <!-- Modal Body -->
+    <g transform="translate(32, 96)">
+
+      <!-- Section 1: Export Format -->
+      <g>
+        <text x="0" y="0" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1A1A1A">Choose Export Format</text>
+        <text x="0" y="24" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="400" fill="#6D6D6D">Select how you'd like to export your keyword data</text>
+
+        <!-- Format Options -->
+        <g transform="translate(0, 48)">
+          <!-- CSV Option (Selected) -->
+          <g>
+            <rect width="360" height="120" rx="8" fill="#FFF7F2" stroke="#FF9800" stroke-width="2"/>
+
+            <!-- Radio Button -->
+            <circle cx="24" cy="24" r="10" stroke="#FF9800" stroke-width="2" fill="#FFFFFF"/>
+            <circle cx="24" cy="24" r="6" fill="#FF9800"/>
+
+            <!-- Icon -->
+            <g transform="translate(280, 20)">
+              <rect width="48" height="56" rx="4" fill="#E8F5E9" stroke="#43A047" stroke-width="2"/>
+              <line x1="12" y1="16" x2="36" y2="16" stroke="#43A047" stroke-width="2"/>
+              <line x1="12" y1="24" x2="36" y2="24" stroke="#43A047" stroke-width="2"/>
+              <line x1="12" y1="32" x2="36" y2="32" stroke="#43A047" stroke-width="2"/>
+              <line x1="12" y1="40" x2="28" y2="40" stroke="#43A047" stroke-width="2"/>
+            </g>
+
+            <!-- Content -->
+            <text x="52" y="28" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="700" fill="#1A1A1A">CSV File</text>
+            <text x="52" y="52" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="400" fill="#4A4A4A">Download as .csv file for Excel,</text>
+            <text x="52" y="70" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="400" fill="#4A4A4A">Google Sheets, or other tools</text>
+
+            <!-- Badge -->
+            <rect x="52" y="82" width="96" height="20" rx="10" fill="#E8F5E9"/>
+            <text x="100" y="96" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="600" fill="#43A047" text-anchor="middle">Most Popular</text>
+          </g>
+
+          <!-- Google Sheets Option -->
+          <g transform="translate(376, 0)">
+            <rect width="360" height="120" rx="8" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2"/>
+
+            <!-- Radio Button -->
+            <circle cx="24" cy="24" r="10" stroke="#E0E0E0" stroke-width="2" fill="#FFFFFF"/>
+
+            <!-- Icon -->
+            <g transform="translate(280, 20)">
+              <rect width="48" height="56" rx="4" fill="#E8F5E9" stroke="#43A047" stroke-width="2"/>
+              <rect x="8" y="12" width="32" height="32" fill="#FFFFFF"/>
+              <line x1="12" y1="20" x2="36" y2="20" stroke="#43A047" stroke-width="1.5"/>
+              <line x1="12" y1="26" x2="36" y2="26" stroke="#43A047" stroke-width="1.5"/>
+              <line x1="12" y1="32" x2="36" y2="32" stroke="#43A047" stroke-width="1.5"/>
+            </g>
+
+            <!-- Content -->
+            <text x="52" y="28" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1A1A1A">Google Sheets</text>
+            <text x="52" y="52" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="400" fill="#4A4A4A">Export directly to a new</text>
+            <text x="52" y="70" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="400" fill="#4A4A4A">Google Sheet in your Drive</text>
+
+            <!-- Badge -->
+            <rect x="52" y="82" width="112" height="20" rx="10" fill="#E1F5FE"/>
+            <text x="108" y="96" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="600" fill="#039BE5" text-anchor="middle">Requires Google Login</text>
+          </g>
+        </g>
+
+        <!-- PDF Option -->
+        <g transform="translate(0, 176)">
+          <rect width="360" height="88" rx="8" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2"/>
+
+          <circle cx="24" cy="24" r="10" stroke="#E0E0E0" stroke-width="2" fill="#FFFFFF"/>
+
+          <!-- Icon -->
+          <g transform="translate(280, 20)">
+            <rect width="40" height="48" rx="4" fill="#FFEBEE" stroke="#E53935" stroke-width="2"/>
+            <text x="20" y="32" font-family="IBM Plex Sans, sans-serif" font-size="18" font-weight="700" fill="#E53935" text-anchor="middle">PDF</text>
+          </g>
+
+          <text x="52" y="28" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1A1A1A">PDF Report</text>
+          <text x="52" y="52" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="400" fill="#4A4A4A">Formatted report with charts and insights</text>
+
+          <!-- Pro Badge -->
+          <rect x="52" y="62" width="64" height="20" rx="10" fill="#FFF3E0"/>
+          <text x="84" y="76" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="700" fill="#FF9800" text-anchor="middle">PRO PLAN</text>
+        </g>
+
+        <!-- Copy to Clipboard Option -->
+        <g transform="translate(376, 176)">
+          <rect width="360" height="88" rx="8" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2"/>
+
+          <circle cx="24" cy="24" r="10" stroke="#E0E0E0" stroke-width="2" fill="#FFFFFF"/>
+
+          <!-- Icon -->
+          <g transform="translate(284, 24)">
+            <rect width="36" height="40" rx="3" fill="#FFFFFF" stroke="#6D6D6D" stroke-width="2"/>
+            <rect x="4" y="4" width="36" height="40" rx="3" fill="#F5F5F5" stroke="#6D6D6D" stroke-width="2"/>
+            <line x1="12" y1="16" x2="28" y2="16" stroke="#6D6D6D" stroke-width="1.5"/>
+            <line x1="12" y1="22" x2="28" y2="22" stroke="#6D6D6D" stroke-width="1.5"/>
+            <line x1="12" y1="28" x2="22" y2="28" stroke="#6D6D6D" stroke-width="1.5"/>
+          </g>
+
+          <text x="52" y="28" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1A1A1A">Copy to Clipboard</text>
+          <text x="52" y="52" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="400" fill="#4A4A4A">Tab-separated format for easy pasting</text>
+        </g>
+      </g>
+
+      <!-- Divider -->
+      <line x1="0" y1="296" x2="736" y2="296" stroke="#E0E0E0" stroke-width="1"/>
+
+      <!-- Section 2: Columns to Include -->
+      <g transform="translate(0, 320)">
+        <text x="0" y="0" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1A1A1A">Select Columns to Include</text>
+        <text x="0" y="24" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="400" fill="#6D6D6D">Choose which data fields to export</text>
+
+        <!-- Column Selection Grid -->
+        <g transform="translate(0, 48)">
+          <!-- Row 1 -->
+          <g>
+            <!-- Keyword (Always selected) -->
+            <g>
+              <rect width="20" height="20" rx="4" fill="#E0E0E0"/>
+              <path d="M 6 10 L 9 13 L 14 7" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <text x="32" y="16" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="500" fill="#8A8A8A">Keyword</text>
+              <text x="130" y="16" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="400" fill="#8A8A8A">(required)</text>
+            </g>
+
+            <!-- Search Volume (Selected) -->
+            <g transform="translate(240, 0)">
+              <rect width="20" height="20" rx="4" fill="#FF9800"/>
+              <path d="M 6 10 L 9 13 L 14 7" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <text x="32" y="16" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="500" fill="#1A1A1A">Search Volume</text>
+            </g>
+
+            <!-- Difficulty (Selected) -->
+            <g transform="translate(480, 0)">
+              <rect width="20" height="20" rx="4" fill="#FF9800"/>
+              <path d="M 6 10 L 9 13 L 14 7" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <text x="32" y="16" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="500" fill="#1A1A1A">Difficulty</text>
+            </g>
+          </g>
+
+          <!-- Row 2 -->
+          <g transform="translate(0, 36)">
+            <!-- Trend (Selected) -->
+            <g>
+              <rect width="20" height="20" rx="4" fill="#FF9800"/>
+              <path d="M 6 10 L 9 13 L 14 7" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <text x="32" y="16" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="500" fill="#1A1A1A">Trend</text>
+            </g>
+
+            <!-- Opportunity -->
+            <g transform="translate(240, 0)">
+              <rect width="20" height="20" rx="4" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2"/>
+              <text x="32" y="16" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="400" fill="#4A4A4A">Opportunity Score</text>
+            </g>
+
+            <!-- Current Rank (Selected) -->
+            <g transform="translate(480, 0)">
+              <rect width="20" height="20" rx="4" fill="#FF9800"/>
+              <path d="M 6 10 L 9 13 L 14 7" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <text x="32" y="16" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="500" fill="#1A1A1A">Current Rank</text>
+            </g>
+          </g>
+
+          <!-- Row 3 -->
+          <g transform="translate(0, 72)">
+            <!-- CPC -->
+            <g>
+              <rect width="20" height="20" rx="4" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2"/>
+              <text x="32" y="16" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="400" fill="#4A4A4A">CPC (Cost per Click)</text>
+            </g>
+
+            <!-- Competition -->
+            <g transform="translate(240, 0)">
+              <rect width="20" height="20" rx="4" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2"/>
+              <text x="32" y="16" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="400" fill="#4A4A4A">Competition Level</text>
+            </g>
+
+            <!-- Related Apps -->
+            <g transform="translate(480, 0)">
+              <rect width="20" height="20" rx="4" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2"/>
+              <text x="32" y="16" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="400" fill="#4A4A4A">Related Apps</text>
+            </g>
+          </g>
+        </g>
+
+        <!-- Quick Actions -->
+        <g transform="translate(0, 144)">
+          <text x="0" y="0" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="500" fill="#FF9800" style="text-decoration:underline;cursor:pointer;">Select All</text>
+          <text x="84" y="0" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="400" fill="#6D6D6D">|</text>
+          <text x="100" y="0" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="500" fill="#FF9800" style="text-decoration:underline;cursor:pointer;">Deselect All</text>
+        </g>
+      </g>
+
+      <!-- Divider -->
+      <line x1="0" y1="536" x2="736" y2="536" stroke="#E0E0E0" stroke-width="1"/>
+
+      <!-- Section 3: Additional Options -->
+      <g transform="translate(0, 560)">
+        <text x="0" y="0" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1A1A1A">Additional Options</text>
+
+        <!-- Options -->
+        <g transform="translate(0, 28)">
+          <!-- Include Header Row -->
+          <g>
+            <rect width="20" height="20" rx="4" fill="#FF9800"/>
+            <path d="M 6 10 L 9 13 L 14 7" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <text x="32" y="16" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="500" fill="#1A1A1A">Include header row</text>
+          </g>
+
+          <!-- Include Filters -->
+          <g transform="translate(0, 36)">
+            <rect width="20" height="20" rx="4" fill="#FF9800"/>
+            <path d="M 6 10 L 9 13 L 14 7" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <text x="32" y="16" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="500" fill="#1A1A1A">Include applied filters in export</text>
+          </g>
+
+          <!-- Include Timestamp -->
+          <g transform="translate(0, 72)">
+            <rect width="20" height="20" rx="4" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2"/>
+            <text x="32" y="16" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="400" fill="#4A4A4A">Add export timestamp</text>
+          </g>
+        </g>
+      </g>
+    </g>
+
+    <!-- Modal Footer -->
+    <g transform="translate(0, 712)">
+      <rect y="0" width="800" height="1" fill="#E0E0E0"/>
+      <rect y="1" width="800" height="71" rx="0 0 12 12" fill="#FAFAFA"/>
+
+      <!-- File Info -->
+      <g transform="translate(32, 28)">
+        <text x="0" y="0" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="400" fill="#6D6D6D">File will be named:</text>
+        <text x="0" y="20" font-family="Roboto Mono, monospace" font-size="13" font-weight="500" fill="#1A1A1A">keywords_export_2025-10-16.csv</text>
+      </g>
+
+      <!-- Action Buttons -->
+      <g transform="translate(496, 16)">
+        <rect width="128" height="40" rx="8" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2"/>
+        <text x="64" y="26" font-family="IBM Plex Sans, sans-serif" font-size="15" font-weight="500" fill="#4A4A4A" text-anchor="middle">Cancel</text>
+
+        <rect x="144" width="128" height="40" rx="8" fill="#FF9800"/>
+        <text x="208" y="26" font-family="IBM Plex Sans, sans-serif" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">Export Now</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Annotation: Modal Features -->
+  <g transform="translate(80, 920)">
+    <rect width="360" height="80" rx="8" fill="#E1F5FE"/>
+    <text x="16" y="24" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="700" fill="#039BE5">Export Modal Features:</text>
+    <text x="16" y="44" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="400" fill="#4A4A4A">• Multiple format options (CSV, Google Sheets, PDF)</text>
+    <text x="16" y="60" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="400" fill="#4A4A4A">• Customizable column selection</text>
+    <text x="16" y="76" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="400" fill="#4A4A4A">• Export configuration preview</text>
+  </g>
+
+  <!-- Annotation: Pro Feature Upsell -->
+  <g transform="translate(1000, 920)">
+    <rect width="360" height="80" rx="8" fill="#FFF3E0"/>
+    <text x="16" y="24" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="700" fill="#FF9800">Pro Feature Indication:</text>
+    <text x="16" y="44" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="400" fill="#4A4A4A">• Clear "PRO PLAN" badge on premium features</text>
+    <text x="16" y="60" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="400" fill="#4A4A4A">• Disabled state for non-accessible options</text>
+    <text x="16" y="76" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="400" fill="#4A4A4A">• Upgrade prompts on selection attempt</text>
+  </g>
+</svg>

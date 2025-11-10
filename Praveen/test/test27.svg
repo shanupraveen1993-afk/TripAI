@@ -1,0 +1,251 @@
+<svg width="1440" height="1200" viewBox="0 0 1440 1200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1440" height="1200" fill="#FFFFFF"/>
+
+  <!-- Section Container (max-w-7xl centered) -->
+  <g transform="translate(80, 0)">
+
+    <!-- Section Header -->
+    <g transform="translate(0, 64)">
+      <text x="640" y="0" font-family="Inter, sans-serif" font-size="36" font-weight="600" fill="#111827" text-anchor="middle">Powerful ASO Features</text>
+      <text x="640" y="40" font-family="Inter, sans-serif" font-size="18" font-weight="400" fill="#4B5563" text-anchor="middle" style="line-height:1.5">Everything you need to optimize your app store presence</text>
+    </g>
+
+    <!-- Feature Cards Grid (3 columns) -->
+    <g transform="translate(0, 180)">
+
+      <!-- Row 1 -->
+      <!-- Card 1: Keyword Research -->
+      <g>
+        <rect width="400" height="280" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1" style="filter:drop-shadow(0 4px 6px rgba(0,0,0,0.05))"/>
+
+        <!-- Icon Container -->
+        <g transform="translate(24, 24)">
+          <rect width="48" height="48" rx="12" fill="rgba(255,87,34,0.1)"/>
+          <circle cx="24" cy="24" r="8" stroke="#FF5722" stroke-width="2" fill="none"/>
+          <line x1="30" y1="30" x2="34" y2="34" stroke="#FF5722" stroke-width="2"/>
+        </g>
+
+        <!-- Card Title -->
+        <text x="24" y="108" font-family="Inter, sans-serif" font-size="20" font-weight="600" fill="#111827">Keyword Research</text>
+
+        <!-- Card Description -->
+        <text x="24" y="138" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280" style="line-height:1.5">Discover high-performing keywords</text>
+        <text x="24" y="160" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">with real search volume data,</text>
+        <text x="24" y="182" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">difficulty scores, and trend analysis</text>
+        <text x="24" y="204" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">for both iOS and Android.</text>
+
+        <!-- Link -->
+        <text x="24" y="244" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#FF5722" style="text-decoration:underline;">Learn more →</text>
+      </g>
+
+      <!-- Card 2: Competitor Analysis -->
+      <g transform="translate(440, 0)">
+        <rect width="400" height="280" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1" style="filter:drop-shadow(0 4px 6px rgba(0,0,0,0.05))"/>
+
+        <!-- Icon Container -->
+        <g transform="translate(24, 24)">
+          <rect width="48" height="48" rx="12" fill="rgba(255,87,34,0.1)"/>
+          <rect x="16" y="16" width="16" height="16" rx="2" stroke="#FF5722" stroke-width="2" fill="none"/>
+          <circle cx="20" cy="20" r="2" fill="#FF5722"/>
+        </g>
+
+        <!-- Card Title -->
+        <text x="24" y="108" font-family="Inter, sans-serif" font-size="20" font-weight="600" fill="#111827">Competitor Analysis</text>
+
+        <!-- Card Description -->
+        <text x="24" y="138" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">Track your competitors' keywords,</text>
+        <text x="24" y="160" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">rankings, and ASO strategies.</text>
+        <text x="24" y="182" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">See what's working for similar</text>
+        <text x="24" y="204" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">apps in your category.</text>
+
+        <!-- Link -->
+        <text x="24" y="244" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#FF5722" style="text-decoration:underline;">Learn more →</text>
+      </g>
+
+      <!-- Card 3: Rank Tracking -->
+      <g transform="translate(880, 0)">
+        <rect width="400" height="280" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1" style="filter:drop-shadow(0 4px 6px rgba(0,0,0,0.05))"/>
+
+        <!-- Icon Container -->
+        <g transform="translate(24, 24)">
+          <rect width="48" height="48" rx="12" fill="rgba(255,87,34,0.1)"/>
+          <path d="M 16 32 L 20 26 L 24 28 L 28 20 L 32 22" stroke="#FF5722" stroke-width="2" fill="none"/>
+          <circle cx="32" cy="22" r="2" fill="#FF5722"/>
+        </g>
+
+        <!-- Card Title -->
+        <text x="24" y="108" font-family="Inter, sans-serif" font-size="20" font-weight="600" fill="#111827">Rank Tracking</text>
+
+        <!-- Card Description -->
+        <text x="24" y="138" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">Monitor your app's keyword</text>
+        <text x="24" y="160" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">rankings over time with daily</text>
+        <text x="24" y="182" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">updates and historical data.</text>
+        <text x="24" y="204" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">Track up to 100 keywords.</text>
+
+        <!-- Link -->
+        <text x="24" y="244" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#FF5722" style="text-decoration:underline;">Learn more →</text>
+      </g>
+
+      <!-- Row 2 -->
+      <!-- Card 4: Review Analytics -->
+      <g transform="translate(0, 312)">
+        <rect width="400" height="280" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1" style="filter:drop-shadow(0 4px 6px rgba(0,0,0,0.05))"/>
+
+        <!-- Icon Container -->
+        <g transform="translate(24, 24)">
+          <rect width="48" height="48" rx="12" fill="rgba(255,87,34,0.1)"/>
+          <path d="M 24 16 L 26 22 L 32 22 L 27 26 L 29 32 L 24 28 L 19 32 L 21 26 L 16 22 L 22 22 Z" fill="#FF5722"/>
+        </g>
+
+        <!-- Card Title -->
+        <text x="24" y="108" font-family="Inter, sans-serif" font-size="20" font-weight="600" fill="#111827">Review Analytics</text>
+
+        <!-- Card Description -->
+        <text x="24" y="138" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">Analyze user reviews with</text>
+        <text x="24" y="160" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">sentiment analysis. Identify</text>
+        <text x="24" y="182" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">common issues and feature</text>
+        <text x="24" y="204" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">requests automatically.</text>
+
+        <!-- Link -->
+        <text x="24" y="244" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#FF5722" style="text-decoration:underline;">Learn more →</text>
+      </g>
+
+      <!-- Card 5: A/B Testing -->
+      <g transform="translate(440, 312)">
+        <rect width="400" height="280" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1" style="filter:drop-shadow(0 4px 6px rgba(0,0,0,0.05))"/>
+
+        <!-- Icon Container -->
+        <g transform="translate(24, 24)">
+          <rect width="48" height="48" rx="12" fill="rgba(255,87,34,0.1)"/>
+          <rect x="16" y="20" width="8" height="12" fill="#FF5722"/>
+          <rect x="28" y="16" width="8" height="16" fill="#FF5722" opacity="0.5"/>
+        </g>
+
+        <!-- Card Title -->
+        <text x="24" y="108" font-family="Inter, sans-serif" font-size="20" font-weight="600" fill="#111827">A/B Testing</text>
+
+        <!-- Card Description -->
+        <text x="24" y="138" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">Test different app titles,</text>
+        <text x="24" y="160" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">descriptions, and screenshots</text>
+        <text x="24" y="182" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">to optimize conversion rates.</text>
+        <text x="24" y="204" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">Data-driven optimization.</text>
+
+        <!-- Link -->
+        <text x="24" y="244" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#FF5722" style="text-decoration:underline;">Learn more →</text>
+      </g>
+
+      <!-- Card 6: Market Intelligence -->
+      <g transform="translate(880, 312)">
+        <rect width="400" height="280" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1" style="filter:drop-shadow(0 4px 6px rgba(0,0,0,0.05))"/>
+
+        <!-- Icon Container -->
+        <g transform="translate(24, 24)">
+          <rect width="48" height="48" rx="12" fill="rgba(255,87,34,0.1)"/>
+          <circle cx="24" cy="24" r="10" stroke="#FF5722" stroke-width="2" fill="none"/>
+          <circle cx="24" cy="24" r="6" stroke="#FF5722" stroke-width="2" fill="none"/>
+          <circle cx="24" cy="24" r="2" fill="#FF5722"/>
+        </g>
+
+        <!-- Card Title -->
+        <text x="24" y="108" font-family="Inter, sans-serif" font-size="20" font-weight="600" fill="#111827">Market Intelligence</text>
+
+        <!-- Card Description -->
+        <text x="24" y="138" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">Get insights into market trends,</text>
+        <text x="24" y="160" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">category performance, and</text>
+        <text x="24" y="182" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">emerging opportunities in your</text>
+        <text x="24" y="204" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">app's niche.</text>
+
+        <!-- Link -->
+        <text x="24" y="244" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#FF5722" style="text-decoration:underline;">Learn more →</text>
+      </g>
+
+      <!-- Row 3 -->
+      <!-- Card 7: Export & Reports -->
+      <g transform="translate(0, 624)">
+        <rect width="400" height="280" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1" style="filter:drop-shadow(0 4px 6px rgba(0,0,0,0.05))"/>
+
+        <!-- Icon Container -->
+        <g transform="translate(24, 24)">
+          <rect width="48" height="48" rx="12" fill="rgba(255,87,34,0.1)"/>
+          <rect x="18" y="18" width="12" height="14" rx="2" stroke="#FF5722" stroke-width="2" fill="none"/>
+          <line x1="20" y1="22" x2="28" y2="22" stroke="#FF5722" stroke-width="1.5"/>
+          <line x1="20" y1="26" x2="28" y2="26" stroke="#FF5722" stroke-width="1.5"/>
+          <path d="M 24 32 L 24 36 M 20 36 L 28 36" stroke="#FF5722" stroke-width="2"/>
+        </g>
+
+        <!-- Card Title -->
+        <text x="24" y="108" font-family="Inter, sans-serif" font-size="20" font-weight="600" fill="#111827">Export & Reports</text>
+
+        <!-- Card Description -->
+        <text x="24" y="138" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">Export data to CSV, Google</text>
+        <text x="24" y="160" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">Sheets, or PDF. Generate</text>
+        <text x="24" y="182" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">custom reports for clients or</text>
+        <text x="24" y="204" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">stakeholders.</text>
+
+        <!-- Link -->
+        <text x="24" y="244" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#FF5722" style="text-decoration:underline;">Learn more →</text>
+      </g>
+
+      <!-- Card 8: API Access -->
+      <g transform="translate(440, 624)">
+        <rect width="400" height="280" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1" style="filter:drop-shadow(0 4px 6px rgba(0,0,0,0.05))"/>
+
+        <!-- Icon Container -->
+        <g transform="translate(24, 24)">
+          <rect width="48" height="48" rx="12" fill="rgba(255,87,34,0.1)"/>
+          <rect x="16" y="20" width="16" height="12" rx="2" stroke="#FF5722" stroke-width="2" fill="none"/>
+          <line x1="18" y1="24" x2="30" y2="24" stroke="#FF5722" stroke-width="1.5"/>
+          <line x1="18" y1="28" x2="26" y2="28" stroke="#FF5722" stroke-width="1.5"/>
+        </g>
+
+        <!-- Card Title -->
+        <text x="24" y="108" font-family="Inter, sans-serif" font-size="20" font-weight="600" fill="#111827">API Access</text>
+
+        <!-- Card Description -->
+        <text x="24" y="138" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">Integrate ASO data directly</text>
+        <text x="24" y="160" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">into your tools and workflows</text>
+        <text x="24" y="182" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">with our REST API. Enterprise</text>
+        <text x="24" y="204" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">plan only.</text>
+
+        <!-- Badge -->
+        <rect x="24" y="220" width="92" height="20" rx="10" fill="#FFF7ED"/>
+        <text x="70" y="234" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#FF5722" text-anchor="middle">ENTERPRISE</text>
+      </g>
+
+      <!-- Card 9: Expert Consultation -->
+      <g transform="translate(880, 624)">
+        <rect width="400" height="280" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1" style="filter:drop-shadow(0 4px 6px rgba(0,0,0,0.05))"/>
+
+        <!-- Icon Container -->
+        <g transform="translate(24, 24)">
+          <rect width="48" height="48" rx="12" fill="rgba(255,87,34,0.1)"/>
+          <circle cx="24" cy="22" r="6" stroke="#FF5722" stroke-width="2" fill="none"/>
+          <path d="M 16 32 Q 16 28 24 28 Q 32 28 32 32" stroke="#FF5722" stroke-width="2" fill="none"/>
+        </g>
+
+        <!-- Card Title -->
+        <text x="24" y="108" font-family="Inter, sans-serif" font-size="20" font-weight="600" fill="#111827">Expert Consultation</text>
+
+        <!-- Card Description -->
+        <text x="24" y="138" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">Get personalized ASO strategy</text>
+        <text x="24" y="160" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">advice from our team of experts.</text>
+        <text x="24" y="182" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">Free 30-minute consultation</text>
+        <text x="24" y="204" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">with every plan.</text>
+
+        <!-- Link -->
+        <text x="24" y="244" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#FF5722" style="text-decoration:underline;">Book now →</text>
+      </g>
+    </g>
+
+    <!-- CTA Section -->
+    <g transform="translate(0, 1000)">
+      <rect x="240" width="800" height="112" rx="12" fill="#FFF7ED" stroke="#FFEDD5" stroke-width="1"/>
+
+      <text x="640" y="48" font-family="Inter, sans-serif" font-size="24" font-weight="600" fill="#111827" text-anchor="middle">Ready to optimize your app?</text>
+
+      <rect x="464" y="68" width="352" height="40" rx="8" fill="#FF5722" style="filter:drop-shadow(0 4px 8px rgba(255,87,34,0.25))"/>
+      <text x="640" y="93" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">Start Free Trial - No Credit Card Required</text>
+    </g>
+  </g>
+</svg>

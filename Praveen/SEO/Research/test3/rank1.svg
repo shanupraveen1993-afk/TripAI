@@ -1,0 +1,170 @@
+<svg width="1440" height="900" viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1440" height="900" fill="#FFFFFF"/>
+
+  <!-- Sidebar -->
+  <rect x="0" y="0" width="240" height="900" fill="#F9FAFB"/>
+  <line x1="240" y1="0" x2="240" y2="900" stroke="#E5E7EB" stroke-width="1"/>
+
+  <!-- Sidebar Logo -->
+  <circle cx="40" cy="40" r="16" fill="#FF5722"/>
+  <text x="64" y="48" font-family="Inter, sans-serif" font-size="18" font-weight="600" fill="#111827">RankTrack</text>
+
+  <!-- Sidebar Nav Items -->
+  <g id="nav-dashboard">
+    <rect x="16" y="96" width="208" height="44" rx="12" fill="#F3F4F6"/>
+    <rect x="28" y="108" width="20" height="20" rx="2" fill="#6B7280"/>
+    <text x="60" y="124" font-family="Inter, sans-serif" font-size="16" fill="#374151">Dashboard</text>
+  </g>
+
+  <g id="nav-apps">
+    <rect x="16" y="148" width="208" height="44" rx="12" fill="#FFF3E0"/>
+    <rect x="28" y="160" width="20" height="20" rx="2" fill="#FF5722"/>
+    <text x="60" y="176" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#4F1C0F">My Apps</text>
+  </g>
+
+  <g id="nav-alerts">
+    <rect x="16" y="200" width="208" height="44" rx="12" fill="transparent"/>
+    <rect x="28" y="212" width="20" height="20" rx="2" fill="#6B7280"/>
+    <text x="60" y="228" font-family="Inter, sans-serif" font-size="16" fill="#374151">Alerts</text>
+  </g>
+
+  <g id="nav-reports">
+    <rect x="16" y="252" width="208" height="44" rx="12" fill="transparent"/>
+    <rect x="28" y="264" width="20" height="20" rx="2" fill="#6B7280"/>
+    <text x="60" y="280" font-family="Inter, sans-serif" font-size="16" fill="#374151">Reports</text>
+  </g>
+
+  <!-- Header -->
+  <rect x="240" y="0" width="1200" height="80" fill="#FFFFFF"/>
+  <line x1="240" y1="80" x2="1440" y2="80" stroke="#E5E7EB" stroke-width="1"/>
+
+  <text x="280" y="50" font-family="Inter, sans-serif" font-size="32" font-weight="600" fill="#111827">My Apps</text>
+
+  <!-- Add App Button -->
+  <rect x="1280" y="28" width="120" height="40" rx="12" fill="#FF5722"/>
+  <text x="1310" y="53" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF">+ Add App</text>
+
+  <!-- Main Content Area -->
+  <rect x="240" y="80" width="1200" height="820" fill="#FFFFFF"/>
+
+  <!-- App Card 1 -->
+  <g id="app-card-1">
+    <rect x="280" y="120" width="1120" height="160" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+
+    <!-- App Icon -->
+    <rect x="304" y="144" width="64" height="64" rx="14" fill="#FF5722"/>
+    <text x="325" y="185" font-family="Inter, sans-serif" font-size="24" font-weight="600" fill="#FFFFFF">M</text>
+
+    <!-- App Info -->
+    <text x="388" y="164" font-family="Inter, sans-serif" font-size="22" font-weight="600" fill="#111827">My Travel App</text>
+    <text x="388" y="188" font-family="Inter, sans-serif" font-size="14" fill="#6B7280">com.example.travelapp</text>
+    <text x="388" y="210" font-family="Inter, sans-serif" font-size="14" fill="#9CA3AF">Last updated 2h ago</text>
+
+    <!-- Store & Country -->
+    <circle cx="700" cy="164" r="12" fill="#E5E7EB"/>
+    <text x="720" y="170" font-family="Inter, sans-serif" font-size="14" fill="#6B7280">iOS</text>
+    <text x="780" y="170" font-family="Inter, sans-serif" font-size="20" fill="#6B7280">🇺🇸</text>
+
+    <!-- Rank Badge -->
+    <rect x="900" y="142" width="68" height="36" rx="18" fill="#10B981"/>
+    <text x="922" y="166" font-family="Inter, sans-serif" font-size="18" font-weight="600" fill="#FFFFFF">#12</text>
+
+    <!-- Change Indicator -->
+    <text x="988" y="166" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#10B981">↑3</text>
+
+    <!-- Sparkline Chart -->
+    <polyline points="1080,190 1095,185 1110,180 1125,175 1140,165 1155,168 1170,160"
+              fill="none" stroke="#FF5722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- App Card 2 -->
+  <g id="app-card-2">
+    <rect x="280" y="300" width="1120" height="160" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+
+    <!-- App Icon -->
+    <rect x="304" y="324" width="64" height="64" rx="14" fill="#FFA726"/>
+    <text x="325" y="365" font-family="Inter, sans-serif" font-size="24" font-weight="600" fill="#FFFFFF">F</text>
+
+    <!-- App Info -->
+    <text x="388" y="344" font-family="Inter, sans-serif" font-size="22" font-weight="600" fill="#111827">Fitness Tracker Pro</text>
+    <text x="388" y="368" font-family="Inter, sans-serif" font-size="14" fill="#6B7280">com.example.fitnesspro</text>
+    <text x="388" y="390" font-family="Inter, sans-serif" font-size="14" fill="#9CA3AF">Last updated 1h ago</text>
+
+    <!-- Store & Country -->
+    <rect x="688" y="352" width="24" height="24" rx="4" fill="#E5E7EB"/>
+    <text x="720" y="370" font-family="Inter, sans-serif" font-size="14" fill="#6B7280">Android</text>
+    <text x="780" y="370" font-family="Inter, sans-serif" font-size="20" fill="#6B7280">🇬🇧</text>
+
+    <!-- Rank Badge -->
+    <rect x="900" y="322" width="60" height="36" rx="18" fill="#10B981"/>
+    <text x="922" y="346" font-family="Inter, sans-serif" font-size="18" font-weight="600" fill="#FFFFFF">#5</text>
+
+    <!-- Change Indicator -->
+    <text x="980" y="346" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#DC2626">↓1</text>
+
+    <!-- Sparkline Chart -->
+    <polyline points="1080,355 1095,358 1110,352 1125,348 1140,345 1155,350 1170,362"
+              fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- App Card 3 -->
+  <g id="app-card-3">
+    <rect x="280" y="480" width="1120" height="160" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+
+    <!-- App Icon -->
+    <rect x="304" y="504" width="64" height="64" rx="14" fill="#4CAF50"/>
+    <text x="325" y="545" font-family="Inter, sans-serif" font-size="24" font-weight="600" fill="#FFFFFF">P</text>
+
+    <!-- App Info -->
+    <text x="388" y="524" font-family="Inter, sans-serif" font-size="22" font-weight="600" fill="#111827">Photo Editor Plus</text>
+    <text x="388" y="548" font-family="Inter, sans-serif" font-size="14" fill="#6B7280">com.example.photoeditor</text>
+    <text x="388" y="570" font-family="Inter, sans-serif" font-size="14" fill="#9CA3AF">Last updated 3h ago</text>
+
+    <!-- Store & Country -->
+    <circle cx="700" cy="524" r="12" fill="#E5E7EB"/>
+    <text x="720" y="530" font-family="Inter, sans-serif" font-size="14" fill="#6B7280">iOS</text>
+    <text x="780" y="530" font-family="Inter, sans-serif" font-size="20" fill="#6B7280">🇨🇦</text>
+
+    <!-- Rank Badge -->
+    <rect x="900" y="502" width="72" height="36" rx="18" fill="#F59E0B"/>
+    <text x="922" y="526" font-family="Inter, sans-serif" font-size="18" font-weight="600" fill="#1F2937">#18</text>
+
+    <!-- Change Indicator -->
+    <text x="992" y="526" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#6B7280">→</text>
+
+    <!-- Sparkline Chart -->
+    <polyline points="1080,535 1095,532 1110,535 1125,538 1140,535 1155,532 1170,535"
+              fill="none" stroke="#6B7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- App Card 4 -->
+  <g id="app-card-4">
+    <rect x="280" y="660" width="1120" height="160" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+
+    <!-- App Icon -->
+    <rect x="304" y="684" width="64" height="64" rx="14" fill="#2196F3"/>
+    <text x="325" y="725" font-family="Inter, sans-serif" font-size="24" font-weight="600" fill="#FFFFFF">G</text>
+
+    <!-- App Info -->
+    <text x="388" y="704" font-family="Inter, sans-serif" font-size="22" font-weight="600" fill="#111827">Game Hub</text>
+    <text x="388" y="728" font-family="Inter, sans-serif" font-size="14" fill="#6B7280">com.example.gamehub</text>
+    <text x="388" y="750" font-family="Inter, sans-serif" font-size="14" fill="#9CA3AF">Last updated 4h ago</text>
+
+    <!-- Store & Country -->
+    <rect x="688" y="692" width="24" height="24" rx="4" fill="#E5E7EB"/>
+    <text x="720" y="710" font-family="Inter, sans-serif" font-size="14" fill="#6B7280">Android</text>
+    <text x="780" y="710" font-family="Inter, sans-serif" font-size="20" fill="#6B7280">🇦🇺</text>
+
+    <!-- Rank Badge -->
+    <rect x="900" y="682" width="68" height="36" rx="18" fill="#F59E0B"/>
+    <text x="922" y="706" font-family="Inter, sans-serif" font-size="18" font-weight="600" fill="#1F2937">#23</text>
+
+    <!-- Change Indicator -->
+    <text x="988" y="706" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#10B981">↑2</text>
+
+    <!-- Sparkline Chart -->
+    <polyline points="1080,715 1095,718 1110,710 1125,705 1140,698 1155,695 1170,692"
+              fill="none" stroke="#FF5722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

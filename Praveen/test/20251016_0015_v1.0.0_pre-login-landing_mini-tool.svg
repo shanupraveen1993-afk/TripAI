@@ -1,0 +1,303 @@
+<svg width="1440" height="1800" viewBox="0 0 1440 1800" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1440" height="1800" fill="#FFFFFF"/>
+
+  <!-- Top Navigation Bar (Public) -->
+  <g id="top-nav">
+    <rect width="1440" height="72" fill="#FFFFFF"/>
+    <rect y="72" width="1440" height="1" fill="#E0E0E0"/>
+
+    <!-- Logo -->
+    <g transform="translate(80, 20)">
+      <rect width="32" height="32" rx="8" fill="#FF9800"/>
+      <text x="44" y="22" font-family="IBM Plex Sans, sans-serif" font-size="18" font-weight="600" fill="#1A1A1A">SearchVector</text>
+    </g>
+
+    <!-- Navigation Links -->
+    <g transform="translate(600, 36)">
+      <text x="0" y="0" font-family="IBM Plex Sans, sans-serif" font-size="15" font-weight="500" fill="#4A4A4A">Features</text>
+      <text x="100" y="0" font-family="IBM Plex Sans, sans-serif" font-size="15" font-weight="500" fill="#4A4A4A">Pricing</text>
+      <text x="200" y="0" font-family="IBM Plex Sans, sans-serif" font-size="15" font-weight="500" fill="#4A4A4A">Resources</text>
+      <text x="320" y="0" font-family="IBM Plex Sans, sans-serif" font-size="15" font-weight="500" fill="#4A4A4A">Blog</text>
+    </g>
+
+    <!-- Auth Buttons -->
+    <g transform="translate(1180, 20)">
+      <rect width="80" height="32" rx="6" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="1"/>
+      <text x="20" y="20" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="500" fill="#1A1A1A">Sign In</text>
+
+      <rect x="96" width="100" height="32" rx="6" fill="#FF9800"/>
+      <text x="110" y="20" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF">Get Started</text>
+    </g>
+  </g>
+
+  <!-- Hero Section -->
+  <g transform="translate(0, 120)">
+    <!-- Heading -->
+    <text x="720" y="0" font-family="IBM Plex Sans, sans-serif" font-size="48" font-weight="700" fill="#1A1A1A" text-anchor="middle">Find the Perfect Keywords</text>
+    <text x="720" y="56" font-family="IBM Plex Sans, sans-serif" font-size="48" font-weight="700" fill="#1A1A1A" text-anchor="middle">for Your App</text>
+
+    <!-- Subheading -->
+    <text x="720" y="116" font-family="IBM Plex Sans, sans-serif" font-size="18" font-weight="400" fill="#6D6D6D" text-anchor="middle">Discover high-performing keywords to boost your app's visibility</text>
+    <text x="720" y="144" font-family="IBM Plex Sans, sans-serif" font-size="18" font-weight="400" fill="#6D6D6D" text-anchor="middle">Try our free keyword research tool below</text>
+  </g>
+
+  <!-- Free Tool Section -->
+  <g transform="translate(220, 320)">
+    <!-- Tool Container -->
+    <rect width="1000" height="900" rx="12" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2" style="filter:drop-shadow(0 8px 24px rgba(0,0,0,0.08))"/>
+
+    <!-- Tool Header -->
+    <g transform="translate(40, 40)">
+      <text x="0" y="0" font-family="IBM Plex Sans, sans-serif" font-size="24" font-weight="600" fill="#1A1A1A">Try Free Keyword Research</text>
+      <text x="0" y="32" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="400" fill="#6D6D6D">Enter a keyword to see 5 suggestions - no sign up required</text>
+    </g>
+
+    <!-- Platform & Country Selector -->
+    <g transform="translate(40, 120)">
+      <!-- Platform Toggle -->
+      <g>
+        <text x="0" y="0" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="500" fill="#4A4A4A">Platform</text>
+        <g transform="translate(0, 12)">
+          <rect width="200" height="36" rx="18" fill="#F5F5F5"/>
+          <rect x="2" y="2" width="96" height="32" rx="16" fill="#FF9800"/>
+          <text x="28" y="23" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#FFFFFF">iOS</text>
+          <text x="124" y="23" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="500" fill="#6D6D6D">Android</text>
+        </g>
+      </g>
+
+      <!-- Country Selector -->
+      <g transform="translate(230, 0)">
+        <text x="0" y="0" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="500" fill="#4A4A4A">Country</text>
+        <g transform="translate(0, 12)">
+          <rect width="200" height="36" rx="6" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="1"/>
+          <text x="12" y="23" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="400" fill="#1A1A1A">🇺🇸 United States</text>
+          <path d="M 192 16 L 196 20 L 192 24" stroke="#4A4A4A" stroke-width="1.5" fill="none"/>
+        </g>
+      </g>
+    </g>
+
+    <!-- Search Input -->
+    <g transform="translate(40, 224)">
+      <text x="0" y="0" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="500" fill="#4A4A4A">Enter a keyword</text>
+      <g transform="translate(0, 12)">
+        <rect width="720" height="56" rx="8" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2"/>
+        <circle cx="24" cy="28" r="10" stroke="#6D6D6D" stroke-width="2" fill="none"/>
+        <line x1="31" y1="35" x2="36" y2="40" stroke="#6D6D6D" stroke-width="2"/>
+        <text x="52" y="35" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="400" fill="#A0A0A0">e.g., fitness tracker, workout app, calorie counter...</text>
+      </g>
+
+      <!-- Search Button -->
+      <rect x="732" y="12" width="188" height="56" rx="8" fill="#FF9800"/>
+      <text x="780" y="45" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#FFFFFF">Search Keywords</text>
+    </g>
+
+    <!-- Results Section (Limited to 5) -->
+    <g transform="translate(40, 324)">
+      <text x="0" y="0" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1A1A1A">Top 5 Keyword Suggestions</text>
+      <text x="0" y="24" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="400" fill="#6D6D6D">Showing 5 of 127 total results</text>
+
+      <!-- Simple Table -->
+      <g transform="translate(0, 48)">
+        <!-- Header -->
+        <rect width="920" height="40" fill="#FAFAFA"/>
+        <rect y="40" width="920" height="1" fill="#E0E0E0"/>
+        <text x="16" y="25" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#1A1A1A">Keyword</text>
+        <text x="380" y="25" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#1A1A1A">Volume</text>
+        <text x="520" y="25" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#1A1A1A">Difficulty</text>
+        <text x="680" y="25" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#1A1A1A">Opportunity</text>
+
+        <!-- Row 1 -->
+        <g transform="translate(0, 41)">
+          <rect width="920" height="48" fill="#FFFFFF"/>
+          <rect y="48" width="920" height="1" fill="#E0E0E0"/>
+          <text x="16" y="30" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="400" fill="#1A1A1A">fitness tracker app</text>
+          <text x="380" y="30" font-family="Roboto Mono, monospace" font-size="14" font-weight="400" fill="#1A1A1A">45.2K</text>
+          <rect x="520" y="12" width="80" height="24" rx="12" fill="#E8F5E9"/>
+          <text x="540" y="28" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="#43A047">Easy (23)</text>
+          <rect x="680" y="12" width="60" height="24" rx="12" fill="#E8F5E9"/>
+          <text x="694" y="28" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="#43A047">High</text>
+        </g>
+
+        <!-- Row 2 -->
+        <g transform="translate(0, 89)">
+          <rect width="920" height="48" fill="#FFFFFF"/>
+          <rect y="48" width="920" height="1" fill="#E0E0E0"/>
+          <text x="16" y="30" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="400" fill="#1A1A1A">workout planner</text>
+          <text x="380" y="30" font-family="Roboto Mono, monospace" font-size="14" font-weight="400" fill="#1A1A1A">128K</text>
+          <rect x="520" y="12" width="100" height="24" rx="12" fill="#FFF3E0"/>
+          <text x="535" y="28" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="#FB8C00">Medium (67)</text>
+          <rect x="680" y="12" width="80" height="24" rx="12" fill="#FFF3E0"/>
+          <text x="690" y="28" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="#FB8C00">Medium</text>
+        </g>
+
+        <!-- Row 3 -->
+        <g transform="translate(0, 137)">
+          <rect width="920" height="48" fill="#FFFFFF"/>
+          <rect y="48" width="920" height="1" fill="#E0E0E0"/>
+          <text x="16" y="30" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="400" fill="#1A1A1A">calorie counter free</text>
+          <text x="380" y="30" font-family="Roboto Mono, monospace" font-size="14" font-weight="400" fill="#1A1A1A">89.5K</text>
+          <rect x="520" y="12" width="80" height="24" rx="12" fill="#FFEBEE"/>
+          <text x="540" y="28" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="#E53935">Hard (89)</text>
+          <rect x="680" y="12" width="60" height="24" rx="12" fill="#F5F5F5"/>
+          <text x="698" y="28" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="#9E9E9E">Low</text>
+        </g>
+
+        <!-- Row 4 -->
+        <g transform="translate(0, 185)">
+          <rect width="920" height="48" fill="#FFFFFF"/>
+          <rect y="48" width="920" height="1" fill="#E0E0E0"/>
+          <text x="16" y="30" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="400" fill="#1A1A1A">step counter pedometer</text>
+          <text x="380" y="30" font-family="Roboto Mono, monospace" font-size="14" font-weight="400" fill="#1A1A1A">34.1K</text>
+          <rect x="520" y="12" width="80" height="24" rx="12" fill="#E8F5E9"/>
+          <text x="540" y="28" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="#43A047">Easy (18)</text>
+          <rect x="680" y="12" width="60" height="24" rx="12" fill="#E8F5E9"/>
+          <text x="694" y="28" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="#43A047">High</text>
+        </g>
+
+        <!-- Row 5 -->
+        <g transform="translate(0, 233)">
+          <rect width="920" height="48" fill="#FFFFFF"/>
+          <rect y="48" width="920" height="1" fill="#E0E0E0"/>
+          <text x="16" y="30" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="400" fill="#1A1A1A">health and fitness app</text>
+          <text x="380" y="30" font-family="Roboto Mono, monospace" font-size="14" font-weight="400" fill="#1A1A1A">156K</text>
+          <rect x="520" y="12" width="100" height="24" rx="12" fill="#FFF3E0"/>
+          <text x="535" y="28" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="#FB8C00">Medium (54)</text>
+          <rect x="680" y="12" width="80" height="24" rx="12" fill="#FFF3E0"/>
+          <text x="690" y="28" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="#FB8C00">Medium</text>
+        </g>
+
+        <!-- Blur Overlay & Unlock CTA -->
+        <g transform="translate(0, 281)">
+          <rect width="920" height="120" fill="url(#blur-gradient)"/>
+          <defs>
+            <linearGradient id="blur-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.4"/>
+              <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:1"/>
+            </linearGradient>
+          </defs>
+        </g>
+      </g>
+    </g>
+
+    <!-- Unlock CTA Banner -->
+    <g transform="translate(40, 718)">
+      <rect width="920" height="120" rx="8" fill="url(#gradient-unlock)" stroke="#F4511E" stroke-width="2"/>
+      <defs>
+        <linearGradient id="gradient-unlock" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:#FF5722;stop-opacity:0.08"/>
+          <stop offset="100%" style="stop-color:#F4511E;stop-opacity:0.12"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Lock Icon -->
+      <g transform="translate(60, 35)">
+        <rect x="0" y="12" width="24" height="28" rx="4" stroke="#FF5722" stroke-width="2" fill="none"/>
+        <path d="M 6 12 L 6 8 A 6 6 0 0 1 18 8 L 18 12" stroke="#FF5722" stroke-width="2" fill="none"/>
+        <circle cx="12" cy="26" r="3" fill="#FF5722"/>
+      </g>
+
+      <!-- Text -->
+      <text x="100" y="48" font-family="IBM Plex Sans, sans-serif" font-size="20" font-weight="700" fill="#1A1A1A">Sign up to see all 127 keywords</text>
+      <text x="100" y="72" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="400" fill="#4A4A4A">Get full access to all keyword data, trends, competitor analysis, and export features</text>
+
+      <!-- CTA Button -->
+      <rect x="690" y="28" width="180" height="48" rx="8" fill="#FF5722"/>
+      <text x="726" y="57" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="700" fill="#FFFFFF">Create Free Account</text>
+    </g>
+  </g>
+
+  <!-- Value Proposition Section -->
+  <g transform="translate(220, 1280)">
+    <text x="500" y="0" font-family="IBM Plex Sans, sans-serif" font-size="24" font-weight="600" fill="#1A1A1A" text-anchor="middle">What you get with a free account:</text>
+
+    <!-- Benefits Grid -->
+    <g transform="translate(0, 48)">
+      <!-- Benefit 1 -->
+      <g>
+        <circle cx="16" cy="16" r="16" fill="#E8F5E9"/>
+        <path d="M 11 16 L 15 20 L 21 12" stroke="#43A047" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="48" y="22" font-family="IBM Plex Sans, sans-serif" font-size="15" font-weight="600" fill="#1A1A1A">500 keyword searches per month</text>
+      </g>
+
+      <!-- Benefit 2 -->
+      <g transform="translate(0, 56)">
+        <circle cx="16" cy="16" r="16" fill="#E8F5E9"/>
+        <path d="M 11 16 L 15 20 L 21 12" stroke="#43A047" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="48" y="22" font-family="IBM Plex Sans, sans-serif" font-size="15" font-weight="600" fill="#1A1A1A">Full keyword metrics & trend data</text>
+      </g>
+
+      <!-- Benefit 3 -->
+      <g transform="translate(0, 112)">
+        <circle cx="16" cy="16" r="16" fill="#E8F5E9"/>
+        <path d="M 11 16 L 15 20 L 21 12" stroke="#43A047" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="48" y="22" font-family="IBM Plex Sans, sans-serif" font-size="15" font-weight="600" fill="#1A1A1A">Save and organize keyword lists</text>
+      </g>
+
+      <!-- Benefit 4 -->
+      <g transform="translate(500, 0)">
+        <circle cx="16" cy="16" r="16" fill="#E8F5E9"/>
+        <path d="M 11 16 L 15 20 L 21 12" stroke="#43A047" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="48" y="22" font-family="IBM Plex Sans, sans-serif" font-size="15" font-weight="600" fill="#1A1A1A">Export to CSV & Google Sheets</text>
+      </g>
+
+      <!-- Benefit 5 -->
+      <g transform="translate(500, 56)">
+        <circle cx="16" cy="16" r="16" fill="#E8F5E9"/>
+        <path d="M 11 16 L 15 20 L 21 12" stroke="#43A047" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="48" y="22" font-family="IBM Plex Sans, sans-serif" font-size="15" font-weight="600" fill="#1A1A1A">Access to competitor analysis</text>
+      </g>
+
+      <!-- Benefit 6 -->
+      <g transform="translate(500, 112)">
+        <circle cx="16" cy="16" r="16" fill="#E8F5E9"/>
+        <path d="M 11 16 L 15 20 L 21 12" stroke="#43A047" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="48" y="22" font-family="IBM Plex Sans, sans-serif" font-size="15" font-weight="600" fill="#1A1A1A">Free ASO consultation call</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Trust Indicators -->
+  <g transform="translate(220, 1520)">
+    <rect width="1000" height="160" rx="8" fill="#FAFAFA"/>
+
+    <!-- Stats -->
+    <g transform="translate(100, 50)">
+      <text x="0" y="0" font-family="IBM Plex Sans, sans-serif" font-size="32" font-weight="700" fill="#FF9800" text-anchor="middle">10,000+</text>
+      <text x="0" y="32" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="500" fill="#6D6D6D" text-anchor="middle">App Developers</text>
+    </g>
+
+    <g transform="translate(350, 50)">
+      <text x="0" y="0" font-family="IBM Plex Sans, sans-serif" font-size="32" font-weight="700" fill="#FF9800" text-anchor="middle">4.8/5.0</text>
+      <text x="0" y="32" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="500" fill="#6D6D6D" text-anchor="middle">Average Rating</text>
+    </g>
+
+    <g transform="translate(600, 50)">
+      <text x="0" y="0" font-family="IBM Plex Sans, sans-serif" font-size="32" font-weight="700" fill="#FF9800" text-anchor="middle">50M+</text>
+      <text x="0" y="32" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="500" fill="#6D6D6D" text-anchor="middle">Keywords Analyzed</text>
+    </g>
+
+    <g transform="translate(850, 50)">
+      <text x="0" y="0" font-family="IBM Plex Sans, sans-serif" font-size="32" font-weight="700" fill="#FF9800" text-anchor="middle">24/7</text>
+      <text x="0" y="32" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="500" fill="#6D6D6D" text-anchor="middle">Support Available</text>
+    </g>
+
+    <!-- Certification Badges -->
+    <g transform="translate(320, 100)">
+      <rect width="80" height="32" rx="4" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="1"/>
+      <text x="40" y="20" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="600" fill="#4A4A4A" text-anchor="middle">G2 4.8★</text>
+
+      <rect x="96" width="80" height="32" rx="4" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="1"/>
+      <text x="136" y="20" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="600" fill="#4A4A4A" text-anchor="middle">SOC2</text>
+
+      <rect x="192" width="80" height="32" rx="4" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="1"/>
+      <text x="232" y="20" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="600" fill="#4A4A4A" text-anchor="middle">GDPR</text>
+    </g>
+  </g>
+
+  <!-- Final CTA -->
+  <g transform="translate(520, 1720)">
+    <rect width="400" height="56" rx="8" fill="#FF5722"/>
+    <text x="200" y="36" font-family="IBM Plex Sans, sans-serif" font-size="18" font-weight="700" fill="#FFFFFF" text-anchor="middle">Get Started for Free →</text>
+  </g>
+</svg>

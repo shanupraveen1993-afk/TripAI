@@ -1,0 +1,412 @@
+<svg width="1440" height="2900" viewBox="0 0 1440 2900" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;display=swap');
+    * { font-family: 'Inter', system-ui, sans-serif; }
+    .bg-surface { fill: #FFFFFF; } .bg-surface-variant { fill: #F9FAFB; } .bg-primary { fill: #FF5722; } .bg-primary-container { fill: #FFF3E0; }
+    .text-primary { fill: #FF5722; } .text-on-surface { fill: #111827; } .text-on-surface-variant { fill: #6B7280; } .text-on-primary { fill: #FFFFFF; }
+    .stroke-outline { stroke: #E5E7EB; } .stroke-primary { stroke: #FF5722; } .stroke-error { stroke: #EF4444; } .stroke-success { stroke: #10B981; }
+    .elevation-1 { filter: drop-shadow(0 1px 3px rgba(0,0,0,0.1)); }
+    .font-display-sm { font-size: 36px; font-weight: 600; } .font-headline { font-size: 32px; font-weight: 600; } .font-title { font-size: 22px; font-weight: 600; }
+    .font-body { font-size: 16px; font-weight: 400; } .font-body-sm { font-size: 14px; font-weight: 400; } .font-label { font-size: 14px; font-weight: 600; }
+    .trend-up { fill: #10B981; } .trend-down { fill: #EF4444; }
+  </style>
+
+  <rect width="1440" height="2900" class="bg-surface-variant"/>
+
+  <!-- Sidebar -->
+  <g id="sidebar">
+    <rect width="240" height="2900" class="bg-surface-variant"/>
+    <line x1="240" y1="0" x2="240" y2="2900" class="stroke-outline" stroke-width="1"/>
+    <g transform="translate(24, 24)">
+      <circle cx="16" cy="16" r="16" class="bg-primary"/>
+      <text x="16" y="22" text-anchor="middle" class="text-on-primary font-label">SEO</text>
+      <text x="44" y="22" class="text-on-surface font-title">Dashboard</text>
+    </g>
+    <g transform="translate(16, 96)">
+      <rect width="208" height="48" rx="12" class="bg-primary-container"/>
+      <text x="20" y="29" class="text-primary font-body">📊 Overview</text>
+    </g>
+  </g>
+
+  <!-- Header -->
+  <g id="header">
+    <rect x="240" width="1200" height="64" class="bg-surface"/>
+    <line x1="240" y1="64" x2="1440" y2="64" class="stroke-outline" stroke-width="1"/>
+    <g transform="translate(268, 16)">
+      <rect width="400" height="32" rx="16" class="stroke-outline bg-surface" stroke-width="1"/>
+      <text x="16" y="21" class="text-on-surface-variant font-body-sm">🔍 getbelong.com</text>
+    </g>
+    <g transform="translate(1310, 16)">
+      <circle cx="16" cy="16" r="16" class="bg-surface-variant"/>
+      <text x="16" y="22" text-anchor="middle" class="text-on-surface-variant font-label">🔔</text>
+      <circle cx="68" cy="16" r="16" class="bg-primary-container"/>
+      <text x="68" y="22" text-anchor="middle" class="text-primary font-label">JD</text>
+    </g>
+  </g>
+
+  <!-- Main Content -->
+  <g id="main-content" transform="translate(240, 64)">
+    <rect width="1200" height="2836" fill="#FFFFFF"/>
+
+    <!-- Page Header -->
+    <g transform="translate(32, 32)">
+      <text class="text-on-surface font-headline">getbelong.com</text>
+      <text y="36" class="text-on-surface-variant font-body">Mutual Funds &amp; Fixed Deposits - SEO Analysis</text>
+    </g>
+
+    <!-- KPI Card 1: Domain Rating -->
+    <g transform="translate(32, 104)">
+      <rect width="276" height="120" rx="16" class="bg-surface stroke-outline elevation-1" stroke-width="1"/>
+      <text x="20" y="32" class="text-on-surface-variant font-body-sm">DOMAIN RATING</text>
+      <text x="20" y="70" class="text-on-surface font-display-sm">25</text>
+      <text x="20" y="100" class="trend-down font-body-sm">↓ 24</text>
+    </g>
+
+    <!-- KPI Card 2 -->
+    <g transform="translate(324, 104)">
+      <rect width="276" height="120" rx="16" class="bg-surface stroke-outline elevation-1" stroke-width="1"/>
+      <text x="20" y="32" class="text-on-surface-variant font-body-sm">ORGANIC KEYWORDS</text>
+      <text x="20" y="70" class="text-on-surface font-display-sm">971</text>
+      <text x="20" y="100" class="trend-up font-body-sm">↑ 743</text>
+    </g>
+
+    <!-- KPI Card 3 -->
+    <g transform="translate(616, 104)">
+      <rect width="276" height="120" rx="16" class="bg-surface stroke-outline elevation-1" stroke-width="1"/>
+      <text x="20" y="32" class="text-on-surface-variant font-body-sm">ORGANIC TRAFFIC</text>
+      <text x="20" y="70" class="text-on-surface font-display-sm">1.6K</text>
+      <text x="20" y="100" class="trend-down font-body-sm">↓ 4.3K</text>
+    </g>
+
+    <!-- KPI Card 4 -->
+    <g transform="translate(908, 104)">
+      <rect width="260" height="120" rx="16" class="bg-surface stroke-outline elevation-1" stroke-width="1"/>
+      <text x="20" y="32" class="text-on-surface-variant font-body-sm">BACKLINKS</text>
+      <text x="20" y="70" class="text-on-surface font-display-sm">900</text>
+      <text x="20" y="100" class="trend-up font-body-sm">↑ 771</text>
+    </g>
+
+    <!-- Secondary Metrics -->
+    <g transform="translate(32, 272)">
+      <rect width="276" height="100" rx="16" class="bg-surface stroke-outline elevation-1" stroke-width="1"/>
+      <text x="20" y="28" class="text-on-surface-variant font-body-sm">REFERRING DOMAINS</text>
+      <text x="20" y="62" class="text-on-surface font-headline">170</text>
+      <text x="20" y="84" class="trend-up font-body-sm">↑ 137</text>
+    </g>
+
+    <g transform="translate(324, 272)">
+      <rect width="276" height="100" rx="16" class="bg-surface stroke-outline elevation-1" stroke-width="1"/>
+      <text x="20" y="28" class="text-on-surface-variant font-body-sm">URL RATING</text>
+      <text x="20" y="62" class="text-on-surface font-headline">19</text>
+      <text x="20" y="84" class="trend-up font-body-sm">↑ 19</text>
+    </g>
+
+    <g transform="translate(616, 272)">
+      <rect width="276" height="100" rx="16" class="bg-surface stroke-outline elevation-1" stroke-width="1"/>
+      <text x="20" y="28" class="text-on-surface-variant font-body-sm">CRAWLED PAGES</text>
+      <text x="20" y="62" class="text-on-surface font-headline">1,277</text>
+      <text x="20" y="84" class="text-on-surface-variant font-body-sm">indexed</text>
+    </g>
+
+    <g transform="translate(908, 272)">
+      <rect width="260" height="100" rx="16" class="bg-surface stroke-outline elevation-1" stroke-width="1"/>
+      <text x="20" y="28" class="text-on-surface-variant font-body-sm">DOFOLLOW RATIO</text>
+      <text x="20" y="62" class="text-on-surface font-headline">82%</text>
+      <text x="20" y="84" class="text-on-surface-variant font-body-sm">737 dofollow</text>
+    </g>
+
+    <!-- Traffic by Location - Content: 312h, Container: 360h (312+48) -->
+    <g transform="translate(32, 420)">
+      <rect width="568" height="360" rx="16" class="bg-surface stroke-outline elevation-1" stroke-width="1"/>
+      <g transform="translate(24, 24)">
+        <text y="16" class="text-on-surface font-title">Traffic by Location</text>
+
+        <rect y="44" width="520" height="40" class="bg-surface-variant"/>
+        <text y="68" class="text-on-surface font-label">Country</text>
+        <text x="256" y="68" class="text-on-surface font-label">Traffic</text>
+        <text x="380" y="68" class="text-on-surface font-label">Share</text>
+
+        <text y="112" class="text-on-surface font-body">🇦🇪 UAE</text>
+        <text x="256" y="112" class="text-on-surface font-body">493</text>
+        <text x="380" y="112" class="text-on-surface font-body">64.3%</text>
+
+        <text y="152" class="text-on-surface font-body">🇮🇳 India</text>
+        <text x="256" y="152" class="text-on-surface font-body">292</text>
+        <text x="380" y="152" class="text-on-surface font-body">18.7%</text>
+
+        <text y="192" class="text-on-surface font-body">🇺🇸 US</text>
+        <text x="256" y="192" class="text-on-surface font-body">n1</text>
+        <text x="380" y="192" class="text-on-surface font-body">5.2%</text>
+
+        <text y="232" class="text-on-surface font-body">🇶🇦 Qatar</text>
+        <text x="256" y="232" class="text-on-surface font-body">43</text>
+        <text x="380" y="232" class="text-on-surface font-body">2.8%</text>
+
+        <text y="272" class="text-on-surface font-body">🇸🇦 Saudi</text>
+        <text x="256" y="272" class="text-on-surface font-body">40</text>
+        <text x="380" y="272" class="text-on-surface font-body">2.9%</text>
+
+        <text y="312" class="text-on-surface-variant font-body-sm">Others: 96 (6.1%)</text>
+      </g>
+    </g>
+
+    <!-- Keywords by Intent - Content: 340h, Container: 388h (340+48) -->
+    <g transform="translate(632, 420)">
+      <rect width="536" height="388" rx="16" class="bg-surface stroke-outline elevation-1" stroke-width="1"/>
+      <g transform="translate(24, 24)">
+        <text y="16" class="text-on-surface font-title">Keywords by Intent</text>
+
+        <text y="56" class="text-on-surface font-body">Informational</text>
+        <rect y="68" width="488" height="24" rx="12" class="bg-surface-variant"/>
+        <rect y="68" width="438" height="24" rx="12" class="bg-primary"/>
+        <text y="110" class="text-on-surface font-body-sm">865 keywords</text>
+        <text y="130" class="text-on-surface-variant font-body-sm">+743 • -4.3K traffic</text>
+
+        <text y="170" class="text-on-surface font-body">Non-Branded</text>
+        <rect y="182" width="488" height="24" rx="12" class="bg-surface-variant"/>
+        <rect y="182" width="230" height="24" rx="12" fill="#10B981"/>
+        <text y="224" class="text-on-surface font-body-sm">456 keywords</text>
+        <text y="244" class="text-on-surface-variant font-body-sm">+380 • +88% growth</text>
+
+        <text y="284" class="text-on-surface font-body">Commercial</text>
+        <rect y="296" width="488" height="24" rx="12" class="bg-surface-variant"/>
+        <rect y="296" width="135" height="24" rx="12" fill="#F59E0B"/>
+        <text y="338" class="text-on-surface font-body-sm">268 keywords • +70%</text>
+      </g>
+    </g>
+
+    <!-- Backlink Profile - Content: 284h, Container: 332h (284+48) -->
+    <g transform="translate(32, 856)">
+      <rect width="568" height="332" rx="16" class="bg-surface stroke-outline elevation-1" stroke-width="1"/>
+      <g transform="translate(24, 24)">
+        <text y="16" class="text-on-surface font-title">Backlink Distribution</text>
+
+        <text y="52" class="text-on-surface font-body-sm">Link Type</text>
+
+        <rect y="72" width="520" height="32" rx="8" class="bg-surface-variant"/>
+        <rect y="72" width="426" height="32" rx="8" fill="#D1FAE5"/>
+        <text y="93" x="12" class="text-on-surface font-body-sm">Followed</text>
+        <text y="93" x="500" text-anchor="end" class="text-on-surface font-body">737 (81.8%)</text>
+
+        <rect y="112" width="520" height="32" rx="8" class="bg-surface-variant"/>
+        <rect y="112" width="94" height="32" rx="8" fill="#FEE2E2"/>
+        <text y="133" x="12" class="text-on-surface font-body-sm">Not Followed</text>
+        <text y="133" x="500" text-anchor="end" class="text-on-surface font-body">163 (18.1%)</text>
+
+        <text y="176" class="text-on-surface font-body-sm">By Attribute</text>
+
+        <rect y="192" width="520" height="28" rx="8" class="bg-surface-variant"/>
+        <rect y="192" width="94" height="28" rx="8" fill="#FEF3C7"/>
+        <text y="211" x="12" class="text-on-surface-variant font-body-sm">Nofollow: 163</text>
+
+        <rect y="228" width="520" height="28" rx="8" class="bg-surface-variant"/>
+        <text y="247" x="12" class="text-on-surface-variant font-body-sm">UGC: 9 (1.0%)</text>
+
+        <rect y="264" width="520" height="20" rx="8" class="bg-surface-variant"/>
+        <text y="279" x="12" class="text-on-surface-variant font-body-sm">Sponsored: 0</text>
+      </g>
+    </g>
+
+    <!-- Referring Domains - Content: 316h, Container: 364h (316+48) -->
+    <g transform="translate(632, 856)">
+      <rect width="536" height="364" rx="16" class="bg-surface stroke-outline elevation-1" stroke-width="1"/>
+      <g transform="translate(24, 24)">
+        <text y="16" class="text-on-surface font-title">Referring Domains by DR</text>
+
+        <text y="52" class="text-on-surface font-body-sm">10-19 DR</text>
+        <rect y="64" width="488" height="20" rx="10" class="bg-surface-variant"/>
+        <rect y="64" width="24" height="20" rx="10" fill="#EF4444"/>
+        <text y="104" class="text-on-surface-variant font-body-sm">8 domains (0.9%)</text>
+
+        <text y="140" class="text-on-surface font-body-sm">20-29 DR</text>
+        <rect y="152" width="488" height="20" rx="10" class="bg-surface-variant"/>
+        <rect y="152" width="17" height="20" rx="10" fill="#F59E0B"/>
+        <text y="192" class="text-on-surface-variant font-body-sm">6 domains (0.7%)</text>
+
+        <text y="228" class="text-on-surface font-body-sm">30-39 DR</text>
+        <rect y="240" width="488" height="20" rx="10" class="bg-surface-variant"/>
+        <rect y="240" width="8" height="20" rx="10" fill="#10B981"/>
+        <text y="280" class="text-on-surface-variant font-body-sm">3 domains (0.3%)</text>
+
+        <rect y="300" width="488" height="16" rx="8" fill="#FFF3E0"/>
+        <text y="312" x="12" class="text-primary font-body-sm">+883 links UR&lt;10</text>
+      </g>
+    </g>
+
+    <!-- Top Competitors - Content: 344h, Container: 392h (344+48) -->
+    <g transform="translate(32, 1268)">
+      <rect width="1136" height="392" rx="16" class="bg-surface stroke-outline elevation-1" stroke-width="1"/>
+      <g transform="translate(24, 24)">
+        <text y="16" class="text-on-surface font-title">Top Organic Competitors</text>
+
+        <rect y="44" width="1088" height="180" rx="12" class="bg-surface-variant"/>
+        <circle cx="180" cy="164" r="28" class="bg-primary" opacity="0.8"/>
+        <text x="180" y="169" text-anchor="middle" class="text-on-primary font-body-sm">getbelong</text>
+        <circle cx="420" cy="104" r="38" fill="#10B981" opacity="0.8"/>
+        <text x="420" y="109" text-anchor="middle" fill="#FFFFFF" class="font-body-sm">aonri.com</text>
+
+        <rect y="244" width="1088" height="32" class="bg-surface-variant"/>
+        <text y="265" class="text-on-surface font-label">Domain</text>
+        <text x="300" y="265" class="text-on-surface font-label">Common Kw</text>
+
+        <text y="304" class="text-primary font-body">aonri.com</text>
+        <text x="300" y="304" class="text-on-surface font-body">124</text>
+
+        <text y="340" class="text-primary font-body">goinvr.com</text>
+        <text x="300" y="340" class="text-on-surface font-body">89</text>
+      </g>
+    </g>
+
+    <!-- Branded vs Non-Branded - Content: 308h, Container: 356h (308+48) -->
+    <g transform="translate(32, 1708)">
+      <rect width="568" height="356" rx="16" class="bg-surface stroke-outline elevation-1" stroke-width="1"/>
+      <g transform="translate(24, 24)">
+        <text y="16" class="text-on-surface font-title">Branded vs Non-Branded</text>
+
+        <text y="52" class="text-on-surface font-body">Branded</text>
+        <rect y="64" width="520" height="28" rx="14" class="bg-surface-variant"/>
+        <rect y="64" width="288" height="28" rx="14" class="bg-primary"/>
+        <text y="110" class="text-on-surface font-body-sm">538 keywords</text>
+        <text y="130" class="text-on-surface-variant font-body-sm">+384 • -5.2K</text>
+
+        <text y="170" class="text-on-surface font-body">Non-Branded</text>
+        <rect y="182" width="520" height="28" rx="14" class="bg-surface-variant"/>
+        <rect y="182" width="232" height="28" rx="14" fill="#10B981"/>
+        <text y="228" class="text-on-surface font-body-sm">456 keywords</text>
+        <text y="248" class="text-on-surface-variant font-body-sm">+380 • +88%</text>
+
+        <rect y="272" width="520" height="36" rx="12" fill="#D1FAE5"/>
+        <text y="292" x="16" fill="#10B981" class="font-body-sm">✓ +88% growth</text>
+      </g>
+    </g>
+
+    <!-- Intent Deep Dive - Content: 260h, Container: 308h (260+48) -->
+    <g transform="translate(632, 1708)">
+      <rect width="536" height="308" rx="16" class="bg-surface stroke-outline elevation-1" stroke-width="1"/>
+      <g transform="translate(24, 24)">
+        <text y="16" class="text-on-surface font-title">Intent Deep Dive</text>
+
+        <text y="52" class="text-on-surface-variant font-body-sm">Navigational</text>
+        <text x="200" y="52" class="text-on-surface font-body">30 kw</text>
+
+        <text y="88" class="text-on-surface-variant font-body-sm">Transactional</text>
+        <text x="200" y="88" class="text-on-surface font-body">47 kw</text>
+
+        <text y="124" class="text-on-surface-variant font-body-sm">Local</text>
+        <text x="200" y="124" class="text-on-surface font-body">327 kw</text>
+
+        <text y="160" class="text-on-surface-variant font-body-sm">Non-Local</text>
+        <text x="200" y="160" class="text-on-surface font-body">645 kw</text>
+
+        <rect y="184" width="488" height="76" rx="12" class="bg-surface-variant"/>
+        <text y="204" x="16" class="text-on-surface font-body-sm">Top Performers:</text>
+        <text y="228" x="16" fill="#10B981" class="font-body-sm">✓ Local: +802</text>
+        <text y="252" x="16" fill="#10B981" class="font-body-sm">✓ Commercial: +705</text>
+      </g>
+    </g>
+
+    <!-- Technical Health - Content: 284h, Container: 332h (284+48) -->
+    <g transform="translate(32, 2112)">
+      <rect width="376" height="332" rx="16" class="bg-surface stroke-outline elevation-1" stroke-width="1"/>
+      <g transform="translate(24, 24)">
+        <text y="16" class="text-on-surface font-title">Technical SEO</text>
+
+        <g transform="translate(164, 116)">
+          <circle cx="0" cy="0" r="56" fill="none" class="stroke-outline" stroke-width="12"/>
+          <circle cx="0" cy="0" r="56" fill="none" class="stroke-success" stroke-width="12"
+                  stroke-dasharray="352" stroke-dashoffset="70" stroke-linecap="round" transform="rotate(-90)"/>
+          <text text-anchor="middle" y="8" class="text-on-surface" font-size="36" font-weight="600">78</text>
+          <text text-anchor="middle" y="26" class="text-on-surface-variant font-body-sm">of 100</text>
+        </g>
+
+        <text y="228" class="text-on-surface-variant font-body-sm">Crawled: 2h ago</text>
+        <text y="248" class="text-on-surface-variant font-body-sm">1,277 pages</text>
+        <text y="268" class="text-primary font-body-sm">View audit →</text>
+      </g>
+    </g>
+
+    <!-- HTTP Status - Content: 284h, Container: 332h (284+48) -->
+    <g transform="translate(440, 2112)">
+      <rect width="360" height="332" rx="16" class="bg-surface stroke-outline elevation-1" stroke-width="1"/>
+      <g transform="translate(24, 24)">
+        <text y="16" class="text-on-surface font-title">HTTP Status</text>
+
+        <rect y="48" width="312" height="32" rx="8" fill="#D1FAE5"/>
+        <text y="69" x="12" class="text-on-surface font-body-sm">200 OK</text>
+        <text y="69" x="290" text-anchor="end" class="text-on-surface font-body">416</text>
+
+        <rect y="88" width="312" height="32" rx="8" fill="#FEF3C7"/>
+        <text y="109" x="12" class="text-on-surface font-body-sm">3XX</text>
+        <text y="109" x="290" text-anchor="end" class="text-on-surface font-body">539</text>
+
+        <rect y="128" width="312" height="32" rx="8" fill="#FEE2E2"/>
+        <text y="149" x="12" class="text-on-surface font-body-sm">404</text>
+        <text y="149" x="290" text-anchor="end" class="text-on-surface font-body">120</text>
+
+        <rect y="168" width="312" height="32" rx="8" class="bg-surface-variant"/>
+        <text y="189" x="12" class="text-on-surface-variant font-body-sm">4XX Other</text>
+        <text y="189" x="290" text-anchor="end" class="text-on-surface-variant font-body">118</text>
+
+        <rect y="208" width="312" height="32" rx="8" class="bg-surface-variant"/>
+        <text y="229" x="12" class="text-on-surface-variant font-body-sm">5XX</text>
+        <text y="229" x="290" text-anchor="end" class="text-on-surface-variant font-body">4</text>
+
+        <rect y="256" width="312" height="28" rx="12" class="bg-surface-variant"/>
+        <text y="276" x="12" class="text-on-surface-variant font-body-sm">Total: 1,197</text>
+      </g>
+    </g>
+
+    <!-- Page Performance - Content: 260h, Container: 308h (260+48) -->
+    <g transform="translate(832, 2112)">
+      <rect width="336" height="308" rx="16" class="bg-surface stroke-outline elevation-1" stroke-width="1"/>
+      <g transform="translate(24, 24)">
+        <text y="16" class="text-on-surface font-title">Performance</text>
+
+        <text y="52" class="text-on-surface font-body-sm">Page Traffic</text>
+        <text y="80" class="text-on-surface font-headline">98</text>
+        <text y="100" class="text-on-surface-variant font-body-sm">avg/page</text>
+
+        <text y="144" class="text-on-surface font-body-sm">Total</text>
+        <text y="172" class="text-on-surface font-headline">1.6K</text>
+        <text y="192" class="text-on-surface-variant font-body-sm">monthly</text>
+
+        <rect y="220" width="288" height="40" rx="12" class="bg-surface-variant"/>
+        <text y="238" x="12" class="text-on-surface-variant font-body-sm">UAE: 64.3%</text>
+        <text y="256" x="12" class="text-on-surface-variant font-body-sm">Middle East</text>
+      </g>
+    </g>
+
+    <!-- Key Insights - Content: 168h, Container: 216h (168+48) -->
+    <g transform="translate(32, 2492)">
+      <rect width="1136" height="216" rx="16" class="bg-primary-container stroke-primary elevation-1" stroke-width="2"/>
+      <g transform="translate(24, 24)">
+        <text y="16" class="text-primary font-title">🎯 Key Insights</text>
+
+        <circle cy="48" r="6" fill="#10B981"/>
+        <text y="53" x="20" class="text-on-surface font-body-sm">UAE 64.3% - Middle East expansion</text>
+
+        <circle cy="76" r="6" fill="#EF4444"/>
+        <text y="81" x="20" class="text-on-surface font-body-sm">DR -24 - backlink acquisition needed</text>
+
+        <circle cy="104" r="6" fill="#10B981"/>
+        <text y="109" x="20" class="text-on-surface font-body-sm">Commercial +70% - optimize funnels</text>
+
+        <circle cy="132" r="6" fill="#10B981"/>
+        <text y="137" x="20" class="text-on-surface font-body-sm">Local +802 traffic growth</text>
+
+        <circle cy="160" r="6" fill="#F59E0B"/>
+        <text y="165" x="20" class="text-on-surface font-body-sm">Non-branded +88% growth</text>
+      </g>
+    </g>
+
+    <!-- Footer - Content: 28h, Container: 76h (28+48) -->
+    <g transform="translate(32, 2756)">
+      <rect width="1136" height="76" rx="16" class="bg-surface-variant elevation-1"/>
+      <g transform="translate(24, 24)">
+        <text y="14" class="text-on-surface-variant font-body-sm">Report: 2025-10-24 • Ahrefs</text>
+        <text y="34" class="text-on-surface-variant font-body-sm">For getbelong.com</text>
+      </g>
+    </g>
+
+  </g>
+</svg>

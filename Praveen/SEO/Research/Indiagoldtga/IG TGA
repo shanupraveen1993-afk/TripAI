@@ -1,0 +1,22 @@
+client = "indiagold.co"
+
+competitor_list = [
+    "manappuram.com",
+    "rupeek.com",
+    "capriloans.in",
+    "iifl.com"
+]
+
+country = "IN"
+top_pages = 10
+topics_to_cover = f"related to {client} (focus only on blog-related topics, exclude irrelevant/non-blog pages)"
+
+
+Using SEMRUSH MCP, find top {top_pages} pages of {client}, by organic traffic and compare them with {competitor_list}. 
+The output I want is - which pages, should the client cover, along with the traffic. If multiple competitors are covering the same topic, put that in the below table format. 
+
+topic, max_traffic, competitors_covering, urls
+topic a, number i.e. 10000, competitor 1, competitor 2 (names), competitor_1_url, competitor_2_url
+
+Important - for my {client}, please make sure that you take the data from Google Search Console MCP (under account: team@nextaso.com), and get up to 1000 top pages. 
+Also, filter and include only blog-related topics — ignore irrelevant or non-blog pages (like login, careers, terms, etc.).

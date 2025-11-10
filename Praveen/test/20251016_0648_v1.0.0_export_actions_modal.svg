@@ -1,0 +1,234 @@
+<svg width="1440" height="1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with Overlay -->
+  <rect width="1440" height="1024" fill="#111827" fill-opacity="0.5"/>
+
+  <!-- Dimmed Background Content (Simplified) -->
+  <g opacity="0.3">
+    <rect x="0" y="0" width="240" height="1024" fill="#FCFCFD"/>
+    <text x="24" y="40" font-family="Inter, sans-serif" font-size="20" font-weight="700" fill="#111827">SearchVector</text>
+    <rect x="240" y="0" width="1200" height="72" fill="#FFFFFF"/>
+    <text x="272" y="45" font-family="Inter, sans-serif" font-size="24" font-weight="600" fill="#111827">Keyword Research</text>
+  </g>
+
+  <!-- Modal Container -->
+  <g id="export-modal">
+    <rect x="420" y="200" width="600" height="600" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1" filter="url(#modal-shadow)"/>
+
+    <!-- Shadow Definition -->
+    <defs>
+      <filter id="modal-shadow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="8"/>
+        <feOffset dx="0" dy="4" result="offsetblur"/>
+        <feComponentTransfer>
+          <feFuncA type="linear" slope="0.2"/>
+        </feComponentTransfer>
+        <feMerge>
+          <feMergeNode/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+
+    <!-- Modal Header -->
+    <g id="modal-header">
+      <text x="452" y="248" font-family="Inter, sans-serif" font-size="24" font-weight="700" fill="#111827">Export Keywords</text>
+
+      <!-- Close Button -->
+      <circle cx="980" cy="236" r="20" fill="#F9FAFB"/>
+      <text x="975" y="243" font-family="Inter, sans-serif" font-size="18" font-weight="400" fill="#6B7280">×</text>
+    </g>
+
+    <!-- Selection Summary -->
+    <rect x="452" y="272" width="536" height="48" rx="8" fill="#FFF4F2"/>
+    <text x="468" y="295" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#111827">Selected: 24 keywords</text>
+    <text x="468" y="311" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#6B7280">Choose an export format below</text>
+
+    <!-- Divider -->
+    <line x1="452" y1="340" x2="988" y2="340" stroke="#F3F4F6" stroke-width="1"/>
+
+    <!-- Export Format Options -->
+    <g id="export-formats">
+      <text x="452" y="372" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#111827">Export Format</text>
+
+      <!-- CSV Option -->
+      <g id="format-csv">
+        <rect x="452" y="388" width="536" height="72" rx="8" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+
+        <!-- Radio Button -->
+        <circle cx="472" cy="424" r="10" fill="#FFFFFF" stroke="#FF5722" stroke-width="2"/>
+        <circle cx="472" cy="424" r="5" fill="#FF5722"/>
+
+        <!-- Icon & Text -->
+        <rect x="496" y="410" width="36" height="36" rx="6" fill="#F9FAFB"/>
+        <text x="506" y="434" font-family="Inter, sans-serif" font-size="18" fill="#4B5563">📄</text>
+
+        <text x="548" y="422" font-family="Inter, sans-serif" font-size="15" font-weight="600" fill="#111827">CSV (Comma-separated)</text>
+        <text x="548" y="441" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#6B7280">Download as .csv file • Works with Excel, Google Sheets</text>
+
+        <!-- Download Button -->
+        <rect x="868" y="408" width="100" height="32" rx="6" fill="#FF5722"/>
+        <text x="892" y="429" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#FFFFFF">Download</text>
+      </g>
+
+      <!-- Google Sheets Option -->
+      <g id="format-sheets">
+        <rect x="452" y="472" width="536" height="72" rx="8" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+
+        <!-- Radio Button -->
+        <circle cx="472" cy="508" r="10" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="2"/>
+
+        <!-- Icon & Text -->
+        <rect x="496" y="494" width="36" height="36" rx="6" fill="#F9FAFB"/>
+        <text x="506" y="518" font-family="Inter, sans-serif" font-size="18" fill="#4B5563">📊</text>
+
+        <text x="548" y="506" font-family="Inter, sans-serif" font-size="15" font-weight="600" fill="#111827">Google Sheets</text>
+        <text x="548" y="525" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#6B7280">Export directly to Google Sheets • Auto-syncs with updates</text>
+
+        <!-- Export Button -->
+        <rect x="868" y="492" width="100" height="32" rx="6" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+        <text x="904" y="513" font-family="Inter, sans-serif" font-size="13" font-weight="500" fill="#111827">Export</text>
+      </g>
+
+      <!-- Clipboard Option -->
+      <g id="format-clipboard">
+        <rect x="452" y="556" width="536" height="72" rx="8" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+
+        <!-- Radio Button -->
+        <circle cx="472" cy="592" r="10" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="2"/>
+
+        <!-- Icon & Text -->
+        <rect x="496" y="578" width="36" height="36" rx="6" fill="#F9FAFB"/>
+        <text x="506" y="602" font-family="Inter, sans-serif" font-size="18" fill="#4B5563">📋</text>
+
+        <text x="548" y="590" font-family="Inter, sans-serif" font-size="15" font-weight="600" fill="#111827">Copy to Clipboard</text>
+        <text x="548" y="609" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#6B7280">Copy as tab-separated values • Paste anywhere</text>
+
+        <!-- Copy Button -->
+        <rect x="868" y="576" width="100" height="32" rx="6" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+        <text x="905" y="597" font-family="Inter, sans-serif" font-size="13" font-weight="500" fill="#111827">Copy</text>
+      </g>
+
+      <!-- JSON Option (Pro) -->
+      <g id="format-json">
+        <rect x="452" y="640" width="536" height="72" rx="8" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1"/>
+
+        <!-- Radio Button (Disabled) -->
+        <circle cx="472" cy="676" r="10" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="2" opacity="0.5"/>
+
+        <!-- Icon & Text -->
+        <rect x="496" y="662" width="36" height="36" rx="6" fill="#E5E7EB"/>
+        <text x="506" y="686" font-family="Inter, sans-serif" font-size="18" fill="#9CA3AF">{ }</text>
+
+        <text x="548" y="674" font-family="Inter, sans-serif" font-size="15" font-weight="600" fill="#9CA3AF">JSON API Format</text>
+        <text x="548" y="693" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#9CA3AF">Structured data for developers • Pro plan only</text>
+
+        <!-- Pro Badge -->
+        <rect x="688" y="667" width="40" height="20" rx="10" fill="#FF5722"/>
+        <text x="698" y="681" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#FFFFFF">PRO</text>
+
+        <!-- Upgrade Link -->
+        <text x="900" y="681" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#FF5722">Upgrade →</text>
+      </g>
+    </g>
+
+    <!-- Divider -->
+    <line x1="452" y1="732" x2="988" y2="732" stroke="#F3F4F6" stroke-width="1"/>
+
+    <!-- Export Options -->
+    <g id="export-options">
+      <text x="452" y="764" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#111827">Include in Export</text>
+
+      <!-- Checkboxes -->
+      <g id="include-options">
+        <!-- All metrics -->
+        <rect x="452" y="778" width="256" height="28" rx="6" fill="transparent"/>
+        <rect x="452" y="783" width="20" height="20" rx="4" fill="#FF5722"/>
+        <text x="456" y="797" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#FFFFFF">✓</text>
+        <text x="480" y="797" font-family="Inter, sans-serif" font-size="13" fill="#111827">All keyword metrics</text>
+
+        <!-- Trend data -->
+        <rect x="732" y="778" width="256" height="28" rx="6" fill="transparent"/>
+        <rect x="732" y="783" width="20" height="20" rx="4" fill="#FF5722"/>
+        <text x="736" y="797" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#FFFFFF">✓</text>
+        <text x="760" y="797" font-family="Inter, sans-serif" font-size="13" fill="#111827">Historical trend data</text>
+
+        <!-- Competitor data -->
+        <rect x="452" y="814" width="256" height="28" rx="6" fill="transparent"/>
+        <rect x="452" y="819" width="20" height="20" rx="4" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+        <text x="480" y="833" font-family="Inter, sans-serif" font-size="13" fill="#111827">Competitor rankings</text>
+
+        <!-- Notes -->
+        <rect x="732" y="814" width="256" height="28" rx="6" fill="transparent"/>
+        <rect x="732" y="819" width="20" height="20" rx="4" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+        <text x="760" y="833" font-family="Inter, sans-serif" font-size="13" fill="#111827">My notes &amp; tags</text>
+      </g>
+    </g>
+
+    <!-- Modal Footer Actions -->
+    <g id="modal-actions">
+      <rect x="452" y="748" width="536" height="1" fill="#F3F4F6"/>
+
+      <rect x="452" y="856" width="536" height="1" fill="#F3F4F6"/>
+
+      <!-- Cancel Button -->
+      <rect x="740" y="864" width="100" height="40" rx="8" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+      <text x="774" y="889" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#111827">Cancel</text>
+
+      <!-- Export Button (Primary) -->
+      <rect x="852" y="864" width="136" height="40" rx="8" fill="#FF5722"/>
+      <text x="883" y="889" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF">Export (CSV)</text>
+    </g>
+  </g>
+
+  <!-- Bulk Actions Modal (Alternative View - Positioned to Side) -->
+  <g id="bulk-actions-alternative" transform="translate(1060, 240)">
+    <rect x="0" y="0" width="320" height="480" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1" filter="url(#modal-shadow)"/>
+
+    <!-- Header -->
+    <text x="24" y="40" font-family="Inter, sans-serif" font-size="18" font-weight="700" fill="#111827">Bulk Actions</text>
+    <text x="24" y="60" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#6B7280">24 keywords selected</text>
+
+    <!-- Divider -->
+    <line x1="24" y1="76" x2="296" y2="76" stroke="#F3F4F6" stroke-width="1"/>
+
+    <!-- Action List -->
+    <g id="bulk-action-list">
+      <!-- Export -->
+      <rect x="24" y="92" width="272" height="48" rx="8" fill="#FFF4F2" stroke="#FF5722" stroke-width="1"/>
+      <text x="48" y="120" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FF5722">📥 Export Keywords</text>
+
+      <!-- Add to List -->
+      <rect x="24" y="148" width="272" height="48" rx="8" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+      <text x="48" y="176" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#111827">📝 Add to Saved List</text>
+
+      <!-- Track -->
+      <rect x="24" y="204" width="272" height="48" rx="8" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+      <text x="48" y="232" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#111827">📊 Track Rankings</text>
+
+      <!-- Compare -->
+      <rect x="24" y="260" width="272" height="48" rx="8" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+      <text x="48" y="288" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#111827">⚖️ Compare Keywords</text>
+
+      <!-- Share -->
+      <rect x="24" y="316" width="272" height="48" rx="8" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+      <text x="48" y="344" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#111827">🔗 Share Report</text>
+
+      <!-- Delete -->
+      <rect x="24" y="372" width="272" height="48" rx="8" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+      <text x="48" y="400" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#EF4444">🗑️ Remove from Results</text>
+    </g>
+
+    <!-- Divider -->
+    <line x1="24" y1="436" x2="296" y2="436" stroke="#F3F4F6" stroke-width="1"/>
+
+    <!-- Deselect All -->
+    <text x="24" y="464" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#FF5722">Clear Selection</text>
+  </g>
+
+  <!-- Annotation -->
+  <g id="annotations">
+    <text x="420" y="840" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#FFFFFF">← Main Export Modal</text>
+    <text x="1100" y="180" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#FFFFFF">Bulk Actions Menu →</text>
+    <text x="1080" y="200" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#D1D5DB">(Alternative quick menu)</text>
+  </g>
+</svg>

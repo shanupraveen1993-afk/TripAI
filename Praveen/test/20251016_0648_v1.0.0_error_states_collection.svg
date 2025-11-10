@@ -1,0 +1,232 @@
+<svg width="1440" height="2400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1440" height="2400" fill="#FCFCFD"/>
+
+  <!-- Title -->
+  <text x="720" y="60" font-family="Inter, sans-serif" font-size="32" font-weight="700" fill="#111827" text-anchor="middle">Error States Collection</text>
+  <text x="720" y="92" font-family="Inter, sans-serif" font-size="16" font-weight="400" fill="#6B7280" text-anchor="middle">All error states for ASO Keyword Research Tool</text>
+
+  <!-- Error State 1: No Data Found -->
+  <g id="error-no-data">
+    <rect x="120" y="140" width="600" height="340" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+
+    <!-- Label -->
+    <rect x="140" y="160" width="120" height="28" rx="6" fill="#6B7280"/>
+    <text x="174" y="179" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#FFFFFF" text-anchor="middle">NO DATA FOUND</text>
+
+    <!-- Illustration Area -->
+    <circle cx="420" cy="280" r="48" fill="#F9FAFB"/>
+    <text x="420" y="295" font-family="Inter, sans-serif" font-size="48" fill="#D1D5DB" text-anchor="middle">🔍</text>
+
+    <!-- Error Message -->
+    <text x="420" y="360" font-family="Inter, sans-serif" font-size="20" font-weight="600" fill="#111827" text-anchor="middle">No keywords found for "xyz123"</text>
+    <text x="420" y="388" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle">Try searching with different terms or check your spelling</text>
+
+    <!-- Alternative Suggestions -->
+    <text x="420" y="420" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#4B5563" text-anchor="middle">Suggested keywords:</text>
+    <rect x="300" y="432" width="80" height="28" rx="14" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1"/>
+    <text x="340" y="451" font-family="Inter, sans-serif" font-size="12" fill="#4B5563" text-anchor="middle">fitness app</text>
+
+    <rect x="388" y="432" width="64" height="28" rx="14" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1"/>
+    <text x="420" y="451" font-family="Inter, sans-serif" font-size="12" fill="#4B5563" text-anchor="middle">workout</text>
+
+    <rect x="460" y="432" width="80" height="28" rx="14" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1"/>
+    <text x="500" y="451" font-family="Inter, sans-serif" font-size="12" fill="#4B5563" text-anchor="middle">health track</text>
+  </g>
+
+  <!-- Error State 2: Mandatory Fields Missing -->
+  <g id="error-mandatory-fields">
+    <rect x="760" y="140" width="600" height="340" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+
+    <!-- Label -->
+    <rect x="780" y="160" width="160" height="28" rx="6" fill="#6B7280"/>
+    <text x="832" y="179" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#FFFFFF" text-anchor="middle">MANDATORY FIELD</text>
+
+    <!-- Form Example -->
+    <text x="800" y="240" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#111827">Enter Seed Keyword</text>
+
+    <!-- Empty Input with Error -->
+    <rect x="800" y="256" width="520" height="48" rx="8" fill="#FFFFFF" stroke="#EF4444" stroke-width="2"/>
+    <text x="816" y="284" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#9CA3AF">Enter a keyword to search</text>
+
+    <!-- Error Message -->
+    <text x="800" y="322" font-family="Inter, sans-serif" font-size="13" font-weight="500" fill="#EF4444">⚠ Please enter a keyword to search</text>
+
+    <!-- Help Text -->
+    <text x="800" y="354" font-family="Inter, sans-serif" font-size="13" font-weight="400" fill="#6B7280">Example: "fitness tracker", "photo editor", "meditation app"</text>
+
+    <!-- Disabled Search Button -->
+    <rect x="800" y="380" width="100" height="40" rx="8" fill="#E5E7EB"/>
+    <text x="832" y="405" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#9CA3AF">Search</text>
+
+    <text x="912" y="404" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#6B7280">← Disabled until keyword entered</text>
+  </g>
+
+  <!-- Error State 3: Access Denied -->
+  <g id="error-access-denied">
+    <rect x="120" y="520" width="600" height="360" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+
+    <!-- Label -->
+    <rect x="140" y="540" width="140" height="28" rx="6" fill="#6B7280"/>
+    <text x="188" y="559" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#FFFFFF" text-anchor="middle">ACCESS DENIED</text>
+
+    <!-- Lock Icon -->
+    <circle cx="420" cy="660" r="48" fill="#FFF4F2"/>
+    <text x="420" y="675" font-family="Inter, sans-serif" font-size="48" fill="#FF5722" text-anchor="middle">🔒</text>
+
+    <!-- Message -->
+    <text x="420" y="740" font-family="Inter, sans-serif" font-size="20" font-weight="600" fill="#111827" text-anchor="middle">Upgrade to access Competitor Analysis</text>
+    <text x="420" y="768" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle">This feature is available on Pro and Enterprise plans</text>
+
+    <!-- Feature Benefits -->
+    <text x="200" y="804" font-family="Inter, sans-serif" font-size="13" font-weight="400" fill="#4B5563">✓ Unlimited keyword searches</text>
+    <text x="200" y="828" font-family="Inter, sans-serif" font-size="13" font-weight="400" fill="#4B5563">✓ Competitor keyword tracking</text>
+    <text x="480" y="804" font-family="Inter, sans-serif" font-size="13" font-weight="400" fill="#4B5563">✓ Advanced filters &amp; exports</text>
+    <text x="480" y="828" font-family="Inter, sans-serif" font-size="13" font-weight="400" fill="#4B5563">✓ Historical trend data</text>
+
+    <!-- CTA Button -->
+    <rect x="300" y="848" width="240" height="40" rx="8" fill="#FF5722"/>
+    <text x="420" y="873" font-family="Inter, sans-serif" font-size="15" font-weight="600" fill="#FFFFFF" text-anchor="middle">View Pricing & Upgrade →</text>
+  </g>
+
+  <!-- Error State 4: Plan Limitation -->
+  <g id="error-plan-limit">
+    <rect x="760" y="520" width="600" height="360" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+
+    <!-- Label -->
+    <rect x="780" y="540" width="140" height="28" rx="6" fill="#6B7280"/>
+    <text x="830" y="559" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#FFFFFF" text-anchor="middle">PLAN LIMIT</text>
+
+    <!-- Gauge Illustration -->
+    <circle cx="1060" cy="660" r="48" fill="#FFF4F2"/>
+    <text x="1060" y="675" font-family="Inter, sans-serif" font-size="48" fill="#FF5722" text-anchor="middle">📊</text>
+
+    <!-- Message -->
+    <text x="1060" y="740" font-family="Inter, sans-serif" font-size="20" font-weight="600" fill="#111827" text-anchor="middle">You've reached your monthly limit</text>
+    <text x="1060" y="768" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle">You've used all 500 keyword searches for this month</text>
+
+    <!-- Usage Bar -->
+    <rect x="880" y="788" width="360" height="24" rx="12" fill="#F9FAFB"/>
+    <rect x="880" y="788" width="360" height="24" rx="12" fill="#FF5722"/>
+    <text x="1060" y="805" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#FFFFFF" text-anchor="middle">500/500 used (100%)</text>
+
+    <!-- Options -->
+    <text x="1060" y="840" font-family="Inter, sans-serif" font-size="13" font-weight="400" fill="#6B7280" text-anchor="middle">Your limit resets on January 1, 2026</text>
+
+    <!-- CTA Buttons -->
+    <rect x="880" y="856" width="160" height="36" rx="8" fill="#FF5722"/>
+    <text x="960" y="879" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">Upgrade Plan</text>
+
+    <rect x="1052" y="856" width="188" height="36" rx="8" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+    <text x="1146" y="879" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#111827" text-anchor="middle">Buy Additional Credits</text>
+  </g>
+
+  <!-- Error State 5: API/Connection Error -->
+  <g id="error-connection">
+    <rect x="120" y="920" width="600" height="340" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+
+    <!-- Label -->
+    <rect x="140" y="940" width="160" height="28" rx="6" fill="#6B7280"/>
+    <text x="198" y="959" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#FFFFFF" text-anchor="middle">CONNECTION ERROR</text>
+
+    <!-- Error Icon -->
+    <circle cx="420" cy="1050" r="48" fill="#FEF2F2"/>
+    <text x="420" y="1065" font-family="Inter, sans-serif" font-size="48" fill="#EF4444" text-anchor="middle">⚠</text>
+
+    <!-- Message -->
+    <text x="420" y="1140" font-family="Inter, sans-serif" font-size="20" font-weight="600" fill="#111827" text-anchor="middle">Unable to load keyword data</text>
+    <text x="420" y="1168" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle">We're having trouble connecting to our servers</text>
+
+    <!-- Actions -->
+    <rect x="280" y="1196" width="120" height="36" rx="8" fill="#FF5722"/>
+    <text x="340" y="1219" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">Retry</text>
+
+    <rect x="412" y="1196" width="136" height="36" rx="8" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+    <text x="480" y="1219" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#111827" text-anchor="middle">Contact Support</text>
+
+    <!-- Status Info -->
+    <text x="420" y="1252" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#9CA3AF" text-anchor="middle">Error Code: API_TIMEOUT_5001</text>
+  </g>
+
+  <!-- Error State 6: Invalid Input -->
+  <g id="error-invalid-input">
+    <rect x="760" y="920" width="600" height="340" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+
+    <!-- Label -->
+    <rect x="780" y="940" width="140" height="28" rx="6" fill="#6B7280"/>
+    <text x="832" y="959" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#FFFFFF" text-anchor="middle">INVALID INPUT</text>
+
+    <!-- Form with Invalid Input -->
+    <text x="800" y="1020" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#111827">Enter Seed Keyword</text>
+
+    <!-- Input Field with Invalid Content -->
+    <rect x="800" y="1036" width="520" height="48" rx="8" fill="#FFFFFF" stroke="#EF4444" stroke-width="2"/>
+    <text x="816" y="1064" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#111827">a</text>
+
+    <!-- Error Icon in Input -->
+    <circle cx="1292" cy="1060" r="10" fill="#EF4444"/>
+    <text x="1287" y="1065" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#FFFFFF">!</text>
+
+    <!-- Error Messages -->
+    <text x="800" y="1102" font-family="Inter, sans-serif" font-size="13" font-weight="500" fill="#EF4444">⚠ Please enter a valid keyword (minimum 2 characters)</text>
+
+    <!-- Help Text -->
+    <rect x="800" y="1120" width="520" height="56" rx="8" fill="#FFF4F2"/>
+    <text x="816" y="1143" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#111827">Valid keyword examples:</text>
+    <text x="816" y="1163" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#6B7280">✓ "fitness" ✓ "workout tracker" ✓ "photo editor app"</text>
+
+    <!-- Requirements List -->
+    <text x="800" y="1204" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#6B7280">Keyword must be:</text>
+    <text x="800" y="1224" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#6B7280">• At least 2 characters long</text>
+    <text x="800" y="1244" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#6B7280">• Contains letters or numbers (special characters allowed)</text>
+  </g>
+
+  <!-- Empty State (Bonus) -->
+  <g id="empty-state">
+    <rect x="120" y="1300" width="1240" height="380" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+
+    <!-- Label -->
+    <rect x="140" y="1320" width="120" height="28" rx="6" fill="#6B7280"/>
+    <text x="178" y="1339" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#FFFFFF" text-anchor="middle">EMPTY STATE</text>
+
+    <!-- Illustration -->
+    <circle cx="720" cy="1480" r="64" fill="#F9FAFB"/>
+    <text x="720" y="1500" font-family="Inter, sans-serif" font-size="64" fill="#D1D5DB" text-anchor="middle">🔍</text>
+
+    <!-- Message -->
+    <text x="720" y="1580" font-family="Inter, sans-serif" font-size="24" font-weight="600" fill="#111827" text-anchor="middle">Start discovering keywords</text>
+    <text x="720" y="1612" font-family="Inter, sans-serif" font-size="16" font-weight="400" fill="#6B7280" text-anchor="middle">Enter a seed keyword above to find high-performing keywords for your app</text>
+
+    <!-- Suggested Actions -->
+    <g id="suggested-actions">
+      <!-- Video Demo -->
+      <rect x="400" y="1644" width="200" height="48" rx="8" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1"/>
+      <text x="440" y="1664" font-family="Inter, sans-serif" font-size="13" font-weight="500" fill="#4B5563">▶</text>
+      <text x="464" y="1664" font-family="Inter, sans-serif" font-size="13" font-weight="500" fill="#4B5563">Watch 2-min demo</text>
+      <text x="500" y="1682" font-family="Inter, sans-serif" font-size="11" fill="#9CA3AF">Learn how it works</text>
+
+      <!-- Documentation -->
+      <rect x="620" y="1644" width="200" height="48" rx="8" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1"/>
+      <text x="660" y="1664" font-family="Inter, sans-serif" font-size="13" font-weight="500" fill="#4B5563">📖</text>
+      <text x="684" y="1664" font-family="Inter, sans-serif" font-size="13" font-weight="500" fill="#4B5563">Read documentation</text>
+      <text x="720" y="1682" font-family="Inter, sans-serif" font-size="11" fill="#9CA3AF">ASO best practices</text>
+
+      <!-- Consultation -->
+      <rect x="840" y="1644" width="200" height="48" rx="8" fill="#FFF4F2" stroke="#FF5722" stroke-width="1"/>
+      <text x="876" y="1664" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#FF5722">Book consultation</text>
+      <text x="940" y="1682" font-family="Inter, sans-serif" font-size="11" fill="#FF5722">Get expert help</text>
+    </g>
+  </g>
+
+  <!-- Design Notes -->
+  <g id="design-notes">
+    <text x="120" y="1740" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#4B5563">Error State Design Principles:</text>
+    <text x="120" y="1764" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#6B7280">• Clear, actionable error messages</text>
+    <text x="120" y="1784" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#6B7280">• Helpful suggestions or next steps</text>
+    <text x="120" y="1804" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#6B7280">• Consistent visual treatment</text>
+
+    <text x="520" y="1764" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#6B7280">• Contextual help and examples</text>
+    <text x="520" y="1784" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#6B7280">• Retry or alternative actions</text>
+    <text x="520" y="1804" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#6B7280">• Upgrade paths where appropriate</text>
+  </g>
+</svg>

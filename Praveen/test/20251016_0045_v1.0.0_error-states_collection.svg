@@ -1,0 +1,354 @@
+<svg width="1440" height="2400" viewBox="0 0 1440 2400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1440" height="2400" fill="#FAFAFA"/>
+
+  <!-- Title -->
+  <text x="720" y="60" font-family="IBM Plex Sans, sans-serif" font-size="32" font-weight="700" fill="#1A1A1A" text-anchor="middle">Error States Collection</text>
+  <text x="720" y="92" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="400" fill="#6D6D6D" text-anchor="middle">All error and edge case states for Keyword Research feature</text>
+
+  <!-- Error State 1: No Data Found -->
+  <g transform="translate(120, 140)">
+    <rect width="600" height="360" rx="12" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2"/>
+
+    <!-- Label -->
+    <rect x="0" y="-40" width="200" height="28" rx="6" fill="#FF9800"/>
+    <text x="100" y="-18" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#FFFFFF" text-anchor="middle">1. No Data Found</text>
+
+    <!-- Illustration -->
+    <g transform="translate(250, 80)">
+      <circle cx="50" cy="50" r="50" fill="#F5F5F5"/>
+      <circle cx="40" cy="45" r="4" fill="#C6C6C6"/>
+      <circle cx="60" cy="45" r="4" fill="#C6C6C6"/>
+      <path d="M 35 65 Q 50 55 65 65" stroke="#C6C6C6" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <circle cx="50" cy="50" r="55" stroke="#E0E0E0" stroke-width="2" fill="none"/>
+    </g>
+
+    <!-- Text Content -->
+    <text x="300" y="200" font-family="IBM Plex Sans, sans-serif" font-size="18" font-weight="600" fill="#1A1A1A" text-anchor="middle">No keywords found for "xyz123app"</text>
+    <text x="300" y="230" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="400" fill="#6D6D6D" text-anchor="middle">Try a different search term or adjust your filters</text>
+
+    <!-- Suggestions -->
+    <text x="300" y="270" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#4A4A4A" text-anchor="middle">Suggested keywords:</text>
+    <g transform="translate(110, 284)">
+      <rect width="100" height="28" rx="14" fill="#FFF3E0"/>
+      <text x="50" y="18" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="500" fill="#F57C00" text-anchor="middle">fitness app</text>
+
+      <rect x="112" width="100" height="28" rx="14" fill="#FFF3E0"/>
+      <text x="162" y="18" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="500" fill="#F57C00" text-anchor="middle">health tracker</text>
+
+      <rect x="224" width="100" height="28" rx="14" fill="#FFF3E0"/>
+      <text x="274" y="18" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="500" fill="#F57C00" text-anchor="middle">workout app</text>
+    </g>
+
+    <!-- Action Button -->
+    <rect x="225" y="320" width="150" height="32" rx="6" fill="#FF9800"/>
+    <text x="300" y="342" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">Clear Filters</text>
+  </g>
+
+  <!-- Error State 2: Mandatory Field Missing -->
+  <g transform="translate(720, 140)">
+    <rect width="600" height="360" rx="12" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2"/>
+
+    <!-- Label -->
+    <rect x="0" y="-40" width="240" height="28" rx="6" fill="#FF9800"/>
+    <text x="120" y="-18" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#FFFFFF" text-anchor="middle">2. Mandatory Field Missing</text>
+
+    <!-- Form Section -->
+    <g transform="translate(40, 60)">
+      <text x="0" y="0" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="600" fill="#1A1A1A">Search for Keywords</text>
+
+      <!-- Input Label -->
+      <text x="0" y="36" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="500" fill="#4A4A4A">Enter a keyword *</text>
+
+      <!-- Error Input Field -->
+      <rect x="0" y="48" width="520" height="48" rx="8" fill="#FFFFFF" stroke="#E53935" stroke-width="2"/>
+      <text x="16" y="76" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="400" fill="#A0A0A0"></text>
+
+      <!-- Error Icon -->
+      <circle cx="492" cy="72" r="10" fill="#E53935"/>
+      <text x="492" y="78" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="700" fill="#FFFFFF" text-anchor="middle">!</text>
+
+      <!-- Error Message -->
+      <g transform="translate(0, 104)">
+        <circle cx="8" cy="8" r="8" fill="#FFEBEE"/>
+        <text x="6" y="12" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="700" fill="#E53935">!</text>
+        <text x="24" y="12" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="500" fill="#E53935">Please enter a keyword to search</text>
+      </g>
+
+      <!-- Helper Text -->
+      <text x="0" y="148" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="400" fill="#8A8A8A">Example: fitness tracker, workout app, calorie counter</text>
+
+      <!-- Disabled Button -->
+      <rect x="0" y="172" width="160" height="40" rx="8" fill="#F5F5F5"/>
+      <text x="80" y="197" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="600" fill="#C6C6C6" text-anchor="middle">Search Keywords</text>
+
+      <!-- Instructions -->
+      <g transform="translate(0, 236)">
+        <rect width="520" height="60" rx="6" fill="#E1F5FE"/>
+        <text x="16" y="24" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#039BE5">Tip: How to search effectively</text>
+        <text x="16" y="44" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="400" fill="#4A4A4A">Use 2-5 words that describe your app's main feature or category</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Error State 3: Access Denied (Premium Feature) -->
+  <g transform="translate(120, 540)">
+    <rect width="600" height="360" rx="12" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2"/>
+
+    <!-- Label -->
+    <rect x="0" y="-40" width="180" height="28" rx="6" fill="#FF9800"/>
+    <text x="90" y="-18" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#FFFFFF" text-anchor="middle">3. Access Denied</text>
+
+    <!-- Lock Icon -->
+    <g transform="translate(265, 60)">
+      <circle cx="35" cy="50" r="45" fill="#FFF3E0"/>
+      <rect x="20" y="46" width="30" height="34" rx="4" stroke="#FF9800" stroke-width="3" fill="none"/>
+      <path d="M 26 46 L 26 38 A 9 9 0 0 1 44 38 L 44 46" stroke="#FF9800" stroke-width="3" fill="none"/>
+      <circle cx="35" cy="63" r="4" fill="#FF9800"/>
+      <line x1="35" y1="67" x2="35" y2="72" stroke="#FF9800" stroke-width="3"/>
+    </g>
+
+    <!-- Text Content -->
+    <text x="300" y="180" font-family="IBM Plex Sans, sans-serif" font-size="18" font-weight="600" fill="#1A1A1A" text-anchor="middle">Upgrade to access Competitor Analysis</text>
+    <text x="300" y="210" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="400" fill="#6D6D6D" text-anchor="middle">This feature is available on the Pro and Enterprise plans</text>
+
+    <!-- Feature List -->
+    <g transform="translate(140, 236)">
+      <g>
+        <circle cx="8" cy="8" r="6" fill="#E8F5E9"/>
+        <path d="M 6 8 L 8 10 L 11 6" stroke="#43A047" stroke-width="1.5" fill="none"/>
+        <text x="24" y="12" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="400" fill="#4A4A4A">Unlimited competitor tracking</text>
+      </g>
+      <g transform="translate(0, 28)">
+        <circle cx="8" cy="8" r="6" fill="#E8F5E9"/>
+        <path d="M 6 8 L 8 10 L 11 6" stroke="#43A047" stroke-width="1.5" fill="none"/>
+        <text x="24" y="12" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="400" fill="#4A4A4A">Advanced keyword insights</text>
+      </g>
+      <g transform="translate(0, 56)">
+        <circle cx="8" cy="8" r="6" fill="#E8F5E9"/>
+        <path d="M 6 8 L 8 10 L 11 6" stroke="#43A047" stroke-width="1.5" fill="none"/>
+        <text x="24" y="12" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="400" fill="#4A4A4A">Historical trend data</text>
+      </g>
+    </g>
+
+    <!-- CTA Buttons -->
+    <g transform="translate(150, 306)">
+      <rect width="140" height="36" rx="6" fill="#FF5722"/>
+      <text x="70" y="23" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">Upgrade Now</text>
+
+      <rect x="156" width="140" height="36" rx="6" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="1"/>
+      <text x="226" y="23" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="500" fill="#4A4A4A" text-anchor="middle">View Pricing</text>
+    </g>
+  </g>
+
+  <!-- Error State 4: Plan Limitation Reached -->
+  <g transform="translate(720, 540)">
+    <rect width="600" height="360" rx="12" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2"/>
+
+    <!-- Label -->
+    <rect x="0" y="-40" width="200" height="28" rx="6" fill="#FF9800"/>
+    <text x="100" y="-18" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#FFFFFF" text-anchor="middle">4. Plan Limit Reached</text>
+
+    <!-- Illustration -->
+    <g transform="translate(250, 60)">
+      <circle cx="50" cy="50" r="45" fill="#FFEBEE"/>
+      <text x="50" y="70" font-family="IBM Plex Sans, sans-serif" font-size="48" font-weight="700" fill="#E53935" text-anchor="middle">500</text>
+      <path d="M 20 90 L 80 90" stroke="#E53935" stroke-width="3" stroke-linecap="round"/>
+      <path d="M 20 90 L 80 90" stroke="#E53935" stroke-width="3" stroke-linecap="round" transform="rotate(45 50 90)"/>
+    </g>
+
+    <!-- Usage Bar -->
+    <g transform="translate(100, 170)">
+      <text x="0" y="0" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="500" fill="#6D6D6D">Keyword searches this month</text>
+      <rect x="0" y="8" width="400" height="12" rx="6" fill="#F5F5F5"/>
+      <rect x="0" y="8" width="400" height="12" rx="6" fill="#E53935"/>
+      <text x="0" y="36" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="700" fill="#E53935">500 / 500 searches used (100%)</text>
+    </g>
+
+    <!-- Message -->
+    <text x="300" y="240" font-family="IBM Plex Sans, sans-serif" font-size="18" font-weight="600" fill="#1A1A1A" text-anchor="middle">You've reached your monthly limit</text>
+    <text x="300" y="266" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="400" fill="#6D6D6D" text-anchor="middle">Upgrade your plan or wait until next month to continue</text>
+
+    <!-- Reset Date -->
+    <rect x="175" y="280" width="250" height="28" rx="6" fill="#E1F5FE"/>
+    <text x="300" y="300" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="500" fill="#039BE5" text-anchor="middle">Resets on December 1, 2025</text>
+
+    <!-- CTA Button -->
+    <rect x="200" y="316" width="200" height="36" rx="6" fill="#FF5722"/>
+    <text x="300" y="339" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">Upgrade to Unlimited</text>
+  </g>
+
+  <!-- Error State 5: API/Connection Error -->
+  <g transform="translate(120, 940)">
+    <rect width="600" height="360" rx="12" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2"/>
+
+    <!-- Label -->
+    <rect x="0" y="-40" width="220" height="28" rx="6" fill="#FF9800"/>
+    <text x="110" y="-18" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#FFFFFF" text-anchor="middle">5. API/Connection Error</text>
+
+    <!-- Illustration -->
+    <g transform="translate(250, 60)">
+      <circle cx="50" cy="50" r="45" fill="#FFEBEE"/>
+      <circle cx="30" cy="40" r="18" stroke="#E53935" stroke-width="3" fill="none"/>
+      <line x1="44" y1="26" x2="54" y2="16" stroke="#E53935" stroke-width="3"/>
+      <circle cx="70" cy="60" r="18" stroke="#E53935" stroke-width="3" fill="none"/>
+      <line x1="56" y1="74" x2="46" y2="84" stroke="#E53935" stroke-width="3"/>
+      <line x1="38" y1="52" x2="62" y2="62" stroke="#E53935" stroke-width="3" stroke-dasharray="4,4"/>
+    </g>
+
+    <!-- Text Content -->
+    <text x="300" y="180" font-family="IBM Plex Sans, sans-serif" font-size="18" font-weight="600" fill="#1A1A1A" text-anchor="middle">Unable to load keyword data</text>
+    <text x="300" y="210" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="400" fill="#6D6D6D" text-anchor="middle">We're having trouble connecting to our servers</text>
+
+    <!-- Error Details (Expandable) -->
+    <g transform="translate(100, 230)">
+      <rect width="400" height="48" rx="6" fill="#F5F5F5"/>
+      <text x="16" y="20" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="500" fill="#8A8A8A">Error Code:</text>
+      <text x="16" y="36" font-family="Roboto Mono, monospace" font-size="12" font-weight="400" fill="#6D6D6D">ERR_CONNECTION_TIMEOUT (503)</text>
+      <path d="M 384 20 L 388 24 L 384 28" stroke="#6D6D6D" stroke-width="1.5" fill="none"/>
+    </g>
+
+    <!-- Action Buttons -->
+    <g transform="translate(125, 296)">
+      <rect width="140" height="36" rx="6" fill="#FF9800"/>
+      <text x="70" y="23" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">Try Again</text>
+
+      <rect x="156" width="190" height="36" rx="6" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="1"/>
+      <text x="251" y="23" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="500" fill="#4A4A4A" text-anchor="middle">Contact Support</text>
+    </g>
+  </g>
+
+  <!-- Error State 6: Invalid Input -->
+  <g transform="translate(720, 940)">
+    <rect width="600" height="360" rx="12" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2"/>
+
+    <!-- Label -->
+    <rect x="0" y="-40" width="160" height="28" rx="6" fill="#FF9800"/>
+    <text x="80" y="-18" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#FFFFFF" text-anchor="middle">6. Invalid Input</text>
+
+    <!-- Form Section -->
+    <g transform="translate(40, 60)">
+      <text x="0" y="0" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="600" fill="#1A1A1A">Search for Keywords</text>
+
+      <text x="0" y="36" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="500" fill="#4A4A4A">Enter a keyword</text>
+
+      <!-- Invalid Input Field -->
+      <rect x="0" y="48" width="520" height="48" rx="8" fill="#FFFFFF" stroke="#FB8C00" stroke-width="2"/>
+      <text x="16" y="76" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="400" fill="#1A1A1A">a</text>
+
+      <!-- Warning Icon -->
+      <g transform="translate(484, 68)">
+        <circle cx="12" cy="12" r="10" fill="#FB8C00"/>
+        <text x="12" y="17" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="700" fill="#FFFFFF" text-anchor="middle">!</text>
+      </g>
+
+      <!-- Validation Message -->
+      <g transform="translate(0, 104)">
+        <circle cx="8" cy="8" r="8" fill="#FFF3E0"/>
+        <text x="6" y="12" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="700" fill="#FB8C00">!</text>
+        <text x="24" y="12" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="500" fill="#FB8C00">Please enter at least 2 characters</text>
+      </g>
+
+      <!-- Validation Rules -->
+      <g transform="translate(0, 140)">
+        <rect width="520" height="120" rx="6" fill="#FAFAFA" stroke="#E0E0E0" stroke-width="1"/>
+        <text x="16" y="24" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#4A4A4A">Keyword requirements:</text>
+
+        <!-- Rule 1 - Invalid -->
+        <g transform="translate(16, 40)">
+          <circle cx="8" cy="8" r="6" fill="#FFEBEE"/>
+          <line x1="6" y1="6" x2="10" y2="10" stroke="#E53935" stroke-width="1.5"/>
+          <line x1="10" y1="6" x2="6" y2="10" stroke="#E53935" stroke-width="1.5"/>
+          <text x="24" y="12" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="400" fill="#E53935">Minimum 2 characters</text>
+        </g>
+
+        <!-- Rule 2 - Valid -->
+        <g transform="translate(16, 64)">
+          <circle cx="8" cy="8" r="6" fill="#E8F5E9"/>
+          <path d="M 6 8 L 8 10 L 11 6" stroke="#43A047" stroke-width="1.5" fill="none"/>
+          <text x="24" y="12" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="400" fill="#43A047">Letters, numbers, and spaces allowed</text>
+        </g>
+
+        <!-- Rule 3 - Valid -->
+        <g transform="translate(16, 88)">
+          <circle cx="8" cy="8" r="6" fill="#E8F5F5"/>
+          <text x="24" y="12" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="400" fill="#8A8A8A">Maximum 100 characters</text>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  <!-- Loading State (Bonus) -->
+  <g transform="translate(120, 1340)">
+    <rect width="600" height="360" rx="12" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2"/>
+
+    <!-- Label -->
+    <rect x="0" y="-40" width="160" height="28" rx="6" fill="#039BE5"/>
+    <text x="80" y="-18" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#FFFFFF" text-anchor="middle">Bonus: Loading State</text>
+
+    <!-- Spinner -->
+    <g transform="translate(300, 120)">
+      <circle cx="0" cy="0" r="30" stroke="#E0E0E0" stroke-width="4" fill="none"/>
+      <path d="M 0 -30 A 30 30 0 0 1 30 0" stroke="#FF9800" stroke-width="4" fill="none" stroke-linecap="round">
+        <animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="1s" repeatCount="indefinite"/>
+      </path>
+    </g>
+
+    <!-- Text -->
+    <text x="300" y="200" font-family="IBM Plex Sans, sans-serif" font-size="18" font-weight="600" fill="#1A1A1A" text-anchor="middle">Searching for keywords...</text>
+    <text x="300" y="230" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="400" fill="#6D6D6D" text-anchor="middle">This may take a few moments</text>
+
+    <!-- Progress Bar -->
+    <g transform="translate(150, 250)">
+      <rect width="300" height="6" rx="3" fill="#F5F5F5"/>
+      <rect width="200" height="6" rx="3" fill="#FF9800">
+        <animate attributeName="width" from="0" to="300" dur="2s" repeatCount="indefinite"/>
+      </rect>
+    </g>
+  </g>
+
+  <!-- Empty State (Bonus) -->
+  <g transform="translate(720, 1340)">
+    <rect width="600" height="360" rx="12" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2"/>
+
+    <!-- Label -->
+    <rect x="0" y="-40" width="160" height="28" rx="6" fill="#039BE5"/>
+    <text x="80" y="-18" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#FFFFFF" text-anchor="middle">Bonus: Empty State</text>
+
+    <!-- Illustration -->
+    <g transform="translate(235, 60)">
+      <rect x="20" y="20" width="90" height="70" rx="4" stroke="#E0E0E0" stroke-width="2" fill="none"/>
+      <line x1="35" y1="40" x2="95" y2="40" stroke="#E0E0E0" stroke-width="2"/>
+      <line x1="35" y1="55" x2="80" y2="55" stroke="#E0E0E0" stroke-width="2"/>
+      <line x1="35" y1="70" x2="90" y2="70" stroke="#E0E0E0" stroke-width="2"/>
+      <circle cx="65" cy="30" r="18" stroke="#FF9800" stroke-width="3" fill="none"/>
+      <line x1="78" y1="43" x2="90" y2="55" stroke="#FF9800" stroke-width="3"/>
+    </g>
+
+    <!-- Text Content -->
+    <text x="300" y="200" font-family="IBM Plex Sans, sans-serif" font-size="18" font-weight="600" fill="#1A1A1A" text-anchor="middle">Start your keyword research</text>
+    <text x="300" y="230" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="400" fill="#6D6D6D" text-anchor="middle">Enter a keyword above to discover opportunities for your app</text>
+
+    <!-- Tips -->
+    <g transform="translate(120, 256)">
+      <rect width="360" height="60" rx="6" fill="#E1F5FE"/>
+      <text x="16" y="22" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#039BE5">💡 Pro tip:</text>
+      <text x="16" y="42" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="400" fill="#4A4A4A">Start with your app's main feature or category to find relevant keywords</text>
+    </g>
+
+    <!-- CTA -->
+    <rect x="200" y="328" width="200" height="24" rx="4" fill="transparent" stroke="#FF9800" stroke-width="2"/>
+    <text x="300" y="345" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#FF9800" text-anchor="middle">Watch 2-min Demo Video →</text>
+  </g>
+
+  <!-- Summary Footer -->
+  <g transform="translate(120, 1740)">
+    <rect width="1200" height="120" rx="8" fill="#FF9800" opacity="0.1" stroke="#FF9800" stroke-width="2"/>
+    <text x="600" y="40" font-family="IBM Plex Sans, sans-serif" font-size="18" font-weight="700" fill="#1A1A1A" text-anchor="middle">Error State Design Principles</text>
+    <text x="600" y="68" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="400" fill="#4A4A4A" text-anchor="middle">✓ Clear explanation of the issue  •  ✓ Suggested actions  •  ✓ Visual consistency  •  ✓ Appropriate tone</text>
+    <text x="600" y="92" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="400" fill="#4A4A4A" text-anchor="middle">All states follow WCAG AA accessibility standards with 4.5:1 contrast ratio</text>
+  </g>
+
+  <!-- Version Info -->
+  <text x="720" y="2360" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="400" fill="#8A8A8A" text-anchor="middle">SearchVector ASO Design System v1.0.0 • Error States Collection • 2025-10-16</text>
+</svg>

@@ -1,0 +1,184 @@
+<svg width="1440" height="900" viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
+
+      .display-large { font-family: 'Inter', sans-serif; font-size: 57px; line-height: 64px; font-weight: 600; fill: #111827; }
+      .display-small { font-family: 'Inter', sans-serif; font-size: 36px; line-height: 44px; font-weight: 600; fill: #111827; }
+      .headline { font-family: 'Inter', sans-serif; font-size: 32px; line-height: 40px; font-weight: 600; fill: #111827; }
+      .title { font-family: 'Inter', sans-serif; font-size: 22px; line-height: 28px; font-weight: 600; fill: #111827; }
+      .body-large { font-family: 'Inter', sans-serif; font-size: 16px; line-height: 24px; font-weight: 400; fill: #111827; }
+      .body-small { font-family: 'Inter', sans-serif; font-size: 14px; line-height: 20px; font-weight: 400; fill: #6B7280; }
+      .label { font-family: 'Inter', sans-serif; font-size: 14px; line-height: 20px; font-weight: 600; fill: #111827; }
+      .text-white { fill: #FFFFFF; }
+      .text-brand { fill: #FF5722; }
+      .text-secondary { fill: #6B7280; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1440" height="900" fill="#F9FAFB"/>
+
+  <!-- Section Header -->
+  <text x="720" y="80" class="headline" text-anchor="middle">UI States &amp; Edge Cases</text>
+
+  <!-- Row 1: Empty States -->
+
+  <!-- Card 1: No Keywords Yet -->
+  <g id="empty-card-1" transform="translate(48, 128)">
+    <rect x="0" y="0" width="440" height="220" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+    <g transform="translate(24, 24)">
+      <!-- Icon (24px from top) -->
+      <circle cx="196" cy="40" r="36" fill="none" stroke="#E5E7EB" stroke-width="5" opacity="0.4"/>
+      <line x1="220" y1="64" x2="238" y2="82" stroke="#E5E7EB" stroke-width="5" stroke-linecap="round" opacity="0.4"/>
+
+      <!-- Text Group (centered, equal spacing) -->
+      <text x="196" y="108" class="title" text-anchor="middle">No Keywords Tracked Yet</text>
+      <text x="196" y="132" class="body-small text-secondary" text-anchor="middle">Start tracking keywords to see how your</text>
+      <text x="196" y="152" class="body-small text-secondary" text-anchor="middle">app ranks in search results.</text>
+
+      <!-- Button (equal padding from bottom: 24px) -->
+      <rect x="98" y="124" width="196" height="48" rx="12" fill="#FF5722"/>
+      <text x="196" y="154" class="label text-white" text-anchor="middle">+ Add First Keyword</text>
+    </g>
+  </g>
+
+  <!-- Card 2: No Search Results -->
+  <g id="empty-card-2" transform="translate(520, 128)">
+    <rect x="0" y="0" width="440" height="220" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+    <g transform="translate(24, 24)">
+      <!-- Icon -->
+      <circle cx="196" cy="40" r="36" fill="none" stroke="#E5E7EB" stroke-width="5"/>
+      <line x1="220" y1="64" x2="238" y2="82" stroke="#E5E7EB" stroke-width="5" stroke-linecap="round"/>
+      <line x1="181" y1="25" x2="211" y2="55" stroke="#DC2626" stroke-width="4" stroke-linecap="round"/>
+      <line x1="211" y1="25" x2="181" y2="55" stroke="#DC2626" stroke-width="4" stroke-linecap="round"/>
+
+      <!-- Text Group -->
+      <text x="196" y="104" class="title" text-anchor="middle">No Results for 'asotools'</text>
+      <text x="196" y="128" class="body-small text-secondary" text-anchor="middle">Try checking your spelling, using different</text>
+      <text x="196" y="148" class="body-small text-secondary" text-anchor="middle">keywords, or removing filters.</text>
+
+      <!-- Button -->
+      <rect x="133" y="124" width="126" height="48" rx="12" fill="none" stroke="#E5E7EB" stroke-width="2"/>
+      <text x="196" y="154" class="label" text-anchor="middle">Clear Search</text>
+    </g>
+  </g>
+
+  <!-- Card 3: No Data for Filters -->
+  <g id="empty-card-3" transform="translate(992, 128)">
+    <rect x="0" y="0" width="440" height="220" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+    <g transform="translate(24, 24)">
+      <!-- Icon -->
+      <path d="M 160 30 L 232 30 L 216 56 L 216 82 L 176 82 L 176 56 Z" fill="none" stroke="#E5E7EB" stroke-width="5" stroke-linejoin="round"/>
+
+      <!-- Text Group -->
+      <text x="196" y="110" class="title" text-anchor="middle">No Keywords Match Filters</text>
+      <text x="196" y="134" class="body-small text-secondary" text-anchor="middle">Try adjusting your filters or clearing them</text>
+      <text x="196" y="154" class="body-small text-secondary" text-anchor="middle">to see more results.</text>
+
+      <!-- Button -->
+      <rect x="121" y="124" width="150" height="48" rx="12" fill="none" stroke="#E5E7EB" stroke-width="2"/>
+      <text x="196" y="154" class="label" text-anchor="middle">Clear All Filters</text>
+    </g>
+  </g>
+
+  <!-- Row 2: Loading States -->
+
+  <!-- Card 4: Skeleton Screen -->
+  <g id="loading-card-1" transform="translate(48, 380)">
+    <rect x="0" y="0" width="440" height="220" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+    <g transform="translate(24, 24)">
+      <text x="0" y="16" class="body-large" font-weight="600">Skeleton Screen</text>
+      <!-- Skeleton bars with equal padding -->
+      <rect x="0" y="36" width="264" height="20" rx="4" fill="#F3F4F6"/>
+      <rect x="0" y="68" width="392" height="16" rx="4" fill="#F3F4F6"/>
+      <rect x="0" y="92" width="392" height="16" rx="4" fill="#F3F4F6"/>
+      <rect x="0" y="116" width="392" height="16" rx="4" fill="#F3F4F6"/>
+      <rect x="0" y="148" width="176" height="16" rx="4" fill="#F3F4F6"/>
+      <rect x="188" y="148" width="176" height="16" rx="4" fill="#F3F4F6"/>
+    </g>
+  </g>
+
+  <!-- Card 5: Component Loading - Spinner -->
+  <g id="loading-card-2" transform="translate(520, 380)">
+    <rect x="0" y="0" width="440" height="220" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+    <g transform="translate(24, 24)">
+      <!-- Centered content with equal padding -->
+      <text x="196" y="44" class="title" text-anchor="middle">Loading Rankings...</text>
+      <circle cx="196" cy="96" r="20" fill="none" stroke="#FFE5DC" stroke-width="4"/>
+      <path d="M 196 76 A 20 20 0 0 1 216 96" fill="none" stroke="#FF5722" stroke-width="4" stroke-linecap="round">
+        <animateTransform attributeName="transform" type="rotate" from="0 196 96" to="360 196 96" dur="1s" repeatCount="indefinite"/>
+      </path>
+      <text x="196" y="144" class="body-small text-secondary" text-anchor="middle">This may take a few moments</text>
+    </g>
+  </g>
+
+  <!-- Card 6: Progress Operation -->
+  <g id="loading-card-3" transform="translate(992, 380)">
+    <rect x="0" y="0" width="440" height="220" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+    <g transform="translate(24, 24)">
+      <!-- Centered content -->
+      <text x="196" y="44" class="title" text-anchor="middle">Analyzing Keywords...</text>
+      <text x="196" y="68" class="body-small text-secondary" text-anchor="middle">67% complete</text>
+      <!-- Progress bar centered with equal margins -->
+      <rect x="16" y="88" width="360" height="8" rx="4" fill="#E5E7EB"/>
+      <rect x="16" y="88" width="241" height="8" rx="4" fill="#FF5722"/>
+      <text x="196" y="124" class="body-small text-secondary" text-anchor="middle">Estimated time: 30 seconds</text>
+    </g>
+  </g>
+
+  <!-- Row 3: Error States -->
+
+  <!-- Card 7: Network Error -->
+  <g id="error-card-1" transform="translate(48, 632)">
+    <rect x="0" y="0" width="440" height="220" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+    <g transform="translate(24, 24)">
+      <!-- Icon -->
+      <circle cx="196" cy="40" r="32" fill="#FEE2E2"/>
+      <line x1="196" y1="24" x2="196" y2="44" stroke="#DC2626" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="196" cy="52" r="3" fill="#DC2626"/>
+
+      <!-- Text Group -->
+      <text x="196" y="104" class="title" text-anchor="middle">No Internet Connection</text>
+      <text x="196" y="128" class="body-small text-secondary" text-anchor="middle">Check your connection and try again.</text>
+
+      <!-- Button -->
+      <rect x="133" y="124" width="126" height="48" rx="12" fill="#FF5722"/>
+      <text x="196" y="154" class="label text-white" text-anchor="middle">Retry</text>
+    </g>
+  </g>
+
+  <!-- Card 8: API Error 500 -->
+  <g id="error-card-2" transform="translate(520, 632)">
+    <rect x="0" y="0" width="440" height="220" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+    <g transform="translate(24, 24)">
+      <!-- Icon -->
+      <circle cx="196" cy="40" r="32" fill="#FEE2E2"/>
+      <text x="196" y="50" class="headline text-brand" text-anchor="middle">!</text>
+
+      <!-- Text Group -->
+      <text x="196" y="104" class="title" text-anchor="middle">Something Went Wrong</text>
+      <text x="196" y="128" class="body-small text-secondary" text-anchor="middle">We're experiencing technical difficulties.</text>
+      <text x="196" y="148" class="body-small text-secondary" text-anchor="middle">Our team has been notified.</text>
+    </g>
+  </g>
+
+  <!-- Card 9: Permission Error 403 -->
+  <g id="error-card-3" transform="translate(992, 632)">
+    <rect x="0" y="0" width="440" height="220" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+    <g transform="translate(24, 24)">
+      <!-- Icon -->
+      <circle cx="196" cy="40" r="32" fill="#FEE2E2"/>
+      <path d="M 196 24 L 196 44 M 185 32 L 207 32" stroke="#DC2626" stroke-width="4" stroke-linecap="round"/>
+
+      <!-- Text Group -->
+      <text x="196" y="104" class="title" text-anchor="middle">Access Denied</text>
+      <text x="196" y="128" class="body-small text-secondary" text-anchor="middle">You don't have permission to access this</text>
+      <text x="196" y="148" class="body-small text-secondary" text-anchor="middle">feature. Available on Pro plans and above.</text>
+
+      <!-- Button -->
+      <rect x="133" y="124" width="174" height="48" rx="12" fill="#FF5722"/>
+      <text x="220" y="154" class="label text-white" text-anchor="middle">Upgrade to Pro</text>
+    </g>
+  </g>
+</svg>

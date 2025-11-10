@@ -1,0 +1,285 @@
+<svg width="375" height="1400" viewBox="0 0 375 1400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="375" height="1400" fill="#FFFFFF"/>
+
+  <!-- Mobile Top Navigation -->
+  <g id="mobile-nav">
+    <rect width="375" height="64" fill="#FFFFFF"/>
+    <rect y="64" width="375" height="1" fill="#E5E7EB"/>
+
+    <!-- Hamburger Menu (44x44 touch target) -->
+    <g transform="translate(12, 10)">
+      <rect width="44" height="44" fill="transparent"/>
+      <rect x="12" y="14" width="20" height="2" rx="1" fill="#111827"/>
+      <rect x="12" y="21" width="20" height="2" rx="1" fill="#111827"/>
+      <rect x="12" y="28" width="20" height="2" rx="1" fill="#111827"/>
+    </g>
+
+    <!-- Logo -->
+    <g transform="translate(64, 18)">
+      <rect width="28" height="28" rx="6" fill="#FF5722"/>
+      <text x="36" y="20" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#111827">SearchVector</text>
+    </g>
+
+    <!-- User Avatar (44x44 touch target) -->
+    <g transform="translate(319, 10)">
+      <rect width="44" height="44" fill="transparent"/>
+      <circle cx="22" cy="22" r="14" fill="#FF5722"/>
+      <text x="22" y="27" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#FFFFFF" text-anchor="middle">JD</text>
+    </g>
+  </g>
+
+  <!-- Page Content -->
+  <g transform="translate(16, 80)">
+    <!-- Page Title -->
+    <text x="0" y="0" font-family="Inter, sans-serif" font-size="20" font-weight="600" fill="#111827">Keyword Research</text>
+
+    <!-- Usage Badge -->
+    <g transform="translate(0, 12)">
+      <rect width="132" height="20" rx="10" fill="#FFF7ED" stroke="#FFEDD5" stroke-width="1"/>
+      <text x="66" y="14" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#EA580C" text-anchor="middle">250/500 keywords</text>
+    </g>
+
+    <!-- Platform Toggle -->
+    <g transform="translate(0, 52)">
+      <rect width="160" height="36" rx="18" fill="#F3F4F6"/>
+      <rect x="2" y="2" width="76" height="32" rx="16" fill="#FF5722" style="filter:drop-shadow(0 1px 2px rgba(0,0,0,0.05))"/>
+      <text x="40" y="23" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#FFFFFF" text-anchor="middle">iOS</text>
+      <text x="120" y="23" font-family="Inter, sans-serif" font-size="13" font-weight="500" fill="#6B7280" text-anchor="middle">Android</text>
+    </g>
+
+    <!-- Country Selector -->
+    <g transform="translate(172, 52)">
+      <rect width="171" height="36" rx="8" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+      <text x="12" y="23" font-family="Inter, sans-serif" font-size="13" font-weight="400" fill="#111827">🇺🇸 USA</text>
+      <path d="M 159 16 L 163 20 L 159 24" stroke="#4B5563" stroke-width="1.5" fill="none"/>
+    </g>
+
+    <!-- Search Input (48px height) -->
+    <g transform="translate(0, 108)">
+      <rect width="343" height="48" rx="8" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+      <circle cx="18" cy="24" r="7" stroke="#6B7280" stroke-width="2" fill="none"/>
+      <line x1="23" y1="29" x2="27" y2="33" stroke="#6B7280" stroke-width="2"/>
+      <text x="38" y="30" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#111827">fitness tracker</text>
+    </g>
+
+    <!-- Search Button (48px height) -->
+    <g transform="translate(0, 168)">
+      <rect width="343" height="48" rx="8" fill="#FF5722" style="filter:drop-shadow(0 4px 8px rgba(255,87,34,0.25))"/>
+      <text x="171.5" y="30" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">Search Keywords</text>
+    </g>
+
+    <!-- Compact CTA Banner -->
+    <g transform="translate(0, 232)">
+      <rect width="343" height="88" rx="12" fill="#FFF7ED" stroke="#FFEDD5" stroke-width="1"/>
+      <g transform="translate(16, 16)">
+        <rect width="28" height="28" rx="14" fill="#FFEDD5"/>
+        <text x="14" y="20" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FF5722" text-anchor="middle">💡</text>
+      </g>
+      <text x="56" y="32" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#111827">Need ASO help?</text>
+      <text x="56" y="52" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#4B5563">Free consultation available</text>
+      <rect x="16" y="60" width="311" height="20" rx="4" fill="#FF5722"/>
+      <text x="171.5" y="74" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#FFFFFF" text-anchor="middle">Book Consultation</text>
+    </g>
+
+    <!-- Results Header & Filter Button -->
+    <g transform="translate(0, 340)">
+      <text x="0" y="16" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#111827">127 keywords</text>
+
+      <!-- Filter Button (44px height) -->
+      <g transform="translate(227, 0)">
+        <rect width="116" height="32" rx="8" fill="#F3F4F6"/>
+        <circle cx="18" cy="16" r="5" stroke="#4B5563" stroke-width="1.5" fill="none"/>
+        <text x="34" y="20" font-family="Inter, sans-serif" font-size="13" font-weight="500" fill="#111827">Filter (2)</text>
+      </g>
+    </g>
+
+    <!-- Active Filters -->
+    <g transform="translate(0, 384)">
+      <!-- Filter Chip 1 -->
+      <rect width="128" height="24" rx="12" fill="#FFF7ED"/>
+      <text x="12" y="16" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#EA580C">Difficulty: Easy</text>
+      <circle cx="114" cy="12" r="6" fill="#FF5722"/>
+      <line x1="111" y1="9" x2="117" y2="15" stroke="#FFFFFF" stroke-width="1.5"/>
+      <line x1="117" y1="9" x2="111" y2="15" stroke="#FFFFFF" stroke-width="1.5"/>
+
+      <!-- Filter Chip 2 -->
+      <g transform="translate(140, 0)">
+        <rect width="140" height="24" rx="12" fill="#FFF7ED"/>
+        <text x="12" y="16" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#EA580C">Vol: 10K-100K</text>
+        <circle cx="126" cy="12" r="6" fill="#FF5722"/>
+        <line x1="123" y1="9" x2="129" y2="15" stroke="#FFFFFF" stroke-width="1.5"/>
+        <line x1="129" y1="9" x2="123" y2="15" stroke="#FFFFFF" stroke-width="1.5"/>
+      </g>
+    </g>
+
+    <!-- Keyword Cards (Mobile Card View) -->
+    <g transform="translate(0, 424)">
+      <!-- Card 1 -->
+      <g>
+        <rect width="343" height="156" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1" style="filter:drop-shadow(0 1px 2px rgba(0,0,0,0.05))"/>
+
+        <!-- Keyword Title -->
+        <text x="16" y="28" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#111827">fitness tracker app</text>
+
+        <!-- Metrics Row 1 -->
+        <g transform="translate(16, 48)">
+          <text x="0" y="0" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#6B7280">VOLUME</text>
+          <text x="0" y="20" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#111827">45.2K</text>
+
+          <g transform="translate(100, 0)">
+            <text x="0" y="0" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#6B7280">DIFFICULTY</text>
+            <rect x="0" y="6" width="68" height="20" rx="10" fill="#DCFCE7"/>
+            <text x="34" y="20" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#15803D" text-anchor="middle">Easy 23</text>
+          </g>
+
+          <g transform="translate(224, 0)">
+            <text x="0" y="0" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#6B7280">TREND</text>
+            <text x="0" y="20" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#15803D">↑ 12%</text>
+          </g>
+        </g>
+
+        <!-- Metrics Row 2 -->
+        <g transform="translate(16, 100)">
+          <text x="0" y="0" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#6B7280">OPPORTUNITY</text>
+          <rect x="0" y="6" width="56" height="20" rx="10" fill="#DCFCE7"/>
+          <text x="28" y="20" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#15803D" text-anchor="middle">High</text>
+
+          <g transform="translate(100, 0)">
+            <text x="0" y="0" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#6B7280">RANK</text>
+            <text x="0" y="20" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">-</text>
+          </g>
+        </g>
+
+        <!-- Save Button (44px touch target) -->
+        <rect x="255" y="120" width="72" height="28" rx="6" fill="#FF5722"/>
+        <text x="291" y="138" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#FFFFFF" text-anchor="middle">Save</text>
+      </g>
+
+      <!-- Card 2 -->
+      <g transform="translate(0, 168)">
+        <rect width="343" height="156" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1" style="filter:drop-shadow(0 1px 2px rgba(0,0,0,0.05))"/>
+
+        <text x="16" y="28" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#111827">workout planner</text>
+
+        <g transform="translate(16, 48)">
+          <text x="0" y="0" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#6B7280">VOLUME</text>
+          <text x="0" y="20" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#111827">128K</text>
+
+          <g transform="translate(100, 0)">
+            <text x="0" y="0" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#6B7280">DIFFICULTY</text>
+            <rect x="0" y="6" width="88" height="20" rx="10" fill="#FEF3C7"/>
+            <text x="44" y="20" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#B45309" text-anchor="middle">Medium 67</text>
+          </g>
+
+          <g transform="translate(224, 0)">
+            <text x="0" y="0" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#6B7280">TREND</text>
+            <text x="0" y="20" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#6B7280">→ 0%</text>
+          </g>
+        </g>
+
+        <g transform="translate(16, 100)">
+          <text x="0" y="0" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#6B7280">OPPORTUNITY</text>
+          <rect x="0" y="6" width="76" height="20" rx="10" fill="#FEF3C7"/>
+          <text x="38" y="20" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#B45309" text-anchor="middle">Medium</text>
+
+          <g transform="translate(100, 0)">
+            <text x="0" y="0" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#6B7280">RANK</text>
+            <text x="0" y="20" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">#47</text>
+          </g>
+        </g>
+
+        <rect x="255" y="120" width="72" height="28" rx="6" fill="#FF5722"/>
+        <text x="291" y="138" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#FFFFFF" text-anchor="middle">Save</text>
+      </g>
+
+      <!-- Card 3 -->
+      <g transform="translate(0, 336)">
+        <rect width="343" height="156" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1" style="filter:drop-shadow(0 1px 2px rgba(0,0,0,0.05))"/>
+
+        <text x="16" y="28" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#111827">calorie counter free</text>
+
+        <g transform="translate(16, 48)">
+          <text x="0" y="0" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#6B7280">VOLUME</text>
+          <text x="0" y="20" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#111827">89.5K</text>
+
+          <g transform="translate(100, 0)">
+            <text x="0" y="0" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#6B7280">DIFFICULTY</text>
+            <rect x="0" y="6" width="68" height="20" rx="10" fill="#FEE2E2"/>
+            <text x="34" y="20" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#B91C1C" text-anchor="middle">Hard 89</text>
+          </g>
+
+          <g transform="translate(224, 0)">
+            <text x="0" y="0" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#6B7280">TREND</text>
+            <text x="0" y="20" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#B91C1C">↓ 5%</text>
+          </g>
+        </g>
+
+        <g transform="translate(16, 100)">
+          <text x="0" y="0" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#6B7280">OPPORTUNITY</text>
+          <rect x="0" y="6" width="52" height="20" rx="10" fill="#F3F4F6"/>
+          <text x="26" y="20" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#6B7280" text-anchor="middle">Low</text>
+
+          <g transform="translate(100, 0)">
+            <text x="0" y="0" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#6B7280">RANK</text>
+            <text x="0" y="20" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">#8</text>
+          </g>
+        </g>
+
+        <rect x="255" y="120" width="72" height="28" rx="6" fill="#FF5722"/>
+        <text x="291" y="138" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#FFFFFF" text-anchor="middle">Save</text>
+      </g>
+    </g>
+
+    <!-- Load More Button (48px height for touch) -->
+    <g transform="translate(0, 1036)">
+      <rect width="343" height="48" rx="8" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+      <text x="171.5" y="30" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#111827" text-anchor="middle">Load More</text>
+    </g>
+
+    <!-- Export Buttons -->
+    <g transform="translate(0, 1100)">
+      <rect width="167" height="36" rx="8" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+      <text x="83.5" y="22" font-family="Inter, sans-serif" font-size="13" font-weight="500" fill="#111827" text-anchor="middle">Export CSV</text>
+
+      <rect x="176" width="167" height="36" rx="8" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+      <text x="259.5" y="22" font-family="Inter, sans-serif" font-size="13" font-weight="500" fill="#111827" text-anchor="middle">Google Sheets</text>
+    </g>
+  </g>
+
+  <!-- Bottom Navigation Bar (60px height) -->
+  <g transform="translate(0, 1340)">
+    <rect width="375" height="60" fill="#FFFFFF"/>
+    <rect y="0" width="375" height="1" fill="#E5E7EB"/>
+
+    <!-- Nav Item 1 (Active) -->
+    <g transform="translate(30, 12)">
+      <circle cx="16" cy="14" r="8" fill="#FF5722"/>
+      <text x="16" y="40" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#FF5722" text-anchor="middle">Search</text>
+    </g>
+
+    <!-- Nav Item 2 -->
+    <g transform="translate(120, 12)">
+      <circle cx="16" cy="14" r="8" fill="#9CA3AF"/>
+      <text x="16" y="40" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#6B7280" text-anchor="middle">Saved</text>
+    </g>
+
+    <!-- Nav Item 3 -->
+    <g transform="translate(210, 12)">
+      <circle cx="16" cy="14" r="8" fill="#9CA3AF"/>
+      <text x="16" y="40" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#6B7280" text-anchor="middle">Analytics</text>
+    </g>
+
+    <!-- Nav Item 4 -->
+    <g transform="translate(300, 12)">
+      <circle cx="16" cy="14" r="8" fill="#9CA3AF"/>
+      <text x="16" y="40" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#6B7280" text-anchor="middle">More</text>
+    </g>
+  </g>
+
+  <!-- Help FAB (56x56 touch target) -->
+  <g transform="translate(303, 1268)">
+    <circle cx="28" cy="28" r="28" fill="#FF5722" style="filter:drop-shadow(0 10px 15px rgba(0,0,0,0.15))"/>
+    <text x="28" y="38" font-family="Inter, sans-serif" font-size="26" font-weight="600" fill="#FFFFFF" text-anchor="middle">?</text>
+  </g>
+</svg>

@@ -1,0 +1,41 @@
+# DISCOVERED COMPETITORS FOR RANK TRACKER (ASO TOOL)
+# Date: 2025-10-22
+# Search Query: "Rank Tracker ASO app store optimization competitors 2025"
+# Results: 4 leading ASO rank tracking platforms
+
+DISCOVERED_COMPETITORS:
+  - NAME: "AppTweak"
+    URL: "https://www.apptweak.com/en/aso-tools/keyword-tracking-monitoring"
+    CATEGORY: "ASO"
+    REQUIRES_LOGIN: true
+    MARKET_POSITION: "Leading ASO tool trusted by Amazon, Uber, King"
+    KEY_FEATURES: "Keyword tracking & monitoring, All ranked keywords performance, Historical analysis, Category rankings, Atlas AI powered insights"
+
+  - NAME: "Mobile Action"
+    URL: "https://www.mobileaction.co/aso-intelligence/"
+    CATEGORY: "ASO"
+    REQUIRES_LOGIN: true
+    MARKET_POSITION: "Comprehensive ASO intelligence platform"
+    KEY_FEATURES: "Keyword tracking module, App profile & rankings, Category ranking tracking (daily/hourly), ASO Report, Competitor analysis"
+
+  - NAME: "App Radar"
+    URL: "https://appradar.com/aso-keyword-rankings-tool"
+    CATEGORY: "ASO"
+    REQUIRES_LOGIN: true
+    MARKET_POSITION: "Simple and intuitive ASO platform"
+    KEY_FEATURES: "Redesigned AI-driven keyword research, Keyword monitoring with customizable tracker, Competitor comparison (up to 10 competitors), Unified interface"
+
+  - NAME: "AppFollow"
+    URL: "https://appfollow.io/blog/app-ranking-analytics"
+    CATEGORY: "ASO"
+    REQUIRES_LOGIN: true
+    MARKET_POSITION: "App performance monitoring specialist"
+    KEY_FEATURES: "Keyword ranking dashboard, Organic dashboard, Ranking history (hour-by-hour), Competitor benchmarking, Search visibility map, App Reputation Index"
+
+ANALYSIS_SUMMARY:
+  total_competitors: 4
+  all_require_login: true
+  content_collection_strategy: "Marketing pages, demo videos, documentation, blog posts, third-party reviews"
+  common_features: "Keyword rank tracking, competitor analysis, historical data, category rankings, ASO reports"
+  market_leaders: "AppTweak, Mobile Action"
+  differentiation: "AppTweak (AI-powered), App Radar (simple UI), AppFollow (hour-by-hour tracking)"

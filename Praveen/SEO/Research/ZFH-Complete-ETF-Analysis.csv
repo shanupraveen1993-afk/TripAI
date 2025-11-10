@@ -1,0 +1,117 @@
+Category,Topic/Product,Monthly_Traffic_Potential,Search_Volume_Keywords,Competitors_Covering,Primary_Competitor_URL,Difficulty,Priority,Launch_Timeline,Expected_AUM_Yr1_Cr,Expected_Revenue_Lakhs,Action_Required
+GAP_ANALYSIS,NYSE FANG+ ETF (International Tech),15495,"mirae asset nyse fang+ etf (8100), mafang etf (8100), fang etf (1300)",Mirae Asset,https://www.miraeassetmf.co.in/mutual-fund-scheme/etf-and-fof/mirae-asset-nyse-fang-plus-etf,LOW,TIER_1,3-4_months,500-750,425-638,Launch international tech ETF product immediately
+GAP_ANALYSIS,Beginner's Guide to ETF (Educational),10007,"etf full form (60500), etf meaning (33100), etf funds (22200)",HDFC Fund,https://www.hdfcfund.com/learners-corner/beginner/beginners-guide-etf,LOW,TIER_1,Immediate,0,0,Create comprehensive ETF educational guide
+GAP_ANALYSIS,Nifty Smallcap 250 ETF,6147,"nifty smallcap 250 etf, best small cap etf (720)",Mirae Asset,https://www.miraeassetmf.co.in/docs/default-source/alternate/nifty-smallcap250-etf_one-pager.pdf,MEDIUM,TIER_2,12-18_months,100-150,12-18,Consider product variant or comparison content
+GAP_ANALYSIS,Dedicated ETF Hub/Portal,5839,nippon india etf (1300),Nippon India,https://etf.nipponindiaim.com/,LOW,TIER_2,6-12_months,0,0,Build dedicated ETF section with tools
+GAP_ANALYSIS,Gold BeES / Branded Gold ETF,5795,"gold bees, gold etf (49500)",Nippon India,https://mf.nipponindiaim.com/FundsAndPerformance/Pages/NipponIndia-ETF-Gold-BeES.aspx,HIGH,TIER_2,Ongoing,0,0,Strengthen ZGOLD branding and optimization
+GAP_ANALYSIS,Hang Seng Tech ETF (China/HK),4886,"mirae asset hang seng tech etf (2400), hang seng etf (1600), mahktech etf (1600)","Nippon India, Mirae Asset",https://www.miraeassetmf.co.in/mutual-fund-scheme/etf/mirae-asset-hang-seng-tech-etf,LOW,TIER_2,6-12_months,150-250,120-200,Evaluate international ETF expansion
+GAP_ANALYSIS,S&P 500 ETF (US Market),3000,"s&p 500 etf india (720), s&p 500 etf (1000)",Mirae Asset,https://www.miraeassetmf.co.in/mutual-fund-scheme/etf-and-fof/mirae-asset-s-and-p-500-top-50-etf,LOW,TIER_1,3-6_months,400,320,Launch US broad market ETF
+GAP_ANALYSIS,ETF Comparison Content,5000,"etf vs mutual fund (22200), etf vs index fund (4400)","HDFC, Mirae",https://www.hdfcfund.com/learners-corner/intermediate/mutual-funds-vs-etfs,LOW,TIER_1,Immediate,0,0,Create comparison educational pages
+GAP_ANALYSIS,Gold ETF Optimization,8000,"gold etf (49500), gold etf india (4400)","HDFC, Mirae, Nippon",https://www.hdfcfund.com/explore/mutual-funds/hdfc-gold-etf/regular,MEDIUM,TIER_1,Immediate,0,0,Optimize existing ZGOLD page content
+GAP_ANALYSIS,Silver ETF Optimization,4000,"silver etf (14800), silver etf india (4400)","HDFC, Mirae",https://www.hdfcfund.com/explore/mutual-funds/hdfc-silver-etf/regular,MEDIUM,TIER_2,Immediate,0,0,Improve ZSLVR page ranking
+PRODUCT_PRIORITY,NYSE FANG+ ETF,15000,"mirae asset nyse fang+ etf (8100), mafang etf (8100), fang etf (1300)",Mirae Asset,https://www.miraeassetmf.co.in/mutual-fund-scheme/etf-and-fof/mirae-asset-nyse-fang-plus-etf,LOW,HIGHEST_9.2/10,Q1_Month_3,500-750,425-638,Launch international tech ETF - Highest ROI opportunity
+PRODUCT_PRIORITY,Nifty Bank ETF,5000-7000,"bank etf (880), nifty bank etf (2000+)","HDFC, ICICI, Nippon",https://www.hdfcfund.com/explore/mutual-funds/hdfc-nifty-bank-exchange-traded-fund/regular,MEDIUM,HIGH_8.5/10,Q1_Month_3,300-400,36-48,Launch banking sector ETF - High retail demand
+PRODUCT_PRIORITY,S&P 500 Top 50 ETF,5000,"s&p 500 etf india (720), s&p 500 etf (1000)",Mirae Asset,https://www.miraeassetmf.co.in/mutual-fund-scheme/etf-and-fof/mirae-asset-s-and-p-500-top-50-etf,LOW,HIGH_8.3/10,Q2_Month_6,400,320,Launch US broad market ETF
+PRODUCT_PRIORITY,Nifty IT ETF,3000-4000,it etf (1000),"HDFC, Nippon",https://www.hdfcfund.com/explore/mutual-funds/hdfc-nifty-it-etf/regular,MEDIUM,MEDIUM_7.8/10,Q3_Month_9,200-300,24-36,Launch IT sector ETF
+PRODUCT_PRIORITY,Nifty 200 Momentum 30 ETF,3000-4000,momentum etf (1600),HDFC,https://www.hdfcfund.com/explore/mutual-funds/hdfc-nifty200-momentum-30-etf/regular,LOW,MEDIUM_7.5/10,Q4_Month_12,150-250,38-63,Launch smart beta momentum ETF
+PRODUCT_PRIORITY,Nifty 50 Value 20 ETF,2000-3000,value etf (600-800),HDFC,https://www.hdfcfund.com/explore/mutual-funds/hdfc-nifty50-value-20-etf/regular,LOW,MEDIUM_7.4/10,Q4_Month_12,100-200,25-50,Launch smart beta value ETF
+PRODUCT_PRIORITY,Hang Seng Tech ETF,4000-5000,"hang seng tech etf (2400), hang seng etf (1600)","Mirae, Nippon",https://www.miraeassetmf.co.in/mutual-fund-scheme/etf/mirae-asset-hang-seng-tech-etf,MEDIUM,MEDIUM_7.2/10,Q5_Month_15,150-250,120-200,Launch China/HK tech ETF
+PRODUCT_PRIORITY,Nifty Pharma ETF,2000-3000,pharma etf,Multiple,N/A,MEDIUM,MEDIUM_7.0/10,Q3_Month_9,100-150,12-18,Launch pharma sector ETF
+PRODUCT_PRIORITY,Nifty Private Bank ETF,2000-3000,nifty private bank etf (390),HDFC,https://www.hdfcfund.com/explore/mutual-funds/hdfc-nifty-private-bank-etf/regular,MEDIUM,MEDIUM,Q2_Month_6,100-150,12-18,Launch premium banking ETF variant
+PRODUCT_PRIORITY,Nifty PSU Bank ETF,1500-2000,nifty psu bank etf (320),HDFC,https://www.hdfcfund.com/explore/mutual-funds/hdfc-nifty-psu-bank-etf/regular,MEDIUM,MEDIUM,Q2_Month_6,50-100,6-12,Launch PSU banking ETF variant
+PRODUCT_PRIORITY,Nifty India Manufacturing ETF,1500-2500,manufacturing etf (210),Mirae,https://www.miraeassetmf.co.in/mutual-fund-scheme/etf/mirae-asset-nifty-india-manufacturing-etf,MEDIUM,LOW_6.5/10,Q5_Month_15,100-150,12-18,Launch Make in India thematic ETF
+PRODUCT_PRIORITY,Nifty EV & Auto ETF,1500-2000,ev etf,Mirae,https://www.miraeassetmf.co.in/mutual-fund-scheme/etf/mirae-asset-nifty-ev-and-new-age-automotive-etf,MEDIUM,LOW_6.3/10,Q6_Month_18,100-150,12-18,Launch EV thematic ETF
+PRODUCT_PRIORITY,Nifty ESG ETF,1000-1500,esg etf,Multiple,N/A,MEDIUM,LOW_6.0/10,Q6_Month_18,100-150,12-18,Launch sustainable investing ETF
+ETF_TYPES,Equity Index ETFs (Broad Market),Variable,"nifty 50 etf (8100), nifty etf (9900), nifty 100 etf (720)",All_Major_AMCs,N/A,MEDIUM,EXISTING,N/A,N/A,Zerodha has Nifty 100 ETF
+ETF_TYPES,Large Cap ETFs,Variable,nifty 50 (high),All_Major_AMCs,N/A,MEDIUM,EXISTING,N/A,N/A,Zerodha offers via Nifty 100
+ETF_TYPES,Mid Cap ETFs,Variable,nifty midcap 150 (60500),Multiple,N/A,MEDIUM,EXISTING,N/A,N/A,Zerodha has Midcap 150 ETF (ZE150) - 2799 traffic
+ETF_TYPES,Small Cap ETFs,Variable,"small cap etf (3600), nifty smallcap 100 (74000)",Multiple,N/A,MEDIUM,EXISTING,N/A,N/A,Zerodha has Smallcap ETF (ZESML) - 3765 traffic
+ETF_TYPES,Sectoral ETFs - Banking,5000-7000,bank etf (880),Multiple,N/A,MEDIUM,GAP,3-6_months,300-400,36-48,Major gap - high priority
+ETF_TYPES,Sectoral ETFs - IT,3000-4000,it etf (1000),Multiple,N/A,MEDIUM,GAP,6-9_months,200-300,24-36,Gap - medium priority
+ETF_TYPES,Sectoral ETFs - Pharma,2000-3000,pharma etf,Multiple,N/A,MEDIUM,GAP,6-9_months,100-150,12-18,Gap - medium priority
+ETF_TYPES,Sectoral ETFs - Auto,1000-1500,auto etf,Limited,N/A,LOW,GAP,12-18_months,50-100,6-12,Gap - lower priority
+ETF_TYPES,Sectoral ETFs - Energy,500-1000,energy etf,Limited,N/A,LOW,GAP,18+_months,50-100,6-12,Gap - evaluate later
+ETF_TYPES,Sectoral ETFs - Metal,500-1000,nifty metal etf (720),Limited,N/A,LOW,GAP,18+_months,50-100,6-12,Gap - evaluate later
+ETF_TYPES,Thematic ETFs - ESG,1000-1500,esg etf,Multiple,N/A,MEDIUM,GAP,12-18_months,100-150,12-18,Growing demand
+ETF_TYPES,Thematic ETFs - EV,1500-2000,ev etf,Limited,N/A,MEDIUM,GAP,12-18_months,100-150,12-18,Future growth theme
+ETF_TYPES,Thematic ETFs - Manufacturing,1500-2500,manufacturing etf (210),Limited,N/A,MEDIUM,GAP,12-18_months,100-150,12-18,Make in India theme
+ETF_TYPES,Thematic ETFs - Digital Economy,1000-1500,digital etf,Limited,N/A,LOW,GAP,18+_months,50-100,6-12,Emerging theme
+ETF_TYPES,Thematic ETFs - Defense,500-1000,defense etf,Very_Limited,N/A,LOW,GAP,18+_months,50-100,6-12,Policy-driven theme
+ETF_TYPES,Smart Beta - Momentum,3000-4000,momentum etf (1600),Limited,N/A,LOW,GAP,9-12_months,150-250,38-63,High opportunity
+ETF_TYPES,Smart Beta - Value,2000-3000,value etf,Limited,N/A,LOW,GAP,9-12_months,100-200,25-50,Good opportunity
+ETF_TYPES,Smart Beta - Quality,1000-1500,quality etf,Very_Limited,N/A,LOW,GAP,12-18_months,50-100,13-25,Emerging category
+ETF_TYPES,Smart Beta - Low Volatility,500-1000,low volatility etf,Very_Limited,N/A,LOW,GAP,18+_months,50-100,13-25,Niche category
+ETF_TYPES,Smart Beta - Dividend Yield,1000-1500,dividend etf,Limited,N/A,LOW,GAP,12-18_months,100-150,25-38,Income focus
+ETF_TYPES,Smart Beta - Alpha,1000-1500,alpha etf (1600),Limited,N/A,LOW,GAP,12-18_months,50-100,13-25,Sophisticated strategy
+ETF_TYPES,Debt ETFs - Government Securities,1000-2000,g-sec etf,Multiple,N/A,MEDIUM,GAP,12-18_months,200-300,40-60,Safe debt option
+ETF_TYPES,Debt ETFs - Corporate Bond,500-1000,corporate bond etf,Limited,N/A,MEDIUM,GAP,12-18_months,100-150,20-30,Higher yield debt
+ETF_TYPES,Debt ETFs - Bharat Bond,1500-2000,bharat bond etf,EDELWEISS,N/A,HIGH,GAP,12-18_months,200-300,40-60,Government-backed
+ETF_TYPES,Debt ETFs - Liquid,Variable,liquid etf,Multiple,N/A,MEDIUM,EXISTING,N/A,N/A,Zerodha has Liquid ETF (ZLIQD) - 659 traffic
+ETF_TYPES,Debt ETFs - Overnight,Variable,overnight fund,Multiple,N/A,MEDIUM,EXISTING,N/A,N/A,Zerodha has Overnight Fund (ZOVER)
+ETF_TYPES,Commodity ETFs - Gold,8000,"gold etf (49500), gold etf india (4400)",All_Major,N/A,MEDIUM,EXISTING,N/A,N/A,Zerodha has Gold ETF (ZGOLD) - 1973 traffic - needs optimization
+ETF_TYPES,Commodity ETFs - Silver,4000,"silver etf (14800), silver etf india (4400)",Multiple,N/A,MEDIUM,EXISTING,N/A,N/A,Zerodha has Silver ETF (ZSLVR) - 671 traffic
+ETF_TYPES,International ETFs - NYSE FANG+,15000,"mirae fang etf (8100), mafang etf (8100), fang etf (1300)",Mirae_Only,N/A,LOW,GAP,3-6_months,500-750,425-638,HIGHEST PRIORITY - lowest competition
+ETF_TYPES,International ETFs - S&P 500,5000,"s&p 500 etf india (720), s&p 500 etf (1000)",Mirae_Only,N/A,LOW,GAP,3-6_months,400,320,HIGH PRIORITY
+ETF_TYPES,International ETFs - Hang Seng Tech,4000-5000,"hang seng tech etf (2400), hang seng etf (1600)","Mirae, Nippon",N/A,MEDIUM,GAP,6-12_months,150-250,120-200,Medium priority
+ETF_TYPES,International ETFs - NASDAQ 100,2000-3000,nasdaq etf india,Limited,N/A,LOW,GAP,12-18_months,200-300,160-240,Evaluate post S&P 500
+ETF_TYPES,International ETFs - Developed Markets,500-1000,developed markets etf,Very_Limited,N/A,LOW,GAP,18+_months,100-150,80-120,Long-term opportunity
+ETF_TYPES,International ETFs - Emerging Markets,500-1000,emerging markets etf,Limited,N/A,LOW,GAP,18+_months,100-150,80-120,Long-term opportunity
+ETF_TYPES,Hybrid ETFs - Balanced,Variable,balanced etf,Very_Limited,N/A,LOW,GAP,18+_months,100-150,15-23,Emerging category in India
+ETF_TYPES,Hybrid ETFs - Multi-Asset,Variable,multi asset etf,Very_Limited,N/A,LOW,GAP,18+_months,50-100,8-15,Future opportunity
+KEYWORD_OPPORTUNITIES,etf full form,60500,etf full form,Multiple,N/A,LOW,HIGH,Immediate,N/A,N/A,Create educational content - NOT RANKING
+KEYWORD_OPPORTUNITIES,gold etf,49500,gold etf,All_Major,N/A,MEDIUM,HIGH,Immediate,N/A,N/A,Optimize ZGOLD page - Currently position 19
+KEYWORD_OPPORTUNITIES,etf meaning,33100,etf meaning,Multiple,N/A,LOW,HIGH,Immediate,N/A,N/A,Create educational content - NOT RANKING
+KEYWORD_OPPORTUNITIES,etf funds,22200,etf funds,Multiple,N/A,MEDIUM,HIGH,Immediate,N/A,N/A,Create category page - NOT RANKING
+KEYWORD_OPPORTUNITIES,etf vs mutual fund,22200,etf vs mutual fund,Multiple,N/A,LOW,HIGH,Immediate,N/A,N/A,Create comparison content - NOT RANKING
+KEYWORD_OPPORTUNITIES,nifty smallcap 100,74000,nifty smallcap 100,Multiple,N/A,MEDIUM,MEDIUM,Ongoing,N/A,N/A,Currently position 7 - optimize
+KEYWORD_OPPORTUNITIES,nifty midcap 150,60500,nifty midcap 150,Multiple,N/A,MEDIUM,MEDIUM,Ongoing,N/A,N/A,Currently position 9 - optimize
+KEYWORD_OPPORTUNITIES,silver etf,14800,silver etf,Multiple,N/A,MEDIUM,MEDIUM,Immediate,N/A,N/A,Currently position 8 - optimize
+KEYWORD_OPPORTUNITIES,gold etf price,14800,gold etf price,Multiple,N/A,MEDIUM,MEDIUM,Immediate,N/A,N/A,Optimize product page
+KEYWORD_OPPORTUNITIES,nifty etf,9900,nifty etf,Multiple,N/A,MEDIUM,MEDIUM,Immediate,N/A,N/A,Create category content
+KEYWORD_OPPORTUNITIES,nifty 50 etf,8100,nifty 50 etf,Multiple,N/A,MEDIUM,MEDIUM,6-12_months,N/A,N/A,Consider product or content
+KEYWORD_OPPORTUNITIES,etf investment,8100,etf investment,Multiple,N/A,MEDIUM,HIGH,Immediate,N/A,N/A,Create how-to guide
+KEYWORD_OPPORTUNITIES,nse etf,33100,nse etf,Multiple,N/A,MEDIUM,LOW,Immediate,N/A,N/A,Create listing/category page
+KEYWORD_OPPORTUNITIES,what is etf,5400,what is etf,Multiple,N/A,LOW,HIGH,Immediate,N/A,N/A,Educational content opportunity
+KEYWORD_OPPORTUNITIES,etf vs index fund,4400,etf vs index fund,Multiple,N/A,LOW,HIGH,Immediate,N/A,N/A,Create comparison content
+KEYWORD_OPPORTUNITIES,gold etf india,4400,gold etf india,Multiple,N/A,MEDIUM,MEDIUM,Immediate,N/A,N/A,Optimize ZGOLD page
+KEYWORD_OPPORTUNITIES,silver etf india,4400,silver etf india,Multiple,N/A,MEDIUM,MEDIUM,Immediate,N/A,N/A,Optimize ZSLVR page
+KEYWORD_OPPORTUNITIES,small cap etf,3600,small cap etf,Multiple,N/A,MEDIUM,MEDIUM,Ongoing,N/A,N/A,Currently position 4 - optimize
+KEYWORD_OPPORTUNITIES,nifty next 50 etf,3600,nifty next 50 etf,Multiple,N/A,MEDIUM,MEDIUM,12-18_months,N/A,N/A,Consider product launch
+KEYWORD_OPPORTUNITIES,best etf to invest in 2021 india,1300,best etf to invest,Multiple,N/A,LOW,MEDIUM,Immediate,N/A,N/A,Create recommendation content
+KEYWORD_OPPORTUNITIES,best silver etf in india,5400,best silver etf in india,Multiple,N/A,MEDIUM,MEDIUM,Immediate,N/A,N/A,Currently position 6 - optimize
+KEYWORD_OPPORTUNITIES,best gold etf in india,12100,best gold etf in india,Multiple,N/A,MEDIUM,HIGH,Immediate,N/A,N/A,Create comparison content
+KEYWORD_OPPORTUNITIES,how to invest in index funds,5400,how to invest in index funds,Multiple,N/A,MEDIUM,HIGH,Immediate,N/A,N/A,Create educational guide
+KEYWORD_OPPORTUNITIES,how to buy etf,1000,how to buy etf,Multiple,N/A,LOW,MEDIUM,Immediate,N/A,N/A,Create step-by-step guide
+CONTENT_TOPICS,Complete Guide to Types of ETFs in India,5000-8000,types of etf in india,Multiple,N/A,LOW,HIGH,Immediate,N/A,N/A,4000-word comprehensive guide - pillar content
+CONTENT_TOPICS,Beginner's Guide to ETFs,8000-10000,"what is etf, etf meaning, etf full form",Multiple,N/A,LOW,HIGH,Immediate,N/A,N/A,Comprehensive educational content
+CONTENT_TOPICS,ETF vs Mutual Fund Comparison,5000-7000,etf vs mutual fund (22200),Multiple,N/A,LOW,HIGH,Immediate,N/A,N/A,Detailed comparison page
+CONTENT_TOPICS,ETF vs Index Fund Comparison,3000-4000,etf vs index fund (4400),Multiple,N/A,LOW,HIGH,Immediate,N/A,N/A,Comparison content
+CONTENT_TOPICS,Gold ETF Investment Guide,3000-5000,gold etf investment,Multiple,N/A,MEDIUM,HIGH,Immediate,N/A,N/A,Comprehensive gold ETF guide
+CONTENT_TOPICS,How to Invest in ETFs - Step by Step,3000-4000,how to invest in etf,Multiple,N/A,MEDIUM,HIGH,Immediate,N/A,N/A,Step-by-step investment guide
+CONTENT_TOPICS,Best ETFs in India 2025,3000-5000,best etf in india,Multiple,N/A,MEDIUM,HIGH,Immediate,N/A,N/A,Annual ranking/recommendation
+CONTENT_TOPICS,ETF Taxation Guide,2000-3000,etf taxation (1000),Multiple,N/A,LOW,MEDIUM,Immediate,N/A,N/A,Tax treatment explanation
+CONTENT_TOPICS,International ETF Investment Guide,2000-3000,international etf india,Multiple,N/A,LOW,HIGH,Immediate,N/A,N/A,How to invest globally via ETFs
+CONTENT_TOPICS,Smart Beta ETFs Explained,1000-2000,smart beta etf,Limited,N/A,LOW,MEDIUM,3-6_months,N/A,N/A,Factor investing education
+COMPETITOR_INSIGHTS,Mirae Asset - International ETF Leader,N/A,N/A,N/A,https://www.miraeassetmf.co.in/,N/A,N/A,N/A,N/A,N/A,Strategy: International/thematic focus - NYSE FANG+ (15495 traffic)
+COMPETITOR_INSIGHTS,HDFC Fund - Educational Content Champion,N/A,N/A,N/A,https://www.hdfcfund.com/,N/A,N/A,N/A,N/A,N/A,Strategy: Educational + product blend - ETF Guide (10007 traffic)
+COMPETITOR_INSIGHTS,Nippon India - Product Breadth with Portal,N/A,N/A,N/A,https://etf.nipponindiaim.com/,N/A,N/A,N/A,N/A,N/A,Strategy: Dedicated ETF subdomain - Portal (5839 traffic)
+COMPETITOR_INSIGHTS,SBI MF - Traditional Player,N/A,N/A,N/A,https://www.sbimf.com/,N/A,N/A,N/A,N/A,N/A,Strategy: Broad mutual fund focus - Limited ETF emphasis
+ZERODHA_CURRENT,Zerodha Smallcap ETF (ZESML),3765,"nifty smallcap 100 (74000), small cap etf (3600)",N/A,https://www.zerodhafundhouse.com/etfs/zerodha-smallcap-etf-ZESML,N/A,EXISTING,N/A,N/A,N/A,Top performing product - optimize further
+ZERODHA_CURRENT,Zerodha Nifty Midcap 150 ETF (ZE150),2799,"nifty midcap 150 (60500), mid cap etf (880)",N/A,https://www.zerodhafundhouse.com/etfs/zerodha-nifty-midcap-150-etf-ZE150,N/A,EXISTING,N/A,N/A,N/A,Strong performer - continue optimization
+ZERODHA_CURRENT,Zerodha Gold ETF (ZGOLD),1973,"gold etf zerodha, gold case (1900)",N/A,https://www.zerodhafundhouse.com/etfs/zerodha-gold-etf-ZGOLD,N/A,EXISTING,N/A,N/A,N/A,Position 19 for "gold etf" - NEEDS OPTIMIZATION
+ZERODHA_CURRENT,Zerodha Silver ETF (ZSLVR),671,silver etf zerodha,N/A,https://www.zerodhafundhouse.com/etfs/zerodha-silver-etf-ZSLVR,N/A,EXISTING,N/A,N/A,N/A,Position 8 - optimize to top 5
+ZERODHA_CURRENT,Zerodha Nifty 1D Rate Liquid ETF (ZLIQD),659,"liquid case (1600), zerodha liquid etf (260)",N/A,https://www.zerodhafundhouse.com/etfs/zerodha-nifty-1d-rate-liquid-etf-ZLIQD,N/A,EXISTING,N/A,N/A,N/A,Unique product - increase awareness
+ZERODHA_CURRENT,Zerodha Nifty Large Midcap 250 Index Fund (ZN250),666,nifty large midcap 250 index (4400),N/A,https://www.zerodhafundhouse.com/mutual-funds/zerodha-nifty-large-midcap-250-index-fund-ZN250,N/A,EXISTING,N/A,N/A,N/A,Index fund - good diversification option
+ZERODHA_CURRENT,Zerodha Nifty 100 ETF (ZE100),~300,zerodha nifty 100 etf (320),N/A,https://www.zerodhafundhouse.com/etfs/zerodha-nifty-100-etf-ZE100,N/A,EXISTING,N/A,N/A,N/A,Newer launch - build awareness
+ZERODHA_CURRENT,Zerodha Overnight Fund (ZOVER),Variable,overnight fund,N/A,https://www.zerodhafundhouse.com/mutual-funds/zerodha-overnight-fund-ZOVER,N/A,EXISTING,N/A,N/A,N/A,Debt fund offering
+SUMMARY,Total Gap Opportunities Identified,50000-65000,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,Immediate opportunity: 25K-35K traffic; Medium-term: 20K-30K traffic
+SUMMARY,Total New Products Recommended,14,N/A,N/A,N/A,N/A,N/A,18_months,2000-2250,916-1129,Year 1 target AUM and revenue projections
+SUMMARY,Highest Priority Product,NYSE FANG+ ETF,15000,"mirae fang etf (8100), mafang etf (8100)",Mirae_Only,https://www.miraeassetmf.co.in/mutual-fund-scheme/etf-and-fof/mirae-asset-nyse-fang-plus-etf,LOW,SCORE_9.2/10,Q1_Month_3,500-750,425-638,IMMEDIATE LAUNCH - Highest ROI opportunity
+SUMMARY,Second Priority Product,Nifty Bank ETF,5000-7000,bank etf (880),Multiple,N/A,MEDIUM,SCORE_8.5/10,Q1_Month_3,300-400,36-48,IMMEDIATE LAUNCH - High retail demand
+SUMMARY,Third Priority Product,S&P 500 Top 50 ETF,5000,s&p 500 etf india (720),Mirae_Only,N/A,LOW,SCORE_8.3/10,Q2_Month_6,400,320,Launch after FANG+ - Complement strategy
+SUMMARY,Total Content Opportunities,10+,N/A,N/A,N/A,N/A,HIGH,Immediate,N/A,N/A,Educational content can drive 15K+ monthly visitors
+SUMMARY,Zerodha Current ETF Traffic,~10167,N/A,N/A,N/A,N/A,EXISTING,N/A,N/A,N/A,Combined traffic from existing 7-8 products
+SUMMARY,Projected Year 1 Revenue,N/A,N/A,N/A,N/A,N/A,N/A,12_months,2000-2250,916-1129,From recommended new product launches
+SUMMARY,Projected Year 2 Revenue,N/A,N/A,N/A,N/A,N/A,N/A,24_months,N/A,2000-2500,Growth projection with expanded portfolio
+SUMMARY,Investment Required,N/A,N/A,N/A,N/A,N/A,N/A,18_months,N/A,1500-2000,Total setup and marketing investment needed
+SUMMARY,Payback Period,N/A,N/A,N/A,N/A,N/A,N/A,18-24_months,N/A,N/A,Expected ROI timeline

@@ -1,0 +1,173 @@
+<svg width="1440" height="1200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1440" height="1200" fill="#FFFFFF"/>
+
+  <!-- Top Navigation Bar -->
+  <rect x="0" y="0" width="1440" height="72" fill="#FFFFFF"/>
+  <rect x="0" y="72" width="1440" height="1" fill="#F3F4F6"/>
+
+  <!-- Logo -->
+  <text x="120" y="45" font-family="Inter, sans-serif" font-size="20" font-weight="700" fill="#111827">SearchVector</text>
+  <text x="252" y="45" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">ASO Intelligence</text>
+
+  <!-- Top Nav Menu -->
+  <text x="880" y="45" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#4B5563">Features</text>
+  <text x="960" y="45" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#4B5563">Pricing</text>
+  <text x="1032" y="45" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#4B5563">Resources</text>
+
+  <!-- Sign In Button -->
+  <rect x="1140" y="28" width="80" height="32" rx="6" fill="transparent" stroke="#E5E7EB" stroke-width="1"/>
+  <text x="1162" y="49" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#111827">Sign In</text>
+
+  <!-- Sign Up Button -->
+  <rect x="1232" y="28" width="88" height="32" rx="6" fill="#FF5722"/>
+  <text x="1248" y="49" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF">Sign Up</text>
+
+  <!-- Hero Section -->
+  <g id="hero-section">
+    <!-- Main Headline -->
+    <text x="720" y="168" font-family="Inter, sans-serif" font-size="48" font-weight="700" fill="#111827" text-anchor="middle">Free ASO Keyword Research Tool</text>
+    <text x="720" y="216" font-family="Inter, sans-serif" font-size="20" font-weight="400" fill="#4B5563" text-anchor="middle">Discover high-performing keywords for your iOS and Android apps</text>
+    <text x="720" y="248" font-family="Inter, sans-serif" font-size="20" font-weight="400" fill="#4B5563" text-anchor="middle">Get instant keyword suggestions with search volume and difficulty metrics</text>
+
+    <!-- Trust Indicators -->
+    <g id="trust-badges">
+      <text x="480" y="296" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#6B7280">✓ Used by 10,000+ app developers</text>
+      <text x="740" y="296" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#6B7280">✓ 4.8/5 rating (250+ reviews)</text>
+    </g>
+
+    <!-- Search Input - Large -->
+    <g id="search-input-hero">
+      <rect x="320" y="340" width="800" height="64" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+      <text x="344" y="379" font-family="Inter, sans-serif" font-size="18" font-weight="400" fill="#9CA3AF">Enter your seed keyword (e.g., "fitness tracker", "photo editor")</text>
+
+      <!-- Search Button -->
+      <rect x="1000" y="352" width="100" height="40" rx="8" fill="#FF5722"/>
+      <text x="1022" y="379" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#FFFFFF">Search →</text>
+    </g>
+
+    <!-- Platform & Country Selectors -->
+    <g id="quick-filters">
+      <!-- Platform -->
+      <rect x="440" y="428" width="160" height="40" rx="8" fill="#F9FAFB"/>
+      <rect x="440" y="428" width="76" height="40" rx="8" fill="#FF5722" fill-opacity="0.1" stroke="#FF5722" stroke-width="1"/>
+      <text x="461" y="453" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FF5722">iOS</text>
+      <text x="537" y="453" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#4B5563">Android</text>
+
+      <!-- Country -->
+      <rect x="620" y="428" width="200" height="40" rx="8" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+      <text x="644" y="453" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#111827">🇺🇸 United States ▼</text>
+
+      <!-- Language -->
+      <rect x="840" y="428" width="160" height="40" rx="8" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+      <text x="864" y="453" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#111827">English ▼</text>
+    </g>
+  </g>
+
+  <!-- Results Preview Section (Limited to 5 keywords) -->
+  <g id="limited-results">
+    <!-- Results Header -->
+    <text x="320" y="532" font-family="Inter, sans-serif" font-size="24" font-weight="600" fill="#111827">Keyword Suggestions Preview</text>
+    <text x="320" y="560" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">Showing 5 of 127 total keywords. Sign up to see all results!</text>
+
+    <!-- Results Table Card -->
+    <rect x="320" y="592" width="800" height="400" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+
+    <!-- Table Header -->
+    <rect x="320" y="592" width="800" height="48" rx="12" fill="#F9FAFB"/>
+    <line x1="320" y1="640" x2="1120" y2="640" stroke="#E5E7EB" stroke-width="1"/>
+
+    <text x="352" y="622" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#4B5563">KEYWORD</text>
+    <text x="632" y="622" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#4B5563">VOLUME</text>
+    <text x="772" y="622" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#4B5563">DIFFICULTY</text>
+    <text x="932" y="622" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#4B5563">TREND</text>
+
+    <!-- Row 1 -->
+    <g id="preview-row-1">
+      <rect x="320" y="640" width="800" height="64" fill="#FFFFFF"/>
+      <line x1="320" y1="704" x2="1120" y2="704" stroke="#F3F4F6" stroke-width="1"/>
+      <text x="352" y="678" font-family="Inter, sans-serif" font-size="16" font-weight="500" fill="#111827">fitness tracker app</text>
+      <text x="632" y="678" font-family="Inter, sans-serif" font-size="16" font-weight="500" fill="#111827">45.2K</text>
+      <rect x="772" y="661" width="60" height="28" rx="14" fill="#10B981" fill-opacity="0.1"/>
+      <text x="790" y="680" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#10B981">23</text>
+      <text x="932" y="678" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#10B981">↑ 12%</text>
+    </g>
+
+    <!-- Row 2 -->
+    <g id="preview-row-2">
+      <rect x="320" y="704" width="800" height="64" fill="#F9FAFB"/>
+      <line x1="320" y1="768" x2="1120" y2="768" stroke="#F3F4F6" stroke-width="1"/>
+      <text x="352" y="742" font-family="Inter, sans-serif" font-size="16" font-weight="500" fill="#111827">workout planner</text>
+      <text x="632" y="742" font-family="Inter, sans-serif" font-size="16" font-weight="500" fill="#111827">32.8K</text>
+      <rect x="772" y="725" width="60" height="28" rx="14" fill="#10B981" fill-opacity="0.1"/>
+      <text x="790" y="744" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#10B981">18</text>
+      <text x="932" y="742" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#10B981">↑ 8%</text>
+    </g>
+
+    <!-- Row 3 -->
+    <g id="preview-row-3">
+      <rect x="320" y="768" width="800" height="64" fill="#FFFFFF"/>
+      <line x1="320" y1="832" x2="1120" y2="832" stroke="#F3F4F6" stroke-width="1"/>
+      <text x="352" y="806" font-family="Inter, sans-serif" font-size="16" font-weight="500" fill="#111827">calorie counter</text>
+      <text x="632" y="806" font-family="Inter, sans-serif" font-size="16" font-weight="500" fill="#111827">128K</text>
+      <rect x="772" y="789" width="60" height="28" rx="14" fill="#F59E0B" fill-opacity="0.1"/>
+      <text x="790" y="808" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#F59E0B">67</text>
+      <text x="932" y="806" font-family="Inter, sans-serif" font-size="16" font-weight="500" fill="#6B7280">→ 0%</text>
+    </g>
+
+    <!-- Row 4 -->
+    <g id="preview-row-4">
+      <rect x="320" y="832" width="800" height="64" fill="#F9FAFB"/>
+      <line x1="320" y1="896" x2="1120" y2="896" stroke="#F3F4F6" stroke-width="1"/>
+      <text x="352" y="870" font-family="Inter, sans-serif" font-size="16" font-weight="500" fill="#111827">step counter free</text>
+      <text x="632" y="870" font-family="Inter, sans-serif" font-size="16" font-weight="500" fill="#111827">23.1K</text>
+      <rect x="772" y="853" width="60" height="28" rx="14" fill="#10B981" fill-opacity="0.1"/>
+      <text x="790" y="872" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#10B981">15</text>
+      <text x="932" y="870" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#10B981">↑ 5%</text>
+    </g>
+
+    <!-- Row 5 -->
+    <g id="preview-row-5">
+      <rect x="320" y="896" width="800" height="64" fill="#FFFFFF"/>
+      <line x1="320" y1="960" x2="1120" y2="960" stroke="#F3F4F6" stroke-width="1"/>
+      <text x="352" y="934" font-family="Inter, sans-serif" font-size="16" font-weight="500" fill="#111827">exercise tracker</text>
+      <text x="632" y="934" font-family="Inter, sans-serif" font-size="16" font-weight="500" fill="#111827">18.9K</text>
+      <rect x="772" y="917" width="60" height="28" rx="14" fill="#EF4444" fill-opacity="0.1"/>
+      <text x="790" y="936" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#EF4444">89</text>
+      <text x="932" y="934" font-family="Inter, sans-serif" font-size="16" font-weight="500" fill="#EF4444">↓ 3%</text>
+    </g>
+
+    <!-- Blur Overlay to indicate more results -->
+    <defs>
+      <linearGradient id="blur-fade" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0"/>
+        <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.95"/>
+      </linearGradient>
+    </defs>
+    <rect x="320" y="920" width="800" height="72" fill="url(#blur-fade)"/>
+  </g>
+
+  <!-- Email Capture CTA -->
+  <g id="email-capture-cta">
+    <rect x="320" y="1016" width="800" height="144" rx="12" fill="#FFF4F2" stroke="#FF5722" stroke-width="2"/>
+
+    <!-- Lock Icon -->
+    <text x="620" y="1068" font-family="Inter, sans-serif" font-size="32" fill="#FF5722">🔒</text>
+
+    <!-- CTA Text -->
+    <text x="720" y="1072" font-family="Inter, sans-serif" font-size="24" font-weight="700" fill="#111827" text-anchor="middle">Sign up to see all 127 keywords</text>
+    <text x="720" y="1100" font-family="Inter, sans-serif" font-size="16" font-weight="400" fill="#4B5563" text-anchor="middle">Free account • No credit card required • Full access to keyword data</text>
+
+    <!-- Email Input & CTA Button -->
+    <rect x="420" y="1116" width="360" height="40" rx="8" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+    <text x="436" y="1142" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#9CA3AF">Enter your email address</text>
+
+    <rect x="792" y="1116" width="160" height="40" rx="8" fill="#FF5722"/>
+    <text x="824" y="1142" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#FFFFFF">Get Started →</text>
+  </g>
+
+  <!-- Value Proposition Section -->
+  <g id="value-proposition">
+    <text x="720" y="1200" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#111827" text-anchor="middle">What you'll get with a free account:</text>
+  </g>
+</svg>

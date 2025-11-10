@@ -1,0 +1,321 @@
+<svg width="1440" height="1024" viewBox="0 0 1440 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1440" height="1024" fill="#FFFFFF"/>
+
+  <!-- Side Navigation (240px width) - Simplified -->
+  <g id="sidebar">
+    <rect width="240" height="1024" fill="#FCFCFD"/>
+    <rect x="240" y="0" width="1" height="1024" fill="#E5E7EB"/>
+
+    <!-- Logo -->
+    <g id="logo" transform="translate(24, 20)">
+      <rect width="36" height="36" rx="8" fill="#FF5722"/>
+      <text x="48" y="26" font-family="Inter, sans-serif" font-size="18" font-weight="600" fill="#111827">SearchVector</text>
+    </g>
+
+    <!-- Active Nav Item -->
+    <g transform="translate(12, 96)">
+      <rect width="216" height="40" rx="8" fill="#FFF7ED"/>
+      <text x="20" y="25" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#111827">Keyword Research</text>
+    </g>
+  </g>
+
+  <!-- Top Navigation Bar -->
+  <g id="top-nav">
+    <rect x="240" width="1200" height="64" fill="#FFFFFF"/>
+    <rect x="240" y="64" width="1200" height="1" fill="#E5E7EB"/>
+
+    <text x="264" y="42" font-family="Inter, sans-serif" font-size="24" font-weight="600" fill="#111827">Keyword Research</text>
+
+    <!-- User Menu -->
+    <g transform="translate(1120, 22)">
+      <rect width="100" height="20" rx="10" fill="#F9FAFB"/>
+      <circle cx="10" cy="10" r="8" fill="#FF5722"/>
+      <text x="8" y="14" font-family="Inter, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF">JD</text>
+      <text x="26" y="14" font-family="Inter, sans-serif" font-size="12" font-weight="500" fill="#111827">John Doe</text>
+    </g>
+  </g>
+
+  <!-- Main Content Area with Filter Panel -->
+  <g transform="translate(240, 64)">
+
+    <!-- Content Area (Dimmed) -->
+    <rect width="1200" height="960" fill="#000000" opacity="0.4"/>
+
+    <!-- Filter Panel (Side Drawer) -->
+    <g transform="translate(840, 0)">
+      <rect width="360" height="960" fill="#FFFFFF" style="filter:drop-shadow(-4px 0 16px rgba(0,0,0,0.1))"/>
+
+      <!-- Panel Header -->
+      <g>
+        <rect width="360" height="72" fill="#F9FAFB"/>
+        <rect y="72" width="360" height="1" fill="#E5E7EB"/>
+
+        <text x="24" y="40" font-family="Inter, sans-serif" font-size="20" font-weight="600" fill="#111827">Filters</text>
+
+        <!-- Active Filter Count Badge -->
+        <rect x="92" y="26" width="32" height="28" rx="14" fill="#FF5722"/>
+        <text x="108" y="44" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">5</text>
+
+        <!-- Close Button -->
+        <g transform="translate(316, 26)">
+          <circle cx="12" cy="12" r="12" fill="#F3F4F6"/>
+          <line x1="8" y1="8" x2="16" y2="16" stroke="#4B5563" stroke-width="2"/>
+          <line x1="16" y1="8" x2="8" y2="16" stroke="#4B5563" stroke-width="2"/>
+        </g>
+
+        <!-- Clear All -->
+        <text x="236" y="40" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#FF5722" style="text-decoration:underline;cursor:pointer;">Clear all</text>
+      </g>
+
+      <!-- Scrollable Filter Content -->
+      <g transform="translate(24, 96)">
+
+        <!-- Filter Group 1: Platform -->
+        <g>
+          <text x="0" y="0" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#111827">Platform</text>
+
+          <!-- Platform Toggle -->
+          <g transform="translate(0, 12)">
+            <rect width="312" height="40" rx="20" fill="#F3F4F6"/>
+
+            <!-- iOS Option (Selected) -->
+            <g>
+              <rect x="2" y="2" width="152" height="36" rx="18" fill="#FF5722" style="filter:drop-shadow(0 1px 2px rgba(0,0,0,0.05))"/>
+              <text x="78" y="24" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">iOS</text>
+            </g>
+
+            <!-- Android Option -->
+            <g>
+              <text x="236" y="24" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#6B7280" text-anchor="middle">Android</text>
+            </g>
+          </g>
+        </g>
+
+        <!-- Filter Group 2: Country/Region -->
+        <g transform="translate(0, 92)">
+          <text x="0" y="0" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#111827">Country/Region</text>
+
+          <!-- Dropdown -->
+          <g transform="translate(0, 12)">
+            <rect width="312" height="40" rx="8" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+            <text x="16" y="25" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#111827">🇺🇸 United States</text>
+            <path d="M 296 18 L 300 22 L 296 26" stroke="#4B5563" stroke-width="1.5" fill="none"/>
+          </g>
+
+          <!-- Quick Country Chips -->
+          <g transform="translate(0, 64)">
+            <rect width="72" height="28" rx="14" fill="#FFF7ED"/>
+            <text x="36" y="18" font-family="Inter, sans-serif" font-size="12" font-weight="500" fill="#EA580C" text-anchor="middle">🇺🇸 US</text>
+
+            <rect x="80" width="72" height="28" rx="14" fill="#F3F4F6"/>
+            <text x="116" y="18" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#6B7280" text-anchor="middle">🇬🇧 UK</text>
+
+            <rect x="160" width="72" height="28" rx="14" fill="#F3F4F6"/>
+            <text x="196" y="18" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#6B7280" text-anchor="middle">🇨🇦 CA</text>
+
+            <rect x="240" width="72" height="28" rx="14" fill="#F3F4F6"/>
+            <text x="276" y="18" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#6B7280" text-anchor="middle">🇦🇺 AU</text>
+          </g>
+        </g>
+
+        <!-- Divider -->
+        <line x1="0" y1="216" x2="312" y2="216" stroke="#E5E7EB" stroke-width="1"/>
+
+        <!-- Filter Group 3: Search Volume -->
+        <g transform="translate(0, 240)">
+          <g>
+            <text x="0" y="0" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#111827">Search Volume</text>
+            <rect x="220" y="-16" width="92" height="20" rx="10" fill="#FFF7ED"/>
+            <text x="266" y="-2" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#EA580C" text-anchor="middle">10K - 100K</text>
+          </g>
+
+          <!-- Range Slider -->
+          <g transform="translate(0, 24)">
+            <!-- Track -->
+            <rect x="0" y="12" width="312" height="4" rx="2" fill="#E5E7EB"/>
+            <!-- Active Range -->
+            <rect x="78" y="12" width="156" height="4" rx="2" fill="#FF5722"/>
+            <!-- Left Handle -->
+            <circle cx="78" cy="14" r="10" fill="#FF5722" stroke="#FFFFFF" stroke-width="2"/>
+            <!-- Right Handle -->
+            <circle cx="234" cy="14" r="10" fill="#FF5722" stroke="#FFFFFF" stroke-width="2"/>
+          </g>
+
+          <!-- Value Labels -->
+          <g transform="translate(0, 52)">
+            <text x="0" y="0" font-family="Inter, sans-serif" font-size="12" font-weight="500" fill="#6B7280">Min: 10K</text>
+            <text x="312" y="0" font-family="Inter, sans-serif" font-size="12" font-weight="500" fill="#6B7280" text-anchor="end">Max: 100K</text>
+          </g>
+
+          <!-- Quick Presets -->
+          <g transform="translate(0, 76)">
+            <text x="0" y="0" font-family="Inter, sans-serif" font-size="12" font-weight="500" fill="#6B7280">Quick select:</text>
+
+            <g transform="translate(0, 12)">
+              <rect width="68" height="28" rx="14" fill="#F3F4F6"/>
+              <text x="34" y="18" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#6B7280" text-anchor="middle">Any</text>
+
+              <rect x="76" width="68" height="28" rx="14" fill="#F3F4F6"/>
+              <text x="110" y="18" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#6B7280" text-anchor="middle">< 10K</text>
+
+              <rect x="152" width="76" height="28" rx="14" fill="#FFF7ED"/>
+              <text x="190" y="18" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#EA580C" text-anchor="middle">10K-100K</text>
+
+              <rect x="236" width="76" height="28" rx="14" fill="#F3F4F6"/>
+              <text x="274" y="18" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#6B7280" text-anchor="middle">> 100K</text>
+            </g>
+          </g>
+        </g>
+
+        <!-- Divider -->
+        <line x1="0" y1="384" x2="312" y2="384" stroke="#E5E7EB" stroke-width="1"/>
+
+        <!-- Filter Group 4: Keyword Difficulty -->
+        <g transform="translate(0, 408)">
+          <g>
+            <text x="0" y="0" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#111827">Keyword Difficulty</text>
+            <rect x="220" y="-16" width="92" height="20" rx="10" fill="#FFF7ED"/>
+            <text x="266" y="-2" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#EA580C" text-anchor="middle">Easy (0-30)</text>
+          </g>
+
+          <!-- Checkbox Options -->
+          <g transform="translate(0, 20)">
+            <!-- Easy (Selected) -->
+            <g>
+              <rect width="18" height="18" rx="4" fill="#FF5722"/>
+              <path d="M 4 9 L 7 12 L 14 5" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <text x="28" y="14" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#111827">Easy (0-30)</text>
+              <rect x="120" y="2" width="68" height="18" rx="9" fill="#DCFCE7"/>
+              <text x="154" y="14" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#15803D" text-anchor="middle">23 results</text>
+            </g>
+
+            <!-- Medium -->
+            <g transform="translate(0, 32)">
+              <rect width="18" height="18" rx="4" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+              <text x="28" y="14" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#4B5563">Medium (31-70)</text>
+              <rect x="152" y="2" width="68" height="18" rx="9" fill="#F3F4F6"/>
+              <text x="186" y="14" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#6B7280" text-anchor="middle">67 results</text>
+            </g>
+
+            <!-- Hard -->
+            <g transform="translate(0, 64)">
+              <rect width="18" height="18" rx="4" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+              <text x="28" y="14" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#4B5563">Hard (71-100)</text>
+              <rect x="144" y="2" width="68" height="18" rx="9" fill="#F3F4F6"/>
+              <text x="178" y="14" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#6B7280" text-anchor="middle">37 results</text>
+            </g>
+          </g>
+        </g>
+
+        <!-- Divider -->
+        <line x1="0" y1="556" x2="312" y2="556" stroke="#E5E7EB" stroke-width="1"/>
+
+        <!-- Filter Group 5: Opportunity Score -->
+        <g transform="translate(0, 580)">
+          <text x="0" y="0" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#111827">Opportunity Score</text>
+
+          <!-- Radio Options -->
+          <g transform="translate(0, 20)">
+            <!-- All (Default) -->
+            <g>
+              <circle cx="9" cy="9" r="9" stroke="#E5E7EB" stroke-width="2" fill="#FFFFFF"/>
+              <text x="28" y="14" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#4B5563">All opportunities</text>
+            </g>
+
+            <!-- High (Selected) -->
+            <g transform="translate(0, 32)">
+              <circle cx="9" cy="9" r="9" stroke="#FF5722" stroke-width="2" fill="#FFFFFF"/>
+              <circle cx="9" cy="9" r="5" fill="#FF5722"/>
+              <text x="28" y="14" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#111827">High opportunity</text>
+              <rect x="164" y="2" width="68" height="18" rx="9" fill="#DCFCE7"/>
+              <text x="198" y="14" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#15803D" text-anchor="middle">45 results</text>
+            </g>
+
+            <!-- Medium -->
+            <g transform="translate(0, 64)">
+              <circle cx="9" cy="9" r="9" stroke="#E5E7EB" stroke-width="2" fill="#FFFFFF"/>
+              <text x="28" y="14" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#4B5563">Medium opportunity</text>
+              <rect x="188" y="2" width="68" height="18" rx="9" fill="#F3F4F6"/>
+              <text x="222" y="14" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#6B7280" text-anchor="middle">58 results</text>
+            </g>
+
+            <!-- Low -->
+            <g transform="translate(0, 96)">
+              <circle cx="9" cy="9" r="9" stroke="#E5E7EB" stroke-width="2" fill="#FFFFFF"/>
+              <text x="28" y="14" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#4B5563">Low opportunity</text>
+              <rect x="164" y="2" width="68" height="18" rx="9" fill="#F3F4F6"/>
+              <text x="198" y="14" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#6B7280" text-anchor="middle">24 results</text>
+            </g>
+          </g>
+        </g>
+
+        <!-- Divider -->
+        <line x1="0" y1="744" x2="312" y2="744" stroke="#E5E7EB" stroke-width="1"/>
+
+        <!-- Filter Group 6: Trend -->
+        <g transform="translate(0, 768)">
+          <text x="0" y="0" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#111827">Trend Direction</text>
+
+          <!-- Checkbox Options -->
+          <g transform="translate(0, 20)">
+            <!-- Rising (Selected) -->
+            <g>
+              <rect width="18" height="18" rx="4" fill="#FF5722"/>
+              <path d="M 4 9 L 7 12 L 14 5" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <text x="28" y="14" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#111827">Rising</text>
+              <text x="88" y="14" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#15803D">↑</text>
+            </g>
+
+            <!-- Stable -->
+            <g transform="translate(0, 32)">
+              <rect width="18" height="18" rx="4" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+              <text x="28" y="14" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#4B5563">Stable</text>
+              <text x="88" y="14" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#6B7280">→</text>
+            </g>
+
+            <!-- Declining -->
+            <g transform="translate(0, 64)">
+              <rect width="18" height="18" rx="4" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+              <text x="28" y="14" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#4B5563">Declining</text>
+              <text x="104" y="14" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#B91C1C">↓</text>
+            </g>
+          </g>
+        </g>
+      </g>
+
+      <!-- Panel Footer (Sticky) -->
+      <g transform="translate(0, 880)">
+        <rect width="360" height="80" fill="#FFFFFF"/>
+        <rect y="0" width="360" height="1" fill="#E5E7EB"/>
+
+        <!-- Result Count -->
+        <text x="24" y="32" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#111827">45 keywords match filters</text>
+
+        <!-- Action Buttons -->
+        <g transform="translate(24, 44)">
+          <rect width="150" height="40" rx="8" fill="#FF5722" style="filter:drop-shadow(0 4px 8px rgba(255,87,34,0.25))"/>
+          <text x="75" y="25" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">Apply Filters</text>
+
+          <rect x="162" width="150" height="40" rx="8" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+          <text x="237" y="25" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#111827" text-anchor="middle">Reset All</text>
+        </g>
+      </g>
+    </g>
+
+    <!-- Main Content Behind Filter (Blurred) -->
+    <g transform="translate(32, 32)" opacity="0.4">
+      <text x="0" y="0" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#111827">127 keywords found</text>
+
+      <!-- Table Preview -->
+      <g transform="translate(0, 32)">
+        <rect width="760" height="200" rx="12" fill="#F3F4F6"/>
+        <rect x="16" y="16" width="728" height="24" rx="4" fill="#E5E7EB"/>
+        <rect x="16" y="48" width="728" height="24" rx="4" fill="#E5E7EB"/>
+        <rect x="16" y="80" width="728" height="24" rx="4" fill="#E5E7EB"/>
+        <rect x="16" y="112" width="728" height="24" rx="4" fill="#E5E7EB"/>
+        <rect x="16" y="144" width="728" height="24" rx="4" fill="#E5E7EB"/>
+      </g>
+    </g>
+  </g>
+</svg>

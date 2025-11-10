@@ -1,0 +1,155 @@
+<svg width="1440" height="900" viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;display=swap');
+    * { font-family: 'Inter', system-ui, sans-serif; }
+    .bg-surface { fill: #FFFFFF; } .bg-surface-variant { fill: #F9FAFB; } .bg-primary { fill: #FF5722; } .bg-primary-container { fill: #FFF3E0; }
+    .text-primary { fill: #FF5722; } .text-on-surface { fill: #111827; } .text-on-surface-variant { fill: #6B7280; } .text-on-primary { fill: #FFFFFF; }
+    .stroke-outline { stroke: #E5E7EB; } .stroke-primary { stroke: #FF5722; } .elevation-1 { filter: drop-shadow(0 1px 3px rgba(0,0,0,0.1)); }
+    .elevation-4 { filter: drop-shadow(0 20px 25px rgba(0,0,0,0.1)); }
+    .font-headline { font-size: 32px; font-weight: 600; } .font-title { font-size: 22px; font-weight: 600; }
+    .font-body { font-size: 16px; font-weight: 400; } .font-body-sm { font-size: 14px; font-weight: 400; } .font-label { font-size: 14px; font-weight: 600; }
+  </style>
+
+  <rect width="1440" height="900" class="bg-surface-variant"/>
+
+  <g id="sidebar">
+    <rect width="240" height="900" class="bg-surface-variant"/><line x1="240" y1="0" x2="240" y2="900" class="stroke-outline" stroke-width="1"/>
+    <g transform="translate(24, 24)"><circle cx="16" cy="16" r="16" class="bg-primary"/><text x="16" y="22" text-anchor="middle" class="text-on-primary font-label">SEO</text><text x="44" y="22" class="text-on-surface font-title">Dashboard</text></g>
+    <g transform="translate(0, 96)">
+      <g><text x="36" y="29" class="text-on-surface-variant font-body">📊</text><text x="60" y="29" class="text-on-surface-variant font-body">Overview</text></g>
+      <g class="nav-item active"><rect x="16" width="208" height="48" rx="12" class="bg-primary-container"/><text x="36" y="29" class="text-primary font-body">🔍</text><text x="60" y="29" class="text-primary font-body">Keywords</text></g>
+      <g transform="translate(0, 56)"><text x="36" y="29" class="text-on-surface-variant font-body">🔗</text><text x="60" y="29" class="text-on-surface-variant font-body">Backlinks</text></g>
+      <g transform="translate(0, 112)"><text x="36" y="29" class="text-on-surface-variant font-body">⚙️</text><text x="60" y="29" class="text-on-surface-variant font-body">Site Audit</text></g>
+      <g transform="translate(0, 168)"><text x="36" y="29" class="text-on-surface-variant font-body">📈</text><text x="60" y="29" class="text-on-surface-variant font-body">Rank Tracking</text></g>
+      <g transform="translate(0, 224)"><text x="36" y="29" class="text-on-surface-variant font-body">🎯</text><text x="60" y="29" class="text-on-surface-variant font-body">Competitors</text></g>
+      <g transform="translate(0, 280)"><text x="36" y="29" class="text-on-surface-variant font-body">📊</text><text x="60" y="29" class="text-on-surface-variant font-body">Traffic</text></g>
+    </g>
+  </g>
+
+  <g id="header"><rect x="240" width="1200" height="64" class="bg-surface"/><line x1="240" y1="64" x2="1440" y2="64" class="stroke-outline" stroke-width="1"/>
+    <g transform="translate(268, 16)"><rect width="400" height="32" rx="16" class="stroke-outline" fill="white" stroke-width="1"/><text x="16" y="21" class="text-on-surface-variant font-body-sm">🔍 Search...</text></g>
+    <g transform="translate(1310, 16)"><circle cx="16" cy="16" r="16" class="bg-surface-variant"/><text x="16" y="22" text-anchor="middle" class="text-on-surface-variant font-label">🔔</text><circle cx="68" cy="16" r="16" class="bg-primary-container"/><text x="68" y="22" text-anchor="middle" class="text-primary font-label">JD</text></g>
+  </g>
+
+  <g id="main-content" transform="translate(240, 64)">
+    <rect width="1200" height="836" fill="#FFFFFF"/>
+
+    <g transform="translate(24, 24)">
+      <text class="text-on-surface font-headline">Keywords with Filters</text>
+      <text y="32" class="text-on-surface-variant font-body">Advanced filtering options</text>
+      <g transform="translate(1000, 0)">
+        <rect width="152" height="40" rx="12" class="bg-primary elevation-1"/><text x="76" y="26" text-anchor="middle" class="text-on-primary font-label">Open Filters →</text>
+      </g>
+    </g>
+
+    <g transform="translate(24, 112)">
+      <rect width="732" height="700" rx="16" class="bg-surface stroke-outline elevation-1" stroke-width="1"/>
+      <text x="20" y="36" class="text-on-surface font-title">All Keywords (1,247)</text>
+
+      <rect y="48" width="732" height="40" class="bg-surface-variant"/>
+      <g transform="translate(0, 74)">
+        <rect x="16" width="20" height="20" rx="4" class="stroke-outline bg-surface" stroke-width="2"/>
+        <text x="60" class="text-on-surface font-label">Keyword</text><text x="320" class="text-on-surface font-label">Position</text><text x="440" class="text-on-surface font-label">Volume</text><text x="580" class="text-on-surface font-label">Traffic</text>
+      </g>
+
+      <g transform="translate(0, 88)">
+        <g><line y1="52" x2="732" y2="52" class="stroke-outline" stroke-width="1"/>
+          <rect x="16" y="16" width="20" height="20" rx="4" class="stroke-outline bg-surface" stroke-width="2"/><text x="60" y="34" class="text-on-surface font-body">seo tools online</text><text x="320" y="34" class="text-on-surface font-body">5</text><text x="440" y="34" class="text-on-surface font-body">12.5K</text><text x="580" y="34" class="text-on-surface font-body">450</text>
+        </g>
+        <g transform="translate(0, 52)"><line y1="52" x2="732" y2="52" class="stroke-outline" stroke-width="1"/>
+          <rect x="16" y="16" width="20" height="20" rx="4" class="stroke-outline bg-surface" stroke-width="2"/><text x="60" y="34" class="text-on-surface font-body">keyword research</text><text x="320" y="34" class="text-on-surface font-body">8</text><text x="440" y="34" class="text-on-surface font-body">8.2K</text><text x="580" y="34" class="text-on-surface font-body">280</text>
+        </g>
+        <g transform="translate(0, 104)"><line y1="52" x2="732" y2="52" class="stroke-outline" stroke-width="1"/>
+          <rect x="16" y="16" width="20" height="20" rx="4" class="stroke-outline bg-surface" stroke-width="2"/><text x="60" y="34" class="text-on-surface font-body">backlink checker</text><text x="320" y="34" class="text-on-surface font-body">12</text><text x="440" y="34" class="text-on-surface font-body">15.8K</text><text x="580" y="34" class="text-on-surface font-body">320</text>
+        </g>
+        <g transform="translate(0, 156)"><line y1="52" x2="732" y2="52" class="stroke-outline" stroke-width="1"/>
+          <rect x="16" y="16" width="20" height="20" rx="4" class="stroke-outline bg-surface" stroke-width="2"/><text x="60" y="34" class="text-on-surface font-body">site audit tool</text><text x="320" y="34" class="text-on-surface font-body">3</text><text x="440" y="34" class="text-on-surface font-body">6.4K</text><text x="580" y="34" class="text-on-surface font-body">520</text>
+        </g>
+        <g transform="translate(0, 208)"><line y1="52" x2="732" y2="52" class="stroke-outline" stroke-width="1"/>
+          <rect x="16" y="16" width="20" height="20" rx="4" class="stroke-outline bg-surface" stroke-width="2"/><text x="60" y="34" class="text-on-surface font-body">rank tracker</text><text x="320" y="34" class="text-on-surface font-body">15</text><text x="440" y="34" class="text-on-surface font-body">4.9K</text><text x="580" y="34" class="text-on-surface font-body">180</text>
+        </g>
+        <g transform="translate(0, 260)"><line y1="52" x2="732" y2="52" class="stroke-outline" stroke-width="1"/>
+          <rect x="16" y="16" width="20" height="20" rx="4" class="stroke-outline bg-surface" stroke-width="2"/><text x="60" y="34" class="text-on-surface font-body">competitor analysis</text><text x="320" y="34" class="text-on-surface font-body">7</text><text x="440" y="34" class="text-on-surface font-body">9.3K</text><text x="580" y="34" class="text-on-surface font-body">340</text>
+        </g>
+        <g transform="translate(0, 312)"><line y1="52" x2="732" y2="52" class="stroke-outline" stroke-width="1"/>
+          <rect x="16" y="16" width="20" height="20" rx="4" class="stroke-outline bg-surface" stroke-width="2"/><text x="60" y="34" class="text-on-surface font-body">organic traffic</text><text x="320" y="34" class="text-on-surface font-body">11</text><text x="440" y="34" class="text-on-surface font-body">7.1K</text><text x="580" y="34" class="text-on-surface font-body">240</text>
+        </g>
+        <g transform="translate(0, 364)"><line y1="52" x2="732" y2="52" class="stroke-outline" stroke-width="1"/>
+          <rect x="16" y="16" width="20" height="20" rx="4" class="stroke-outline bg-surface" stroke-width="2"/><text x="60" y="34" class="text-on-surface font-body">seo dashboard</text><text x="320" y="34" class="text-on-surface font-body">9</text><text x="440" y="34" class="text-on-surface font-body">5.6K</text><text x="580" y="34" class="text-on-surface font-body">290</text>
+        </g>
+        <g transform="translate(0, 416)"><line y1="52" x2="732" y2="52" class="stroke-outline" stroke-width="1"/>
+          <rect x="16" y="16" width="20" height="20" rx="4" class="stroke-outline bg-surface" stroke-width="2"/><text x="60" y="34" class="text-on-surface font-body">link building</text><text x="320" y="34" class="text-on-surface font-body">18</text><text x="440" y="34" class="text-on-surface font-body">11.2K</text><text x="580" y="34" class="text-on-surface font-body">380</text>
+        </g>
+        <g transform="translate(0, 468)">
+          <rect x="16" y="16" width="20" height="20" rx="4" class="stroke-outline bg-surface" stroke-width="2"/><text x="60" y="34" class="text-on-surface font-body">page speed</text><text x="320" y="34" class="text-on-surface font-body">14</text><text x="440" y="34" class="text-on-surface font-body">8.9K</text><text x="580" y="34" class="text-on-surface font-body">310</text>
+        </g>
+      </g>
+    </g>
+
+    <!-- Filter Drawer (Right Side) -->
+    <g transform="translate(780, 0)">
+      <rect width="420" height="836" class="bg-surface stroke-outline elevation-4" stroke-width="1"/>
+      <g transform="translate(24, 24)">
+        <text class="text-on-surface font-title">Filters</text>
+        <g transform="translate(300, 0)"><rect width="80" height="32" rx="8" fill="transparent"/><text x="40" y="21" text-anchor="middle" class="text-primary font-body-sm">✕ Close</text></g>
+      </g>
+
+      <g transform="translate(24, 80)">
+        <text class="text-on-surface font-label">Position Range</text>
+        <g transform="translate(0, 28)">
+          <rect width="372" height="8" rx="4" fill="#E5E7EB"/>
+          <rect width="186" height="8" rx="4" class="bg-primary"/>
+          <circle cx="186" cy="4" r="12" class="bg-primary"/>
+        </g>
+        <g transform="translate(0, 52)">
+          <text class="text-on-surface-variant font-body-sm">Min: 1</text><text x="320" class="text-on-surface-variant font-body-sm">Max: 50</text>
+        </g>
+      </g>
+
+      <g transform="translate(24, 220)">
+        <text class="text-on-surface font-label">Search Volume</text>
+        <g transform="translate(0, 32)"><rect width="372" height="56" rx="12" class="stroke-outline bg-surface" stroke-width="1"/><text x="16" y="34" class="text-on-surface font-body">1,000 - 50,000</text></g>
+      </g>
+
+      <g transform="translate(24, 340)">
+        <text class="text-on-surface font-label">Keyword Difficulty</text>
+        <g transform="translate(0, 32)">
+          <rect width="116" height="32" rx="8" class="bg-primary"/><text x="58" y="21" text-anchor="middle" class="text-on-primary font-body-sm">0-40</text>
+          <rect x="128" width="116" height="32" rx="8" class="stroke-outline bg-surface" stroke-width="1"/><text x="186" y="21" text-anchor="middle" class="text-on-surface font-body-sm">41-70</text>
+          <rect x="256" width="116" height="32" rx="8" class="stroke-outline bg-surface" stroke-width="1"/><text x="314" y="21" text-anchor="middle" class="text-on-surface font-body-sm">71-100</text>
+        </g>
+      </g>
+
+      <g transform="translate(24, 440)">
+        <text class="text-on-surface font-label">Search Intent</text>
+        <g transform="translate(0, 32)">
+          <rect width="20" height="20" rx="4" class="bg-primary"/><text x="32" y="16" class="text-on-surface font-body">Informational</text>
+        </g>
+        <g transform="translate(0, 68)">
+          <rect width="20" height="20" rx="4" class="stroke-outline bg-surface" stroke-width="2"/><text x="32" y="16" class="text-on-surface font-body">Navigational</text>
+        </g>
+        <g transform="translate(0, 104)">
+          <rect width="20" height="20" rx="4" class="bg-primary"/><text x="32" y="16" class="text-on-surface font-body">Transactional</text>
+        </g>
+        <g transform="translate(0, 140)">
+          <rect width="20" height="20" rx="4" class="stroke-outline bg-surface" stroke-width="2"/><text x="32" y="16" class="text-on-surface font-body">Commercial</text>
+        </g>
+      </g>
+
+      <g transform="translate(24, 660)">
+        <text class="text-on-surface font-label">Date Range</text>
+        <g transform="translate(0, 32)"><rect width="372" height="56" rx="12" class="stroke-outline bg-surface" stroke-width="1"/><text x="16" y="34" class="text-on-surface font-body">Last 30 days</text><text x="320" y="34" class="text-on-surface-variant font-body">▼</text></g>
+      </g>
+
+      <g transform="translate(24, 768)">
+        <rect width="168" height="48" rx="12" class="stroke-outline bg-surface" stroke-width="1"/><text x="84" y="30" text-anchor="middle" class="text-on-surface-variant font-label">Clear All</text>
+        <g transform="translate(184, 0)"><rect width="188" height="48" rx="12" class="bg-primary elevation-1"/><text x="94" y="30" text-anchor="middle" class="text-on-primary font-label">Apply Filters</text></g>
+      </g>
+
+      <text x="24" y="820" class="text-on-surface-variant font-body-sm">234 results match filters</text>
+    </g>
+
+    <!-- Backdrop Scrim -->
+    <rect x="-240" width="780" height="836" fill="#000000" opacity="0.5"/>
+  </g>
+</svg>

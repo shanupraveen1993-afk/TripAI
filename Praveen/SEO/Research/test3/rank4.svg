@@ -1,0 +1,123 @@
+<svg width="1440" height="900" viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1440" height="900" fill="#FFFFFF"/>
+
+  <!-- Page Header -->
+  <text x="40" y="60" font-family="Inter, sans-serif" font-size="32" font-weight="600" fill="#111827">Compare Apps</text>
+
+  <!-- App Selectors -->
+  <g id="selectors">
+    <rect x="40" y="100" width="320" height="56" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+    <text x="64" y="133" font-family="Inter, sans-serif" font-size="16" fill="#111827">My Travel App</text>
+    <text x="324" y="133" font-family="Inter, sans-serif" font-size="16" fill="#6B7280">▼</text>
+
+    <text x="380" y="133" font-family="Inter, sans-serif" font-size="20" font-weight="600" fill="#6B7280">vs</text>
+
+    <rect x="440" y="100" width="320" height="56" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+    <text x="464" y="133" font-family="Inter, sans-serif" font-size="16" fill="#111827">Fitness Tracker Pro</text>
+    <text x="724" y="133" font-family="Inter, sans-serif" font-size="16" fill="#6B7280">▼</text>
+  </g>
+
+  <!-- Comparison Cards -->
+  <g id="comparison-section">
+    <!-- Left App Card -->
+    <rect x="40" y="200" width="560" height="400" rx="16" fill="#FFFFFF" stroke="#FF5722" stroke-width="2"/>
+
+    <!-- App Header -->
+    <rect x="64" y="224" width="48" height="48" rx="10" fill="#FF5722"/>
+    <text x="80" y="256" font-family="Inter, sans-serif" font-size="18" font-weight="600" fill="#FFFFFF">M</text>
+    <text x="128" y="248" font-family="Inter, sans-serif" font-size="22" font-weight="600" fill="#111827">My Travel App</text>
+
+    <!-- Metrics -->
+    <rect x="64" y="300" width="512" height="80" rx="12" fill="#F9FAFB"/>
+    <text x="88" y="325" font-family="Inter, sans-serif" font-size="14" fill="#6B7280">Current Rank</text>
+    <text x="88" y="365" font-family="Inter, sans-serif" font-size="36" font-weight="600" fill="#111827">#12</text>
+    <rect x="264" y="322" width="56" height="32" rx="16" fill="#10B981"/>
+    <text x="280" y="344" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF">↑3</text>
+
+    <rect x="64" y="396" width="244" height="80" rx="12" fill="#F9FAFB"/>
+    <text x="88" y="421" font-family="Inter, sans-serif" font-size="14" fill="#6B7280">Best Rank</text>
+    <text x="88" y="455" font-family="Inter, sans-serif" font-size="28" font-weight="600" fill="#111827">#5</text>
+
+    <rect x="332" y="396" width="244" height="80" rx="12" fill="#F9FAFB"/>
+    <text x="356" y="421" font-family="Inter, sans-serif" font-size="14" fill="#6B7280">Rating</text>
+    <text x="356" y="455" font-family="Inter, sans-serif" font-size="28" font-weight="600" fill="#111827">4.8⭐</text>
+
+    <rect x="64" y="492" width="512" height="80" rx="12" fill="#F9FAFB"/>
+    <text x="88" y="517" font-family="Inter, sans-serif" font-size="14" fill="#6B7280">Downloads</text>
+    <text x="88" y="551" font-family="Inter, sans-serif" font-size="28" font-weight="600" fill="#111827">245K</text>
+
+    <!-- Right App Card -->
+    <rect x="640" y="200" width="560" height="400" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+
+    <!-- App Header -->
+    <rect x="664" y="224" width="48" height="48" rx="10" fill="#FFA726"/>
+    <text x="680" y="256" font-family="Inter, sans-serif" font-size="18" font-weight="600" fill="#FFFFFF">F</text>
+    <text x="728" y="248" font-family="Inter, sans-serif" font-size="22" font-weight="600" fill="#111827">Fitness Tracker Pro</text>
+
+    <!-- Metrics -->
+    <rect x="664" y="300" width="512" height="80" rx="12" fill="#F9FAFB"/>
+    <text x="688" y="325" font-family="Inter, sans-serif" font-size="14" fill="#6B7280">Current Rank</text>
+    <text x="688" y="365" font-family="Inter, sans-serif" font-size="36" font-weight="600" fill="#111827">#18</text>
+    <rect x="864" y="322" width="56" height="32" rx="16" fill="#DC2626"/>
+    <text x="880" y="344" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF">↓2</text>
+
+    <rect x="664" y="396" width="244" height="80" rx="12" fill="#F9FAFB"/>
+    <text x="688" y="421" font-family="Inter, sans-serif" font-size="14" fill="#6B7280">Best Rank</text>
+    <text x="688" y="455" font-family="Inter, sans-serif" font-size="28" font-weight="600" fill="#111827">#8</text>
+
+    <rect x="932" y="396" width="244" height="80" rx="12" fill="#F9FAFB"/>
+    <text x="956" y="421" font-family="Inter, sans-serif" font-size="14" fill="#6B7280">Rating</text>
+    <text x="956" y="455" font-family="Inter, sans-serif" font-size="28" font-weight="600" fill="#111827">4.5⭐</text>
+
+    <rect x="664" y="492" width="512" height="80" rx="12" fill="#F9FAFB"/>
+    <text x="688" y="517" font-family="Inter, sans-serif" font-size="14" fill="#6B7280">Downloads</text>
+    <text x="688" y="551" font-family="Inter, sans-serif" font-size="28" font-weight="600" fill="#111827">89K</text>
+  </g>
+
+  <!-- Comparison Chart -->
+  <g id="chart-section">
+    <text x="40" y="660" font-family="Inter, sans-serif" font-size="22" font-weight="600" fill="#111827">Rank Comparison (30 Days)</text>
+
+    <!-- Chart Container -->
+    <rect x="40" y="680" width="1160" height="180" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+
+    <!-- Y-axis labels (inverted) -->
+    <text x="60" y="710" font-family="Inter, sans-serif" font-size="12" fill="#6B7280">#1</text>
+    <line x1="90" y1="705" x2="1180" y2="705" stroke="#F3F4F6" stroke-width="1"/>
+
+    <text x="60" y="750" font-family="Inter, sans-serif" font-size="12" fill="#6B7280">#10</text>
+    <line x1="90" y1="745" x2="1180" y2="745" stroke="#F3F4F6" stroke-width="1"/>
+
+    <text x="60" y="790" font-family="Inter, sans-serif" font-size="12" fill="#6B7280">#20</text>
+    <line x1="90" y1="785" x2="1180" y2="785" stroke="#F3F4F6" stroke-width="1"/>
+
+    <text x="60" y="830" font-family="Inter, sans-serif" font-size="12" fill="#6B7280">#30</text>
+    <line x1="90" y1="825" x2="1180" y2="825" stroke="#F3F4F6" stroke-width="1"/>
+
+    <!-- X-axis labels -->
+    <text x="120" y="855" font-family="Inter, sans-serif" font-size="12" fill="#6B7280">Day 1</text>
+    <text x="420" y="855" font-family="Inter, sans-serif" font-size="12" fill="#6B7280">Day 10</text>
+    <text x="720" y="855" font-family="Inter, sans-serif" font-size="12" fill="#6B7280">Day 20</text>
+    <text x="1020" y="855" font-family="Inter, sans-serif" font-size="12" fill="#6B7280">Day 30</text>
+
+    <!-- App A Line (Travel App - Better rank, higher on chart) -->
+    <polyline points="120,760 220,755 320,750 420,745 520,742 620,738 720,735 820,740 920,745 1020,748 1120,752 1180,755"
+              fill="none" stroke="#FF5722" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- App B Line (Fitness App - Worse rank, lower on chart) -->
+    <polyline points="120,780 220,778 320,775 420,770 520,768 620,765 720,770 820,775 920,780 1020,785 1120,790 1180,792"
+              fill="none" stroke="#FFA726" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="8,4"/>
+  </g>
+
+  <!-- Legend -->
+  <g id="legend">
+    <rect x="1250" y="695" width="140" height="80" rx="8" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1"/>
+
+    <line x1="1270" y1="720" x2="1300" y2="720" stroke="#FF5722" stroke-width="3"/>
+    <text x="1310" y="725" font-family="Inter, sans-serif" font-size="14" fill="#111827">My Travel App</text>
+
+    <line x1="1270" y1="750" x2="1300" y2="750" stroke="#FFA726" stroke-width="3" stroke-dasharray="8,4"/>
+    <text x="1310" y="755" font-family="Inter, sans-serif" font-size="14" fill="#111827">Fitness Tracker</text>
+  </g>
+</svg>

@@ -1,0 +1,279 @@
+<svg width="1440" height="1024" viewBox="0 0 1440 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1440" height="1024" fill="#FFFFFF"/>
+
+  <!-- Dimmed Background Overlay -->
+  <rect width="1440" height="1024" fill="#000000" opacity="0.5"/>
+
+  <!-- Export Modal -->
+  <g transform="translate(320, 80)">
+    <rect width="800" height="864" rx="12" fill="#FFFFFF" style="filter:drop-shadow(0 20px 25px rgba(0,0,0,0.15))"/>
+
+    <!-- Modal Header -->
+    <g>
+      <rect width="800" height="80" fill="#F9FAFB"/>
+      <rect y="80" width="800" height="1" fill="#E5E7EB"/>
+
+      <!-- Title -->
+      <text x="32" y="46" font-family="Inter, sans-serif" font-size="24" font-weight="600" fill="#111827">Export Keywords</text>
+
+      <!-- Close Button -->
+      <g transform="translate(744, 32)">
+        <circle cx="12" cy="12" r="12" fill="#F3F4F6"/>
+        <line x1="8" y1="8" x2="16" y2="16" stroke="#4B5563" stroke-width="2"/>
+        <line x1="16" y1="8" x2="8" y2="16" stroke="#4B5563" stroke-width="2"/>
+      </g>
+
+      <!-- Selection Count -->
+      <text x="32" y="64" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">45 keywords selected</text>
+    </g>
+
+    <!-- Modal Body -->
+    <g transform="translate(32, 108)">
+
+      <!-- Section 1: Export Format -->
+      <g>
+        <text x="0" y="0" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#111827">Choose Export Format</text>
+        <text x="0" y="24" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">Select how you'd like to export your keyword data</text>
+
+        <!-- Format Options Grid -->
+        <g transform="translate(0, 48)">
+          <!-- CSV Option (Selected) -->
+          <g>
+            <rect width="368" height="128" rx="12" fill="#FFF7ED" stroke="#FF5722" stroke-width="2"/>
+
+            <!-- Radio Button -->
+            <circle cx="24" cy="24" r="10" stroke="#FF5722" stroke-width="2" fill="#FFFFFF"/>
+            <circle cx="24" cy="24" r="6" fill="#FF5722"/>
+
+            <!-- Icon -->
+            <g transform="translate(288, 20)">
+              <rect width="48" height="56" rx="4" fill="#DCFCE7" stroke="#15803D" stroke-width="2"/>
+              <line x1="12" y1="16" x2="36" y2="16" stroke="#15803D" stroke-width="2"/>
+              <line x1="12" y1="24" x2="36" y2="24" stroke="#15803D" stroke-width="2"/>
+              <line x1="12" y1="32" x2="36" y2="32" stroke="#15803D" stroke-width="2"/>
+              <line x1="12" y1="40" x2="28" y2="40" stroke="#15803D" stroke-width="2"/>
+            </g>
+
+            <!-- Content -->
+            <text x="52" y="28" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#111827">CSV File</text>
+            <text x="52" y="54" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#4B5563">Download as .csv file for Excel,</text>
+            <text x="52" y="76" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#4B5563">Google Sheets, or other tools</text>
+
+            <!-- Badge -->
+            <rect x="52" y="92" width="112" height="20" rx="10" fill="#DCFCE7"/>
+            <text x="108" y="106" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#15803D" text-anchor="middle">Most Popular</text>
+          </g>
+
+          <!-- Google Sheets Option -->
+          <g transform="translate(384, 0)">
+            <rect width="368" height="128" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+
+            <!-- Radio Button -->
+            <circle cx="24" cy="24" r="10" stroke="#E5E7EB" stroke-width="2" fill="#FFFFFF"/>
+
+            <!-- Icon -->
+            <g transform="translate(288, 20)">
+              <rect width="48" height="56" rx="4" fill="#DCFCE7" stroke="#15803D" stroke-width="2"/>
+              <rect x="8" y="12" width="32" height="32" fill="#FFFFFF"/>
+              <line x1="12" y1="20" x2="36" y2="20" stroke="#15803D" stroke-width="1.5"/>
+              <line x1="12" y1="26" x2="36" y2="26" stroke="#15803D" stroke-width="1.5"/>
+              <line x1="12" y1="32" x2="36" y2="32" stroke="#15803D" stroke-width="1.5"/>
+            </g>
+
+            <!-- Content -->
+            <text x="52" y="28" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#111827">Google Sheets</text>
+            <text x="52" y="54" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#4B5563">Export directly to a new</text>
+            <text x="52" y="76" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#4B5563">Google Sheet in your Drive</text>
+
+            <!-- Badge -->
+            <rect x="52" y="92" width="144" height="20" rx="10" fill="#DBEAFE"/>
+            <text x="124" y="106" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">Requires Google Login</text>
+          </g>
+        </g>
+
+        <!-- PDF & Copy Options -->
+        <g transform="translate(0, 192)">
+          <!-- PDF Option -->
+          <g>
+            <rect width="368" height="96" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+
+            <circle cx="24" cy="24" r="10" stroke="#E5E7EB" stroke-width="2" fill="#FFFFFF"/>
+
+            <!-- Icon -->
+            <g transform="translate(288, 24)">
+              <rect width="40" height="48" rx="4" fill="#FEE2E2" stroke="#EF4444" stroke-width="2"/>
+              <text x="20" y="32" font-family="Inter, sans-serif" font-size="18" font-weight="700" fill="#EF4444" text-anchor="middle">PDF</text>
+            </g>
+
+            <text x="52" y="28" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#111827">PDF Report</text>
+            <text x="52" y="54" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#4B5563">Formatted report with charts</text>
+
+            <!-- Pro Badge -->
+            <rect x="52" y="68" width="72" height="20" rx="10" fill="#FFF7ED"/>
+            <text x="88" y="82" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#FF5722" text-anchor="middle">PRO PLAN</text>
+          </g>
+
+          <!-- Copy to Clipboard -->
+          <g transform="translate(384, 0)">
+            <rect width="368" height="96" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+
+            <circle cx="24" cy="24" r="10" stroke="#E5E7EB" stroke-width="2" fill="#FFFFFF"/>
+
+            <!-- Icon -->
+            <g transform="translate(292, 28)">
+              <rect width="36" height="40" rx="3" fill="#FFFFFF" stroke="#6B7280" stroke-width="2"/>
+              <rect x="4" y="4" width="36" height="40" rx="3" fill="#F3F4F6" stroke="#6B7280" stroke-width="2"/>
+              <line x1="12" y1="16" x2="28" y2="16" stroke="#6B7280" stroke-width="1.5"/>
+              <line x1="12" y1="22" x2="28" y2="22" stroke="#6B7280" stroke-width="1.5"/>
+              <line x1="12" y1="28" x2="22" y2="28" stroke="#6B7280" stroke-width="1.5"/>
+            </g>
+
+            <text x="52" y="28" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#111827">Copy to Clipboard</text>
+            <text x="52" y="54" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#4B5563">Tab-separated for easy pasting</text>
+          </g>
+        </g>
+      </g>
+
+      <!-- Divider -->
+      <line x1="0" y1="324" x2="736" y2="324" stroke="#E5E7EB" stroke-width="1"/>
+
+      <!-- Section 2: Columns to Include -->
+      <g transform="translate(0, 348)">
+        <text x="0" y="0" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#111827">Select Columns to Include</text>
+        <text x="0" y="24" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">Choose which data fields to export</text>
+
+        <!-- Column Grid -->
+        <g transform="translate(0, 48)">
+          <!-- Row 1 -->
+          <g>
+            <!-- Keyword (Required) -->
+            <g>
+              <rect width="20" height="20" rx="4" fill="#E5E7EB"/>
+              <path d="M 5 10 L 8 13 L 15 6" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <text x="32" y="16" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">Keyword</text>
+              <text x="130" y="16" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF">(required)</text>
+            </g>
+
+            <!-- Search Volume (Selected) -->
+            <g transform="translate(240, 0)">
+              <rect width="20" height="20" rx="4" fill="#FF5722"/>
+              <path d="M 5 10 L 8 13 L 15 6" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <text x="32" y="16" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#111827">Search Volume</text>
+            </g>
+
+            <!-- Difficulty (Selected) -->
+            <g transform="translate(480, 0)">
+              <rect width="20" height="20" rx="4" fill="#FF5722"/>
+              <path d="M 5 10 L 8 13 L 15 6" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <text x="32" y="16" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#111827">Difficulty</text>
+            </g>
+          </g>
+
+          <!-- Row 2 -->
+          <g transform="translate(0, 36)">
+            <!-- Trend (Selected) -->
+            <g>
+              <rect width="20" height="20" rx="4" fill="#FF5722"/>
+              <path d="M 5 10 L 8 13 L 15 6" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <text x="32" y="16" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#111827">Trend</text>
+            </g>
+
+            <!-- Opportunity -->
+            <g transform="translate(240, 0)">
+              <rect width="20" height="20" rx="4" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+              <text x="32" y="16" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#4B5563">Opportunity Score</text>
+            </g>
+
+            <!-- Current Rank (Selected) -->
+            <g transform="translate(480, 0)">
+              <rect width="20" height="20" rx="4" fill="#FF5722"/>
+              <path d="M 5 10 L 8 13 L 15 6" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <text x="32" y="16" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#111827">Current Rank</text>
+            </g>
+          </g>
+
+          <!-- Row 3 -->
+          <g transform="translate(0, 72)">
+            <!-- CPC -->
+            <g>
+              <rect width="20" height="20" rx="4" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+              <text x="32" y="16" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#4B5563">CPC (Cost per Click)</text>
+            </g>
+
+            <!-- Competition -->
+            <g transform="translate(240, 0)">
+              <rect width="20" height="20" rx="4" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+              <text x="32" y="16" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#4B5563">Competition Level</text>
+            </g>
+
+            <!-- Related Apps -->
+            <g transform="translate(480, 0)">
+              <rect width="20" height="20" rx="4" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+              <text x="32" y="16" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#4B5563">Related Apps</text>
+            </g>
+          </g>
+        </g>
+
+        <!-- Quick Actions -->
+        <g transform="translate(0, 156)">
+          <text x="0" y="0" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#FF5722" style="text-decoration:underline;cursor:pointer;">Select All</text>
+          <text x="84" y="0" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">|</text>
+          <text x="100" y="0" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#FF5722" style="text-decoration:underline;cursor:pointer;">Deselect All</text>
+        </g>
+      </g>
+
+      <!-- Divider -->
+      <line x1="0" y1="580" x2="736" y2="580" stroke="#E5E7EB" stroke-width="1"/>
+
+      <!-- Section 3: Additional Options -->
+      <g transform="translate(0, 604)">
+        <text x="0" y="0" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#111827">Additional Options</text>
+
+        <!-- Options -->
+        <g transform="translate(0, 28)">
+          <!-- Include Header Row -->
+          <g>
+            <rect width="20" height="20" rx="4" fill="#FF5722"/>
+            <path d="M 5 10 L 8 13 L 15 6" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <text x="32" y="16" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#111827">Include header row</text>
+          </g>
+
+          <!-- Include Filters -->
+          <g transform="translate(0, 36)">
+            <rect width="20" height="20" rx="4" fill="#FF5722"/>
+            <path d="M 5 10 L 8 13 L 15 6" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <text x="32" y="16" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#111827">Include applied filters in export</text>
+          </g>
+
+          <!-- Include Timestamp -->
+          <g transform="translate(0, 72)">
+            <rect width="20" height="20" rx="4" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+            <text x="32" y="16" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#4B5563">Add export timestamp</text>
+          </g>
+        </g>
+      </g>
+    </g>
+
+    <!-- Modal Footer -->
+    <g transform="translate(0, 784)">
+      <rect y="0" width="800" height="1" fill="#E5E7EB"/>
+      <rect y="1" width="800" height="79" fill="#F9FAFB"/>
+
+      <!-- File Info -->
+      <g transform="translate(32, 28)">
+        <text x="0" y="0" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280">File will be named:</text>
+        <text x="0" y="24" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#111827">keywords_export_2025-10-16.csv</text>
+      </g>
+
+      <!-- Action Buttons -->
+      <g transform="translate(496, 20)">
+        <rect width="128" height="40" rx="8" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+        <text x="64" y="25" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#111827" text-anchor="middle">Cancel</text>
+
+        <rect x="144" width="128" height="40" rx="8" fill="#FF5722" style="filter:drop-shadow(0 4px 8px rgba(255,87,34,0.25))"/>
+        <text x="208" y="25" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">Export Now</text>
+      </g>
+    </g>
+  </g>
+</svg>

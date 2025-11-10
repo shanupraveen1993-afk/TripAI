@@ -1,0 +1,353 @@
+<svg width="1440" height="1024" viewBox="0 0 1440 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1440" height="1024" fill="#FFFFFF"/>
+
+  <!-- Side Navigation (240px width) - Simplified -->
+  <g id="sidebar">
+    <rect width="240" height="1024" fill="#FAFAFA"/>
+    <rect x="240" y="0" width="1" height="1024" fill="#E0E0E0"/>
+
+    <!-- Logo -->
+    <g id="logo" transform="translate(24, 24)">
+      <rect width="32" height="32" rx="8" fill="#FF9800"/>
+      <text x="44" y="22" font-family="IBM Plex Sans, sans-serif" font-size="18" font-weight="600" fill="#1A1A1A">SearchVector</text>
+    </g>
+
+    <!-- Active Nav Item -->
+    <g transform="translate(16, 96)">
+      <rect width="208" height="40" rx="6" fill="#FF9800"/>
+      <text x="20" y="25" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF">Keyword Research</text>
+    </g>
+  </g>
+
+  <!-- Top Navigation Bar -->
+  <g id="top-nav">
+    <rect x="240" width="1200" height="64" fill="#FFFFFF"/>
+    <rect x="240" y="64" width="1200" height="1" fill="#E0E0E0"/>
+
+    <text x="280" y="42" font-family="IBM Plex Sans, sans-serif" font-size="20" font-weight="600" fill="#1A1A1A">Keyword Research</text>
+
+    <!-- User Menu -->
+    <g transform="translate(1100, 20)">
+      <rect width="100" height="24" rx="12" fill="#F5F5F5"/>
+      <circle cx="12" cy="12" r="10" fill="#FF9800"/>
+      <text x="10" y="16" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="600" fill="#FFFFFF">JD</text>
+      <text x="30" y="16" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="500" fill="#1A1A1A">John Doe</text>
+    </g>
+  </g>
+
+  <!-- Main Content Area with Filter Panel -->
+  <g transform="translate(240, 64)">
+
+    <!-- Content Area (Dimmed) -->
+    <rect width="1200" height="960" fill="#000000" opacity="0.3"/>
+
+    <!-- Filter Panel (Side Drawer) -->
+    <g transform="translate(840, 0)">
+      <rect width="360" height="960" fill="#FFFFFF" style="filter:drop-shadow(-4px 0 16px rgba(0,0,0,0.15))"/>
+
+      <!-- Panel Header -->
+      <g>
+        <rect width="360" height="64" fill="#FAFAFA"/>
+        <rect y="64" width="360" height="1" fill="#E0E0E0"/>
+
+        <text x="24" y="36" font-family="IBM Plex Sans, sans-serif" font-size="18" font-weight="700" fill="#1A1A1A">Filters</text>
+
+        <!-- Active Filter Count Badge -->
+        <rect x="84" y="22" width="32" height="24" rx="12" fill="#FF9800"/>
+        <text x="100" y="38" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="700" fill="#FFFFFF" text-anchor="middle">5</text>
+
+        <!-- Close Button -->
+        <g transform="translate(320, 22)">
+          <circle cx="12" cy="12" r="12" fill="#F5F5F5"/>
+          <line x1="8" y1="8" x2="16" y2="16" stroke="#4A4A4A" stroke-width="2"/>
+          <line x1="16" y1="8" x2="8" y2="16" stroke="#4A4A4A" stroke-width="2"/>
+        </g>
+
+        <!-- Clear All -->
+        <text x="240" y="36" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#FF5722" style="text-decoration:underline;cursor:pointer;">Clear all</text>
+      </g>
+
+      <!-- Scrollable Filter Content -->
+      <g transform="translate(24, 88)">
+
+        <!-- Filter Group 1: Platform -->
+        <g>
+          <text x="0" y="0" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#1A1A1A">Platform</text>
+
+          <!-- Platform Toggle -->
+          <g transform="translate(0, 12)">
+            <rect width="312" height="40" rx="6" fill="#F5F5F5"/>
+
+            <!-- iOS Option -->
+            <g>
+              <rect x="4" y="4" width="152" height="32" rx="4" fill="#FF9800"/>
+              <text x="80" y="25" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">iOS</text>
+            </g>
+
+            <!-- Android Option -->
+            <g>
+              <text x="236" y="25" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="500" fill="#6D6D6D" text-anchor="middle">Android</text>
+            </g>
+          </g>
+        </g>
+
+        <!-- Filter Group 2: Country/Region -->
+        <g transform="translate(0, 84)">
+          <text x="0" y="0" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#1A1A1A">Country/Region</text>
+
+          <!-- Dropdown -->
+          <g transform="translate(0, 12)">
+            <rect width="312" height="40" rx="6" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="1"/>
+            <text x="16" y="25" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="400" fill="#1A1A1A">🇺🇸 United States</text>
+            <path d="M 296 18 L 300 22 L 296 26" stroke="#4A4A4A" stroke-width="1.5" fill="none"/>
+          </g>
+
+          <!-- Quick Country Chips -->
+          <g transform="translate(0, 60)">
+            <rect width="68" height="24" rx="12" fill="#FFF3E0"/>
+            <text x="34" y="16" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="500" fill="#F57C00" text-anchor="middle">🇺🇸 US</text>
+
+            <rect x="76" width="68" height="24" rx="12" fill="#F5F5F5"/>
+            <text x="110" y="16" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="500" fill="#6D6D6D" text-anchor="middle">🇬🇧 UK</text>
+
+            <rect x="152" width="68" height="24" rx="12" fill="#F5F5F5"/>
+            <text x="186" y="16" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="500" fill="#6D6D6D" text-anchor="middle">🇨🇦 CA</text>
+
+            <rect x="228" width="68" height="24" rx="12" fill="#F5F5F5"/>
+            <text x="262" y="16" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="500" fill="#6D6D6D" text-anchor="middle">🇦🇺 AU</text>
+          </g>
+        </g>
+
+        <!-- Divider -->
+        <line x1="0" y1="200" x2="312" y2="200" stroke="#E0E0E0" stroke-width="1"/>
+
+        <!-- Filter Group 3: Search Volume -->
+        <g transform="translate(0, 224)">
+          <g>
+            <text x="0" y="0" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#1A1A1A">Search Volume</text>
+            <rect x="220" y="-14" width="92" height="20" rx="10" fill="#FFE0B2"/>
+            <text x="266" y="1" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="600" fill="#F57C00" text-anchor="middle">10K - 100K</text>
+          </g>
+
+          <!-- Range Slider -->
+          <g transform="translate(0, 20)">
+            <!-- Track -->
+            <rect x="0" y="12" width="312" height="4" rx="2" fill="#E0E0E0"/>
+            <!-- Active Range -->
+            <rect x="78" y="12" width="156" height="4" rx="2" fill="#FF9800"/>
+            <!-- Left Handle -->
+            <circle cx="78" cy="14" r="10" fill="#FF9800" stroke="#FFFFFF" stroke-width="2"/>
+            <!-- Right Handle -->
+            <circle cx="234" cy="14" r="10" fill="#FF9800" stroke="#FFFFFF" stroke-width="2"/>
+          </g>
+
+          <!-- Value Labels -->
+          <g transform="translate(0, 48)">
+            <text x="0" y="0" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="500" fill="#6D6D6D">Min: 10K</text>
+            <text x="312" y="0" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="500" fill="#6D6D6D" text-anchor="end">Max: 100K</text>
+          </g>
+
+          <!-- Quick Presets -->
+          <g transform="translate(0, 72)">
+            <text x="0" y="0" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="500" fill="#8A8A8A">Quick select:</text>
+
+            <g transform="translate(0, 12)">
+              <rect width="64" height="24" rx="12" fill="#F5F5F5"/>
+              <text x="32" y="16" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="500" fill="#6D6D6D" text-anchor="middle">Any</text>
+
+              <rect x="72" width="72" height="24" rx="12" fill="#F5F5F5"/>
+              <text x="108" y="16" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="500" fill="#6D6D6D" text-anchor="middle">< 10K</text>
+
+              <rect x="152" width="72" height="24" rx="12" fill="#FFE0B2"/>
+              <text x="188" y="16" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="600" fill="#F57C00" text-anchor="middle">10K-100K</text>
+
+              <rect x="232" width="72" height="24" rx="12" fill="#F5F5F5"/>
+              <text x="268" y="16" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="500" fill="#6D6D6D" text-anchor="middle">> 100K</text>
+            </g>
+          </g>
+        </g>
+
+        <!-- Divider -->
+        <line x1="0" y1="352" x2="312" y2="352" stroke="#E0E0E0" stroke-width="1"/>
+
+        <!-- Filter Group 4: Keyword Difficulty -->
+        <g transform="translate(0, 376)">
+          <g>
+            <text x="0" y="0" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#1A1A1A">Keyword Difficulty</text>
+            <rect x="220" y="-14" width="92" height="20" rx="10" fill="#FFE0B2"/>
+            <text x="266" y="1" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="600" fill="#F57C00" text-anchor="middle">Easy (0-30)</text>
+          </g>
+
+          <!-- Checkbox Options -->
+          <g transform="translate(0, 20)">
+            <!-- Easy (Selected) -->
+            <g>
+              <rect width="18" height="18" rx="4" fill="#FF9800"/>
+              <path d="M 5 9 L 8 12 L 13 6" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <text x="28" y="14" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="500" fill="#1A1A1A">Easy (0-30)</text>
+              <rect x="112" y="2" width="60" height="18" rx="9" fill="#E8F5E9"/>
+              <text x="142" y="14" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="600" fill="#43A047" text-anchor="middle">23 results</text>
+            </g>
+
+            <!-- Medium -->
+            <g transform="translate(0, 32)">
+              <rect width="18" height="18" rx="4" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2"/>
+              <text x="28" y="14" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="400" fill="#4A4A4A">Medium (31-70)</text>
+              <rect x="136" y="2" width="60" height="18" rx="9" fill="#F5F5F5"/>
+              <text x="166" y="14" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="500" fill="#6D6D6D" text-anchor="middle">67 results</text>
+            </g>
+
+            <!-- Hard -->
+            <g transform="translate(0, 64)">
+              <rect width="18" height="18" rx="4" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2"/>
+              <text x="28" y="14" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="400" fill="#4A4A4A">Hard (71-100)</text>
+              <rect x="128" y="2" width="60" height="18" rx="9" fill="#F5F5F5"/>
+              <text x="158" y="14" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="500" fill="#6D6D6D" text-anchor="middle">37 results</text>
+            </g>
+          </g>
+        </g>
+
+        <!-- Divider -->
+        <line x1="0" y1="504" x2="312" y2="504" stroke="#E0E0E0" stroke-width="1"/>
+
+        <!-- Filter Group 5: Opportunity Score -->
+        <g transform="translate(0, 528)">
+          <text x="0" y="0" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#1A1A1A">Opportunity Score</text>
+
+          <!-- Radio Options -->
+          <g transform="translate(0, 20)">
+            <!-- All (Default) -->
+            <g>
+              <circle cx="9" cy="9" r="9" stroke="#E0E0E0" stroke-width="2" fill="#FFFFFF"/>
+              <text x="28" y="14" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="400" fill="#4A4A4A">All opportunities</text>
+            </g>
+
+            <!-- High -->
+            <g transform="translate(0, 32)">
+              <circle cx="9" cy="9" r="9" stroke="#FF9800" stroke-width="2" fill="#FFFFFF"/>
+              <circle cx="9" cy="9" r="5" fill="#FF9800"/>
+              <text x="28" y="14" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="500" fill="#1A1A1A">High opportunity</text>
+              <rect x="148" y="2" width="60" height="18" rx="9" fill="#E8F5E9"/>
+              <text x="178" y="14" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="600" fill="#43A047" text-anchor="middle">45 results</text>
+            </g>
+
+            <!-- Medium -->
+            <g transform="translate(0, 64)">
+              <circle cx="9" cy="9" r="9" stroke="#E0E0E0" stroke-width="2" fill="#FFFFFF"/>
+              <text x="28" y="14" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="400" fill="#4A4A4A">Medium opportunity</text>
+              <rect x="172" y="2" width="60" height="18" rx="9" fill="#F5F5F5"/>
+              <text x="202" y="14" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="500" fill="#6D6D6D" text-anchor="middle">58 results</text>
+            </g>
+
+            <!-- Low -->
+            <g transform="translate(0, 96)">
+              <circle cx="9" cy="9" r="9" stroke="#E0E0E0" stroke-width="2" fill="#FFFFFF"/>
+              <text x="28" y="14" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="400" fill="#4A4A4A">Low opportunity</text>
+              <rect x="148" y="2" width="60" height="18" rx="9" fill="#F5F5F5"/>
+              <text x="178" y="14" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="500" fill="#6D6D6D" text-anchor="middle">24 results</text>
+            </g>
+          </g>
+        </g>
+
+        <!-- Divider -->
+        <line x1="0" y1="676" x2="312" y2="676" stroke="#E0E0E0" stroke-width="1"/>
+
+        <!-- Filter Group 6: Trend -->
+        <g transform="translate(0, 700)">
+          <text x="0" y="0" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#1A1A1A">Trend Direction</text>
+
+          <!-- Checkbox Options -->
+          <g transform="translate(0, 20)">
+            <!-- Rising -->
+            <g>
+              <rect width="18" height="18" rx="4" fill="#FF9800"/>
+              <path d="M 5 9 L 8 12 L 13 6" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <text x="28" y="14" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="500" fill="#1A1A1A">Rising</text>
+              <text x="84" y="14" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#43A047">↑</text>
+            </g>
+
+            <!-- Stable -->
+            <g transform="translate(0, 32)">
+              <rect width="18" height="18" rx="4" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2"/>
+              <text x="28" y="14" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="400" fill="#4A4A4A">Stable</text>
+              <text x="84" y="14" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#9E9E9E">→</text>
+            </g>
+
+            <!-- Declining -->
+            <g transform="translate(0, 64)">
+              <rect width="18" height="18" rx="4" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2"/>
+              <text x="28" y="14" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="400" fill="#4A4A4A">Declining</text>
+              <text x="100" y="14" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#E53935">↓</text>
+            </g>
+          </g>
+        </g>
+
+        <!-- Divider -->
+        <line x1="0" y1="824" x2="312" y2="824" stroke="#E0E0E0" stroke-width="1"/>
+
+        <!-- Filter Group 7: Current Ranking -->
+        <g transform="translate(0, 848)">
+          <text x="0" y="0" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#1A1A1A">Current Ranking Status</text>
+
+          <!-- Toggle Options -->
+          <g transform="translate(0, 20)">
+            <!-- Not Ranked -->
+            <g>
+              <rect width="18" height="18" rx="4" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2"/>
+              <text x="28" y="14" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="400" fill="#4A4A4A">Not ranked (new opportunities)</text>
+            </g>
+
+            <!-- Ranked -->
+            <g transform="translate(0, 32)">
+              <rect width="18" height="18" rx="4" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2"/>
+              <text x="28" y="14" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="400" fill="#4A4A4A">Currently ranked (improve position)</text>
+            </g>
+          </g>
+        </g>
+      </g>
+
+      <!-- Panel Footer (Sticky) -->
+      <g transform="translate(0, 880)">
+        <rect width="360" height="80" fill="#FFFFFF"/>
+        <rect y="0" width="360" height="1" fill="#E0E0E0"/>
+
+        <!-- Result Count -->
+        <text x="24" y="32" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="600" fill="#1A1A1A">45 keywords match your filters</text>
+
+        <!-- Action Buttons -->
+        <g transform="translate(24, 44)">
+          <rect width="150" height="40" rx="8" fill="#FF9800"/>
+          <text x="75" y="26" font-family="IBM Plex Sans, sans-serif" font-size="15" font-weight="600" fill="#FFFFFF" text-anchor="middle">Apply Filters</text>
+
+          <rect x="162" width="150" height="40" rx="8" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2"/>
+          <text x="237" y="26" font-family="IBM Plex Sans, sans-serif" font-size="15" font-weight="500" fill="#4A4A4A" text-anchor="middle">Reset All</text>
+        </g>
+      </g>
+    </g>
+
+    <!-- Main Content Behind Filter (Blurred Preview) -->
+    <g transform="translate(32, 32)" opacity="0.5">
+      <text x="0" y="0" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1A1A1A">127 keywords found</text>
+
+      <!-- Table Preview -->
+      <g transform="translate(0, 32)">
+        <rect width="760" height="200" rx="8" fill="#F5F5F5"/>
+        <rect x="16" y="16" width="728" height="24" rx="4" fill="#E0E0E0"/>
+        <rect x="16" y="48" width="728" height="24" rx="4" fill="#E0E0E0"/>
+        <rect x="16" y="80" width="728" height="24" rx="4" fill="#E0E0E0"/>
+        <rect x="16" y="112" width="728" height="24" rx="4" fill="#E0E0E0"/>
+        <rect x="16" y="144" width="728" height="24" rx="4" fill="#E0E0E0"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- Annotation: Filter Panel Features -->
+  <g transform="translate(60, 920)">
+    <rect width="320" height="80" rx="8" fill="#E1F5FE"/>
+    <text x="16" y="24" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="700" fill="#039BE5">Filter Panel Features:</text>
+    <text x="16" y="44" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="400" fill="#4A4A4A">• Live result counts per option</text>
+    <text x="16" y="60" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="400" fill="#4A4A4A">• Active filter indicators with badges</text>
+    <text x="16" y="76" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="400" fill="#4A4A4A">• Sticky footer with apply/reset actions</text>
+  </g>
+</svg>

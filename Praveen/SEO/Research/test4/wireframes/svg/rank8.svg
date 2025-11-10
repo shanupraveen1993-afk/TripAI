@@ -1,0 +1,172 @@
+<svg width="1440" height="900" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
+
+      .display-large { font-family: 'Inter', sans-serif; font-size: 57px; line-height: 64px; font-weight: 600; fill: #111827; }
+      .display-small { font-family: 'Inter', sans-serif; font-size: 36px; line-height: 44px; font-weight: 600; fill: #111827; }
+      .headline { font-family: 'Inter', sans-serif; font-size: 32px; line-height: 40px; font-weight: 600; fill: #111827; }
+      .title { font-family: 'Inter', sans-serif; font-size: 22px; line-height: 28px; font-weight: 600; fill: #111827; }
+      .body-large { font-family: 'Inter', sans-serif; font-size: 16px; line-height: 24px; font-weight: 400; fill: #111827; }
+      .body-small { font-family: 'Inter', sans-serif; font-size: 14px; line-height: 20px; font-weight: 400; fill: #6B7280; }
+      .label { font-family: 'Inter', sans-serif; font-size: 14px; line-height: 20px; font-weight: 600; fill: #111827; }
+      .text-white { fill: #FFFFFF; }
+      .text-brand { fill: #FF5722; }
+      .text-secondary { fill: #6B7280; }
+    </style>
+  </defs>
+
+  <!-- Dimmed Dashboard Background -->
+  <rect width="1440" height="900" fill="#F9FAFB"/>
+  <rect width="1440" height="900" fill="#000000" opacity="0.5"/>
+
+  <!-- Modal Container (900px width, centered) -->
+  <g id="modal" transform="translate(270, 50)">
+    <rect x="0" y="0" width="900" height="800" rx="16" fill="#FFFFFF"/>
+    <g transform="translate(24, 24)">
+      <!-- Close Button -->
+      <circle cx="836" cy="12" r="20" fill="#F9FAFB"/>
+      <line x1="828" y1="4" x2="844" y2="20" stroke="#6B7280" stroke-width="2" stroke-linecap="round"/>
+      <line x1="844" y1="4" x2="828" y2="20" stroke="#6B7280" stroke-width="2" stroke-linecap="round"/>
+
+      <!-- Header -->
+      <text x="426" y="46" class="headline" text-anchor="middle">Unlock Unlimited Keyword Tracking</text>
+      <text x="426" y="76" class="body-large text-secondary" text-anchor="middle">Choose the plan that fits your needs</text>
+
+      <!-- Billing Toggle -->
+      <g transform="translate(326, 101)">
+        <text x="0" y="15" class="body-small">Monthly</text>
+        <rect x="70" y="0" width="60" height="28" rx="14" fill="#E5E7EB"/>
+        <circle cx="100" cy="14" r="10" fill="#FFFFFF"/>
+        <text x="140" y="15" class="body-small">Annual</text>
+        <rect x="205" y="2" width="80" height="24" rx="12" fill="#10B981"/>
+        <text x="245" y="18" class="body-small text-white" font-weight="bold" text-anchor="middle">Save 20%</text>
+      </g>
+
+      <!-- FREE COLUMN (260px wide card) -->
+      <g id="free-plan" transform="translate(0, 160)">
+        <rect x="0" y="0" width="260" height="540" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+        <g transform="translate(24, 24)">
+          <rect x="52" y="-4" width="90" height="28" rx="14" fill="#9CA3AF"/>
+          <text x="97" y="15" class="label text-white" text-anchor="middle">Free</text>
+          <text x="106" y="66" class="display-small" text-anchor="middle">$0</text>
+          <text x="106" y="91" class="body-small" text-anchor="middle">Current plan</text>
+
+          <!-- Features -->
+          <g transform="translate(0, 116)">
+            <circle cx="8" cy="8" r="8" fill="#10B981"/>
+            <text x="28" y="13" class="body-small">50 keywords tracked</text>
+            <circle cx="8" cy="38" r="8" fill="#10B981"/>
+            <text x="28" y="43" class="body-small">1 app tracked</text>
+            <circle cx="8" cy="68" r="8" fill="#10B981"/>
+            <text x="28" y="73" class="body-small">3 markets</text>
+            <circle cx="8" cy="98" r="8" fill="#10B981"/>
+            <text x="28" y="103" class="body-small">30 days historical data</text>
+            <circle cx="8" cy="128" r="8" fill="#10B981"/>
+            <text x="28" y="133" class="body-small">Daily updates</text>
+            <circle cx="8" cy="158" r="8" fill="#E5E7EB"/>
+            <text x="28" y="163" class="body-small" opacity="0.5">Hourly updates</text>
+            <circle cx="8" cy="188" r="8" fill="#E5E7EB"/>
+            <text x="28" y="193" class="body-small" opacity="0.5">AI insights</text>
+            <circle cx="8" cy="218" r="8" fill="#E5E7EB"/>
+            <text x="28" y="223" class="body-small" opacity="0.5">Competitor tracking</text>
+          </g>
+
+          <rect x="0" y="456" width="212" height="48" rx="12" fill="#E5E7EB"/>
+          <text x="106" y="485" class="label" text-anchor="middle" fill="#9CA3AF">Current Plan</text>
+        </g>
+      </g>
+
+      <!-- PRO COLUMN (Most Popular - 260px wide card) -->
+      <g id="pro-plan" transform="translate(280, 160)">
+        <rect x="0" y="0" width="260" height="540" rx="16" fill="#FFFFFF" stroke="#FF5722" stroke-width="3"/>
+
+        <!-- Most Popular Badge (drawn AFTER card so it appears on top) -->
+        <rect x="70" y="-12" width="120" height="28" rx="14" fill="#FF5722"/>
+        <text x="130" y="7" class="label text-white" text-anchor="middle">MOST POPULAR</text>
+        <g transform="translate(24, 24)">
+          <rect x="59" y="-4" width="76" height="28" rx="14" fill="#FF5722"/>
+          <text x="97" y="15" class="label text-white" text-anchor="middle">Pro</text>
+          <text x="106" y="66" class="display-small" text-anchor="middle">$79</text>
+          <text x="132" y="62" class="body-large text-secondary">/mo</text>
+
+          <!-- Features -->
+          <g transform="translate(0, 116)">
+            <circle cx="8" cy="8" r="8" fill="#10B981"/>
+            <text x="28" y="13" class="body-small">500 keywords tracked</text>
+            <circle cx="8" cy="38" r="8" fill="#10B981"/>
+            <text x="28" y="43" class="body-small">5 apps tracked</text>
+            <circle cx="8" cy="68" r="8" fill="#10B981"/>
+            <text x="28" y="73" class="body-small">10 markets</text>
+            <circle cx="8" cy="98" r="8" fill="#10B981"/>
+            <text x="28" y="103" class="body-small">1 year historical data</text>
+            <circle cx="8" cy="128" r="8" fill="#10B981"/>
+            <text x="28" y="133" class="label text-brand">Hourly updates</text>
+            <circle cx="8" cy="158" r="8" fill="#10B981"/>
+            <text x="28" y="163" class="label text-brand">Unlimited AI insights</text>
+            <circle cx="8" cy="188" r="8" fill="#10B981"/>
+            <text x="28" y="193" class="body-small">10 competitors tracked</text>
+            <circle cx="8" cy="218" r="8" fill="#10B981"/>
+            <text x="28" y="223" class="body-small">Unlimited exports</text>
+          </g>
+
+          <rect x="0" y="456" width="212" height="48" rx="12" fill="#FF5722"/>
+          <text x="106" y="485" class="label text-white" text-anchor="middle">Upgrade Now</text>
+        </g>
+      </g>
+
+      <!-- ENTERPRISE COLUMN (260px wide card) -->
+      <g id="enterprise-plan" transform="translate(560, 160)">
+        <rect x="0" y="0" width="260" height="540" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+        <g transform="translate(24, 24)">
+          <rect x="32" y="-4" width="130" height="28" rx="14" fill="#111827"/>
+          <text x="97" y="15" class="label text-white" text-anchor="middle">Enterprise</text>
+          <text x="106" y="66" class="title" text-anchor="middle">Contact sales</text>
+
+          <!-- Features -->
+          <g transform="translate(0, 116)">
+            <circle cx="8" cy="8" r="8" fill="#10B981"/>
+            <text x="28" y="13" class="body-small">Unlimited keywords</text>
+            <circle cx="8" cy="38" r="8" fill="#10B981"/>
+            <text x="28" y="43" class="body-small">Unlimited apps</text>
+            <circle cx="8" cy="68" r="8" fill="#10B981"/>
+            <text x="28" y="73" class="body-small">All markets (150+)</text>
+            <circle cx="8" cy="98" r="8" fill="#10B981"/>
+            <text x="28" y="103" class="body-small">Unlimited historical data</text>
+            <circle cx="8" cy="128" r="8" fill="#10B981"/>
+            <text x="28" y="133" class="body-small">Hourly updates</text>
+            <circle cx="8" cy="158" r="8" fill="#10B981"/>
+            <text x="28" y="163" class="body-small">Unlimited AI insights</text>
+            <circle cx="8" cy="188" r="8" fill="#10B981"/>
+            <text x="28" y="193" class="body-small">Unlimited competitors</text>
+            <circle cx="8" cy="218" r="8" fill="#10B981"/>
+            <text x="28" y="223" class="label text-brand">API access</text>
+          </g>
+
+          <rect x="0" y="456" width="212" height="48" rx="12" fill="#FFFFFF" stroke="#111827" stroke-width="2"/>
+          <text x="106" y="485" class="label" text-anchor="middle">Contact Sales</text>
+        </g>
+      </g>
+
+      <!-- Footer -->
+      <g transform="translate(96, 727)">
+        <circle cx="12" cy="12" r="10" fill="#10B981" opacity="0.2"/>
+        <text x="30" y="16" class="body-small">14-day money-back guarantee</text>
+
+        <text x="306" y="16" class="body-small">|</text>
+
+        <g transform="translate(326, 0)">
+          <circle cx="12" cy="12" r="10" fill="#2196F3" opacity="0.2"/>
+          <text x="30" y="16" class="body-small">Cancel anytime</text>
+        </g>
+
+        <text x="476" y="16" class="body-small">|</text>
+
+        <g transform="translate(496, 0)">
+          <circle cx="12" cy="12" r="10" fill="#FF9800" opacity="0.2"/>
+          <text x="30" y="16" class="body-small">No credit card required</text>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

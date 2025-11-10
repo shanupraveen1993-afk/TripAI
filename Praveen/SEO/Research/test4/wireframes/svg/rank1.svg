@@ -1,0 +1,479 @@
+<svg width="1440" viewBox="0 0 1440 5800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
+
+      text { font-family: 'Inter', sans-serif; }
+      .display-large { font-size: 57px; line-height: 64px; font-weight: 600; fill: #111827; }
+      .display-small { font-size: 36px; line-height: 44px; font-weight: 600; fill: #111827; }
+      .headline { font-size: 32px; line-height: 40px; font-weight: 600; fill: #111827; }
+      .title { font-size: 22px; line-height: 28px; font-weight: 600; fill: #111827; }
+      .body-large { font-size: 16px; line-height: 24px; font-weight: 400; fill: #111827; }
+      .body-small { font-size: 14px; line-height: 20px; font-weight: 400; fill: #6B7280; }
+      .label { font-size: 14px; line-height: 20px; font-weight: 600; fill: #111827; }
+      .text-white { fill: #FFFFFF; }
+      .text-brand { fill: #FF5722; }
+      .text-secondary { fill: #6B7280; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1440" height="5800" fill="#FFFFFF"/>
+
+  <!-- 1. TOP NAVIGATION BAR (64px height) -->
+  <g id="navigation">
+    <rect width="1440" height="64" fill="#FFFFFF"/>
+    <line x1="0" y1="64" x2="1440" y2="64" stroke="#E5E7EB" stroke-width="1"/>
+
+    <!-- Logo -->
+    <g transform="translate(120, 20)">
+      <rect width="24" height="24" rx="4" fill="#FF5722"/>
+      <text x="32" y="18" class="title" font-size="18">Rank Tracker</text>
+    </g>
+
+    <!-- Navigation Menu -->
+    <text x="520" y="38" class="body-large">Features</text>
+    <text x="640" y="38" class="body-large">Pricing</text>
+    <text x="760" y="38" class="body-large">Resources</text>
+    <text x="880" y="38" class="body-large">Blog</text>
+
+    <!-- Right CTAs -->
+    <text x="1120" y="38" class="body-large text-secondary">Log In</text>
+    <rect x="1200" y="16" width="140" height="32" rx="8" fill="#FF5722"/>
+    <text x="1270" y="38" text-anchor="middle" class="label text-white">Start Free Trial</text>
+  </g>
+
+  <!-- 2. HERO SECTION (500px) -->
+  <g id="hero" transform="translate(0, 64)">
+    <rect width="1440" height="500" fill="#FFFFFF"/>
+
+    <!-- Content Container (centered) -->
+    <g transform="translate(120, 80)">
+      <!-- Headline -->
+      <text x="660" y="0" text-anchor="middle" class="display-large">Track App Rankings in Real-Time</text>
+      <text x="660" y="70" text-anchor="middle" class="display-large">Across 150+ Countries</text>
+
+      <!-- Subheadline -->
+      <text x="660" y="140" text-anchor="middle" class="title text-secondary">AI-powered keyword tracking with hourly updates and competitor intelligence</text>
+
+      <!-- CTAs -->
+      <g transform="translate(380, 180)">
+        <rect width="200" height="48" rx="12" fill="#FF5722"/>
+        <text x="100" y="32" text-anchor="middle" class="body-large text-white" font-weight="600">Start 14-Day Free Trial</text>
+
+        <rect x="220" width="160" height="48" rx="12" fill="none" stroke="#FF5722" stroke-width="2"/>
+        <text x="300" y="32" text-anchor="middle" class="body-large text-brand" font-weight="600">View Live Demo</text>
+
+        <text x="200" y="76" text-anchor="middle" class="body-small">No credit card required</text>
+      </g>
+
+      <!-- Dashboard Mockup -->
+      <rect x="210" y="280" width="800" height="100" rx="16" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="2"/>
+      <!-- Chart visualization -->
+      <path d="M250,340 L350,320 L450,350 L550,310 L650,325 L750,305 L850,315 L950,300" stroke="#FF5722" stroke-width="3" fill="none"/>
+      <circle cx="250" cy="340" r="4" fill="#FF5722"/>
+      <circle cx="350" cy="320" r="4" fill="#FF5722"/>
+      <circle cx="450" cy="350" r="4" fill="#FF5722"/>
+      <circle cx="550" cy="310" r="4" fill="#FF5722"/>
+      <circle cx="650" cy="325" r="4" fill="#FF5722"/>
+      <circle cx="750" cy="305" r="4" fill="#FF5722"/>
+      <circle cx="850" cy="315" r="4" fill="#FF5722"/>
+      <circle cx="950" cy="300" r="4" fill="#FF5722"/>
+    </g>
+  </g>
+
+  <!-- 3. SOCIAL PROOF (80px) -->
+  <g id="social-proof" transform="translate(0, 564)">
+    <rect width="1440" height="80" fill="#F9FAFB"/>
+
+    <text x="720" y="28" text-anchor="middle" class="body-small">Trusted by 5,000+ app developers</text>
+
+    <!-- Company Logos (simplified as rectangles) -->
+    <g transform="translate(320, 48)">
+      <rect x="0" y="0" width="100" height="24" rx="4" fill="#E5E7EB"/>
+      <rect x="120" y="0" width="100" height="24" rx="4" fill="#E5E7EB"/>
+      <rect x="240" y="0" width="100" height="24" rx="4" fill="#E5E7EB"/>
+      <rect x="360" y="0" width="100" height="24" rx="4" fill="#E5E7EB"/>
+      <rect x="480" y="0" width="100" height="24" rx="4" fill="#E5E7EB"/>
+      <rect x="600" y="0" width="100" height="24" rx="4" fill="#E5E7EB"/>
+    </g>
+  </g>
+
+  <!-- 4. VALUE PROPOSITIONS (3-column cards, 320px height) -->
+  <g id="value-props" transform="translate(0, 644)">
+    <rect width="1440" height="320" fill="#FFFFFF"/>
+
+    <g transform="translate(120, 56)">
+      <!-- Card 1: Real-Time Rank Tracking -->
+      <g>
+        <rect x="0" y="0" width="360" height="240" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+        <g transform="translate(24, 24)">
+          <circle cx="156" cy="24" r="32" fill="#FFF3E0"/>
+          <text x="156" y="32" text-anchor="middle" class="headline text-brand">📊</text>
+          <text x="156" y="92" text-anchor="middle" class="title">Real-Time Rank Tracking</text>
+          <text x="156" y="132" text-anchor="middle" class="body-small">Hourly updates across iOS and Android</text>
+          <text x="156" y="156" text-anchor="middle" class="body-small">app stores in 150+ countries worldwide</text>
+        </g>
+      </g>
+
+      <!-- Card 2: AI Keyword Insights -->
+      <g transform="translate(400, 0)">
+        <rect x="0" y="0" width="360" height="240" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+        <g transform="translate(24, 24)">
+          <circle cx="156" cy="24" r="32" fill="#FFF3E0"/>
+          <text x="156" y="32" text-anchor="middle" class="headline text-brand">🤖</text>
+          <text x="156" y="92" text-anchor="middle" class="title">AI Keyword Insights</text>
+          <text x="156" y="132" text-anchor="middle" class="body-small">45M+ keyword database with smart</text>
+          <text x="156" y="156" text-anchor="middle" class="body-small">suggestions powered by machine learning</text>
+        </g>
+      </g>
+
+      <!-- Card 3: Competitor Intelligence -->
+      <g transform="translate(800, 0)">
+        <rect x="0" y="0" width="360" height="240" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+        <g transform="translate(24, 24)">
+          <circle cx="156" cy="24" r="32" fill="#FFF3E0"/>
+          <text x="156" y="32" text-anchor="middle" class="headline text-brand">👥</text>
+          <text x="156" y="92" text-anchor="middle" class="title">Competitor Intelligence</text>
+          <text x="156" y="132" text-anchor="middle" class="body-small">Track competitor rankings and metadata</text>
+          <text x="156" y="156" text-anchor="middle" class="body-small">changes to stay ahead of the competition</text>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  <!-- 5. FEATURE HIGHLIGHTS (3×2 grid, 600px height) -->
+  <g id="features" transform="translate(0, 964)">
+    <rect width="1440" height="700" fill="#F9FAFB"/>
+
+    <text x="720" y="72" text-anchor="middle" class="display-small">Everything you need to dominate app stores</text>
+
+    <g transform="translate(120, 136)">
+      <!-- Row 1 -->
+      <!-- Feature 1: Keyword Rank Tracking -->
+      <g>
+        <rect x="0" y="0" width="360" height="240" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+        <g transform="translate(24, 24)">
+          <circle cx="0" cy="0" r="16" fill="#FFF3E0"/>
+          <text x="32" y="10" class="title">Keyword Rank Tracking</text>
+          <text x="0" y="48" class="body-small">Monitor your app's position for unlimited</text>
+          <text x="0" y="72" class="body-small">keywords with daily rank history and trend</text>
+          <text x="0" y="96" class="body-small">analysis across all major app stores</text>
+        </g>
+      </g>
+
+      <!-- Feature 2: Organic Download Attribution -->
+      <g transform="translate(400, 0)">
+        <rect x="0" y="0" width="360" height="240" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+        <g transform="translate(24, 24)">
+          <circle cx="0" cy="0" r="16" fill="#FFF3E0"/>
+          <text x="32" y="10" class="title">Organic Downloads</text>
+          <text x="0" y="48" class="body-small">Estimate organic installs driven by your</text>
+          <text x="0" y="72" class="body-small">keyword rankings with attribution modeling</text>
+          <text x="0" y="96" class="body-small">to prove ASO ROI to stakeholders</text>
+        </g>
+      </g>
+
+      <!-- Feature 3: Search Visibility Score -->
+      <g transform="translate(800, 0)">
+        <rect x="0" y="0" width="360" height="240" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+        <g transform="translate(24, 24)">
+          <circle cx="0" cy="0" r="16" fill="#FFF3E0"/>
+          <text x="32" y="10" class="title">Search Visibility Score</text>
+          <text x="0" y="48" class="body-small">Proprietary metric measuring your app's</text>
+          <text x="0" y="72" class="body-small">overall discoverability across all tracked</text>
+          <text x="0" y="96" class="body-small">keywords weighted by search volume</text>
+        </g>
+      </g>
+
+      <!-- Row 2 -->
+      <!-- Feature 4: Competitor Monitoring -->
+      <g transform="translate(0, 280)">
+        <rect x="0" y="0" width="360" height="240" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+        <g transform="translate(24, 24)">
+          <circle cx="0" cy="0" r="16" fill="#FFF3E0"/>
+          <text x="32" y="10" class="title">Competitor Monitoring</text>
+          <text x="0" y="48" class="body-small">Track up to 20 competitors and receive</text>
+          <text x="0" y="72" class="body-small">alerts when they update metadata, change</text>
+          <text x="0" y="96" class="body-small">pricing, or improve their rankings</text>
+        </g>
+      </g>
+
+      <!-- Feature 5: Multi-Market Support -->
+      <g transform="translate(400, 280)">
+        <rect x="0" y="0" width="360" height="240" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+        <g transform="translate(24, 24)">
+          <circle cx="0" cy="0" r="16" fill="#FFF3E0"/>
+          <text x="32" y="10" class="title">150+ Countries</text>
+          <text x="0" y="48" class="body-small">Track rankings in every country where your</text>
+          <text x="0" y="72" class="body-small">app is available with localized keyword</text>
+          <text x="0" y="96" class="body-small">suggestions and market-specific insights</text>
+        </g>
+      </g>
+
+      <!-- Feature 6: Alert System -->
+      <g transform="translate(800, 280)">
+        <rect x="0" y="0" width="360" height="240" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+        <g transform="translate(24, 24)">
+          <circle cx="0" cy="0" r="16" fill="#FFF3E0"/>
+          <text x="32" y="10" class="title">Smart Alerts</text>
+          <text x="0" y="48" class="body-small">Get notified via email or Slack when ranks</text>
+          <text x="0" y="72" class="body-small">change significantly, competitors move, or</text>
+          <text x="0" y="96" class="body-small">new keyword opportunities emerge</text>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  <!-- 6. HOW IT WORKS (3 steps, 400px height) -->
+  <g id="how-it-works" transform="translate(0, 1664)">
+    <rect width="1440" height="400" fill="#FFFFFF"/>
+
+    <text x="720" y="72" text-anchor="middle" class="display-small">How it works</text>
+
+    <g transform="translate(120, 160)">
+      <!-- Step 1 -->
+      <circle cx="180" cy="0" r="40" fill="#FF5722"/>
+      <text x="180" y="8" text-anchor="middle" class="headline text-white">1</text>
+      <text x="180" y="72" text-anchor="middle" class="title">Connect Your App</text>
+      <text x="180" y="108" text-anchor="middle" class="body-small">Enter your app store URL and</text>
+      <text x="180" y="132" text-anchor="middle" class="body-small">we'll auto-fetch all metadata</text>
+
+      <!-- Step 2 -->
+      <circle cx="580" cy="0" r="40" fill="#FF5722"/>
+      <text x="580" y="8" text-anchor="middle" class="headline text-white">2</text>
+      <text x="580" y="72" text-anchor="middle" class="title">Add Keywords</text>
+      <text x="580" y="108" text-anchor="middle" class="body-small">Choose keywords manually or use</text>
+      <text x="580" y="132" text-anchor="middle" class="body-small">AI to suggest relevant terms</text>
+
+      <!-- Step 3 -->
+      <circle cx="980" cy="0" r="40" fill="#FF5722"/>
+      <text x="980" y="8" text-anchor="middle" class="headline text-white">3</text>
+      <text x="980" y="72" text-anchor="middle" class="title">Track Rankings</text>
+      <text x="980" y="108" text-anchor="middle" class="body-small">Get hourly rank updates and</text>
+      <text x="980" y="132" text-anchor="middle" class="body-small">actionable insights on your dashboard</text>
+
+      <!-- Connecting lines -->
+      <line x1="220" y1="0" x2="540" y2="0" stroke="#E5E7EB" stroke-width="2" stroke-dasharray="8,4"/>
+      <line x1="620" y1="0" x2="940" y2="0" stroke="#E5E7EB" stroke-width="2" stroke-dasharray="8,4"/>
+    </g>
+  </g>
+
+  <!-- 7. SCREENSHOT/DEMO SECTION (480px height) -->
+  <g id="screenshot" transform="translate(0, 2064)">
+    <rect width="1440" height="480" fill="#F9FAFB"/>
+
+    <text x="720" y="72" text-anchor="middle" class="display-small">See it in action</text>
+    <text x="720" y="116" text-anchor="middle" class="title text-secondary">Real-time dashboard with actionable insights</text>
+
+    <!-- Large Screenshot Mockup -->
+    <rect x="120" y="176" width="1200" height="260" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+
+    <!-- Simulated Dashboard Content -->
+    <g transform="translate(144, 200)">
+      <!-- KPI Cards -->
+      <rect x="0" y="0" width="260" height="100" rx="12" fill="#F9FAFB"/>
+      <text x="24" y="32" class="body-small">Current Avg Rank</text>
+      <text x="24" y="68" class="headline">#12</text>
+      <text x="160" y="68" class="body-large" fill="#10B981">↑ 3</text>
+
+      <rect x="284" y="0" width="260" height="100" rx="12" fill="#F9FAFB"/>
+      <text x="308" y="32" class="body-small">Visibility Score</text>
+      <text x="308" y="68" class="headline">78/100</text>
+      <text x="444" y="68" class="body-large" fill="#10B981">↑ 5</text>
+
+      <rect x="568" y="0" width="260" height="100" rx="12" fill="#F9FAFB"/>
+      <text x="592" y="32" class="body-small">Keywords Tracked</text>
+      <text x="592" y="68" class="headline">245</text>
+
+      <rect x="852" y="0" width="300" height="100" rx="12" fill="#F9FAFB"/>
+      <text x="876" y="32" class="body-small">Est. Organic Downloads</text>
+      <text x="876" y="68" class="headline">12.5K</text>
+      <text x="1000" y="68" class="body-large" fill="#10B981">↑ 18%</text>
+
+      <!-- Chart -->
+      <rect x="0" y="124" width="1152" height="88" rx="12" fill="#F9FAFB"/>
+      <path d="M24,170 L124,185 L224,165 L324,175 L424,155 L524,170 L624,150 L724,165 L824,145 L924,160 L1024,140 L1124,155" stroke="#FF5722" stroke-width="2" fill="none"/>
+    </g>
+  </g>
+
+  <!-- 8. PRICING PREVIEW (3 cards, 560px height) -->
+  <g id="pricing" transform="translate(0, 2544)">
+    <rect width="1440" height="560" fill="#FFFFFF"/>
+
+    <text x="720" y="72" text-anchor="middle" class="display-small">Simple, transparent pricing</text>
+    <text x="720" y="116" text-anchor="middle" class="title text-secondary">Start free, upgrade as you grow</text>
+
+    <g transform="translate(120, 180)">
+      <!-- Starter Plan -->
+      <g>
+        <rect x="0" y="0" width="360" height="340" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+        <g transform="translate(24, 24)">
+          <text x="0" y="20" class="title">Starter</text>
+          <text x="0" y="64" class="display-small">$0</text>
+          <text x="76" y="76" class="body-small">/month</text>
+          <text x="0" y="112" class="body-small">• 1 app</text>
+          <text x="0" y="140" class="body-small">• 25 keywords</text>
+          <text x="0" y="168" class="body-small">• 5 countries</text>
+          <text x="0" y="196" class="body-small">• Daily updates</text>
+          <rect x="0" y="236" width="312" height="48" rx="12" fill="none" stroke="#FF5722" stroke-width="2"/>
+          <text x="156" y="266" text-anchor="middle" class="body-large text-brand" font-weight="600">Start Free</text>
+        </g>
+      </g>
+
+      <!-- Pro Plan (Featured) -->
+      <g transform="translate(400, 0)">
+        <rect x="0" y="0" width="360" height="340" rx="16" fill="#FFFFFF" stroke="#FF5722" stroke-width="3"/>
+        <rect x="0" y="0" width="360" height="36" rx="16" fill="#FF5722"/>
+        <text x="180" y="26" text-anchor="middle" class="label text-white">MOST POPULAR</text>
+        <g transform="translate(24, 24)">
+          <text x="0" y="32" class="title">Pro</text>
+          <text x="0" y="76" class="display-small">$49</text>
+          <text x="88" y="88" class="body-small">/month</text>
+          <text x="0" y="124" class="body-small">• 5 apps</text>
+          <text x="0" y="152" class="body-small">• Unlimited keywords</text>
+          <text x="0" y="180" class="body-small">• All countries</text>
+          <text x="0" y="208" class="body-small">• Hourly updates</text>
+          <rect x="0" y="248" width="312" height="48" rx="12" fill="#FF5722"/>
+          <text x="156" y="278" text-anchor="middle" class="body-large text-white" font-weight="600">Start Free Trial</text>
+        </g>
+      </g>
+
+      <!-- Enterprise Plan -->
+      <g transform="translate(800, 0)">
+        <rect x="0" y="0" width="360" height="340" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+        <g transform="translate(24, 24)">
+          <text x="0" y="20" class="title">Enterprise</text>
+          <text x="0" y="64" class="display-small">Custom</text>
+          <text x="0" y="112" class="body-small">• Unlimited apps</text>
+          <text x="0" y="140" class="body-small">• Unlimited keywords</text>
+          <text x="0" y="168" class="body-small">• All countries</text>
+          <text x="0" y="196" class="body-small">• API access</text>
+          <rect x="0" y="236" width="312" height="48" rx="12" fill="none" stroke="#FF5722" stroke-width="2"/>
+          <text x="156" y="266" text-anchor="middle" class="body-large text-brand" font-weight="600">Contact Sales</text>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  <!-- 9. TESTIMONIALS (3 cards, 400px height) -->
+  <g id="testimonials" transform="translate(0, 3104)">
+    <rect width="1440" height="400" fill="#F9FAFB"/>
+
+    <text x="720" y="72" text-anchor="middle" class="display-small">Loved by app developers</text>
+
+    <g transform="translate(120, 160)">
+      <!-- Testimonial 1 -->
+      <g>
+        <rect x="0" y="0" width="360" height="200" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+        <g transform="translate(24, 24)">
+          <text x="0" y="16" class="body-large">"Rank Tracker helped us identify</text>
+          <text x="0" y="40" class="body-large">keywords that drove 50% more</text>
+          <text x="0" y="64" class="body-large">organic downloads in 3 months"</text>
+          <circle cx="20" cy="124" r="20" fill="#FF5722"/>
+          <text x="20" y="130" text-anchor="middle" class="body-small text-white" font-weight="600">JD</text>
+          <text x="52" y="124" class="label" font-size="12">John Doe</text>
+          <text x="52" y="142" class="body-small" font-size="12">Head of Growth, AppCo</text>
+        </g>
+      </g>
+
+      <!-- Testimonial 2 -->
+      <g transform="translate(400, 0)">
+        <rect x="0" y="0" width="360" height="200" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+        <g transform="translate(24, 24)">
+          <text x="0" y="16" class="body-large">"The competitor intelligence</text>
+          <text x="0" y="40" class="body-large">feature alone is worth the price.</text>
+          <text x="0" y="64" class="body-large">We stay ahead of the competition"</text>
+          <circle cx="20" cy="124" r="20" fill="#FF5722"/>
+          <text x="20" y="130" text-anchor="middle" class="body-small text-white" font-weight="600">SM</text>
+          <text x="52" y="124" class="label" font-size="12">Sarah Miller</text>
+          <text x="52" y="142" class="body-small" font-size="12">ASO Manager, GameStudio</text>
+        </g>
+      </g>
+
+      <!-- Testimonial 3 -->
+      <g transform="translate(800, 0)">
+        <rect x="0" y="0" width="360" height="200" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+        <g transform="translate(24, 24)">
+          <text x="0" y="16" class="body-large">"Hourly rank updates give us a</text>
+          <text x="0" y="40" class="body-large">huge advantage. We can react to</text>
+          <text x="0" y="64" class="body-large">changes faster than ever before"</text>
+          <circle cx="20" cy="124" r="20" fill="#FF5722"/>
+          <text x="20" y="130" text-anchor="middle" class="body-small text-white" font-weight="600">MK</text>
+          <text x="52" y="124" class="label" font-size="12">Mike Kim</text>
+          <text x="52" y="142" class="body-small" font-size="12">Product Lead, TechApp</text>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  <!-- 10. FINAL CTA SECTION (320px height) -->
+  <g id="final-cta" transform="translate(0, 3504)">
+    <rect width="1440" height="320" fill="#FFFFFF"/>
+
+    <g transform="translate(0, 80)">
+      <text x="720" y="0" text-anchor="middle" class="display-small">Ready to dominate app stores?</text>
+      <text x="720" y="60" text-anchor="middle" class="title text-secondary">Start your 14-day free trial today. No credit card required.</text>
+
+      <g transform="translate(520, 120)">
+        <rect width="200" height="48" rx="12" fill="#FF5722"/>
+        <text x="100" y="32" text-anchor="middle" class="body-large text-white" font-weight="600">Start Free Trial</text>
+
+        <rect x="220" width="160" height="48" rx="12" fill="none" stroke="#FF5722" stroke-width="2"/>
+        <text x="300" y="32" text-anchor="middle" class="body-large text-brand" font-weight="600">View Pricing</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- 11. FOOTER (4 columns, 400px height) -->
+  <g id="footer" transform="translate(0, 3824)">
+    <rect width="1440" height="400" fill="#111827"/>
+
+    <g transform="translate(120, 80)">
+      <!-- Column 1: Brand -->
+      <g transform="translate(0, 0)">
+        <rect width="24" height="24" rx="4" fill="#FF5722"/>
+        <text x="32" y="18" class="title text-white">Rank Tracker</text>
+        <text x="0" y="72" class="body-small" fill="#9CA3AF">AI-powered app store</text>
+        <text x="0" y="92" class="body-small" fill="#9CA3AF">rank tracking for iOS</text>
+        <text x="0" y="112" class="body-small" fill="#9CA3AF">and Android apps</text>
+      </g>
+
+      <!-- Column 2: Product -->
+      <g transform="translate(320, 0)">
+        <text x="0" y="18" class="label text-white">Product</text>
+        <text x="0" y="60" class="body-small" fill="#9CA3AF">Features</text>
+        <text x="0" y="84" class="body-small" fill="#9CA3AF">Pricing</text>
+        <text x="0" y="108" class="body-small" fill="#9CA3AF">API</text>
+        <text x="0" y="132" class="body-small" fill="#9CA3AF">Integrations</text>
+        <text x="0" y="156" class="body-small" fill="#9CA3AF">Changelog</text>
+      </g>
+
+      <!-- Column 3: Resources -->
+      <g transform="translate(640, 0)">
+        <text x="0" y="18" class="label text-white">Resources</text>
+        <text x="0" y="60" class="body-small" fill="#9CA3AF">Blog</text>
+        <text x="0" y="84" class="body-small" fill="#9CA3AF">Documentation</text>
+        <text x="0" y="108" class="body-small" fill="#9CA3AF">ASO Guide</text>
+        <text x="0" y="132" class="body-small" fill="#9CA3AF">Case Studies</text>
+        <text x="0" y="156" class="body-small" fill="#9CA3AF">Support</text>
+      </g>
+
+      <!-- Column 4: Company -->
+      <g transform="translate(960, 0)">
+        <text x="0" y="18" class="label text-white">Company</text>
+        <text x="0" y="60" class="body-small" fill="#9CA3AF">About</text>
+        <text x="0" y="84" class="body-small" fill="#9CA3AF">Careers</text>
+        <text x="0" y="108" class="body-small" fill="#9CA3AF">Privacy</text>
+        <text x="0" y="132" class="body-small" fill="#9CA3AF">Terms</text>
+        <text x="0" y="156" class="body-small" fill="#9CA3AF">Contact</text>
+      </g>
+    </g>
+
+    <!-- Bottom Bar -->
+    <line x1="120" y1="280" x2="1320" y2="280" stroke="#374151" stroke-width="1"/>
+    <text x="120" y="324" class="body-small" fill="#9CA3AF">© 2025 Rank Tracker. All rights reserved.</text>
+    <text x="1200" y="324" class="body-small" fill="#9CA3AF">Made with ❤️</text>
+  </g>
+
+</svg>

@@ -1,0 +1,353 @@
+<svg width="1440" height="2800" viewBox="0 0 1440 2800" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1440" height="2800" fill="#F9FAFB"/>
+
+  <!-- Title -->
+  <text x="720" y="64" font-family="Inter, sans-serif" font-size="36" font-weight="600" fill="#111827" text-anchor="middle">Error States Collection</text>
+  <text x="720" y="100" font-family="Inter, sans-serif" font-size="16" font-weight="400" fill="#6B7280" text-anchor="middle">All error and edge case states for ASO Keyword Research</text>
+
+  <!-- Error State 1: No Data Found -->
+  <g transform="translate(80, 160)">
+    <rect width="640" height="400" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1" style="filter:drop-shadow(0 4px 6px rgba(0,0,0,0.05))"/>
+
+    <!-- Label -->
+    <rect x="0" y="-44" width="220" height="32" rx="8" fill="#FF5722"/>
+    <text x="110" y="-20" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">1. No Data Found</text>
+
+    <!-- Illustration -->
+    <g transform="translate(270, 80)">
+      <circle cx="50" cy="50" r="50" fill="#F3F4F6"/>
+      <circle cx="42" cy="45" r="4" fill="#9CA3AF"/>
+      <circle cx="58" cy="45" r="4" fill="#9CA3AF"/>
+      <path d="M 35 65 Q 50 55 65 65" stroke="#9CA3AF" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <circle cx="50" cy="50" r="54" stroke="#E5E7EB" stroke-width="2" fill="none"/>
+    </g>
+
+    <!-- Text Content -->
+    <text x="320" y="220" font-family="Inter, sans-serif" font-size="18" font-weight="600" fill="#111827" text-anchor="middle">No keywords found for "xyz123app"</text>
+    <text x="320" y="248" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle">Try a different search term or adjust your filters</text>
+
+    <!-- Suggestions -->
+    <text x="320" y="292" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#4B5563" text-anchor="middle">Suggested keywords:</text>
+    <g transform="translate(100, 308)">
+      <rect width="112" height="28" rx="14" fill="#FFF7ED"/>
+      <text x="56" y="18" font-family="Inter, sans-serif" font-size="12" font-weight="500" fill="#EA580C" text-anchor="middle">fitness app</text>
+
+      <rect x="124" width="120" height="28" rx="14" fill="#FFF7ED"/>
+      <text x="184" y="18" font-family="Inter, sans-serif" font-size="12" font-weight="500" fill="#EA580C" text-anchor="middle">health tracker</text>
+
+      <rect x="256" width="112" height="28" rx="14" fill="#FFF7ED"/>
+      <text x="312" y="18" font-family="Inter, sans-serif" font-size="12" font-weight="500" fill="#EA580C" text-anchor="middle">workout app</text>
+    </g>
+
+    <!-- Action Button -->
+    <rect x="230" y="352" width="180" height="36" rx="8" fill="#FF5722" style="filter:drop-shadow(0 4px 8px rgba(255,87,34,0.25))"/>
+    <text x="320" y="374" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">Clear All Filters</text>
+  </g>
+
+  <!-- Error State 2: Mandatory Field Missing -->
+  <g transform="translate(720, 160)">
+    <rect width="640" height="400" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1" style="filter:drop-shadow(0 4px 6px rgba(0,0,0,0.05))"/>
+
+    <!-- Label -->
+    <rect x="0" y="-44" width="268" height="32" rx="8" fill="#FF5722"/>
+    <text x="134" y="-20" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">2. Mandatory Field Missing</text>
+
+    <!-- Form Section -->
+    <g transform="translate(32, 60)">
+      <text x="0" y="0" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#111827">Search for Keywords</text>
+
+      <!-- Input Label -->
+      <text x="0" y="36" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#111827">Enter a keyword *</text>
+
+      <!-- Error Input Field -->
+      <rect x="0" y="48" width="576" height="48" rx="8" fill="#FFFFFF" stroke="#EF4444" stroke-width="2"/>
+
+      <!-- Error Icon -->
+      <circle cx="540" cy="72" r="10" fill="#EF4444"/>
+      <text x="540" y="78" font-family="Inter, sans-serif" font-size="16" font-weight="700" fill="#FFFFFF" text-anchor="middle">!</text>
+
+      <!-- Error Message -->
+      <g transform="translate(0, 104)">
+        <circle cx="8" cy="8" r="8" fill="#FEE2E2"/>
+        <text x="6" y="12" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#EF4444">!</text>
+        <text x="24" y="12" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#EF4444">Please enter a keyword to search</text>
+      </g>
+
+      <!-- Helper Text -->
+      <text x="0" y="152" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#6B7280">Example: fitness tracker, workout app, calorie counter</text>
+
+      <!-- Disabled Button -->
+      <rect x="0" y="176" width="200" height="40" rx="8" fill="#F3F4F6"/>
+      <text x="100" y="200" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#9CA3AF" text-anchor="middle">Search Keywords</text>
+
+      <!-- Info Banner -->
+      <g transform="translate(0, 236)">
+        <rect width="576" height="60" rx="8" fill="#DBEAFE"/>
+        <text x="16" y="26" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#1E40AF">Tip: How to search effectively</text>
+        <text x="16" y="48" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#4B5563">Use 2-5 words that describe your app's main feature</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Error State 3: Access Denied -->
+  <g transform="translate(80, 620)">
+    <rect width="640" height="400" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1" style="filter:drop-shadow(0 4px 6px rgba(0,0,0,0.05))"/>
+
+    <!-- Label -->
+    <rect x="0" y="-44" width="196" height="32" rx="8" fill="#FF5722"/>
+    <text x="98" y="-20" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">3. Access Denied</text>
+
+    <!-- Lock Icon -->
+    <g transform="translate(275, 60)">
+      <circle cx="35" cy="50" r="48" fill="#FFF7ED"/>
+      <rect x="20" y="46" width="30" height="34" rx="4" stroke="#FF5722" stroke-width="3" fill="none"/>
+      <path d="M 26 46 L 26 38 A 9 9 0 0 1 44 38 L 44 46" stroke="#FF5722" stroke-width="3" fill="none"/>
+      <circle cx="35" cy="63" r="4" fill="#FF5722"/>
+      <line x1="35" y1="67" x2="35" y2="72" stroke="#FF5722" stroke-width="3"/>
+    </g>
+
+    <!-- Text Content -->
+    <text x="320" y="200" font-family="Inter, sans-serif" font-size="18" font-weight="600" fill="#111827" text-anchor="middle">Upgrade to access Competitor Analysis</text>
+    <text x="320" y="228" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle">This feature is available on Pro and Enterprise plans</text>
+
+    <!-- Feature List -->
+    <g transform="translate(160, 260)">
+      <g>
+        <circle cx="8" cy="8" r="7" fill="#DCFCE7"/>
+        <path d="M 5 8 L 7 10 L 11 5" stroke="#15803D" stroke-width="1.5" fill="none"/>
+        <text x="24" y="12" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#4B5563">Unlimited competitor tracking</text>
+      </g>
+      <g transform="translate(0, 32)">
+        <circle cx="8" cy="8" r="7" fill="#DCFCE7"/>
+        <path d="M 5 8 L 7 10 L 11 5" stroke="#15803D" stroke-width="1.5" fill="none"/>
+        <text x="24" y="12" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#4B5563">Advanced keyword insights</text>
+      </g>
+      <g transform="translate(0, 64)">
+        <circle cx="8" cy="8" r="7" fill="#DCFCE7"/>
+        <path d="M 5 8 L 7 10 L 11 5" stroke="#15803D" stroke-width="1.5" fill="none"/>
+        <text x="24" y="12" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#4B5563">Historical trend data</text>
+      </g>
+    </g>
+
+    <!-- CTA Buttons -->
+    <g transform="translate(160, 348)">
+      <rect width="140" height="36" rx="8" fill="#FF5722" style="filter:drop-shadow(0 4px 8px rgba(255,87,34,0.25))"/>
+      <text x="70" y="22" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">Upgrade Now</text>
+
+      <rect x="156" width="140" height="36" rx="8" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+      <text x="226" y="22" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#111827" text-anchor="middle">View Pricing</text>
+    </g>
+  </g>
+
+  <!-- Error State 4: Plan Limit Reached -->
+  <g transform="translate(720, 620)">
+    <rect width="640" height="400" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1" style="filter:drop-shadow(0 4px 6px rgba(0,0,0,0.05))"/>
+
+    <!-- Label -->
+    <rect x="0" y="-44" width="220" height="32" rx="8" fill="#FF5722"/>
+    <text x="110" y="-20" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">4. Plan Limit Reached</text>
+
+    <!-- Illustration -->
+    <g transform="translate(270, 60)">
+      <circle cx="50" cy="50" r="48" fill="#FEE2E2"/>
+      <text x="50" y="70" font-family="Inter, sans-serif" font-size="48" font-weight="700" fill="#EF4444" text-anchor="middle">500</text>
+      <path d="M 20 92 L 80 92" stroke="#EF4444" stroke-width="3" stroke-linecap="round"/>
+      <path d="M 20 92 L 80 92" stroke="#EF4444" stroke-width="3" stroke-linecap="round" transform="rotate(45 50 92)"/>
+    </g>
+
+    <!-- Usage Bar -->
+    <g transform="translate(120, 188)">
+      <text x="0" y="0" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#6B7280">Keyword searches this month</text>
+      <rect x="0" y="8" width="400" height="12" rx="6" fill="#F3F4F6"/>
+      <rect x="0" y="8" width="400" height="12" rx="6" fill="#EF4444"/>
+      <text x="0" y="38" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#EF4444">500 / 500 searches used (100%)</text>
+    </g>
+
+    <!-- Message -->
+    <text x="320" y="264" font-family="Inter, sans-serif" font-size="18" font-weight="600" fill="#111827" text-anchor="middle">You've reached your monthly limit</text>
+    <text x="320" y="292" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle">Upgrade your plan or wait until next month</text>
+
+    <!-- Reset Date -->
+    <rect x="185" y="308" width="270" height="28" rx="8" fill="#DBEAFE"/>
+    <text x="320" y="326" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#1E40AF" text-anchor="middle">Resets on December 1, 2025</text>
+
+    <!-- CTA Button -->
+    <rect x="210" y="348" width="220" height="36" rx="8" fill="#FF5722" style="filter:drop-shadow(0 4px 8px rgba(255,87,34,0.25))"/>
+    <text x="320" y="370" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">Upgrade to Unlimited</text>
+  </g>
+
+  <!-- Error State 5: API/Connection Error -->
+  <g transform="translate(80, 1080)">
+    <rect width="640" height="400" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1" style="filter:drop-shadow(0 4px 6px rgba(0,0,0,0.05))"/>
+
+    <!-- Label -->
+    <rect x="0" y="-44" width="252" height="32" rx="8" fill="#FF5722"/>
+    <text x="126" y="-20" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">5. API/Connection Error</text>
+
+    <!-- Illustration -->
+    <g transform="translate(270, 60)">
+      <circle cx="50" cy="50" r="48" fill="#FEE2E2"/>
+      <circle cx="28" cy="40" r="18" stroke="#EF4444" stroke-width="3" fill="none"/>
+      <line x1="43" y1="25" x2="53" y2="15" stroke="#EF4444" stroke-width="3"/>
+      <circle cx="72" cy="60" r="18" stroke="#EF4444" stroke-width="3" fill="none"/>
+      <line x1="57" y1="75" x2="47" y2="85" stroke="#EF4444" stroke-width="3"/>
+      <line x1="37" y1="52" x2="63" y2="62" stroke="#EF4444" stroke-width="3" stroke-dasharray="4,4"/>
+    </g>
+
+    <!-- Text Content -->
+    <text x="320" y="200" font-family="Inter, sans-serif" font-size="18" font-weight="600" fill="#111827" text-anchor="middle">Unable to load keyword data</text>
+    <text x="320" y="228" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle">We're having trouble connecting to our servers</text>
+
+    <!-- Error Details -->
+    <g transform="translate(120, 252)">
+      <rect width="400" height="52" rx="8" fill="#F3F4F6"/>
+      <text x="16" y="22" font-family="Inter, sans-serif" font-size="12" font-weight="500" fill="#6B7280">Error Code:</text>
+      <text x="16" y="40" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#4B5563">ERR_CONNECTION_TIMEOUT (503)</text>
+      <path d="M 384 24 L 388 28 L 384 32" stroke="#6B7280" stroke-width="1.5" fill="none"/>
+    </g>
+
+    <!-- Action Buttons -->
+    <g transform="translate(145, 328)">
+      <rect width="140" height="36" rx="8" fill="#FF5722" style="filter:drop-shadow(0 4px 8px rgba(255,87,34,0.25))"/>
+      <text x="70" y="22" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">Try Again</text>
+
+      <rect x="156" width="180" height="36" rx="8" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+      <text x="246" y="22" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#111827" text-anchor="middle">Contact Support</text>
+    </g>
+  </g>
+
+  <!-- Error State 6: Invalid Input -->
+  <g transform="translate(720, 1080)">
+    <rect width="640" height="400" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1" style="filter:drop-shadow(0 4px 6px rgba(0,0,0,0.05))"/>
+
+    <!-- Label -->
+    <rect x="0" y="-44" width="172" height="32" rx="8" fill="#FF5722"/>
+    <text x="86" y="-20" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">6. Invalid Input</text>
+
+    <!-- Form Section -->
+    <g transform="translate(32, 60)">
+      <text x="0" y="0" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#111827">Search for Keywords</text>
+
+      <text x="0" y="36" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#111827">Enter a keyword</text>
+
+      <!-- Invalid Input Field -->
+      <rect x="0" y="48" width="576" height="48" rx="8" fill="#FFFFFF" stroke="#F59E0B" stroke-width="2"/>
+      <text x="16" y="76" font-family="Inter, sans-serif" font-size="16" font-weight="400" fill="#111827">a</text>
+
+      <!-- Warning Icon -->
+      <g transform="translate(532, 68)">
+        <circle cx="12" cy="12" r="10" fill="#F59E0B"/>
+        <text x="12" y="17" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#FFFFFF" text-anchor="middle">!</text>
+      </g>
+
+      <!-- Validation Message -->
+      <g transform="translate(0, 104)">
+        <circle cx="8" cy="8" r="8" fill="#FEF3C7"/>
+        <text x="6" y="12" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#F59E0B">!</text>
+        <text x="24" y="12" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#F59E0B">Please enter at least 2 characters</text>
+      </g>
+
+      <!-- Validation Rules -->
+      <g transform="translate(0, 144)">
+        <rect width="576" height="132" rx="8" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1"/>
+        <text x="16" y="28" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#111827">Keyword requirements:</text>
+
+        <!-- Rule 1 - Invalid -->
+        <g transform="translate(16, 48)">
+          <circle cx="8" cy="8" r="6" fill="#FEE2E2"/>
+          <line x1="6" y1="6" x2="10" y2="10" stroke="#EF4444" stroke-width="1.5"/>
+          <line x1="10" y1="6" x2="6" y2="10" stroke="#EF4444" stroke-width="1.5"/>
+          <text x="24" y="12" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#EF4444">Minimum 2 characters</text>
+        </g>
+
+        <!-- Rule 2 - Valid -->
+        <g transform="translate(16, 76)">
+          <circle cx="8" cy="8" r="6" fill="#DCFCE7"/>
+          <path d="M 5 8 L 7 10 L 11 5" stroke="#15803D" stroke-width="1.5" fill="none"/>
+          <text x="24" y="12" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#15803D">Letters, numbers, and spaces allowed</text>
+        </g>
+
+        <!-- Rule 3 - Neutral -->
+        <g transform="translate(16, 104)">
+          <circle cx="8" cy="8" r="6" fill="#F3F4F6"/>
+          <text x="24" y="12" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#6B7280">Maximum 100 characters</text>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  <!-- Loading State -->
+  <g transform="translate(80, 1540)">
+    <rect width="640" height="400" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1" style="filter:drop-shadow(0 4px 6px rgba(0,0,0,0.05))"/>
+
+    <!-- Label -->
+    <rect x="0" y="-44" width="196" height="32" rx="8" fill="#1E40AF"/>
+    <text x="98" y="-20" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">7. Loading State</text>
+
+    <!-- Spinner -->
+    <g transform="translate(320, 140)">
+      <circle cx="0" cy="0" r="32" stroke="#E5E7EB" stroke-width="4" fill="none"/>
+      <path d="M 0 -32 A 32 32 0 0 1 32 0" stroke="#FF5722" stroke-width="4" fill="none" stroke-linecap="round">
+        <animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="1s" repeatCount="indefinite"/>
+      </path>
+    </g>
+
+    <!-- Text -->
+    <text x="320" y="240" font-family="Inter, sans-serif" font-size="18" font-weight="600" fill="#111827" text-anchor="middle">Searching for keywords...</text>
+    <text x="320" y="268" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle">This may take a few moments</text>
+
+    <!-- Progress Bar -->
+    <g transform="translate(170, 296)">
+      <rect width="300" height="8" rx="4" fill="#F3F4F6"/>
+      <rect width="200" height="8" rx="4" fill="#FF5722">
+        <animate attributeName="width" from="0" to="300" dur="2s" repeatCount="indefinite"/>
+      </rect>
+    </g>
+  </g>
+
+  <!-- Empty State -->
+  <g transform="translate(720, 1540)">
+    <rect width="640" height="400" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1" style="filter:drop-shadow(0 4px 6px rgba(0,0,0,0.05))"/>
+
+    <!-- Label -->
+    <rect x="0" y="-44" width="172" height="32" rx="8" fill="#1E40AF"/>
+    <text x="86" y="-20" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">8. Empty State</text>
+
+    <!-- Illustration -->
+    <g transform="translate(250, 60)">
+      <rect x="20" y="20" width="100" height="80" rx="4" stroke="#E5E7EB" stroke-width="2" fill="none"/>
+      <line x1="40" y1="44" x2="100" y2="44" stroke="#E5E7EB" stroke-width="2"/>
+      <line x1="40" y1="60" x2="88" y2="60" stroke="#E5E7EB" stroke-width="2"/>
+      <line x1="40" y1="76" x2="96" y2="76" stroke="#E5E7EB" stroke-width="2"/>
+      <circle cx="70" cy="32" r="20" stroke="#FF5722" stroke-width="3" fill="none"/>
+      <line x1="85" y1="47" x2="98" y2="60" stroke="#FF5722" stroke-width="3"/>
+    </g>
+
+    <!-- Text Content -->
+    <text x="320" y="220" font-family="Inter, sans-serif" font-size="18" font-weight="600" fill="#111827" text-anchor="middle">Start your keyword research</text>
+    <text x="320" y="248" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle">Enter a keyword above to discover opportunities</text>
+
+    <!-- Tips -->
+    <g transform="translate(140, 276)">
+      <rect width="360" height="64" rx="8" fill="#DBEAFE"/>
+      <text x="16" y="24" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#1E40AF">💡 Pro tip:</text>
+      <text x="16" y="46" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#4B5563">Start with your app's main feature or category</text>
+    </g>
+
+    <!-- CTA -->
+    <rect x="210" y="356" width="220" height="28" rx="6" fill="transparent" stroke="#FF5722" stroke-width="2"/>
+    <text x="320" y="374" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FF5722" text-anchor="middle">Watch 2-min Demo Video →</text>
+  </g>
+
+  <!-- Summary Footer -->
+  <g transform="translate(80, 2000)">
+    <rect width="1280" height="120" rx="12" fill="#FFF7ED" stroke="#FFEDD5" stroke-width="1"/>
+    <text x="640" y="44" font-family="Inter, sans-serif" font-size="20" font-weight="600" fill="#111827" text-anchor="middle">Error State Design Principles</text>
+    <text x="640" y="76" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#4B5563" text-anchor="middle">✓ Clear explanation  •  ✓ Suggested actions  •  ✓ Visual consistency  •  ✓ Appropriate tone</text>
+    <text x="640" y="100" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#4B5563" text-anchor="middle">All states follow WCAG AA standards with 4.5:1 contrast ratio</text>
+  </g>
+
+  <!-- Version Info -->
+  <text x="720" y="2760" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#6B7280" text-anchor="middle">SearchVector Design System v1.0.0 • Error States • 2025-10-16</text>
+</svg>

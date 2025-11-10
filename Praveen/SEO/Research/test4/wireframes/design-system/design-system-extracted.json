@@ -1,0 +1,181 @@
+{
+  "meta": {
+    "source": "/home/coder/Praveen/SEO/Research/test4/claude.md",
+    "extracted_date": "2025-10-22",
+    "status": "VERIFIED ✓",
+    "brand": "Rank Tracker ASO Tool",
+    "font": "Inter",
+    "icon_system": "Material Symbols"
+  },
+  "colors": {
+    "brand": {
+      "primary": "#FF5722",
+      "50": "#FFF3E0",
+      "100": "#FFE0B2",
+      "200": "#FFCC80",
+      "300": "#FFB74D",
+      "400": "#FFA726",
+      "500": "#FF5722",
+      "600": "#F4511E",
+      "700": "#E64A19",
+      "800": "#D84315",
+      "900": "#BF360C"
+    },
+    "neutral": {
+      "25": "#FCFCFD",
+      "50": "#F9FAFB",
+      "100": "#F3F4F6",
+      "200": "#E5E7EB",
+      "300": "#D1D5DB",
+      "400": "#9CA3AF",
+      "500": "#6B7280",
+      "600": "#4B5563",
+      "700": "#374151",
+      "800": "#1F2937",
+      "850": "#171E2C",
+      "900": "#111827",
+      "950": "#0A0E16"
+    },
+    "semantic": {
+      "error": "#DC2626",
+      "error_container": "#FEE2E2",
+      "success": "#10B981",
+      "warning": "#F59E0B",
+      "info": "#FF5722"
+    },
+    "surface": {
+      "background": "#FFFFFF",
+      "surface": "#FFFFFF",
+      "surface_variant": "#F9FAFB",
+      "outline": "#E5E7EB",
+      "outline_variant": "#D1D5DB"
+    },
+    "text": {
+      "primary": "#111827",
+      "secondary": "#6B7280",
+      "tertiary": "#9CA3AF",
+      "on_brand": "#FFFFFF"
+    }
+  },
+  "typography": {
+    "font_family": "Inter, system-ui, -apple-system, Segoe UI, Helvetica, Arial, sans-serif",
+    "scale": {
+      "display_large": {"size": "57px", "line_height": "64px", "weight": 600},
+      "display_small": {"size": "36px", "line_height": "44px", "weight": 600},
+      "headline_large": {"size": "32px", "line_height": "40px", "weight": 600},
+      "title_large": {"size": "22px", "line_height": "28px", "weight": 600},
+      "body_large": {"size": "16px", "line_height": "24px", "weight": 400},
+      "body_small": {"size": "14px", "line_height": "20px", "weight": 400},
+      "label_large": {"size": "14px", "line_height": "20px", "weight": 600}
+    }
+  },
+  "spacing": {
+    "unit": "4px",
+    "scale": {
+      "0": "0px",
+      "1": "4px",
+      "2": "8px",
+      "3": "12px",
+      "4": "16px",
+      "5": "20px",
+      "6": "24px",
+      "7": "28px",
+      "8": "32px",
+      "9": "40px",
+      "10": "48px"
+    },
+    "note": "4pt grid system - NO odd numbers (5px, 15px, 25px)"
+  },
+  "border_radius": {
+    "xs": "4px",
+    "sm": "6px",
+    "md": "8px",
+    "lg": "12px",
+    "xl": "16px",
+    "2xl": "20px",
+    "3xl": "24px",
+    "full": "9999px"
+  },
+  "elevation": {
+    "0": "none",
+    "1": "0 1px 3px 0 rgb(0 0 0/0.10), 0 1px 2px -1px rgb(0 0 0/0.10)",
+    "2": "0 4px 6px -1px rgb(0 0 0/0.10), 0 2px 4px -2px rgb(0 0 0/0.10)",
+    "3": "0 10px 15px -3px rgb(0 0 0/0.10), 0 4px 6px -4px rgb(0 0 0/0.10)",
+    "4": "0 20px 25px -5px rgb(0 0 0/0.10), 0 8px 10px -6px rgb(0 0 0/0.10)",
+    "5": "0 25px 50px -12px rgb(0 0 0/0.25)",
+    "brand_glow": "0 0 0 1px rgb(255 87 34/0.10), 0 8px 16px -4px rgb(255 87 34/0.30)"
+  },
+  "components": {
+    "button": {
+      "default": {"height": "40px", "padding": "10px 16px", "radius": "12px"},
+      "small": {"height": "36px", "padding": "8px 12px", "radius": "12px"},
+      "large": {"height": "48px", "padding": "12px 20px", "radius": "12px"},
+      "variants": ["filled", "outlined", "text"]
+    },
+    "input": {
+      "height": "56px",
+      "padding": "0 16px",
+      "radius": "12px",
+      "border": "1px solid #E5E7EB"
+    },
+    "card": {
+      "padding": "24px",
+      "radius": "16px",
+      "shadow": "elevation-1",
+      "border": "1px solid #E5E7EB"
+    },
+    "modal": {
+      "max_width": "560px",
+      "padding": "24px",
+      "radius": "20px",
+      "shadow": "elevation-5"
+    },
+    "table": {
+      "header_height": "48px",
+      "header_padding": "12px 16px",
+      "row_padding": "16px",
+      "border": "1px solid #E5E7EB"
+    },
+    "avatar": {
+      "default": "40px",
+      "small": "32px",
+      "large": "48px",
+      "xl": "64px"
+    },
+    "icon": {
+      "default": "24px",
+      "small": "16px",
+      "large": "32px",
+      "xl": "40px"
+    },
+    "topbar": {
+      "height": "64px",
+      "padding": "0 16px"
+    },
+    "sidebar": {
+      "width": "240px"
+    }
+  },
+  "layout": {
+    "container_max_width": "1200px",
+    "section_padding": "56px",
+    "page_padding": {
+      "mobile": "16px",
+      "tablet": "24px",
+      "desktop": "32px"
+    }
+  },
+  "breakpoints": {
+    "mobile": "< 599px",
+    "tablet": "600px - 1023px",
+    "desktop": ">= 1024px"
+  },
+  "motion": {
+    "duration": {
+      "short": "150ms",
+      "medium": "250ms",
+      "long": "300ms"
+    },
+    "easing": "cubic-bezier(0.4, 0, 0.2, 1)"
+  }
+}

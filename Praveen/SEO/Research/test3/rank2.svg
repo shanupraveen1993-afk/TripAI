@@ -1,0 +1,122 @@
+<svg width="1440" height="900" viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1440" height="900" fill="#FFFFFF"/>
+
+  <!-- Back Button -->
+  <text x="40" y="50" font-family="Inter, sans-serif" font-size="16" fill="#FF5722">← Back to My Apps</text>
+
+  <!-- App Header -->
+  <g id="app-header">
+    <rect x="40" y="80" width="56" height="56" rx="12" fill="#FF5722"/>
+    <text x="56" y="118" font-family="Inter, sans-serif" font-size="20" font-weight="600" fill="#FFFFFF">M</text>
+
+    <text x="116" y="106" font-family="Inter, sans-serif" font-size="28" font-weight="600" fill="#111827">My Travel App</text>
+    <text x="116" y="130" font-family="Inter, sans-serif" font-size="14" fill="#6B7280">com.example.travelapp</text>
+  </g>
+
+  <!-- Store/Country Tabs -->
+  <g id="tabs">
+    <line x1="40" y1="180" x2="1400" y2="180" stroke="#E5E7EB" stroke-width="1"/>
+
+    <text x="40" y="170" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#FF5722">iOS</text>
+    <line x1="40" y1="178" x2="62" y2="178" stroke="#FF5722" stroke-width="2"/>
+
+    <text x="100" y="170" font-family="Inter, sans-serif" font-size="16" fill="#6B7280">Android</text>
+
+    <text x="200" y="170" font-family="Inter, sans-serif" font-size="16" fill="#6B7280">United States</text>
+    <text x="350" y="170" font-family="Inter, sans-serif" font-size="16" fill="#6B7280">United Kingdom</text>
+    <text x="520" y="170" font-family="Inter, sans-serif" font-size="16" fill="#6B7280">Canada</text>
+  </g>
+
+  <!-- KPI Cards -->
+  <g id="kpi-cards">
+    <!-- Current Rank -->
+    <rect x="40" y="220" width="260" height="120" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+    <text x="64" y="250" font-family="Inter, sans-serif" font-size="14" fill="#6B7280">Current Rank</text>
+    <text x="64" y="300" font-family="Inter, sans-serif" font-size="48" font-weight="600" fill="#111827">#12</text>
+
+    <!-- Change -->
+    <rect x="320" y="220" width="260" height="120" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+    <text x="344" y="250" font-family="Inter, sans-serif" font-size="14" fill="#6B7280">Change</text>
+    <text x="344" y="300" font-family="Inter, sans-serif" font-size="48" font-weight="600" fill="#10B981">↑3</text>
+
+    <!-- Best Rank -->
+    <rect x="600" y="220" width="260" height="120" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+    <text x="624" y="250" font-family="Inter, sans-serif" font-size="14" fill="#6B7280">Best Rank</text>
+    <text x="624" y="300" font-family="Inter, sans-serif" font-size="48" font-weight="600" fill="#111827">#5</text>
+
+    <!-- Last Updated -->
+    <rect x="880" y="220" width="260" height="120" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+    <text x="904" y="250" font-family="Inter, sans-serif" font-size="14" fill="#6B7280">Last Updated</text>
+    <text x="904" y="290" font-family="Inter, sans-serif" font-size="22" font-weight="600" fill="#111827">2 hours ago</text>
+  </g>
+
+  <!-- Rank History Chart -->
+  <g id="chart-section">
+    <text x="40" y="390" font-family="Inter, sans-serif" font-size="22" font-weight="600" fill="#111827">Rank History (30 Days)</text>
+
+    <!-- Chart Container -->
+    <rect x="40" y="410" width="1120" height="300" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+
+    <!-- Y-axis labels (inverted - #1 at top) -->
+    <text x="60" y="440" font-family="Inter, sans-serif" font-size="12" fill="#6B7280">#1</text>
+    <line x1="90" y1="435" x2="1140" y2="435" stroke="#F3F4F6" stroke-width="1"/>
+
+    <text x="60" y="500" font-family="Inter, sans-serif" font-size="12" fill="#6B7280">#10</text>
+    <line x1="90" y1="495" x2="1140" y2="495" stroke="#F3F4F6" stroke-width="1"/>
+
+    <text x="60" y="560" font-family="Inter, sans-serif" font-size="12" fill="#6B7280">#20</text>
+    <line x1="90" y1="555" x2="1140" y2="555" stroke="#F3F4F6" stroke-width="1"/>
+
+    <text x="60" y="620" font-family="Inter, sans-serif" font-size="12" fill="#6B7280">#30</text>
+    <line x1="90" y1="615" x2="1140" y2="615" stroke="#F3F4F6" stroke-width="1"/>
+
+    <text x="60" y="680" font-family="Inter, sans-serif" font-size="12" fill="#6B7280">#40</text>
+    <line x1="90" y1="675" x2="1140" y2="675" stroke="#F3F4F6" stroke-width="1"/>
+
+    <!-- X-axis labels -->
+    <text x="120" y="700" font-family="Inter, sans-serif" font-size="12" fill="#6B7280">Day 1</text>
+    <text x="320" y="700" font-family="Inter, sans-serif" font-size="12" fill="#6B7280">Day 7</text>
+    <text x="520" y="700" font-family="Inter, sans-serif" font-size="12" fill="#6B7280">Day 14</text>
+    <text x="720" y="700" font-family="Inter, sans-serif" font-size="12" fill="#6B7280">Day 21</text>
+    <text x="920" y="700" font-family="Inter, sans-serif" font-size="12" fill="#6B7280">Day 28</text>
+    <text x="1080" y="700" font-family="Inter, sans-serif" font-size="12" fill="#6B7280">Day 30</text>
+
+    <!-- Rank Line Chart (inverted - lower rank number = higher position) -->
+    <polyline points="120,525 180,520 240,515 300,505 360,495 420,490 480,485 540,480 600,475 660,485 720,490 780,495 840,500 900,510 960,515 1020,520 1080,530 1120,535"
+              fill="none" stroke="#FF5722" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- Data points -->
+    <circle cx="120" cy="525" r="4" fill="#FF5722"/>
+    <circle cx="360" cy="495" r="4" fill="#FF5722"/>
+    <circle cx="600" cy="475" r="4" fill="#FF5722"/>
+    <circle cx="840" cy="500" r="4" fill="#FF5722"/>
+    <circle cx="1120" cy="535" r="4" fill="#FF5722"/>
+  </g>
+
+  <!-- Country Rankings Table -->
+  <g id="country-table">
+    <text x="40" y="760" font-family="Inter, sans-serif" font-size="22" font-weight="600" fill="#111827">Rankings by Country</text>
+
+    <rect x="40" y="780" width="1120" height="100" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+
+    <!-- Table Header -->
+    <rect x="40" y="780" width="1120" height="40" rx="12" fill="#F9FAFB"/>
+    <text x="60" y="805" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#6B7280">Country</text>
+    <text x="300" y="805" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#6B7280">Store</text>
+    <text x="450" y="805" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#6B7280">Current Rank</text>
+    <text x="650" y="805" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#6B7280">Change</text>
+    <text x="850" y="805" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#6B7280">Best Rank</text>
+    <text x="1050" y="805" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#6B7280">Trend</text>
+
+    <!-- Row 1 -->
+    <text x="60" y="848" font-family="Inter, sans-serif" font-size="16" fill="#111827">🇺🇸 United States</text>
+    <text x="300" y="848" font-family="Inter, sans-serif" font-size="16" fill="#6B7280">iOS</text>
+    <rect x="450" y="830" width="50" height="28" rx="14" fill="#10B981"/>
+    <text x="462" y="850" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF">#12</text>
+    <text x="650" y="848" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#10B981">↑3</text>
+    <text x="850" y="848" font-family="Inter, sans-serif" font-size="16" fill="#6B7280">#5</text>
+    <polyline points="1050,843 1060,840 1070,838 1080,835 1090,832 1100,835 1110,830"
+              fill="none" stroke="#FF5722" stroke-width="2"/>
+  </g>
+</svg>
