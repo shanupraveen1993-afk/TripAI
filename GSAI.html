@@ -368,6 +368,41 @@
             margin-top: 20px;
         }
 
+        /* Tooltip styles */
+        .data-table th[title] {
+            position: relative;
+        }
+
+        .data-table th[title]:hover::before {
+            content: attr(title);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #1f2937;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            white-space: nowrap;
+            z-index: 1000;
+            margin-bottom: 5px;
+            font-weight: 500;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .data-table th[title]:hover::after {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: #1f2937;
+            margin-bottom: -5px;
+        }
+
         .data-table td {
             padding: 16px;
             border-bottom: 1px solid #e5e7eb;
@@ -532,29 +567,29 @@
                 <table class="data-table" id="keywordTable">
                     <thead>
                         <tr>
-                            <th class="sortable" data-column="0">Campaign Name</th>
-                            <th class="sortable" data-column="1">Ad Group</th>
-                            <th class="sortable" data-column="2">Keyword</th>
-                            <th class="sortable" data-column="3">Match Type</th>
-                            <th class="sortable" data-column="4">Quality Score</th>
-                            <th class="sortable" data-column="5">Cost (₹)</th>
-                            <th class="sortable" data-column="6">Impressions</th>
-                            <th class="sortable" data-column="7">Clicks</th>
-                            <th class="sortable" data-column="8">CTR (%)</th>
-                            <th class="sortable" data-column="9">All Conversions</th>
-                            <th class="sortable" data-column="10">All Conversion Value</th>
-                            <th class="sortable" data-column="11">All Conv. Value / Cost</th>
-                            <th class="sortable" data-column="12">All Conv. Value / Click</th>
-                            <th class="sortable" data-column="13">Ad Group CPC (₹)</th>
-                            <th class="sortable" data-column="14">Avg CPC (₹)</th>
-                            <th class="sortable" data-column="15">First Page CPC (₹)</th>
-                            <th class="sortable" data-column="16">Top of page bid low</th>
-                            <th class="sortable" data-column="17">Top of page bid high</th>
-                            <th class="sortable" data-column="18">Highest Bid (₹)</th>
-                            <th class="sortable" data-column="19">New Bid (₹)</th>
-                            <th class="sortable" data-column="20">Campaign ID</th>
-                            <th class="sortable" data-column="21">Ad Group ID</th>
-                            <th class="sortable" data-column="22">Customer ID</th>
+                            <th class="sortable" data-column="0" title="Campaign Name">Campaign</th>
+                            <th class="sortable" data-column="1" title="Ad Group">Ad Group</th>
+                            <th class="sortable" data-column="2" title="Keyword">Keyword</th>
+                            <th class="sortable" data-column="3" title="Match Type">Match</th>
+                            <th class="sortable" data-column="4" title="Quality Score">QS</th>
+                            <th class="sortable" data-column="5" title="Cost (₹)">Cost</th>
+                            <th class="sortable" data-column="6" title="Impressions">Impr.</th>
+                            <th class="sortable" data-column="7" title="Clicks">Clicks</th>
+                            <th class="sortable" data-column="8" title="Click-Through Rate (%)">CTR%</th>
+                            <th class="sortable" data-column="9" title="All Conversions">Conv.</th>
+                            <th class="sortable" data-column="10" title="All Conversion Value">Conv. Val</th>
+                            <th class="sortable" data-column="11" title="All Conversion Value / Cost (ROAS)">ROAS</th>
+                            <th class="sortable" data-column="12" title="All Conversion Value / Click">Val/Click</th>
+                            <th class="sortable" data-column="13" title="Ad Group CPC (₹)">AG CPC</th>
+                            <th class="sortable" data-column="14" title="Average CPC (₹)">Avg CPC</th>
+                            <th class="sortable" data-column="15" title="First Page CPC (₹)">1st Pg CPC</th>
+                            <th class="sortable" data-column="16" title="Top of Page Bid Low">Top Low</th>
+                            <th class="sortable" data-column="17" title="Top of Page Bid High">Top High</th>
+                            <th class="sortable" data-column="18" title="Highest Bid (₹)">High Bid</th>
+                            <th class="sortable" data-column="19" title="New Bid (₹)">New Bid</th>
+                            <th class="sortable" data-column="20" title="Campaign ID">Camp ID</th>
+                            <th class="sortable" data-column="21" title="Ad Group ID">AG ID</th>
+                            <th class="sortable" data-column="22" title="Customer ID">Cust ID</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -873,28 +908,28 @@
                 <table class="data-table" id="budgetLeakKeywordsTable">
                     <thead>
                         <tr>
-                            <th class="sortable" data-column="0">Campaign Name</th>
-                            <th class="sortable" data-column="1">Ad Group</th>
-                            <th class="sortable" data-column="2">Keyword</th>
-                            <th class="sortable" data-column="3">Match Type</th>
-                            <th class="sortable" data-column="4">Quality Score</th>
-                            <th class="sortable" data-column="5">Cost (₹)</th>
-                            <th class="sortable" data-column="6">Impressions</th>
-                            <th class="sortable" data-column="7">Clicks</th>
-                            <th class="sortable" data-column="8">CTR (%)</th>
-                            <th class="sortable" data-column="9">All Conversions</th>
-                            <th class="sortable" data-column="10">All Conversion Value</th>
-                            <th class="sortable" data-column="11">All Conv. Value / Cost</th>
-                            <th class="sortable" data-column="12">All Conv. Value / Click</th>
-                            <th class="sortable" data-column="13">Ad Group CPC (₹)</th>
-                            <th class="sortable" data-column="14">Avg CPC (₹)</th>
-                            <th class="sortable" data-column="15">First Page CPC (₹)</th>
-                            <th class="sortable" data-column="16">Top of page bid low</th>
-                            <th class="sortable" data-column="17">Top of page bid high</th>
-                            <th class="sortable" data-column="18">New Bid (₹)</th>
-                            <th class="sortable" data-column="19">Campaign ID</th>
-                            <th class="sortable" data-column="20">Ad Group ID</th>
-                            <th class="sortable" data-column="21">Customer ID</th>
+                            <th class="sortable" data-column="0" title="Campaign Name">Campaign</th>
+                            <th class="sortable" data-column="1" title="Ad Group">Ad Group</th>
+                            <th class="sortable" data-column="2" title="Keyword">Keyword</th>
+                            <th class="sortable" data-column="3" title="Match Type">Match</th>
+                            <th class="sortable" data-column="4" title="Quality Score">QS</th>
+                            <th class="sortable" data-column="5" title="Cost (₹)">Cost</th>
+                            <th class="sortable" data-column="6" title="Impressions">Impr.</th>
+                            <th class="sortable" data-column="7" title="Clicks">Clicks</th>
+                            <th class="sortable" data-column="8" title="Click-Through Rate (%)">CTR%</th>
+                            <th class="sortable" data-column="9" title="All Conversions">Conv.</th>
+                            <th class="sortable" data-column="10" title="All Conversion Value">Conv. Val</th>
+                            <th class="sortable" data-column="11" title="All Conversion Value / Cost (ROAS)">ROAS</th>
+                            <th class="sortable" data-column="12" title="All Conversion Value / Click">Val/Click</th>
+                            <th class="sortable" data-column="13" title="Ad Group CPC (₹)">AG CPC</th>
+                            <th class="sortable" data-column="14" title="Average CPC (₹)">Avg CPC</th>
+                            <th class="sortable" data-column="15" title="First Page CPC (₹)">1st Pg CPC</th>
+                            <th class="sortable" data-column="16" title="Top of Page Bid Low">Top Low</th>
+                            <th class="sortable" data-column="17" title="Top of Page Bid High">Top High</th>
+                            <th class="sortable" data-column="18" title="New Bid (₹)">New Bid</th>
+                            <th class="sortable" data-column="19" title="Campaign ID">Camp ID</th>
+                            <th class="sortable" data-column="20" title="Ad Group ID">AG ID</th>
+                            <th class="sortable" data-column="21" title="Customer ID">Cust ID</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -939,28 +974,28 @@
                 <table class="data-table" id="profitableSTTable">
                     <thead>
                         <tr>
-                            <th class="sortable" data-column="0">Campaign Name</th>
-                            <th class="sortable" data-column="1">Search Term</th>
-                            <th class="sortable" data-column="2">Match Type</th>
-                            <th class="sortable" data-column="3">Search Term Status</th>
-                            <th class="sortable" data-column="4">Ad Group</th>
-                            <th class="sortable" data-column="5">Cost (₹)</th>
-                            <th class="sortable" data-column="6">Impressions</th>
-                            <th class="sortable" data-column="7">Clicks</th>
-                            <th class="sortable" data-column="8">CTR (%)</th>
-                            <th class="sortable" data-column="9">All Conversions</th>
-                            <th class="sortable" data-column="10">All Conversion Value</th>
-                            <th class="sortable" data-column="11">All Conv. Value / Cost</th>
-                            <th class="sortable" data-column="12">All Conv. Value / Click</th>
-                            <th class="sortable" data-column="13">Ad Group CPC (₹)</th>
-                            <th class="sortable" data-column="14">Avg CPC (₹)</th>
-                            <th class="sortable" data-column="15">Top of page bid low</th>
-                            <th class="sortable" data-column="16">Top of page bid high</th>
-                            <th class="sortable" data-column="17">Highest Bid (₹)</th>
-                            <th class="sortable" data-column="18">New Bid (₹)</th>
-                            <th class="sortable" data-column="19">Campaign ID</th>
-                            <th class="sortable" data-column="20">Ad Group ID</th>
-                            <th class="sortable" data-column="21">Customer ID</th>
+                            <th class="sortable" data-column="0" title="Campaign Name">Campaign</th>
+                            <th class="sortable" data-column="1" title="Search Term">Search Term</th>
+                            <th class="sortable" data-column="2" title="Match Type">Match</th>
+                            <th class="sortable" data-column="3" title="Search Term Status">ST Status</th>
+                            <th class="sortable" data-column="4" title="Ad Group">Ad Group</th>
+                            <th class="sortable" data-column="5" title="Cost (₹)">Cost</th>
+                            <th class="sortable" data-column="6" title="Impressions">Impr.</th>
+                            <th class="sortable" data-column="7" title="Clicks">Clicks</th>
+                            <th class="sortable" data-column="8" title="Click-Through Rate (%)">CTR%</th>
+                            <th class="sortable" data-column="9" title="All Conversions">Conv.</th>
+                            <th class="sortable" data-column="10" title="All Conversion Value">Conv. Val</th>
+                            <th class="sortable" data-column="11" title="All Conversion Value / Cost (ROAS)">ROAS</th>
+                            <th class="sortable" data-column="12" title="All Conversion Value / Click">Val/Click</th>
+                            <th class="sortable" data-column="13" title="Ad Group CPC (₹)">AG CPC</th>
+                            <th class="sortable" data-column="14" title="Average CPC (₹)">Avg CPC</th>
+                            <th class="sortable" data-column="15" title="Top of Page Bid Low">Top Low</th>
+                            <th class="sortable" data-column="16" title="Top of Page Bid High">Top High</th>
+                            <th class="sortable" data-column="17" title="Highest Bid (₹)">High Bid</th>
+                            <th class="sortable" data-column="18" title="New Bid (₹)">New Bid</th>
+                            <th class="sortable" data-column="19" title="Campaign ID">Camp ID</th>
+                            <th class="sortable" data-column="20" title="Ad Group ID">AG ID</th>
+                            <th class="sortable" data-column="21" title="Customer ID">Cust ID</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -982,26 +1017,26 @@
                 <table class="data-table" id="budgetLeakTable">
                     <thead>
                         <tr>
-                            <th class="sortable" data-column="0">Search Term</th>
-                            <th class="sortable" data-column="1">Match Type</th>
-                            <th class="sortable" data-column="2">Search Term Status</th>
-                            <th class="sortable" data-column="3">Ad Group</th>
-                            <th class="sortable" data-column="4">Cost (₹)</th>
-                            <th class="sortable" data-column="5">Impressions</th>
-                            <th class="sortable" data-column="6">Clicks</th>
-                            <th class="sortable" data-column="7">CTR (%)</th>
-                            <th class="sortable" data-column="8">Conversions</th>
-                            <th class="sortable" data-column="9">All Conversion</th>
-                            <th class="sortable" data-column="10">All Conversion Value</th>
-                            <th class="sortable" data-column="11">All Conv. Value / Cost</th>
-                            <th class="sortable" data-column="12">All Conv. Value / Click</th>
-                            <th class="sortable" data-column="13">Avg CPC (₹)</th>
-                            <th class="sortable" data-column="14">Ad Group CPC (₹)</th>
-                            <th class="sortable" data-column="15">New Bid (₹)</th>
-                            <th class="sortable" data-column="16">Action</th>
-                            <th class="sortable" data-column="17">Campaign ID</th>
-                            <th class="sortable" data-column="18">Ad Group ID</th>
-                            <th class="sortable" data-column="19">Customer ID</th>
+                            <th class="sortable" data-column="0" title="Search Term">Search Term</th>
+                            <th class="sortable" data-column="1" title="Match Type">Match</th>
+                            <th class="sortable" data-column="2" title="Search Term Status">ST Status</th>
+                            <th class="sortable" data-column="3" title="Ad Group">Ad Group</th>
+                            <th class="sortable" data-column="4" title="Cost (₹)">Cost</th>
+                            <th class="sortable" data-column="5" title="Impressions">Impr.</th>
+                            <th class="sortable" data-column="6" title="Clicks">Clicks</th>
+                            <th class="sortable" data-column="7" title="Click-Through Rate (%)">CTR%</th>
+                            <th class="sortable" data-column="8" title="Conversions">Conv.</th>
+                            <th class="sortable" data-column="9" title="All Conversion">All Conv.</th>
+                            <th class="sortable" data-column="10" title="All Conversion Value">Conv. Val</th>
+                            <th class="sortable" data-column="11" title="All Conversion Value / Cost (ROAS)">ROAS</th>
+                            <th class="sortable" data-column="12" title="All Conversion Value / Click">Val/Click</th>
+                            <th class="sortable" data-column="13" title="Average CPC (₹)">Avg CPC</th>
+                            <th class="sortable" data-column="14" title="Ad Group CPC (₹)">AG CPC</th>
+                            <th class="sortable" data-column="15" title="New Bid (₹)">New Bid</th>
+                            <th class="sortable" data-column="16" title="Action">Action</th>
+                            <th class="sortable" data-column="17" title="Campaign ID">Camp ID</th>
+                            <th class="sortable" data-column="18" title="Ad Group ID">AG ID</th>
+                            <th class="sortable" data-column="19" title="Customer ID">Cust ID</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1038,22 +1073,22 @@
                 <table class="data-table" id="zeroClickTable">
                     <thead>
                         <tr>
-                            <th class="sortable" data-column="0">Ad Group</th>
-                            <th class="sortable" data-column="1">Keyword</th>
-                            <th class="sortable" data-column="2">Match Type</th>
-                            <th class="sortable" data-column="3">Keyword Status</th>
-                            <th class="sortable" data-column="4">Impressions</th>
-                            <th class="sortable" data-column="5">Clicks</th>
-                            <th class="sortable" data-column="6">Cost (₹)</th>
-                            <th class="sortable" data-column="7">Ad Group CPC (₹)</th>
-                            <th class="sortable" data-column="8">First Page CPC (₹)</th>
-                            <th class="sortable" data-column="9">Top of page bid low</th>
-                            <th class="sortable" data-column="10">Top of page bid high</th>
-                            <th class="sortable" data-column="11">New Bid (₹)</th>
-                            <th class="sortable" data-column="12">Campaign Name</th>
-                            <th class="sortable" data-column="13">Ad Group ID</th>
-                            <th class="sortable" data-column="14">Campaign ID</th>
-                            <th class="sortable" data-column="15">Customer ID</th>
+                            <th class="sortable" data-column="0" title="Ad Group">Ad Group</th>
+                            <th class="sortable" data-column="1" title="Keyword">Keyword</th>
+                            <th class="sortable" data-column="2" title="Match Type">Match</th>
+                            <th class="sortable" data-column="3" title="Keyword Status">Status</th>
+                            <th class="sortable" data-column="4" title="Impressions">Impr.</th>
+                            <th class="sortable" data-column="5" title="Clicks">Clicks</th>
+                            <th class="sortable" data-column="6" title="Cost (₹)">Cost</th>
+                            <th class="sortable" data-column="7" title="Ad Group CPC (₹)">AG CPC</th>
+                            <th class="sortable" data-column="8" title="First Page CPC (₹)">1st Pg CPC</th>
+                            <th class="sortable" data-column="9" title="Top of Page Bid Low">Top Low</th>
+                            <th class="sortable" data-column="10" title="Top of Page Bid High">Top High</th>
+                            <th class="sortable" data-column="11" title="New Bid (₹)">New Bid</th>
+                            <th class="sortable" data-column="12" title="Campaign Name">Campaign</th>
+                            <th class="sortable" data-column="13" title="Ad Group ID">AG ID</th>
+                            <th class="sortable" data-column="14" title="Campaign ID">Camp ID</th>
+                            <th class="sortable" data-column="15" title="Customer ID">Cust ID</th>
                         </tr>
                     </thead>
                     <tbody>
