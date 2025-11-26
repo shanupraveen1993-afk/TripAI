@@ -452,6 +452,11 @@
             </div>
 
             <div class="control-group">
+                <label>Target ROAS</label>
+                <input type="number" id="roasInput" placeholder="Enter ROAS" step="0.1" min="0">
+            </div>
+
+            <div class="control-group">
                 <label>Date Range</label>
                 <div class="date-picker">
                     <span>Last 30 days</span>
@@ -470,185 +475,49 @@
 
     <!-- Tabs -->
     <div class="tabs">
-        <div class="tab active">ROAS Optimization</div>
-        <div class="tab">Manual Controls</div>
+        <div class="tab active">Which keyword is more profitable ?</div>
+        <div class="tab">Search term opportunity (Search term not added as keyword)</div>
+        <div class="tab">Leaking Search Term</div>
+        <div class="tab">Are there keywords with *LIFETIME* 0 clicks?</div>
     </div>
 
     <!-- Main Content -->
     <div class="content">
-        <!-- ROAS & Performance Section -->
-        <div class="section">
-            <div class="section-header">
-                <h2>Budget & ROAS Optimization</h2>
-                <p>How automated bid adjustments optimize your budget spending and achieve target ROAS</p>
-            </div>
-
-            <div class="metrics-container">
-                <div class="metric-card">
-                    <div class="metric-label">BUDGET EFFICIENCY</div>
-                    <div class="metric-value">$54.8K</div>
-                    <div class="metric-change positive">
-                        ↑ 12%
-                    </div>
-                    <div class="metric-subtext">Previous Week Spend: $62.1K</div>
-                </div>
-
-                <div class="metric-card">
-                    <div class="metric-label">CURRENT ROAS</div>
-                    <div class="metric-value">4.8x</div>
-                    <div class="metric-change positive">
-                        ↑ 18%
-                    </div>
-                    <div class="metric-subtext">Previous Week ROAS: 4.1x</div>
-                </div>
-
-                <div class="metric-card">
-                    <div class="metric-label">TARGET ROAS</div>
-                    <div class="metric-value">4.5x</div>
-                    <div class="metric-change positive">
-                        Target Exceeded
-                    </div>
-                    <div class="metric-subtext">Exceeding target by 6.7%</div>
-                </div>
-            </div>
-
-            <!-- Custom Target ROAS Input -->
-            <div class="roas-input-section">
-                <h3>Set Custom Target ROAS</h3>
-                <div class="roas-input-group">
-                    <input type="number" id="targetRoasInput" placeholder="Enter target ROAS (e.g., 4.5)" step="0.1" min="0">
-                    <button onclick="updateTargetRoas()">Update Target ROAS</button>
-                </div>
-            </div>
-
-            <div class="status-banner">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                </svg>
-                <span class="status-banner-text">ROAS optimization active</span>
-                <span class="status-banner-detail">Automated adjustments preventing overspend and achieving optimal ROAS</span>
-            </div>
-        </div>
-
-        <!-- Campaign Controls Section -->
-        <div class="section">
-            <div class="campaign-controls">
-                <h3>Campaign Automation Controls</h3>
-
-                <div class="search-box">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-                    </svg>
-                    <input type="text" placeholder="Search in table...">
-                </div>
-
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>CAMPAIGN NAME</th>
-                            <th>STATUS</th>
-                            <th>AUTOMATION</th>
-                            <th>CURRENT BID</th>
-                            <th>ROAS</th>
-                            <th>SPEND</th>
-                            <th>REVENUE</th>
-                            <th>LAST ADJUSTMENT</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Brand Keywords Campaign</td>
-                            <td><span class="status-badge active">Active</span></td>
-                            <td>Enabled</td>
-                            <td>$2.45</td>
-                            <td>5.2x</td>
-                            <td>$12,450</td>
-                            <td>$64,740</td>
-                            <td>2 hours ago</td>
-                        </tr>
-                        <tr>
-                            <td>Product Search Campaign</td>
-                            <td><span class="status-badge active">Active</span></td>
-                            <td>Enabled</td>
-                            <td>$3.20</td>
-                            <td>4.8x</td>
-                            <td>$18,900</td>
-                            <td>$90,720</td>
-                            <td>4 hours ago</td>
-                        </tr>
-                        <tr>
-                            <td>Competitor Keywords</td>
-                            <td><span class="status-badge active">Active</span></td>
-                            <td>Enabled</td>
-                            <td>$4.15</td>
-                            <td>3.9x</td>
-                            <td>$8,320</td>
-                            <td>$32,448</td>
-                            <td>1 hour ago</td>
-                        </tr>
-                        <tr>
-                            <td>High Intent Keywords</td>
-                            <td><span class="status-badge paused">Paused</span></td>
-                            <td>Disabled</td>
-                            <td>$5.80</td>
-                            <td>6.5x</td>
-                            <td>$15,130</td>
-                            <td>$98,345</td>
-                            <td>Yesterday</td>
-                        </tr>
-                        <tr>
-                            <td>Seasonal Promotion</td>
-                            <td><span class="status-badge active">Active</span></td>
-                            <td>Enabled</td>
-                            <td>$2.90</td>
-                            <td>4.2x</td>
-                            <td>$6,780</td>
-                            <td>$28,476</td>
-                            <td>5 hours ago</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <!-- Content will be added based on selected tab -->
     </div>
 
     <script>
-        // JavaScript for interactivity
-        function updateTargetRoas() {
-            const input = document.getElementById('targetRoasInput');
-            const value = input.value;
+        // ROAS input field with Enter key functionality
+        const roasInput = document.getElementById('roasInput');
 
-            if (value && parseFloat(value) > 0) {
-                alert(`Target ROAS updated to ${value}x`);
-                // Here you would typically send this to your backend
-                console.log('Target ROAS updated to:', value);
-            } else {
-                alert('Please enter a valid ROAS value');
+        roasInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const value = this.value;
+                if (value && parseFloat(value) > 0) {
+                    console.log('Target ROAS set to:', value);
+                    alert(`Target ROAS set to ${value}x`);
+                    // Here you would typically send this to your backend
+                } else {
+                    alert('Please enter a valid ROAS value');
+                }
             }
-        }
+        });
 
         // Tab switching functionality
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', function() {
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                 this.classList.add('active');
+
+                // Clear content when switching tabs
+                const contentDiv = document.querySelector('.content');
+                contentDiv.innerHTML = '<p style="text-align: center; color: #666; padding: 40px;">Content for this tab will be added here.</p>';
             });
         });
 
         // Date picker placeholder
         document.querySelector('.date-picker').addEventListener('click', function() {
             alert('Date picker would open here');
-        });
-
-        // Search functionality placeholder
-        document.querySelector('.search-box input').addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            const rows = document.querySelectorAll('.data-table tbody tr');
-
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(searchTerm) ? '' : 'none';
-            });
         });
     </script>
 </body>
