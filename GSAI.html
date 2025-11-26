@@ -335,6 +335,37 @@
             color: #6b7280;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+        }
+
+        .data-table th:hover {
+            background-color: #f3f4f6;
+        }
+
+        .data-table th.sortable::after {
+            content: ' ↕';
+            font-size: 10px;
+            opacity: 0.5;
+            margin-left: 5px;
+        }
+
+        .data-table th.sort-asc::after {
+            content: ' ↑';
+            opacity: 1;
+            color: #FF6B35;
+        }
+
+        .data-table th.sort-desc::after {
+            content: ' ↓';
+            opacity: 1;
+            color: #FF6B35;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin-top: 20px;
         }
 
         .data-table td {
@@ -483,7 +514,178 @@
 
     <!-- Main Content -->
     <div class="content">
-        <!-- Content will be added based on selected tab -->
+        <div class="section">
+            <div class="section-header">
+                <h2>Which keyword is more profitable?</h2>
+                <p>Analyze keyword profitability based on conversion value and cost metrics</p>
+            </div>
+
+            <div class="search-box">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+                <input type="text" id="keywordSearch" placeholder="Search keywords, campaigns, ad groups...">
+            </div>
+
+            <div class="table-wrapper">
+                <table class="data-table" id="keywordTable">
+                    <thead>
+                        <tr>
+                            <th class="sortable" data-column="0">Campaign Name</th>
+                            <th class="sortable" data-column="1">Ad Group</th>
+                            <th class="sortable" data-column="2">Keyword</th>
+                            <th class="sortable" data-column="3">Match Type</th>
+                            <th class="sortable" data-column="4">Quality Score</th>
+                            <th class="sortable" data-column="5">Cost (₹)</th>
+                            <th class="sortable" data-column="6">Impressions</th>
+                            <th class="sortable" data-column="7">Clicks</th>
+                            <th class="sortable" data-column="8">CTR (%)</th>
+                            <th class="sortable" data-column="9">All Conversions</th>
+                            <th class="sortable" data-column="10">All Conversion Value</th>
+                            <th class="sortable" data-column="11">All Conv. Value / Cost</th>
+                            <th class="sortable" data-column="12">All Conv. Value / Click</th>
+                            <th class="sortable" data-column="13">Ad Group CPC (₹)</th>
+                            <th class="sortable" data-column="14">Avg CPC (₹)</th>
+                            <th class="sortable" data-column="15">First Page CPC (₹)</th>
+                            <th class="sortable" data-column="16">Top of page bid low</th>
+                            <th class="sortable" data-column="17">Top of page bid high</th>
+                            <th class="sortable" data-column="18">Highest Bid (₹)</th>
+                            <th class="sortable" data-column="19">New Bid (₹)</th>
+                            <th class="sortable" data-column="20">Campaign ID</th>
+                            <th class="sortable" data-column="21">Ad Group ID</th>
+                            <th class="sortable" data-column="22">Customer ID</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Worldwide - Spanish Campaign</td>
+                            <td>app store optimization companies ad group</td>
+                            <td>app store optimization companies</td>
+                            <td>EXACT</td>
+                            <td>0</td>
+                            <td>29.99</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>100</td>
+                            <td>1</td>
+                            <td>1237</td>
+                            <td>41.25</td>
+                            <td>1237</td>
+                            <td>0.01</td>
+                            <td>29.99</td>
+                            <td>0</td>
+                            <td>587.86</td>
+                            <td>7596.68</td>
+                            <td>353.45</td>
+                            <td>29.99</td>
+                            <td>19459101566</td>
+                            <td>189091317024</td>
+                            <td>8215130627</td>
+                        </tr>
+                        <tr>
+                            <td>SERP Rank Tracker - WorldWide</td>
+                            <td>keyword checker ad group</td>
+                            <td>keyword checker</td>
+                            <td>EXACT</td>
+                            <td>5</td>
+                            <td>9.74</td>
+                            <td>4</td>
+                            <td>1</td>
+                            <td>25</td>
+                            <td>3</td>
+                            <td>87</td>
+                            <td>8.93</td>
+                            <td>87</td>
+                            <td>10</td>
+                            <td>9.74</td>
+                            <td>49.53</td>
+                            <td>86.56</td>
+                            <td>361.12</td>
+                            <td>144.96</td>
+                            <td>49.53</td>
+                            <td>20771156539</td>
+                            <td>185253596307</td>
+                            <td>8215130627</td>
+                        </tr>
+                        <tr>
+                            <td>Leads/SEO/India T-1 Cities</td>
+                            <td>search engine optimization ad group</td>
+                            <td>search engine optimization</td>
+                            <td>EXACT</td>
+                            <td>2</td>
+                            <td>442.66</td>
+                            <td>439</td>
+                            <td>11</td>
+                            <td>3</td>
+                            <td>7</td>
+                            <td>2679</td>
+                            <td>6.05</td>
+                            <td>243.55</td>
+                            <td>0.96</td>
+                            <td>40.24</td>
+                            <td>0</td>
+                            <td>18.93</td>
+                            <td>762.12</td>
+                            <td>69.56</td>
+                            <td>18.93</td>
+                            <td>20960514433</td>
+                            <td>182646886296</td>
+                            <td>8215130627</td>
+                        </tr>
+                        <tr>
+                            <td>Leads/SEO/India T-1 Cities</td>
+                            <td>website seo ad group</td>
+                            <td>website seo</td>
+                            <td>EXACT</td>
+                            <td>2</td>
+                            <td>1392.54</td>
+                            <td>464</td>
+                            <td>28</td>
+                            <td>6</td>
+                            <td>30</td>
+                            <td>5630</td>
+                            <td>4.04</td>
+                            <td>201.07</td>
+                            <td>48.66</td>
+                            <td>49.73</td>
+                            <td>0</td>
+                            <td>69.08</td>
+                            <td>1540.28</td>
+                            <td>57.4</td>
+                            <td>49.73</td>
+                            <td>20960514433</td>
+                            <td>183215073018</td>
+                            <td>8215130627</td>
+                        </tr>
+                        <tr>
+                            <td>SERP Rank Tracker - WorldWide</td>
+                            <td>rank tracker ad group</td>
+                            <td>rank tracker</td>
+                            <td>EXACT</td>
+                            <td>8</td>
+                            <td>77.9</td>
+                            <td>27</td>
+                            <td>8</td>
+                            <td>30</td>
+                            <td>6</td>
+                            <td>174</td>
+                            <td>2.23</td>
+                            <td>21.75</td>
+                            <td>10</td>
+                            <td>9.74</td>
+                            <td>37.84</td>
+                            <td>76.07</td>
+                            <td>786.95</td>
+                            <td>36.2</td>
+                            <td>36.2</td>
+                            <td>20771156539</td>
+                            <td>180588935685</td>
+                            <td>8215130627</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -503,15 +705,92 @@
             }
         });
 
+        // Search functionality for keyword table
+        const keywordSearch = document.getElementById('keywordSearch');
+        if (keywordSearch) {
+            keywordSearch.addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const table = document.getElementById('keywordTable');
+                const rows = table.querySelectorAll('tbody tr');
+
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(searchTerm) ? '' : 'none';
+                });
+            });
+        }
+
+        // Sort functionality for table columns
+        let currentSortColumn = null;
+        let currentSortDirection = 'asc';
+
+        document.querySelectorAll('.sortable').forEach(header => {
+            header.addEventListener('click', function() {
+                const columnIndex = parseInt(this.getAttribute('data-column'));
+                const table = this.closest('table');
+                const tbody = table.querySelector('tbody');
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+
+                // Toggle sort direction if clicking the same column
+                if (currentSortColumn === columnIndex) {
+                    currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+                } else {
+                    currentSortDirection = 'asc';
+                    currentSortColumn = columnIndex;
+                }
+
+                // Remove sort classes from all headers
+                document.querySelectorAll('.sortable').forEach(h => {
+                    h.classList.remove('sort-asc', 'sort-desc');
+                });
+
+                // Add sort class to current header
+                this.classList.add(currentSortDirection === 'asc' ? 'sort-asc' : 'sort-desc');
+
+                // Sort rows
+                rows.sort((a, b) => {
+                    const aValue = a.cells[columnIndex].textContent.trim();
+                    const bValue = b.cells[columnIndex].textContent.trim();
+
+                    // Try to parse as number
+                    const aNum = parseFloat(aValue);
+                    const bNum = parseFloat(bValue);
+
+                    let comparison = 0;
+                    if (!isNaN(aNum) && !isNaN(bNum)) {
+                        // Numeric comparison
+                        comparison = aNum - bNum;
+                    } else {
+                        // String comparison
+                        comparison = aValue.localeCompare(bValue);
+                    }
+
+                    return currentSortDirection === 'asc' ? comparison : -comparison;
+                });
+
+                // Reorder table rows
+                rows.forEach(row => tbody.appendChild(row));
+            });
+        });
+
         // Tab switching functionality
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', function() {
+                const tabText = this.textContent.trim();
+
+                // Don't do anything if clicking the first tab (already loaded)
+                if (tabText === 'Which keyword is more profitable ?') {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    return;
+                }
+
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                 this.classList.add('active');
 
-                // Clear content when switching tabs
+                // Show placeholder for other tabs
                 const contentDiv = document.querySelector('.content');
-                contentDiv.innerHTML = '<p style="text-align: center; color: #666; padding: 40px;">Content for this tab will be added here.</p>';
+                contentDiv.innerHTML = '<div class="section"><p style="text-align: center; color: #666; padding: 40px;">Content for "' + tabText + '" will be added here.</p></div>';
             });
         });
 
