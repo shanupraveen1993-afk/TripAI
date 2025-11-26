@@ -507,6 +507,7 @@
     <!-- Tabs -->
     <div class="tabs">
         <div class="tab active">Which keyword is more profitable ?</div>
+        <div class="tab">Which keyword is leaking Budget?</div>
         <div class="tab">Search term opportunity (Search term not added as keyword)</div>
         <div class="tab">Leaking Search Term</div>
         <div class="tab">Are there keywords with *LIFETIME* 0 clicks?</div>
@@ -782,18 +783,24 @@
                 searchId: 'keywordSearch'
             },
             'tab2': {
+                title: 'Which keyword is leaking Budget?',
+                description: 'Keywords with poor ROAS (below 350% threshold) causing budget leaks',
+                tableId: 'budgetLeakKeywordsTable',
+                searchId: 'budgetLeakKeywordsSearch'
+            },
+            'tab3': {
                 title: 'Search term opportunity (Search term not added as keyword)',
                 description: 'Identify profitable search terms that should be added as keywords - 350% ROAS threshold',
                 tableId: 'profitableSTTable',
                 searchId: 'profitableSTSearch'
             },
-            'tab3': {
+            'tab4': {
                 title: 'Leaking Search Term',
                 description: 'Search terms causing budget leaks with poor conversion rates or high costs',
                 tableId: 'budgetLeakTable',
                 searchId: 'budgetLeakSearch'
             },
-            'tab4': {
+            'tab5': {
                 title: 'Are there keywords with *LIFETIME* 0 clicks?',
                 description: 'Keywords that have never received clicks despite having impressions',
                 tableId: 'zeroClickTable',
@@ -812,13 +819,16 @@
                 // First tab - already loaded
                 return;
             } else if (tabKey === 'tab2') {
-                // Tab 2: Profitable ST
-                tableHTML = generateProfitableSTTable();
+                // Tab 2: Budget Leak Keywords
+                tableHTML = generateBudgetLeakKeywordsTable();
             } else if (tabKey === 'tab3') {
-                // Tab 3: Budget Leak
-                tableHTML = generateBudgetLeakTable();
+                // Tab 3: Profitable ST
+                tableHTML = generateProfitableSTTable();
             } else if (tabKey === 'tab4') {
-                // Tab 4: Zero Click Keywords
+                // Tab 4: Budget Leak Search Terms
+                tableHTML = generateBudgetLeakTable();
+            } else if (tabKey === 'tab5') {
+                // Tab 5: Zero Click Keywords
                 tableHTML = generateZeroClickTable();
             }
 
@@ -857,7 +867,73 @@
             });
         });
 
-        // Function to generate Tab 2 table (Profitable ST)
+        // Function to generate Tab 2 table (Budget Leak Keywords)
+        function generateBudgetLeakKeywordsTable() {
+            return `
+                <table class="data-table" id="budgetLeakKeywordsTable">
+                    <thead>
+                        <tr>
+                            <th class="sortable" data-column="0">Campaign Name</th>
+                            <th class="sortable" data-column="1">Ad Group</th>
+                            <th class="sortable" data-column="2">Keyword</th>
+                            <th class="sortable" data-column="3">Match Type</th>
+                            <th class="sortable" data-column="4">Quality Score</th>
+                            <th class="sortable" data-column="5">Cost (₹)</th>
+                            <th class="sortable" data-column="6">Impressions</th>
+                            <th class="sortable" data-column="7">Clicks</th>
+                            <th class="sortable" data-column="8">CTR (%)</th>
+                            <th class="sortable" data-column="9">All Conversions</th>
+                            <th class="sortable" data-column="10">All Conversion Value</th>
+                            <th class="sortable" data-column="11">All Conv. Value / Cost</th>
+                            <th class="sortable" data-column="12">All Conv. Value / Click</th>
+                            <th class="sortable" data-column="13">Ad Group CPC (₹)</th>
+                            <th class="sortable" data-column="14">Avg CPC (₹)</th>
+                            <th class="sortable" data-column="15">First Page CPC (₹)</th>
+                            <th class="sortable" data-column="16">Top of page bid low</th>
+                            <th class="sortable" data-column="17">Top of page bid high</th>
+                            <th class="sortable" data-column="18">New Bid (₹)</th>
+                            <th class="sortable" data-column="19">Campaign ID</th>
+                            <th class="sortable" data-column="20">Ad Group ID</th>
+                            <th class="sortable" data-column="21">Customer ID</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Keyword Tracking Tool - T1 Countries</td><td>aso audit tool ad group</td><td>aso audit tool</td><td>EXACT</td><td>7</td><td>4289.04</td><td>27</td><td>3</td><td>11</td><td>1</td><td>293</td><td>0.07</td><td>97.67</td><td>388</td><td>1429.68</td><td>1175.3</td><td>154.64</td><td>1064.13</td><td>166.8</td><td>20257390745</td><td>151806092093</td><td>8215130627</td></tr>
+                        <tr><td>Leads/ASO/India T-1 Cities PB</td><td>app promotion agencies ad groups</td><td>app promotion agencies</td><td>EXACT</td><td>0</td><td>3414.83</td><td>48</td><td>6</td><td>12</td><td>3.01</td><td>453.8</td><td>0.13</td><td>75.63</td><td>785.82</td><td>569.14</td><td>310.4</td><td>227.34</td><td>2714.97</td><td>569.14</td><td>20300637288</td><td>182162462392</td><td>8215130627</td></tr>
+                        <tr><td>Keyword Tracking Tool - T1 Countries - Old Converting Kws</td><td>app store app rankings ad group</td><td>app store app rankings</td><td>EXACT</td><td>1</td><td>3364.76</td><td>99</td><td>8</td><td>8</td><td>3</td><td>451</td><td>0.13</td><td>56.38</td><td>75.15</td><td>420.6</td><td>0</td><td>102.3</td><td>334.59</td><td>67.64</td><td>22326421410</td><td>182442329496</td><td>8215130627</td></tr>
+                        <tr><td>Keyword Tracking Tool - T1 Countries - Old Converting Kws</td><td>ios app store rank ad group</td><td>ios app store rank</td><td>EXACT</td><td>1</td><td>2289.62</td><td>65</td><td>6</td><td>9</td><td>0</td><td>0</td><td>0</td><td>0</td><td>75.15</td><td>381.6</td><td>0</td><td>102.3</td><td>334.59</td><td>67.64</td><td>22326421410</td><td>180670329023</td><td>8215130627</td></tr>
+                        <tr><td>Keyword Tracking Tool - T1 Countries</td><td>keyword research aso ad group</td><td>keyword research aso</td><td>EXACT</td><td>8</td><td>1963.5</td><td>42</td><td>5</td><td>12</td><td>0</td><td>0</td><td>0</td><td>0</td><td>400</td><td>392.7</td><td>398.44</td><td>65.58</td><td>699.51</td><td>398.44</td><td>20257390745</td><td>151806089653</td><td>8215130627</td></tr>
+                        <tr><td>Keyword Tracking Tool - T1 Countries</td><td>app store optimisation tools ad group</td><td>app store optimisation tools</td><td>EXACT</td><td>3</td><td>1868.56</td><td>65</td><td>2</td><td>3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>18</td><td>934.28</td><td>957.81</td><td>92.69</td><td>917.25</td><td>16.2</td><td>20257390745</td><td>159722489224</td><td>8215130627</td></tr>
+                        <tr><td>Keyword Tracking Tool - T1 Countries</td><td>app keyword ranking tool ad group</td><td>app keyword ranking tool</td><td>EXACT</td><td>8</td><td>1594.56</td><td>13</td><td>2</td><td>15</td><td>1</td><td>79</td><td>0.05</td><td>39.5</td><td>18</td><td>797.28</td><td>785.18</td><td>71.88</td><td>1041.32</td><td>16.2</td><td>20257390745</td><td>159722490864</td><td>8215130627</td></tr>
+                        <tr><td>Leads/SEO/T1 - Countries</td><td>seo optimizer ad group</td><td>seo optimizer</td><td>EXACT</td><td>3</td><td>1494.7</td><td>170</td><td>8</td><td>5</td><td>16</td><td>3236</td><td>2.16</td><td>404.5</td><td>0.01</td><td>186.84</td><td>0</td><td>172.25</td><td>2240.4</td><td>0.01</td><td>22185843818</td><td>187814610208</td><td>8215130627</td></tr>
+                        <tr><td>Leads/SEO/India T-1 Cities</td><td>seo ad group</td><td>seo</td><td>EXACT</td><td>3</td><td>1411.73</td><td>802</td><td>29</td><td>4</td><td>42</td><td>3014</td><td>2.13</td><td>103.93</td><td>10.57</td><td>48.68</td><td>0</td><td>51.67</td><td>726.86</td><td>9.51</td><td>20960514433</td><td>181535020945</td><td>8215130627</td></tr>
+                        <tr><td>Keyword Tracking Tool - T1 Countries - Old Converting Kws</td><td>ios app ranking ad group</td><td>ios app ranking</td><td>EXACT</td><td>1</td><td>1384.44</td><td>34</td><td>3</td><td>9</td><td>0</td><td>0</td><td>0</td><td>0</td><td>75.15</td><td>461.48</td><td>0</td><td>102.3</td><td>334.59</td><td>67.64</td><td>22326421410</td><td>182290975615</td><td>8215130627</td></tr>
+                        <tr><td>Keyword Tracking Tool - T1 Countries - Old Converting Kws</td><td>how to do aso for app ad group</td><td>how to do aso for app</td><td>EXACT</td><td>1</td><td>1374.82</td><td>64</td><td>3</td><td>5</td><td>1</td><td>79</td><td>0.06</td><td>26.33</td><td>46.97</td><td>458.27</td><td>0</td><td>36.72</td><td>721.26</td><td>45.83</td><td>22326421410</td><td>181225254439</td><td>8215130627</td></tr>
+                        <tr><td>Keyword Tracking Tool - T1 Countries - Old Converting Kws</td><td>keyword tool play store ad group</td><td>keyword tool play store</td><td>EXACT</td><td>0</td><td>1291.23</td><td>21</td><td>3</td><td>14</td><td>0</td><td>0</td><td>0</td><td>0</td><td>62.76</td><td>430.41</td><td>0</td><td>0</td><td>0</td><td>56.48</td><td>22326421410</td><td>181632260563</td><td>8215130627</td></tr>
+                        <tr><td>Leads/SEO/T1 - Countries</td><td>seo optimization ad group</td><td>seo optimization</td><td>EXACT</td><td>3</td><td>1239.73</td><td>289</td><td>10</td><td>3</td><td>12</td><td>636</td><td>0.51</td><td>63.6</td><td>0.01</td><td>123.97</td><td>0</td><td>172.25</td><td>2240.4</td><td>0.01</td><td>22185843818</td><td>189031434384</td><td>8215130627</td></tr>
+                        <tr><td>Keyword Tracking Tool - T1 Countries - Old Converting Kws</td><td>aso tools ad group</td><td>aso tools</td><td>EXACT</td><td>5</td><td>1186.28</td><td>52</td><td>4</td><td>8</td><td>0</td><td>0</td><td>0</td><td>0</td><td>20</td><td>296.57</td><td>0</td><td>92.69</td><td>917.25</td><td>18</td><td>22326421410</td><td>184961637114</td><td>8215130627</td></tr>
+                        <tr><td>Keyword Tracking Tool - T1 Countries - Old Converting Kws</td><td>asotools ad group</td><td>asotools</td><td>EXACT</td><td>7</td><td>1184.62</td><td>23</td><td>3</td><td>13</td><td>0</td><td>0</td><td>0</td><td>0</td><td>78.93</td><td>394.87</td><td>0</td><td>92.69</td><td>917.25</td><td>71.04</td><td>22326421410</td><td>183424039353</td><td>8215130627</td></tr>
+                        <tr><td>Leads/ASO/India T-1 Cities PB</td><td>app seo optimization add group</td><td>app seo optimization</td><td>EXACT</td><td>5</td><td>1134.99</td><td>39</td><td>3</td><td>8</td><td>2</td><td>118</td><td>0.1</td><td>39.33</td><td>1000</td><td>378.33</td><td>99.62</td><td>51.12</td><td>1229.39</td><td>378.33</td><td>20300637288</td><td>180113702125</td><td>8215130627</td></tr>
+                        <tr><td>Keyword Tracking Tool - T1 Countries</td><td>aso check ad groups</td><td>aso check</td><td>EXACT</td><td>5</td><td>1064.57</td><td>6</td><td>3</td><td>50</td><td>0</td><td>0</td><td>0</td><td>0</td><td>91.37</td><td>354.86</td><td>105.98</td><td>65.77</td><td>899.89</td><td>65.77</td><td>20257390745</td><td>188673648184</td><td>8215130627</td></tr>
+                        <tr><td>Leads/SEO/T1 - Countries</td><td>seo search engine marketing ad group</td><td>seo search engine marketing</td><td>EXACT</td><td>0</td><td>1031.85</td><td>73</td><td>3</td><td>4</td><td>2</td><td>106</td><td>0.1</td><td>35.33</td><td>0.01</td><td>343.95</td><td>0</td><td>26.23</td><td>459.48</td><td>0.01</td><td>22185843818</td><td>185928098767</td><td>8215130627</td></tr>
+                        <tr><td>Leads/ASO/Spain PB</td><td>app store optimisation ad group</td><td>app store optimisation</td><td>EXACT</td><td>0</td><td>996.35</td><td>30</td><td>1</td><td>3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1000</td><td>996.35</td><td>1023.7</td><td>192.97</td><td>1229.01</td><td>996.35</td><td>21442450248</td><td>164709674095</td><td>8215130627</td></tr>
+                        <tr><td>Keyword Tracking Tool - T1 Countries - Old Converting Kws</td><td>free aso tools ad group</td><td>free aso tools</td><td>EXACT</td><td>4</td><td>938.8</td><td>89</td><td>3</td><td>3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>62.34</td><td>312.93</td><td>0</td><td>62.96</td><td>440.69</td><td>56.11</td><td>22326421410</td><td>181632077003</td><td>8215130627</td></tr>
+                        <tr><td>Keyword Tracking Tool - T1 Countries - Old Converting Kws</td><td>how to find keywords for aso ad group</td><td>how to find keywords for aso</td><td>EXACT</td><td>5</td><td>917.65</td><td>10</td><td>2</td><td>20</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0.01</td><td>458.83</td><td>0</td><td>0</td><td>0</td><td>0.01</td><td>22326421410</td><td>182290971295</td><td>8215130627</td></tr>
+                        <tr><td>Keyword Tracking Tool - T1 Countries</td><td>app ranking checker ad group</td><td>app ranking checker</td><td>EXACT</td><td>8</td><td>860.08</td><td>12</td><td>2</td><td>17</td><td>0</td><td>0</td><td>0</td><td>0</td><td>19.27</td><td>430.04</td><td>63.48</td><td>50.71</td><td>324.88</td><td>17.34</td><td>20257390745</td><td>151806092533</td><td>8215130627</td></tr>
+                        <tr><td>AV - Competitor Keywords</td><td>appradar ad group</td><td>appradar</td><td>EXACT</td><td>5</td><td>856.01</td><td>207</td><td>5</td><td>2</td><td>1</td><td>79</td><td>0.09</td><td>15.8</td><td>0.01</td><td>171.2</td><td>0</td><td>27.16</td><td>305.73</td><td>0.01</td><td>22292817006</td><td>181828549843</td><td>8215130627</td></tr>
+                        <tr><td>Keyword Tracking Tool - T1 Countries - Old Converting Kws</td><td>aso free tools ad group</td><td>aso free tools</td><td>EXACT</td><td>6</td><td>848.41</td><td>18</td><td>3</td><td>17</td><td>0</td><td>0</td><td>0</td><td>0</td><td>52.94</td><td>282.8</td><td>0</td><td>48.09</td><td>300.79</td><td>48.09</td><td>22326421410</td><td>182167529699</td><td>8215130627</td></tr>
+                        <tr><td>Keyword Tracking Tool - T1 Countries</td><td>app store rank tracking ad group</td><td>app store rank tracking</td><td>EXACT</td><td>0</td><td>837.79</td><td>25</td><td>2</td><td>8</td><td>0</td><td>0</td><td>0</td><td>0</td><td>6.29</td><td>418.89</td><td>361.5</td><td>0</td><td>0</td><td>5.66</td><td>20257390745</td><td>151806091653</td><td>8215130627</td></tr>
+                        <tr><td>Keyword Tracking Tool - T1 Countries - Old Converting Kws</td><td>app store optimization tools ad group</td><td>app store optimization tools</td><td>EXACT</td><td>3</td><td>817.29</td><td>23</td><td>2</td><td>9</td><td>0</td><td>0</td><td>0</td><td>0</td><td>78.93</td><td>408.65</td><td>0</td><td>92.69</td><td>917.25</td><td>71.04</td><td>22326421410</td><td>183423910993</td><td>8215130627</td></tr>
+                        <tr><td>Keyword Tracking Tool - T1 Countries</td><td>appstore rank tracker ad group</td><td>appstore rank tracker</td><td>EXACT</td><td>0</td><td>771.89</td><td>20</td><td>3</td><td>15</td><td>0</td><td>0</td><td>0</td><td>0</td><td>291.19</td><td>257.3</td><td>276.79</td><td>0</td><td>0</td><td>276.79</td><td>20257390745</td><td>151806092813</td><td>8215130627</td></tr>
+                        <tr><td>Keyword Tracking Tool - T1 Countries</td><td>play store keyword tool ad group</td><td>play store keyword tool</td><td>EXACT</td><td>0</td><td>734.98</td><td>22</td><td>2</td><td>9</td><td>0</td><td>0</td><td>0</td><td>0</td><td>265.35</td><td>367.49</td><td>139.37</td><td>0</td><td>0</td><td>139.37</td><td>20257390745</td><td>159722490624</td><td>8215130627</td></tr>
+                        <tr><td>AV - Competitor Keywords</td><td>mobile action ad group</td><td>mobile action</td><td>EXACT</td><td>3</td><td>692.56</td><td>66</td><td>4</td><td>6</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0.01</td><td>173.14</td><td>0</td><td>23.65</td><td>193.67</td><td>0.01</td><td>22292817006</td><td>184905606369</td><td>8215130627</td></tr>
+                        <tr><td>Keyword Tracking Tool - T1 Countries - Old Converting Kws</td><td>aso for apps ad group</td><td>aso for apps</td><td>EXACT</td><td>4</td><td>674.58</td><td>52</td><td>2</td><td>4</td><td>0</td><td>0</td><td>0</td><td>0</td><td>100.76</td><td>337.29</td><td>0</td><td>76.57</td><td>605.46</td><td>76.57</td><td>22326421410</td><td>182678361115</td><td>8215130627</td></tr>
+                    </tbody>
+                </table>
+            `;
+        }
+
+        // Function to generate Tab 3 table (Profitable ST)
         function generateProfitableSTTable() {
             return `
                 <table class="data-table" id="profitableSTTable">
