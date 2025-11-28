@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SearchVector - Final Design Standard</title>
+    <style>
+        /* ============================================
+           DESIGN SYSTEM - FINAL STANDARD
+           ============================================ */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* COLORS */
+            --brand-orange: #ff6b35;
+            --brand-orange-hover: #e55a2b;
+            --brand-orange-light: #fff5f2;
+
+            --text-primary: #333;
+            --text-secondary: #666;
+            --text-tertiary: #999;
+
+            --border-default: #e0e0e0;
+            --border-light: #f0f0f0;
+
+            --bg-page: #f5f5f5;
+            --bg-white: #ffffff;
+            --bg-input: #f9f9f9;
+
+            --success: #2e7d32;
+            --success-bg: #e8f5e9;
+            --error: #c62828;
+            --error-bg: #ffebee;
+            --warning: #f57f17;
+            --warning-bg: #fff9c4;
+            --info: #2196f3;
+            --info-bg: #e3f2fd;
+
+            /* SPACING - 8px grid system */
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+            --space-6: 24px;
+            --space-8: 32px;
+            --space-12: 48px;
+            --space-16: 64px;
+
+            /* BORDER RADIUS */
+            --radius-small: 4px;
+            --radius-medium: 8px;
+            --radius-large: 12px;
+            --radius-pill: 20px;
+
+            /* SHADOWS */
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+            --shadow-md: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-lg: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-page);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* ============================================
+           TYPOGRAPHY SYSTEM
+           ============================================ */
+
+        .text-h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+
+        .text-h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.3;
+        }
+
+        .text-h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+
+        .text-body {
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .text-small {
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--text-tertiary);
+            line-height: 1.5;
+        }
+
+        .text-label {
+            font-size: 11px;
+            font-weight: 400;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .text-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+
+        /* ============================================
+           LAYOUT
+           ============================================ */
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 220px;
+            background: var(--bg-white);
+            border-right: 1px solid var(--border-default);
+            padding: var(--space-5);
+            overflow-y: auto;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            margin-bottom: var(--space-6);
+            padding: var(--space-3);
+        }
+
+        .sidebar-logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--brand-orange);
+            border-radius: var(--radius-medium);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .sidebar-logo-text {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .sidebar-search {
+            position: relative;
+            margin-bottom: var(--space-6);
+        }
+
+        .sidebar-search input {
+            width: 100%;
+            padding: var(--space-2) var(--space-2) var(--space-2) 36px;
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-medium);
+            font-size: 13px;
+            background: var(--bg-input);
+            transition: border-color 0.2s;
+        }
+
+        .sidebar-search input:focus {
+            outline: none;
+            border-color: var(--brand-orange);
+        }
+
+        .sidebar-search::before {
+            content: "🔍";
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+        }
+
+        /* Sidebar Items */
+        .sidebar-item {
+            padding: 10px 15px;
+            margin: var(--space-1) 0;
+            border-radius: var(--radius-medium);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .sidebar-item:hover {
+            background: var(--brand-orange-light);
+            color: var(--brand-orange);
+        }
+
+        .sidebar-item.active {
+            background: var(--brand-orange);
+            color: white;
+            font-weight: 500;
+            padding: 12px 15px;
+        }
+
+        .sidebar-category {
+            padding: 10px 15px;
+            margin: var(--space-4) 0 var(--space-2) 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+
+        .sidebar-sub-item {
+            padding: 10px 15px 10px 35px;
+            margin: var(--space-1) 0;
+            border-radius: var(--radius-medium);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .sidebar-sub-item:hover {
+            background: var(--brand-orange-light);
+            color: var(--brand-orange);
+        }
+
+        .sidebar-sub-item.active {
+            background: var(--brand-orange);
+            color: white;
+            font-weight: 500;
+            padding: 12px 15px 12px 35px;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        /* TOP HEADER */
+        .top-header {
+            background: var(--bg-white);
+            padding: var(--space-4) var(--space-6);
+            border-bottom: 1px solid var(--border-default);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+        }
+
+        .header-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--brand-orange);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* CONTENT AREA */
+        .content-area {
+            padding: var(--space-6);
+        }
+
+        /* PAGE HEADER */
+        .page-header {
+            margin-bottom: var(--space-6);
+        }
+
+        .page-header-top {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: var(--space-2);
+        }
+
+        .page-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--brand-orange);
+            border-radius: var(--radius-large);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .page-header-underline {
+            height: 3px;
+            background: linear-gradient(to right, var(--brand-orange) 0%, transparent 100%);
+            border-radius: 2px;
+            margin-top: var(--space-3);
+        }
+
+        /* ============================================
+           BUTTONS
+           ============================================ */
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: var(--radius-medium);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+        }
+
+        .btn-primary {
+            background: var(--brand-orange);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--brand-orange-hover);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--brand-orange);
+            border: 2px solid var(--brand-orange);
+        }
+
+        .btn-secondary:hover {
+            background: var(--brand-orange-light);
+        }
+
+        /* ============================================
+           FORM CONTROLS
+           ============================================ */
+
+        .form-group {
+            margin-bottom: var(--space-4);
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: var(--space-2);
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-default);
+            border-radius: var(--radius-medium);
+            font-size: 14px;
+            color: var(--text-primary);
+            transition: border-color 0.2s;
+            height: 44px;
+            background: white;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--brand-orange);
+        }
+
+        /* ============================================
+           CARDS
+           ============================================ */
+
+        .card {
+            background: var(--bg-white);
+            padding: var(--space-5);
+            border-radius: var(--radius-large);
+            box-shadow: var(--shadow-md);
+        }
+
+        .card-list-item {
+            background: var(--bg-white);
+            padding: var(--space-4);
+            border-radius: var(--radius-medium);
+            border: 1px solid var(--border-default);
+        }
+
+        /* ============================================
+           METRICS
+           ============================================ */
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--space-6);
+        }
+
+        .metric-item {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+        }
+
+        .metric-label {
+            font-size: 11px;
+            font-weight: 400;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+
+        /* ============================================
+           TABLES
+           ============================================ */
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table thead th {
+            text-align: left;
+            padding: 12px 8px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        .table tbody td {
+            padding: 16px 8px;
+            font-size: 14px;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        /* ============================================
+           BADGES
+           ============================================ */
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 12px;
+            border-radius: var(--radius-pill);
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: var(--success-bg);
+            color: var(--success);
+        }
+
+        .badge-error {
+            background: var(--error-bg);
+            color: var(--error);
+        }
+
+        .badge-warning {
+            background: var(--warning-bg);
+            color: var(--warning);
+        }
+
+        .badge-info {
+            background: var(--info-bg);
+            color: var(--info);
+        }
+
+        .badge-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        /* ============================================
+           TABS
+           ============================================ */
+
+        .tabs {
+            display: flex;
+            gap: var(--space-6);
+            border-bottom: 1px solid var(--border-light);
+            margin-bottom: var(--space-6);
+        }
+
+        .tab-item {
+            padding: 12px 0;
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            margin-bottom: -1px;
+        }
+
+        .tab-item:hover {
+            color: var(--text-primary);
+            border-bottom-color: var(--brand-orange-light);
+        }
+
+        .tab-item.active {
+            color: var(--text-primary);
+            font-weight: 600;
+            border-bottom-color: var(--brand-orange);
+        }
+
+        /* ============================================
+           SPECIFIC LAYOUTS
+           ============================================ */
+
+        .project-grid {
+            display: grid;
+            gap: var(--space-6);
+        }
+
+        .project-card-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            margin-bottom: var(--space-4);
+            padding-bottom: var(--space-4);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .project-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-page);
+            border-radius: var(--radius-medium);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+
+        .project-info h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .project-info p {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        /* Search Input with Tags */
+        .search-with-tags {
+            position: relative;
+            border: 2px solid var(--border-default);
+            border-radius: var(--radius-medium);
+            padding: var(--space-2);
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-2);
+            background: white;
+            min-height: 44px;
+            align-items: center;
+        }
+
+        .search-with-tags:focus-within {
+            border-color: var(--brand-orange);
+        }
+
+        .search-tag {
+            background: var(--brand-orange-light);
+            color: var(--brand-orange);
+            padding: 4px 10px;
+            border-radius: var(--radius-small);
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .search-tag-remove {
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .search-with-tags input {
+            border: none;
+            outline: none;
+            flex: 1;
+            min-width: 150px;
+            font-size: 14px;
+            padding: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="sidebar-logo">
+                <div class="sidebar-logo-icon">S</div>
+                <div class="sidebar-logo-text">SearchVector</div>
+            </div>
+
+            <div class="sidebar-search">
+                <input type="text" placeholder="Search...">
+            </div>
+
+            <div class="sidebar-item active">📱 My Projects</div>
+            <div class="sidebar-item">🔔 What's New</div>
+            <div class="sidebar-item">📚 Book SEO Demo</div>
+
+            <div class="sidebar-category">
+                🔍 SEARCH <span>▼</span>
+            </div>
+            <div class="sidebar-sub-item">🔑 Keyword Research</div>
+            <div class="sidebar-sub-item">📊 Live SERP Rank Tracker</div>
+            <div class="sidebar-sub-item">📈 GSC Insights</div>
+            <div class="sidebar-sub-item">✓ GSC Index Status Checker</div>
+
+            <div class="sidebar-category">
+                📢 GOOGLE ADS <span>▼</span>
+            </div>
+            <div class="sidebar-sub-item">💰 Campaign Manager</div>
+            <div class="sidebar-sub-item">📊 Performance Tracker</div>
+
+            <div class="sidebar-category">
+                🍎 APPLE <span>▼</span>
+            </div>
+            <div class="sidebar-sub-item">🏪 App Store Analytics</div>
+            <div class="sidebar-sub-item">🔍 Keyword Optimization</div>
+
+            <div class="sidebar-category">
+                ⚡ PERFORMANCE <span>▼</span>
+            </div>
+            <div class="sidebar-sub-item">📄 On-Page SEO</div>
+            <div class="sidebar-sub-item">⚡ Site Speed</div>
+
+            <div class="sidebar-category">
+                🤖 AI TOOLS <span>▼</span>
+            </div>
+            <div class="sidebar-sub-item">✍️ Content Generator</div>
+            <div class="sidebar-sub-item">🔍 Keyword Finder</div>
+
+            <div class="sidebar-category">
+                👥 TEAM <span>▼</span>
+            </div>
+            <div class="sidebar-sub-item">👤 Members</div>
+            <div class="sidebar-sub-item">⚙️ Settings</div>
+
+            <div class="sidebar-category">
+                👤 ACCOUNT <span>▼</span>
+            </div>
+            <div class="sidebar-sub-item">⚙️ Settings</div>
+            <div class="sidebar-sub-item">💳 Billing</div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <!-- TOP HEADER -->
+            <div class="top-header">
+                <div class="header-left">
+                    <input type="text" placeholder="Add website: example.com or https://example.com"
+                           style="width: 500px; padding: 12px 16px; border: 2px solid var(--border-default); border-radius: var(--radius-medium); font-size: 14px;">
+                </div>
+                <div class="header-right">
+                    <button class="btn btn-primary">+ Add Website</button>
+                    <div style="color: var(--text-tertiary);">🌙</div>
+                    <div style="color: var(--text-tertiary);">🔔</div>
+                    <div class="header-icon">S</div>
+                </div>
+            </div>
+
+            <!-- CONTENT AREA -->
+            <div class="content-area">
+                <!-- PAGE HEADER -->
+                <div class="page-header">
+                    <div class="page-header-top">
+                        <div class="page-icon">📱</div>
+                        <div>
+                            <h1 class="text-h1">My Projects</h1>
+                            <p class="text-body" style="margin-top: 8px;">Manage and track all your websites and SEO campaigns</p>
+                        </div>
+                    </div>
+                    <div class="page-header-underline"></div>
+                </div>
+
+                <!-- PROJECT CARDS -->
+                <div class="project-grid">
+                    <!-- PROJECT 1 -->
+                    <div class="card">
+                        <div class="project-card-header">
+                            <div class="project-avatar">A</div>
+                            <div class="project-info">
+                                <h3>appvector.io</h3>
+                                <p>https://appvector.io</p>
+                            </div>
+                            <div style="margin-left: auto;">
+                                <span class="badge badge-success">
+                                    <span class="badge-dot"></span>
+                                    CONNECTED
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- SEO METRICS -->
+                        <div class="metrics-grid" style="margin-bottom: 24px;">
+                            <div class="metric-item">
+                                <div class="metric-label">SEO Score</div>
+                                <div class="metric-value">29</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-label">Backlinks</div>
+                                <div class="metric-value">257</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-label">Organic Traffic</div>
+                                <div class="metric-value">2.7K</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-label">Keywords</div>
+                                <div class="metric-value">444</div>
+                            </div>
+                        </div>
+
+                        <!-- GSC METRICS -->
+                        <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border-light);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                <h3 class="text-label" style="color: var(--text-tertiary);">GSC Metrics</h3>
+                            </div>
+                            <div class="metrics-grid">
+                                <div class="metric-item">
+                                    <div class="metric-label">Clicks</div>
+                                    <div class="metric-value">1.9K</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-label">Impressions</div>
+                                    <div class="metric-value">193.4K</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-label">CTR</div>
+                                    <div class="metric-value" style="font-size: 28px;">0.97%</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-label">Avg Position</div>
+                                    <div class="metric-value" style="font-size: 28px;">44.2</div>
+                                </div>
+                            </div>
+                            <div style="margin-top: 20px;">
+                                <a href="#" style="color: var(--brand-orange); text-decoration: none; font-size: 13px; font-weight: 600;">
+                                    📊 GSC Insight →
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PROJECT 2 -->
+                    <div class="card">
+                        <div class="project-card-header">
+                            <div class="project-avatar">A</div>
+                            <div class="project-info">
+                                <h3>appvector.com</h3>
+                                <p>https://appvector.com</p>
+                            </div>
+                            <div style="margin-left: auto;">
+                                <span class="badge badge-error">
+                                    <span class="badge-dot"></span>
+                                    NOT CONNECTED
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- SEO METRICS -->
+                        <div class="metrics-grid" style="margin-bottom: 24px;">
+                            <div class="metric-item">
+                                <div class="metric-label">SEO Score</div>
+                                <div class="metric-value">0</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-label">Backlinks</div>
+                                <div class="metric-value">43</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-label">Organic Traffic</div>
+                                <div class="metric-value">0</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-label">Keywords</div>
+                                <div class="metric-value">0</div>
+                            </div>
+                        </div>
+
+                        <!-- GSC EMPTY STATE -->
+                        <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border-light);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                <h3 class="text-label" style="color: var(--text-tertiary);">GSC Metrics</h3>
+                            </div>
+                            <div style="text-align: center; padding: 40px 20px;">
+                                <p class="text-body" style="margin-bottom: 16px;">Connect your Google Search Console to view performance metrics</p>
+                                <button class="btn btn-primary">Connect GSC</button>
+                            </div>
+                            <div style="margin-top: 20px;">
+                                <a href="#" style="color: var(--brand-orange); text-decoration: none; font-size: 13px; font-weight: 600;">
+                                    📊 GSC Insight →
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EXAMPLE: KEYWORD RESEARCH SECTION -->
+                <div style="margin-top: 48px;">
+                    <div class="page-header">
+                        <div class="page-header-top">
+                            <div class="page-icon">🔍</div>
+                            <div>
+                                <h1 class="text-h1">Keyword Research</h1>
+                                <p class="text-body" style="margin-top: 8px;">Discover high-opportunity keywords across multiple platforms</p>
+                            </div>
+                        </div>
+                        <div class="page-header-underline"></div>
+                    </div>
+
+                    <div class="card" style="margin-top: 24px;">
+                        <!-- TABS -->
+                        <div class="tabs">
+                            <div class="tab-item active">Google</div>
+                            <div class="tab-item">YouTube</div>
+                            <div class="tab-item">Amazon</div>
+                            <div class="tab-item">Google Play</div>
+                            <div class="tab-item">App Store</div>
+                        </div>
+
+                        <!-- SEARCH FORM -->
+                        <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 16px; margin-bottom: 24px;">
+                            <div class="search-with-tags">
+                                <div class="search-tag">
+                                    keyword research
+                                    <span class="search-tag-remove">×</span>
+                                </div>
+                                <input type="text" placeholder="Add keywords using comma or enter">
+                            </div>
+                            <select class="form-select" style="width: 200px;">
+                                <option>United States</option>
+                                <option>United Kingdom</option>
+                                <option>India</option>
+                            </select>
+                            <button class="btn btn-primary">🔍 Search</button>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <p class="text-small">351 suggestions found</p>
+                            <button class="btn btn-secondary">📤 Export</button>
+                        </div>
+
+                        <!-- TABLE -->
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox"></th>
+                                    <th>KEYWORD</th>
+                                    <th>WORDS</th>
+                                    <th>CHARS</th>
+                                    <th>VOLUME</th>
+                                    <th>OPPORTUNITY</th>
+                                    <th>COMPETITION</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><input type="checkbox"></td>
+                                    <td><strong>keyword research tool</strong></td>
+                                    <td>3</td>
+                                    <td>21</td>
+                                    <td>12.5K</td>
+                                    <td>High</td>
+                                    <td>Medium</td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox"></td>
+                                    <td><strong>keyword finder</strong></td>
+                                    <td>2</td>
+                                    <td>14</td>
+                                    <td>8.3K</td>
+                                    <td>High</td>
+                                    <td>Low</td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox"></td>
+                                    <td><strong>keyword research seo</strong></td>
+                                    <td>3</td>
+                                    <td>19</td>
+                                    <td>6.1K</td>
+                                    <td>Medium</td>
+                                    <td>High</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- EXAMPLE: BOOK DEMO SECTION -->
+                <div style="margin-top: 48px;">
+                    <div class="page-header">
+                        <div class="page-header-top">
+                            <div class="page-icon">📚</div>
+                            <div>
+                                <h1 class="text-h1">Book SEO Demo</h1>
+                                <p class="text-body" style="margin-top: 8px;">Get a personalized walkthrough of our SEO tools</p>
+                            </div>
+                        </div>
+                        <div class="page-header-underline"></div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-top: 24px;">
+                        <!-- LEFT: What You'll Get -->
+                        <div>
+                            <h2 class="text-h2" style="margin-bottom: 24px;">What You'll Get</h2>
+
+                            <div style="display: flex; flex-direction: column; gap: 20px;">
+                                <div style="display: flex; gap: 16px;">
+                                    <div style="width: 40px; height: 40px; background: var(--brand-orange-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                        <span style="font-size: 20px;">📊</span>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-h3">GSC Insights</h3>
+                                        <p class="text-body" style="margin-top: 4px;">Deep dive into your Google Search Console data with advanced analytics</p>
+                                    </div>
+                                </div>
+
+                                <div style="display: flex; gap: 16px;">
+                                    <div style="width: 40px; height: 40px; background: var(--brand-orange-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                        <span style="font-size: 20px;">🔍</span>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-h3">Keyword Research</h3>
+                                        <p class="text-body" style="margin-top: 4px;">Discover high-value keywords to target for organic growth</p>
+                                    </div>
+                                </div>
+
+                                <div style="display: flex; gap: 16px;">
+                                    <div style="width: 40px; height: 40px; background: var(--brand-orange-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                        <span style="font-size: 20px;">📢</span>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-h3">Google Ads</h3>
+                                        <p class="text-body" style="margin-top: 4px;">Optimize your ad campaigns for better ROI and conversions</p>
+                                    </div>
+                                </div>
+
+                                <div style="display: flex; gap: 16px;">
+                                    <div style="width: 40px; height: 40px; background: var(--brand-orange-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                        <span style="font-size: 20px;">📍</span>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-h3">Google My Business</h3>
+                                        <p class="text-body" style="margin-top: 4px;">Boost local visibility and manage your business presence</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- RIGHT: Form -->
+                        <div class="card">
+                            <h2 class="text-h2" style="margin-bottom: 24px;">Book Your Demo</h2>
+
+                            <div class="form-group">
+                                <label class="form-label">Select Project</label>
+                                <select class="form-select">
+                                    <option>Choose a project</option>
+                                    <option>appvector.io</option>
+                                    <option>appvector.com</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Your Role</label>
+                                <select class="form-select">
+                                    <option>Select your role</option>
+                                    <option>Marketing Manager</option>
+                                    <option>SEO Specialist</option>
+                                    <option>Business Owner</option>
+                                    <option>Developer</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Contact Details</label>
+                                <div style="padding: 12px 16px; background: var(--bg-page); border-radius: var(--radius-medium);">
+                                    <div style="font-weight: 500;">praveen</div>
+                                    <div class="text-small">praveen@multivariate.tech</div>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary" style="width: 100%; margin-top: 8px;">
+                                Book Demo →
+                            </button>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 32px; padding: 20px; background: var(--brand-orange-light); border-radius: var(--radius-medium); text-align: center;">
+                        <p style="color: var(--brand-orange); font-size: 14px;">
+                            Our SEO experts will guide you through the tools and show you how to improve your search rankings, drive more traffic, and grow your business.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
