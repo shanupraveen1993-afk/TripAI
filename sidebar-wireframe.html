@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SearchVector Sidebar Navigation - Wireframe</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f3f4f6;
+            padding: 40px 20px;
+        }
+
+        .wireframe-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #FF6B1A;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 16px;
+            color: #6b7280;
+        }
+
+        .comparison-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .sidebar-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-section h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .sidebar-section.before h2 {
+            color: #ef4444;
+        }
+
+        .sidebar-section.after h2 {
+            color: #10b981;
+        }
+
+        /* BEFORE Sidebar Styles */
+        .sidebar.before {
+            width: 240px;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px 12px;
+            margin: 0 auto;
+        }
+
+        .sidebar.before .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            margin-bottom: 16px;
+        }
+
+        .sidebar.before .logo-icon {
+            width: 24px;
+            height: 24px;
+            background: #FF6B1A;
+            border-radius: 4px;
+        }
+
+        .sidebar.before .logo-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .sidebar.before .search-box {
+            margin-bottom: 16px;
+        }
+
+        .sidebar.before .search-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .sidebar.before .nav-item-primary {
+            font-weight: 500;
+            font-size: 14px;
+            padding: 8px 12px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #1a1a1a;
+        }
+
+        .sidebar.before .nav-item-primary.active {
+            background: #FF6B1A;
+            color: white;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .sidebar.before .nav-section-header {
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            padding: 6px 12px;
+            margin-top: 8px;
+            margin-bottom: 4px;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+
+        .sidebar.before .nav-item-sub {
+            font-weight: 400;
+            font-size: 13px;
+            padding: 6px 12px 6px 28px;
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #374151;
+        }
+
+        .sidebar.before .icon {
+            width: 18px;
+            height: 18px;
+            background: #9ca3af;
+            border-radius: 3px;
+        }
+
+        /* AFTER Sidebar Styles */
+        .sidebar.after {
+            width: 240px;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px 12px;
+            margin: 0 auto;
+        }
+
+        .sidebar.after .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            margin-bottom: 20px;
+        }
+
+        .sidebar.after .logo-icon {
+            width: 24px;
+            height: 24px;
+            background: #FF6B1A;
+            border-radius: 4px;
+        }
+
+        .sidebar.after .logo-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .sidebar.after .search-box {
+            margin-bottom: 20px;
+        }
+
+        .sidebar.after .search-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        /* Level 1: Primary Navigation Items */
+        .sidebar.after .nav-item-primary {
+            font-weight: 600;
+            font-size: 15px;
+            line-height: 20px;
+            padding: 10px 12px;
+            margin-bottom: 4px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #1a1a1a;
+            cursor: pointer;
+            transition: background-color 150ms ease-in-out;
+        }
+
+        .sidebar.after .nav-item-primary:hover:not(.active) {
+            background-color: #F3F4F6;
+        }
+
+        .sidebar.after .nav-item-primary.active {
+            background-color: #FF6B1A;
+            color: #FFFFFF;
+            font-weight: 600;
+        }
+
+        .sidebar.after .nav-item-primary.active .icon {
+            background: #FFFFFF;
+        }
+
+        /* Divider */
+        .sidebar.after .nav-divider {
+            border-bottom: 1px solid #E5E7EB;
+            margin: 12px 0;
+        }
+
+        /* Level 2: Section Headers */
+        .sidebar.after .nav-section-header {
+            font-weight: 600;
+            font-size: 12px;
+            line-height: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 8px 12px;
+            margin-top: 20px;
+            margin-bottom: 4px;
+            color: #6B7280;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sidebar.after .nav-section-header:first-of-type {
+            margin-top: 12px;
+        }
+
+        .sidebar.after .nav-section-header .chevron {
+            width: 16px;
+            height: 16px;
+            background: #9ca3af;
+            border-radius: 2px;
+            transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar.after .nav-section-header.expanded .chevron {
+            transform: rotate(90deg);
+        }
+
+        /* Level 3: Sub-items */
+        .sidebar.after .nav-item-sub {
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 20px;
+            padding: 8px 12px 8px 32px;
+            margin-bottom: 2px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #374151;
+            cursor: pointer;
+            transition: all 150ms ease-in-out;
+        }
+
+        .sidebar.after .nav-item-sub:hover:not(.active) {
+            background-color: #F3F4F6;
+        }
+
+        .sidebar.after .nav-item-sub.active {
+            background-color: #FFF7ED;
+            border-left: 3px solid #FF6B1A;
+            font-weight: 600;
+            color: #FF6B1A;
+            padding-left: 29px;
+        }
+
+        .sidebar.after .nav-item-sub.active .icon {
+            background: #FF6B1A;
+        }
+
+        .sidebar.after .icon {
+            width: 16px;
+            height: 16px;
+            background: #6B7280;
+            border-radius: 3px;
+            transition: background-color 150ms ease-in-out;
+        }
+
+        .sidebar.after .nav-item-primary .icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Collapsed state */
+        .nav-sub-group {
+            max-height: 500px;
+            overflow: hidden;
+            transition: max-height 300ms ease-in-out;
+        }
+
+        .nav-sub-group.collapsed {
+            max-height: 0;
+        }
+
+        /* Annotations */
+        .annotation-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-top: 40px;
+        }
+
+        .annotation-section h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+        }
+
+        .annotation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .annotation-box {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            background: #f9fafb;
+        }
+
+        .annotation-box h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #FF6B1A;
+            margin-bottom: 12px;
+        }
+
+        .annotation-box ul {
+            margin-left: 20px;
+        }
+
+        .annotation-box li {
+            margin-bottom: 6px;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .annotation-box code {
+            background: #e5e7eb;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+            color: #dc2626;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .badge.red {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .badge.green {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        @media (max-width: 1024px) {
+            .comparison-wrapper {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wireframe-container">
+        <div class="header">
+            <h1>SearchVector Sidebar Navigation Wireframe</h1>
+            <p>Before vs After - Typography & Hierarchy Improvements</p>
+        </div>
+
+        <div class="comparison-wrapper">
+            <!-- BEFORE -->
+            <div class="sidebar-section before">
+                <span class="badge red">❌ CURRENT STATE</span>
+                <h2>Before (Current Issues)</h2>
+
+                <div class="sidebar before">
+                    <!-- Logo -->
+                    <div class="logo">
+                        <div class="logo-icon"></div>
+                        <div class="logo-text">SearchVector</div>
+                    </div>
+
+                    <!-- Search -->
+                    <div class="search-box">
+                        <input type="text" class="search-input" placeholder="Search...">
+                    </div>
+
+                    <!-- Primary Navigation -->
+                    <div class="nav-item-primary active">
+                        <div class="icon"></div>
+                        My Projects
+                    </div>
+                    <div class="nav-item-primary">
+                        <div class="icon"></div>
+                        What's New
+                    </div>
+                    <div class="nav-item-primary">
+                        <div class="icon"></div>
+                        Book SEO Demo
+                    </div>
+
+                    <!-- SEARCH Section -->
+                    <div class="nav-section-header">
+                        SEARCH
+                        <div class="icon"></div>
+                    </div>
+                    <div class="nav-item-sub">
+                        <div class="icon"></div>
+                        Keyword Research
+                    </div>
+                    <div class="nav-item-sub">
+                        <div class="icon"></div>
+                        Live SERP Rank Tracker
+                    </div>
+                    <div class="nav-item-sub">
+                        <div class="icon"></div>
+                        GSC Insights
+                    </div>
+                    <div class="nav-item-sub">
+                        <div class="icon"></div>
+                        GSC Index Status Checker
+                    </div>
+
+                    <!-- GOOGLE ADS Section -->
+                    <div class="nav-section-header">
+                        GOOGLE ADS
+                        <div class="icon"></div>
+                    </div>
+
+                    <!-- GOOGLE MY BUSINESS Section -->
+                    <div class="nav-section-header">
+                        GOOGLE MY BUSINESS
+                        <div class="icon"></div>
+                    </div>
+
+                    <!-- APPLE Section -->
+                    <div class="nav-section-header">
+                        APPLE
+                        <div class="icon"></div>
+                    </div>
+                    <div class="nav-item-sub">
+                        <div class="icon"></div>
+                        Apple Search Ads
+                    </div>
+
+                    <!-- ON-PAGE SEO Section -->
+                    <div class="nav-section-header">
+                        ON-PAGE SEO
+                        <div class="icon"></div>
+                    </div>
+
+                    <!-- PERFORMANCE Section -->
+                    <div class="nav-section-header">
+                        PERFORMANCE
+                        <div class="icon"></div>
+                    </div>
+
+                    <!-- YOUTUBE Section -->
+                    <div class="nav-section-header">
+                        YOUTUBE
+                        <div class="icon"></div>
+                    </div>
+
+                    <!-- AI TOOLS Section -->
+                    <div class="nav-section-header">
+                        AI TOOLS
+                        <div class="icon"></div>
+                    </div>
+
+                    <!-- TEAM Section -->
+                    <div class="nav-section-header">
+                        TEAM
+                        <div class="icon"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AFTER -->
+            <div class="sidebar-section after">
+                <span class="badge green">✅ RECOMMENDED</span>
+                <h2>After (Improved Hierarchy)</h2>
+
+                <div class="sidebar after">
+                    <!-- Logo -->
+                    <div class="logo">
+                        <div class="logo-icon"></div>
+                        <div class="logo-text">SearchVector</div>
+                    </div>
+
+                    <!-- Search -->
+                    <div class="search-box">
+                        <input type="text" class="search-input" placeholder="Search...">
+                    </div>
+
+                    <!-- Primary Navigation -->
+                    <div class="nav-item-primary active">
+                        <div class="icon"></div>
+                        My Projects
+                    </div>
+                    <div class="nav-item-primary">
+                        <div class="icon"></div>
+                        What's New
+                    </div>
+                    <div class="nav-item-primary">
+                        <div class="icon"></div>
+                        Book SEO Demo
+                    </div>
+
+                    <!-- Divider -->
+                    <div class="nav-divider"></div>
+
+                    <!-- SEARCH Section -->
+                    <div class="nav-section-header expanded">
+                        SEARCH
+                        <div class="chevron"></div>
+                    </div>
+                    <div class="nav-sub-group">
+                        <div class="nav-item-sub">
+                            <div class="icon"></div>
+                            Keyword Research
+                        </div>
+                        <div class="nav-item-sub">
+                            <div class="icon"></div>
+                            Live SERP Rank Tracker
+                        </div>
+                        <div class="nav-item-sub active">
+                            <div class="icon"></div>
+                            GSC Insights
+                        </div>
+                        <div class="nav-item-sub">
+                            <div class="icon"></div>
+                            GSC Index Status Checker
+                        </div>
+                    </div>
+
+                    <!-- GOOGLE ADS Section -->
+                    <div class="nav-section-header">
+                        GOOGLE ADS
+                        <div class="chevron"></div>
+                    </div>
+
+                    <!-- GOOGLE MY BUSINESS Section -->
+                    <div class="nav-section-header">
+                        GOOGLE MY BUSINESS
+                        <div class="chevron"></div>
+                    </div>
+
+                    <!-- APPLE Section -->
+                    <div class="nav-section-header expanded">
+                        APPLE
+                        <div class="chevron"></div>
+                    </div>
+                    <div class="nav-sub-group">
+                        <div class="nav-item-sub">
+                            <div class="icon"></div>
+                            Apple Search Ads
+                        </div>
+                    </div>
+
+                    <!-- ON-PAGE SEO Section -->
+                    <div class="nav-section-header">
+                        ON-PAGE SEO
+                        <div class="chevron"></div>
+                    </div>
+
+                    <!-- PERFORMANCE Section -->
+                    <div class="nav-section-header">
+                        PERFORMANCE
+                        <div class="chevron"></div>
+                    </div>
+
+                    <!-- YOUTUBE Section -->
+                    <div class="nav-section-header">
+                        YOUTUBE
+                        <div class="chevron"></div>
+                    </div>
+
+                    <!-- AI TOOLS Section -->
+                    <div class="nav-section-header">
+                        AI TOOLS
+                        <div class="chevron"></div>
+                    </div>
+
+                    <!-- TEAM Section -->
+                    <div class="nav-section-header">
+                        TEAM
+                        <div class="chevron"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Annotations -->
+        <div class="annotation-section">
+            <h2>Typography & Spacing Specifications</h2>
+
+            <div class="annotation-grid">
+                <div class="annotation-box">
+                    <h3>Level 1: Primary Items</h3>
+                    <ul>
+                        <li>Font Weight: <code>600</code> (Semibold)</li>
+                        <li>Font Size: <code>15px</code></li>
+                        <li>Line Height: <code>20px</code></li>
+                        <li>Padding: <code>10px 12px</code></li>
+                        <li>Gap: <code>12px</code> (icon-text)</li>
+                        <li>Icon Size: <code>20px × 20px</code></li>
+                        <li>Active BG: <code>#FF6B1A</code></li>
+                        <li>Hover BG: <code>#F3F4F6</code></li>
+                    </ul>
+                </div>
+
+                <div class="annotation-box">
+                    <h3>Level 2: Section Headers</h3>
+                    <ul>
+                        <li>Font Weight: <code>600</code> (Semibold)</li>
+                        <li>Font Size: <code>12px</code></li>
+                        <li>Line Height: <code>16px</code></li>
+                        <li>Text Transform: <code>UPPERCASE</code></li>
+                        <li>Letter Spacing: <code>0.5px</code></li>
+                        <li>Padding: <code>8px 12px</code></li>
+                        <li>Margin Top: <code>20px</code></li>
+                        <li>Color: <code>#6B7280</code></li>
+                        <li>Icon Size: <code>16px × 16px</code></li>
+                    </ul>
+                </div>
+
+                <div class="annotation-box">
+                    <h3>Level 3: Sub-items</h3>
+                    <ul>
+                        <li>Font Weight: <code>500</code> (Medium)</li>
+                        <li>Font Size: <code>14px</code></li>
+                        <li>Line Height: <code>20px</code></li>
+                        <li>Padding: <code>8px 12px 8px 32px</code></li>
+                        <li>Gap: <code>10px</code> (icon-text)</li>
+                        <li>Icon Size: <code>16px × 16px</code></li>
+                        <li>Active BG: <code>#FFF7ED</code></li>
+                        <li>Active Border: <code>3px solid #FF6B1A</code></li>
+                        <li>Active Color: <code>#FF6B1A</code></li>
+                        <li>Hover BG: <code>#F3F4F6</code></li>
+                    </ul>
+                </div>
+
+                <div class="annotation-box">
+                    <h3>Transitions & Effects</h3>
+                    <ul>
+                        <li>Hover Transition: <code>150ms ease-in-out</code></li>
+                        <li>Icon Rotation: <code>200ms cubic-bezier</code></li>
+                        <li>Chevron Rotation: <code>90deg</code> (expanded)</li>
+                        <li>Border Radius: <code>8px</code></li>
+                        <li>Divider: <code>1px solid #E5E7EB</code></li>
+                        <li>Divider Margin: <code>12px 0</code></li>
+                    </ul>
+                </div>
+
+                <div class="annotation-box">
+                    <h3>Color System</h3>
+                    <ul>
+                        <li>Primary Orange: <code>#FF6B1A</code></li>
+                        <li>Orange Light BG: <code>#FFF7ED</code></li>
+                        <li>Gray Text: <code>#374151</code></li>
+                        <li>Gray Headers: <code>#6B7280</code></li>
+                        <li>Gray Icons: <code>#6B7280</code></li>
+                        <li>Hover BG: <code>#F3F4F6</code></li>
+                        <li>Border: <code>#E5E7EB</code></li>
+                    </ul>
+                </div>
+
+                <div class="annotation-box">
+                    <h3>Key Improvements</h3>
+                    <ul>
+                        <li>✅ Clear 3-level font hierarchy (600→600→500)</li>
+                        <li>✅ Size differentiation (15px→12px→14px)</li>
+                        <li>✅ Letter spacing on headers (0.5px)</li>
+                        <li>✅ Hover states with smooth transitions</li>
+                        <li>✅ Active state with left border accent</li>
+                        <li>✅ Proper spacing & breathing room</li>
+                        <li>✅ Consistent icon sizing (20px/16px)</li>
+                        <li>✅ Sub-item indentation (32px)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add interactivity to the AFTER sidebar
+        document.querySelectorAll('.sidebar.after .nav-section-header').forEach(header => {
+            header.addEventListener('click', function() {
+                this.classList.toggle('expanded');
+                const subGroup = this.nextElementSibling;
+                if (subGroup && subGroup.classList.contains('nav-sub-group')) {
+                    subGroup.classList.toggle('collapsed');
+                }
+            });
+        });
+
+        // Add hover effects (already handled by CSS)
+        document.querySelectorAll('.sidebar.after .nav-item-primary:not(.active)').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.cursor = 'pointer';
+            });
+        });
+
+        document.querySelectorAll('.sidebar.after .nav-item-sub:not(.active)').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.cursor = 'pointer';
+            });
+        });
+    </script>
+</body>
+</html>
