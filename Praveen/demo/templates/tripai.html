@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"/>
+<meta name="theme-color" content="#FF5722"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="TripAI"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="description" content="Find the best hotels and restaurants in Thanjavur"/>
+<link rel="manifest" href="/static/manifest.json"/>
+<title>TripAI – Thanjavur</title>
+<style>
+:root{
+  --pr:#FF5722;--pr2:#E64A19;--pr-bg:#FFF3EF;
+  --teal:#00838F;--teal-bg:#E0F7FA;
+  --gold:#F59E0B;
+  --green:#16A34A;--green-bg:#F0FDF4;
+  --red:#DC2626;
+  --bg:#F2F2F7;--surface:#FFFFFF;--surface2:#F8F8FA;
+  --border:#E4E4E7;--txt:#1C1C1E;--txt2:#48484A;--txt3:#8E8E93;--txt4:#C7C7CC;
+  --r8:8px;--r12:12px;--r16:16px;--r99:99px;
+  --sh:0 2px 8px rgba(0,0,0,.08);--sh2:0 8px 32px rgba(0,0,0,.14);
+  --nav-h:60px;--bar-h:56px;--t:.18s cubic-bezier(.4,0,.2,1);
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bot:env(safe-area-inset-bottom,0px);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{height:100%;height:100dvh}
+body{height:100%;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:14px;color:var(--txt);-webkit-font-smoothing:antialiased;overflow:hidden}
+button{cursor:pointer;font-family:inherit;border:none;background:none;outline:none}
+a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px}
+
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden;padding-top:var(--safe-top)}
+
+/* App bar */
+.app-bar{flex-shrink:0;height:var(--bar-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:10px;z-index:50}
+.brand{display:flex;align-items:center;gap:8px;text-decoration:none}
+.brand-ic{width:34px;height:34px;border-radius:var(--r8);background:linear-gradient(135deg,var(--pr),var(--pr2));display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;box-shadow:0 2px 6px rgba(255,87,34,.35)}
+.brand-nm{font-size:18px;font-weight:800;letter-spacing:-.3px;color:var(--txt)}
+.brand-nm em{color:var(--pr);font-style:normal}
+.app-bar-mid{flex:1;display:flex;justify-content:center}
+.loc-btn{display:flex;align-items:center;gap:6px;background:var(--pr-bg);border-radius:var(--r99);padding:6px 14px;border:1.5px solid rgba(255,87,34,.2);max-width:190px;min-width:0}
+.loc-inner{min-width:0}
+.loc-lbl{font-size:9px;font-weight:700;color:var(--pr);text-transform:uppercase;letter-spacing:.6px;line-height:1}
+.loc-city{font-size:13px;font-weight:700;color:var(--txt);line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pulse{width:7px;height:7px;border-radius:50%;background:var(--pr);animation:pulse 1.2s ease infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.6);opacity:.45}}
+.live-dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px var(--green-bg);flex-shrink:0;animation:live 2s ease infinite}
+@keyframes live{0%,100%{box-shadow:0 0 0 3px var(--green-bg)}50%{box-shadow:0 0 0 5px rgba(22,163,74,.15)}}
+
+/* Install banner */
+#install-banner{display:none;align-items:center;gap:10px;padding:10px 16px;background:linear-gradient(135deg,var(--pr),var(--pr2));color:#fff;font-size:12px;font-weight:600;z-index:60}
+#install-banner.show{display:flex}
+.install-btn{margin-left:auto;background:#fff;color:var(--pr);border-radius:var(--r99);padding:5px 14px;font-size:12px;font-weight:700;white-space:nowrap;flex-shrink:0}
+.install-dismiss{opacity:.75;font-size:18px;line-height:1;padding:2px 4px;flex-shrink:0}
+
+/* Filter shell */
+.filter-shell{flex-shrink:0;background:var(--surface);border-bottom:1px solid var(--border)}
+.frow{display:flex;gap:6px;padding:10px 16px;overflow-x:auto;scrollbar-width:none}
+.frow::-webkit-scrollbar{display:none}
+.brow{display:flex;gap:6px;padding:0 16px 10px;overflow-x:auto;scrollbar-width:none}
+.brow::-webkit-scrollbar{display:none}
+
+.chip{display:flex;align-items:center;gap:4px;padding:8px 14px;border-radius:var(--r99);font-size:13px;font-weight:600;background:var(--surface2);border:1.5px solid var(--border);color:var(--txt2);white-space:nowrap;transition:var(--t);flex-shrink:0;user-select:none}
+.chip:active{transform:scale(.96)}
+.chip.active{background:var(--pr);border-color:var(--pr);color:#fff}
+.chip.teal.active{background:var(--teal);border-color:var(--teal);color:#fff}
+
+/* Tab row */
+.tab-row{display:flex;border-bottom:1px solid var(--border);background:var(--surface)}
+.tab-btn{flex:1;padding:11px 8px;font-size:13px;font-weight:700;color:var(--txt3);border-bottom:2px solid transparent;transition:var(--t);user-select:none}
+.tab-btn.active{color:var(--pr);border-bottom-color:var(--pr)}
+
+/* Budget range */
+.budget-range{padding:0 16px 10px;display:flex;align-items:center;gap:10px}
+.budget-range label{font-size:12px;font-weight:700;color:var(--txt2);white-space:nowrap}
+.budget-range input[type=range]{flex:1;accent-color:var(--pr);height:4px;border-radius:2px}
+.budget-val{font-size:12px;font-weight:700;color:var(--pr);min-width:54px;text-align:right}
+
+/* Main scroll */
+.main-wrap{display:flex;flex:1;overflow:hidden}
+.main-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.panel{display:none;padding:12px 16px;padding-bottom:calc(var(--nav-h) + var(--safe-bot) + 16px)}
+.panel.active{display:block}
+
+/* Section label */
+.section-lbl{font-size:11px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.8px;margin:4px 0 10px}
+
+/* Cards */
+.cards-grid{display:grid;gap:12px}
+.card{background:var(--surface);border-radius:var(--r16);overflow:hidden;border:1px solid var(--border);box-shadow:var(--sh);transition:transform var(--t),box-shadow var(--t)}
+.card:active{transform:scale(.99);box-shadow:none}
+.card-accent{height:4px}
+.card-body{padding:14px}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px}
+.card-info{flex:1;min-width:0}
+.card-name{font-size:15px;font-weight:800;color:var(--txt);line-height:1.2;margin-bottom:3px}
+.card-addr{font-size:12px;color:var(--txt3);margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stars{color:var(--gold);font-size:12px;letter-spacing:.4px;margin-bottom:3px}
+.rating-row{display:flex;align-items:center;gap:6px}
+.rating-val{font-size:14px;font-weight:800;color:var(--txt)}
+.rating-cnt{font-size:12px;color:var(--txt3)}
+.price-badge{background:var(--green-bg);color:var(--green);font-size:14px;font-weight:800;padding:8px 11px;border-radius:var(--r12);white-space:nowrap;flex-shrink:0;text-align:center;line-height:1.3}
+.price-badge small{font-size:10px;font-weight:600;opacity:.7;display:block}
+
+/* Tags & amenities */
+.tags-row{display:flex;gap:5px;flex-wrap:wrap;margin:8px 0}
+.tag{font-size:11px;font-weight:600;padding:3px 9px;border-radius:var(--r99);background:var(--surface2);color:var(--txt2);border:1px solid var(--border)}
+.amenity-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.amenity{font-size:11px;font-weight:600;padding:3px 9px;border-radius:var(--r99);background:var(--pr-bg);color:var(--pr)}
+.card-desc{font-size:12px;color:var(--txt3);line-height:1.6}
+
+/* Restaurant extras */
+.diet-badge,.open-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:var(--r99)}
+.diet-badge.pure-veg{background:var(--green-bg);color:var(--green)}
+.diet-badge.veg{background:#F0FDF4;color:#15803D}
+.diet-badge.non-veg{background:#FEF2F2;color:var(--red)}
+.open-badge.open{background:var(--green-bg);color:var(--green)}
+.open-badge.closed{background:#FEF2F2;color:var(--red)}
+.badges-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px}
+.timing-row{font-size:11px;color:var(--txt3);margin-bottom:8px}
+.dishes-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.dish{font-size:11px;padding:3px 9px;border-radius:var(--r99);background:var(--teal-bg);color:var(--teal);font-weight:600}
+.price-sub{font-size:11px;color:var(--txt3);text-align:center;margin-top:4px}
+
+/* GBP reviews */
+.gbp-block{border-top:1px solid var(--border);padding-top:10px;margin-top:4px}
+.gbp-hdr{font-size:11px;font-weight:700;color:var(--txt3);margin-bottom:6px}
+.gbp-q{font-size:12px;color:var(--txt2);font-style:italic;line-height:1.5;margin-bottom:3px}
+.gbp-q::before{content:'"'}
+.gbp-q::after{content:'"'}
+
+/* CTA button on card */
+.card-cta{width:100%;margin-top:12px;padding:11px;background:var(--pr);color:#fff;border-radius:var(--r12);font-size:13px;font-weight:700;text-align:center;transition:background var(--t)}
+.card-cta:active{background:var(--pr2)}
+.card-cta.teal{background:var(--teal)}
+.card-cta.teal:active{background:#006068}
+
+/* Empty state */
+.empty{text-align:center;padding:56px 24px;color:var(--txt3)}
+.empty-ic{font-size:52px;margin-bottom:14px}
+.empty-txt{font-size:15px;font-weight:700;margin-bottom:6px;color:var(--txt2)}
+.empty-sub{font-size:13px}
+
+/* Bottom nav */
+.bottom-nav{flex-shrink:0;height:calc(var(--nav-h) + var(--safe-bot));background:var(--surface);border-top:1px solid var(--border);display:flex;z-index:50;padding-bottom:var(--safe-bot)}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--txt4);transition:color var(--t);user-select:none;position:relative}
+.nav-btn.active{color:var(--pr)}
+.nav-btn.active::after{content:'';position:absolute;top:6px;width:24px;height:3px;background:var(--pr);border-radius:var(--r99)}
+.nav-ic{font-size:22px;line-height:1}
+.nav-lbl{font-size:10px;font-weight:700;letter-spacing:.2px}
+
+/* Toast */
+#toast{position:fixed;bottom:calc(var(--nav-h) + var(--safe-bot) + 16px);left:50%;transform:translateX(-50%) translateY(20px);background:#1C1C1E;color:#fff;font-size:13px;font-weight:600;padding:10px 20px;border-radius:var(--r99);z-index:999;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;white-space:nowrap}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* Offline banner */
+#offline-bar{display:none;text-align:center;padding:7px;background:#F59E0B;color:#fff;font-size:12px;font-weight:700;z-index:60}
+#offline-bar.show{display:block}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- Offline bar -->
+  <div id="offline-bar">You're offline — showing cached data</div>
+
+  <!-- Install banner -->
+  <div id="install-banner">
+    <span>✈️</span>
+    <span>Add TripAI to your home screen</span>
+    <button class="install-btn" id="install-btn">Install</button>
+    <button class="install-dismiss" id="install-dismiss">✕</button>
+  </div>
+
+  <!-- App Bar -->
+  <div class="app-bar">
+    <a class="brand" href="/tripai">
+      <div class="brand-ic">✈️</div>
+      <div class="brand-nm">Trip<em>AI</em></div>
+    </a>
+    <div class="app-bar-mid">
+      <button class="loc-btn" id="loc-btn">
+        <div class="pulse"></div>
+        <div class="loc-inner">
+          <div class="loc-lbl">📍 Location</div>
+          <div class="loc-city" id="loc-city">Thanjavur, TN</div>
+        </div>
+      </button>
+    </div>
+    <div class="live-dot" title="Live data"></div>
+  </div>
+
+  <!-- Hotel Filters -->
+  <div class="filter-shell" id="hotel-filters">
+    <div class="frow" id="guest-chips">
+      <button class="chip active" data-val="all">All Guests</button>
+      <button class="chip" data-val="family">👨‍👩‍👧 Family</button>
+      <button class="chip" data-val="couple">💑 Couple</button>
+      <button class="chip" data-val="solo">🧳 Solo</button>
+      <button class="chip" data-val="group">👥 Group</button>
+      <button class="chip" data-val="business">💼 Business</button>
+    </div>
+    <div class="budget-range">
+      <label>₹ Max</label>
+      <input type="range" id="budget-slider" min="500" max="10000" step="500" value="10000"/>
+      <span class="budget-val" id="budget-display">Any</span>
+    </div>
+    <div class="brow" id="budget-chips">
+      <button class="chip active" data-val="all">All Budgets</button>
+      <button class="chip" data-val="budget">🟢 Budget</button>
+      <button class="chip" data-val="mid">🟡 Mid-range</button>
+      <button class="chip" data-val="luxury">💎 Luxury</button>
+    </div>
+  </div>
+
+  <!-- Restaurant Filters -->
+  <div class="filter-shell" id="rest-filters" style="display:none">
+    <div class="frow" id="diet-chips">
+      <button class="chip teal active" data-val="all">All</button>
+      <button class="chip teal" data-val="pure-veg">🌿 Pure Veg</button>
+      <button class="chip teal" data-val="veg">🥗 Veg</button>
+      <button class="chip teal" data-val="non-veg">🍗 Non-Veg</button>
+    </div>
+    <div class="brow" id="cuisine-chips">
+      <button class="chip teal active" data-val="all">All Cuisines</button>
+      <button class="chip teal" data-val="south-indian">South Indian</button>
+      <button class="chip teal" data-val="north-indian">North Indian</button>
+      <button class="chip teal" data-val="chinese">Chinese</button>
+      <button class="chip teal" data-val="continental">Continental</button>
+      <button class="chip teal" data-val="seafood">Seafood</button>
+      <button class="chip teal" data-val="cafe">Cafe</button>
+    </div>
+    <div class="brow" id="open-chips">
+      <button class="chip teal active" data-val="all">All Hours</button>
+      <button class="chip teal" data-val="open">🟢 Open Now</button>
+      <button class="chip teal" data-val="rating">⭐ 4.0+ Rating</button>
+    </div>
+  </div>
+
+  <!-- Tab Row -->
+  <div class="tab-row">
+    <button class="tab-btn active" id="tab-hotels" onclick="switchTab('hotels')">🏨 Hotels</button>
+    <button class="tab-btn" id="tab-restaurants" onclick="switchTab('restaurants')">🍽️ Restaurants</button>
+  </div>
+
+  <!-- Main content -->
+  <div class="main-wrap">
+    <div class="main-scroll" id="main-scroll">
+
+      <div class="panel active" id="panel-hotels">
+        <div class="section-lbl" id="hotels-lbl">All Hotels</div>
+        <div class="cards-grid" id="hotels-grid"></div>
+      </div>
+
+      <div class="panel" id="panel-restaurants">
+        <div class="section-lbl" id="rests-lbl">Restaurants &amp; Cafes</div>
+        <div class="cards-grid" id="rests-grid"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <div class="bottom-nav">
+    <button class="nav-btn active" id="nav-hotels" onclick="switchTab('hotels')">
+      <div class="nav-ic">🏨</div>
+      <div class="nav-lbl">Hotels</div>
+    </button>
+    <button class="nav-btn" id="nav-restaurants" onclick="switchTab('restaurants')">
+      <div class="nav-ic">🍽️</div>
+      <div class="nav-lbl">Restaurants</div>
+    </button>
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────
+const HOTELS = [
+  {id:1,name:"Sangam Hotel",stars:4,rating:4.2,reviews_count:1847,price:3500,budget_category:"mid",guest_types:["family","couple","solo"],tags:["Near Big Temple","AC Rooms","Restaurant On-Site","Heritage View"],address:"Srinivasam Pillai Rd, Thanjavur",amenities:["WiFi","AC","Restaurant","Parking","Laundry"],description:"A landmark hotel with iconic views of the ancient temple gopuram.",color:"#8B4513"},
+  {id:2,name:"Ideal River View Resort",stars:4,rating:4.5,reviews_count:632,price:5800,budget_category:"luxury",guest_types:["couple","family"],tags:["River View","Swimming Pool","Rooftop Restaurant","Spa & Wellness"],address:"Punnainallur, Thanjavur",amenities:["WiFi","AC","Pool","Spa","Restaurant","Bar","Gym"],description:"Premium riverside resort with panoramic views and world-class amenities.",color:"#1B6B7B"},
+  {id:3,name:"Hotel Tamil Nadu (TTDC)",stars:3,rating:3.8,reviews_count:2341,price:1800,budget_category:"budget",guest_types:["solo","family","group"],tags:["Budget Friendly","Near Big Temple","Government Hotel","Vegetarian Kitchen"],address:"Grand Anicut Canal Rd, Thanjavur",amenities:["WiFi","AC","Restaurant","Parking"],description:"Government-run hotel conveniently close to all major attractions.",color:"#2E7D32"},
+  {id:4,name:"GRT Regency",stars:4,rating:4.3,reviews_count:987,price:4200,budget_category:"mid",guest_types:["business","family","couple"],tags:["Business Centre","Conference Hall","Free Breakfast","Cultural Shows"],address:"2 Venkatesan Colony, Thanjavur",amenities:["WiFi","AC","Restaurant","Business Centre","Conference","Parking"],description:"Modern business hotel with excellent conference facilities.",color:"#4A148C"},
+  {id:5,name:"Parisutham Hotel",stars:3,rating:4.1,reviews_count:1523,price:2800,budget_category:"mid",guest_types:["family","solo","group"],tags:["Family Friendly","Vegetarian Kitchen","Heritage Property","Pilgrimage Groups"],address:"55 Grand Anicut Canal Rd, Thanjavur",amenities:["WiFi","AC","Restaurant","Parking","Travel Desk"],description:"Popular heritage hotel catering warmly to pilgrims and family groups.",color:"#BF360C"},
+  {id:6,name:"Hotel Valli",stars:2,rating:3.5,reviews_count:445,price:900,budget_category:"budget",guest_types:["solo","group"],tags:["Super Budget","City Centre","Basic Amenities"],address:"Railway Station Rd, Thanjavur",amenities:["WiFi","AC","Parking"],description:"No-frills budget accommodation near the railway station.",color:"#546E7A"},
+  {id:7,name:"Akila Hotel",stars:3,rating:3.9,reviews_count:728,price:1500,budget_category:"budget",guest_types:["solo","family","couple"],tags:["Good Value","Clean Rooms","Friendly Staff","Local Experience"],address:"Medical College Rd, Thanjavur",amenities:["WiFi","AC","Restaurant","Parking"],description:"Comfortable budget hotel known for its warm, friendly service.",color:"#00695C"},
+  {id:8,name:"The Thanjavur Grand",stars:5,rating:4.7,reviews_count:342,price:8500,budget_category:"luxury",guest_types:["couple","family","business"],tags:["5-Star Luxury","Rooftop Pool","Spa & Wellness","Fine Dining","Butler Service"],address:"Old Tank Bund Rd, Thanjavur",amenities:["WiFi","Pool","Spa","Restaurant","Bar","Gym","Concierge","Butler"],description:"Thanjavur's premier 5-star property with world-class luxury.",color:"#6A1B9A"},
+  {id:9,name:"Brindavan Lodge",stars:2,rating:3.6,reviews_count:289,price:750,budget_category:"budget",guest_types:["solo","group"],tags:["Super Budget","Temple Doorstep","Pilgrims Choice"],address:"Big Temple East St, Thanjavur",amenities:["WiFi","AC"],description:"Extremely affordable lodge just steps from the iconic Big Temple.",color:"#5D4037"},
+  {id:10,name:"Chola Heritage Boutique",stars:4,rating:4.6,reviews_count:178,price:5200,budget_category:"luxury",guest_types:["couple","solo","family"],tags:["Boutique Property","Heritage Architecture","Rooftop Terrace","Art Collection"],address:"Salai Rd, Thanjavur",amenities:["WiFi","AC","Rooftop","Breakfast","Art Tours","Cultural Workshop"],description:"Intimate boutique in a restored 100-year-old Chola-era mansion.",color:"#BF360C"},
+];
+
+const RESTAURANTS = [
+  {id:1,name:"Sathars Restaurant",rating:4.4,reviews_count:3241,price_for_two:250,price_range:"low",diet:"non-veg",cuisines:["south-indian","seafood"],distance:1.3,address:"Abraham Pandithar Rd, Thanjavur",open_now:true,timing:"6:00 AM – 11:00 PM",tags:["Must Try","Local Favourite","Biryani"],popular_dishes:["Chettinad Biryani","Prawn Curry","Parotta"],gbp_highlights:["Amazing biryani!","Best non-veg in Thanjavur","Authentic Chettinad taste"],color:"#B71C1C"},
+  {id:2,name:"Vasantha Bhavan",rating:4.2,reviews_count:1876,price_for_two:180,price_range:"low",diet:"pure-veg",cuisines:["south-indian"],distance:0.7,address:"South Main St, Thanjavur",open_now:true,timing:"6:30 AM – 10:30 PM",tags:["Pure Veg","Traditional","Breakfast Spot"],popular_dishes:["Idli Sambar","Pongal","Filter Coffee"],gbp_highlights:["Best idlis in town","Authentic South Indian","Great for breakfast"],color:"#1B5E20"},
+  {id:3,name:"Bons Hilton Restaurant",rating:4.1,reviews_count:892,price_for_two:800,price_range:"high",diet:"non-veg",cuisines:["multi-cuisine","north-indian","chinese"],distance:2.5,address:"Srinivasam Pillai Rd, Thanjavur",open_now:true,timing:"12:00 PM – 11:00 PM",tags:["Fine Dining","AC Restaurant","Family Dining"],popular_dishes:["Butter Chicken","Hakka Noodles","Grilled Fish"],gbp_highlights:["Great ambience","Perfect for family dinner","Good service"],color:"#4A148C"},
+  {id:4,name:"Sri Ananda Bhavan",rating:4.0,reviews_count:2103,price_for_two:160,price_range:"low",diet:"pure-veg",cuisines:["south-indian","north-indian"],distance:0.4,address:"Railway Station Rd, Thanjavur",open_now:true,timing:"6:00 AM – 10:00 PM",tags:["Pure Veg","Budget","Quick Bites"],popular_dishes:["Dosa","Chapati","Meals"],gbp_highlights:["Very affordable","Tasty food","Quick service"],color:"#E65100"},
+  {id:5,name:"Golden Restaurant",rating:4.3,reviews_count:1456,price_for_two:450,price_range:"medium",diet:"veg",cuisines:["north-indian","chinese","south-indian"],distance:1.8,address:"Medical College Rd, Thanjavur",open_now:false,timing:"11:00 AM – 11:00 PM",tags:["Multi-cuisine","Lunch Special"],popular_dishes:["Paneer Butter Masala","Fried Rice","Veg Biryani"],gbp_highlights:["Great paneer dishes","Nice ambience","Good for groups"],color:"#F57F17"},
+  {id:6,name:"Thanjai Multicuisine",rating:4.4,reviews_count:743,price_for_two:1200,price_range:"high",diet:"non-veg",cuisines:["continental","chinese","american"],distance:3.2,address:"Punnainallur Main Rd, Thanjavur",open_now:true,timing:"12:00 PM – 12:00 AM",tags:["Premium","Rooftop View","Live Music"],popular_dishes:["Grilled Steak","Pasta","Cheesecake"],gbp_highlights:["Rooftop view is stunning","Best continental in TJ","Great cocktails"],color:"#0D47A1"},
+  {id:7,name:"Hotel Balaji",rating:3.9,reviews_count:1234,price_for_two:140,price_range:"low",diet:"pure-veg",cuisines:["south-indian"],distance:0.6,address:"Big Temple Rd, Thanjavur",open_now:true,timing:"5:30 AM – 9:30 PM",tags:["Pure Veg","Temple Area","Early Breakfast"],popular_dishes:["Pongal","Idli","Vada"],gbp_highlights:["Pilgrimage friendly","Opens early","Simple & tasty"],color:"#004D40"},
+  {id:8,name:"Cafe Aarthy",rating:4.5,reviews_count:567,price_for_two:350,price_range:"medium",diet:"veg",cuisines:["cafe","continental","bakery"],distance:2.0,address:"Medical College Rd, Thanjavur",open_now:true,timing:"8:00 AM – 10:00 PM",tags:["Cafe Vibes","Desserts","Sandwiches"],popular_dishes:["Cold Coffee","Croissants","Cheesecake Slice"],gbp_highlights:["Lovely cafe atmosphere","Best coffee in TJ","Great desserts"],color:"#880E4F"},
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────
+let guestFilter='all', budgetFilter='all', maxPrice=10000;
+let dietFilter='all', cuisineFilter='all', openFilter='all';
+let currentTab='hotels';
+let deferredPrompt=null;
+
+// ── INIT ──────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  renderHotels();
+  renderRestaurants();
+
+  setupChips('guest-chips', v => { guestFilter=v; renderHotels(); });
+  setupChips('budget-chips', v => { budgetFilter=v; renderHotels(); });
+  setupChips('diet-chips',   v => { dietFilter=v; renderRestaurants(); });
+  setupChips('cuisine-chips',v => { cuisineFilter=v; renderRestaurants(); });
+  setupChips('open-chips',   v => { openFilter=v; renderRestaurants(); });
+
+  document.getElementById('budget-slider').addEventListener('input', e => {
+    maxPrice = +e.target.value;
+    document.getElementById('budget-display').textContent =
+      maxPrice >= 10000 ? 'Any' : '₹' + maxPrice.toLocaleString('en-IN');
+    renderHotels();
+  });
+
+  // Restore tab from URL hash
+  if (location.hash === '#restaurants') switchTab('restaurants');
+
+  // Offline detection
+  const offBar = document.getElementById('offline-bar');
+  window.addEventListener('offline', () => offBar.classList.add('show'));
+  window.addEventListener('online',  () => offBar.classList.remove('show'));
+  if (!navigator.onLine) offBar.classList.add('show');
+});
+
+// ── PWA: INSTALL PROMPT ───────────────────────────────────────────────
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('install-banner').classList.add('show');
+});
+
+document.getElementById('install-btn').addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  document.getElementById('install-banner').classList.remove('show');
+  if (outcome === 'accepted') showToast('TripAI added to home screen!');
+});
+
+document.getElementById('install-dismiss').addEventListener('click', () => {
+  document.getElementById('install-banner').classList.remove('show');
+});
+
+window.addEventListener('appinstalled', () => {
+  document.getElementById('install-banner').classList.remove('show');
+  showToast('App installed successfully!');
+});
+
+// ── SERVICE WORKER ────────────────────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/static/sw.js').catch(() => {});
+}
+
+// ── CHIPS ─────────────────────────────────────────────────────────────
+function setupChips(rowId, onChange) {
+  document.getElementById(rowId).querySelectorAll('.chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.getElementById(rowId).querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      onChange(btn.dataset.val);
+      document.getElementById('main-scroll').scrollTo({top:0,behavior:'smooth'});
+    });
+  });
+}
+
+// ── HOTELS ────────────────────────────────────────────────────────────
+function filterHotels() {
+  return HOTELS.filter(h => {
+    if (maxPrice < 10000 && h.price > maxPrice) return false;
+    if (guestFilter !== 'all' && !h.guest_types.includes(guestFilter)) return false;
+    if (budgetFilter !== 'all' && h.budget_category !== budgetFilter) return false;
+    return true;
+  });
+}
+
+function renderHotels() {
+  const grid = document.getElementById('hotels-grid');
+  const lbl  = document.getElementById('hotels-lbl');
+  const list  = filterHotels();
+  lbl.textContent = `All Hotels (${list.length})`;
+  grid.innerHTML  = list.length
+    ? list.map(hotelCard).join('')
+    : `<div class="empty"><div class="empty-ic">🏨</div><div class="empty-txt">No hotels match</div><div class="empty-sub">Try adjusting your filters</div></div>`;
+}
+
+function hotelCard(h) {
+  const stars = '★'.repeat(h.stars) + '☆'.repeat(5 - h.stars);
+  return `
+  <div class="card">
+    <div class="card-accent" style="background:${h.color}"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div class="card-info">
+          <div class="card-name">${h.name}</div>
+          <div class="card-addr">📍 ${h.address}</div>
+          <div class="stars">${stars}</div>
+          <div class="rating-row">
+            <span class="rating-val">${h.rating}</span>
+            <span class="rating-cnt">(${h.reviews_count.toLocaleString('en-IN')} reviews)</span>
+          </div>
+        </div>
+        <div class="price-badge">₹${h.price.toLocaleString('en-IN')}<small>/ night</small></div>
+      </div>
+      <div class="tags-row">${h.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+      <div class="amenity-row">${h.amenities.map(a=>`<span class="amenity">${a}</span>`).join('')}</div>
+      <div class="card-desc">${h.description}</div>
+      <button class="card-cta" onclick="showToast('Opening maps for ${h.name.replace(/'/g,"\\'")}…')">📍 Get Directions</button>
+    </div>
+  </div>`;
+}
+
+// ── RESTAURANTS ───────────────────────────────────────────────────────
+function filterRestaurants() {
+  return RESTAURANTS.filter(r => {
+    if (dietFilter !== 'all' && r.diet !== dietFilter) return false;
+    if (cuisineFilter !== 'all' && !r.cuisines.includes(cuisineFilter)) return false;
+    if (openFilter === 'open' && !r.open_now) return false;
+    if (openFilter === 'rating' && r.rating < 4.0) return false;
+    return true;
+  }).sort((a,b) => b.rating - a.rating);
+}
+
+function renderRestaurants() {
+  const grid = document.getElementById('rests-grid');
+  const lbl  = document.getElementById('rests-lbl');
+  const list  = filterRestaurants();
+  lbl.textContent = `Restaurants & Cafes (${list.length})`;
+  grid.innerHTML  = list.length
+    ? list.map(restaurantCard).join('')
+    : `<div class="empty"><div class="empty-ic">🍽️</div><div class="empty-txt">No restaurants match</div><div class="empty-sub">Try adjusting your filters</div></div>`;
+}
+
+function restaurantCard(r) {
+  const dc = r.diet==='pure-veg' ? 'pure-veg' : r.diet==='veg' ? 'veg' : 'non-veg';
+  const dl = r.diet==='pure-veg' ? '🌿 Pure Veg' : r.diet==='veg' ? '🥗 Veg' : '🍗 Non-Veg';
+  const oc = r.open_now ? 'open' : 'closed';
+  const ol = r.open_now ? '🟢 Open' : '🔴 Closed';
+  const pl = r.price_range==='low' ? '₹ Budget' : r.price_range==='medium' ? '₹₹ Mid' : '₹₹₹ Premium';
+  return `
+  <div class="card">
+    <div class="card-accent" style="background:${r.color}"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div class="card-info">
+          <div class="card-name">${r.name}</div>
+          <div class="card-addr">📍 ${r.address}</div>
+          <div class="badges-row">
+            <span class="diet-badge ${dc}">${dl}</span>
+            <span class="open-badge ${oc}">${ol}</span>
+          </div>
+          <div class="rating-row">
+            <span class="rating-val">${r.rating}</span>
+            <span class="rating-cnt">(${r.reviews_count.toLocaleString('en-IN')} reviews)</span>
+          </div>
+        </div>
+        <div>
+          <div class="price-badge">₹${r.price_for_two}<small>for 2</small></div>
+          <div class="price-sub">${pl}</div>
+        </div>
+      </div>
+      <div class="timing-row">🕐 ${r.timing} &nbsp;•&nbsp; 📍 ${r.distance} km away</div>
+      <div class="dishes-row">${r.popular_dishes.map(d=>`<span class="dish">${d}</span>`).join('')}</div>
+      <div class="tags-row">${r.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+      <div class="gbp-block">
+        <div class="gbp-hdr">⭐ Google Reviews</div>
+        ${r.gbp_highlights.map(q=>`<div class="gbp-q">${q}</div>`).join('')}
+      </div>
+      <button class="card-cta teal" onclick="showToast('Opening maps for ${r.name.replace(/'/g,"\\'")}…')">📍 Get Directions</button>
+    </div>
+  </div>`;
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  currentTab = tab;
+  ['hotels','restaurants'].forEach(t => {
+    document.getElementById('panel-'+t).classList.toggle('active', t===tab);
+    document.getElementById('tab-'+t).classList.toggle('active', t===tab);
+    document.getElementById('nav-'+t).classList.toggle('active', t===tab);
+  });
+  document.getElementById('hotel-filters').style.display = tab==='hotels' ? '' : 'none';
+  document.getElementById('rest-filters').style.display  = tab==='restaurants' ? '' : 'none';
+  history.replaceState(null,'',tab==='hotels' ? '/tripai' : '/tripai#restaurants');
+  document.getElementById('main-scroll').scrollTo({top:0,behavior:'instant'});
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>
