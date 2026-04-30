@@ -1,0 +1,18 @@
+node_modules
+dist
+.env
+tripai.db
+*.db
+.DS_Store
+*.log
+
+# Screenshots and planning docs
+screenshots/
+Screenshot*
+*.png
+APP_DEVELOPMENT_PLAN.md
+INTEGRATIONS.md
+ROADMAP.md
+execution.md
+design.md
+Plan.md
