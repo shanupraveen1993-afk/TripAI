@@ -250,16 +250,15 @@ Return ONLY valid JSON. No markdown fences. No explanation text.`;
       {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { thinkingConfig: { thinkingBudget: 0 } },
-        }),
+        body:    JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
       }
     );
-    const data  = await resp.json() as any;
-    const raw   = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '[]';
-    const clean = raw.replace(/```json|```/g, '').trim();
-    return JSON.parse(clean);
+    const data   = await resp.json() as any;
+    const raw    = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+    const clean  = raw.replace(/```json|```/g, '').trim();
+    const parsed = clean ? JSON.parse(clean) : [];
+    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    throw new Error('empty');
   } catch {
     // Fallback: preserve original order with neutral annotations
     return places.map((_, i) => ({
@@ -375,10 +374,7 @@ Return a JSON array of EXACTLY 5 stops. Return ONLY valid JSON. No markdown. No 
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { thinkingConfig: { thinkingBudget: 0 } },
-        }),
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
       }
     );
     const data  = await resp.json() as any;
@@ -473,10 +469,7 @@ Return ONLY valid JSON. No markdown. No explanation.`;
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { thinkingConfig: { thinkingBudget: 0 } },
-        }),
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
       }
     );
     const data  = await resp.json() as any;
