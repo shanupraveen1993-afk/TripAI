@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { Compass, MapPin, Search, X } from 'lucide-react';
 import { PlaceCardSkeleton, ItineraryItemSkeleton } from './components/ui/Skeleton';
@@ -16,29 +16,61 @@ import {
   MOCK_HOTELS, MOCK_FOOD, MOCK_ITINERARY, MOCK_EXPLORE,
   PlaceResult,
 } from './mock/data';
-import { fetchPlan, PlanResult } from './api/client';
+import {
+  fetchPlan, fetchItinerary, fetchExploreGuide,
+  PlanResult, ExploreGuide, LiveItineraryStop,
+} from './api/client';
 
 type AppScreen = 'landing' | 'browse' | 'app';
 type ContentScreen = 'dashboard' | 'loading' | 'results';
 
 interface User { name: string; email: string; avatar?: string; }
 
-const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
-
 export default function App() {
-  const [appScreen, setAppScreen]     = useState<AppScreen>('landing');
+  const [user, setUser] = useState<User | null>(() => {
+    try {
+      const stored = localStorage.getItem('tripai_user');
+      return stored ? (JSON.parse(stored) as User) : null;
+    } catch { return null; }
+  });
+  const [appScreen, setAppScreen]     = useState<AppScreen>(() => {
+    try {
+      return localStorage.getItem('tripai_user') ? 'app' : 'landing';
+    } catch { return 'landing'; }
+  });
   const [mainSection, setMainSection] = useState<MainSection>('home');
   const [contentScreen, setContent]   = useState<ContentScreen>('dashboard');
-  const [user, setUser]               = useState<User | null>(null);
   const [searchLocation, setSearchLocation] = useState('Thanjavur');
   const [liveResults, setLiveResults]       = useState<PlanResult[] | null>(null);
+  const [liveExplore, setLiveExplore]       = useState<ExploreGuide | null>(null);
+  const [liveItinerary, setLiveItinerary]   = useState<LiveItineraryStop[] | null>(null);
   const [apiError, setApiError]             = useState(false);
+  const [searchSeed, setSearchSeed]         = useState(0);
   const [activeTab, setActiveTab]     = useState<Tab>('Hotels');
   const [initialTab, setInitialTab]   = useState<Tab | undefined>(undefined);
-  const [savedTrips, setSavedTrips]   = useState<SavedTrip[]>([]);
+  const [savedTrips, setSavedTrips]   = useState<SavedTrip[]>(() => {
+    try {
+      const stored = localStorage.getItem('tripai_saved');
+      return stored ? (JSON.parse(stored) as SavedTrip[]) : [];
+    } catch { return []; }
+  });
   const [isSaved, setIsSaved]         = useState(false);
   const [aiCount, setAiCount]         = useState(0);
+  const [itineraryGenCount, setItineraryGenCount] = useState(0);
   const [lastSearchFilters, setLastSearchFilters] = useState<DashboardFilters | null>(null);
+  const [backContext, setBackContext] = useState<'dashboard' | 'itinerary-results'>('dashboard');
+
+  // Persist user session and saved trips across page refreshes
+  useEffect(() => {
+    try {
+      if (user) localStorage.setItem('tripai_user', JSON.stringify(user));
+      else localStorage.removeItem('tripai_user');
+    } catch {}
+  }, [user]);
+
+  useEffect(() => {
+    try { localStorage.setItem('tripai_saved', JSON.stringify(savedTrips)); } catch {}
+  }, [savedTrips]);
 
   // Browse mode: auth modal shown when user tries to search
   const [browseAuthOpen, setBrowseAuthOpen]     = useState(false);
@@ -60,12 +92,13 @@ export default function App() {
     setBrowseAuthOpen(false);
     setAppScreen('app');
     if (pendingFilters) {
-      await runSearch(pendingFilters);
+      await runSearch(pendingFilters, searchSeed);
       setPendingFilters(null);
     }
   };
 
   const handleLogout = () => {
+    try { localStorage.removeItem('tripai_user'); } catch {}
     setUser(null);
     setAppScreen('landing');
     setMainSection('home');
@@ -74,7 +107,6 @@ export default function App() {
   };
 
   // ── Tab selection from landing page categories ──────────────────────────
-  // Always goes to browse mode first; login required only at search time
   const handleTabSelect = (tab: Tab, dest?: string) => {
     if (dest) setSearchLocation(dest);
     setInitialTab(tab);
@@ -88,17 +120,36 @@ export default function App() {
   };
 
   // ── Core search logic ───────────────────────────────────────────────────
-  const runSearch = async (filters: DashboardFilters) => {
+  const runSearch = async (filters: DashboardFilters, seed: number) => {
     setActiveTab(filters.tab);
     setSearchLocation('Thanjavur');
     setLastSearchFilters(filters);
     setContent('loading');
     setIsSaved(false);
     setLiveResults(null);
+    setLiveExplore(null);
+    setLiveItinerary(null);
     setApiError(false);
     try {
-      const results = await fetchPlan(filters.tab);
-      setLiveResults(results);
+      if (filters.tab === 'Explore') {
+        const guide = await fetchExploreGuide(filters.exploreTarget, filters.visitTime);
+        if (guide) setLiveExplore(guide);
+        else setApiError(true);
+      } else if (filters.tab === 'Itinerary') {
+        const stops = await fetchItinerary(filters.startTime, seed);
+        if (stops.length > 0) { setLiveItinerary(stops); setItineraryGenCount(c => c + 1); }
+        else setApiError(true);
+      } else {
+        const results = await fetchPlan(filters.tab, seed, {
+          hotelTags:  filters.hotelTags,
+          hotelArea:  filters.hotelArea,
+          budget:     filters.budget,
+          dietType:   filters.dietType,
+          foodBudget: filters.foodBudget,
+          diningVibe: filters.diningVibe,
+        });
+        setLiveResults(results);
+      }
     } catch {
       setApiError(true);
     }
@@ -126,7 +177,7 @@ export default function App() {
       setBrowseAuthOpen(true);
       return;
     }
-    await runSearch(filters);
+    await runSearch(filters, searchSeed);
   };
 
   // ── Save trip ───────────────────────────────────────────────────────────
@@ -158,6 +209,20 @@ export default function App() {
     setContent('results');
   };
 
+  // ── Drill-down: Itinerary stop → Explore ───────────────────────────────
+  const handleExploreStop = async (target: string) => {
+    setBackContext('itinerary-results');
+    const filters: DashboardFilters = {
+      tab: 'Explore', destination: searchLocation,
+      startDate: '', endDate: '', numPeople: 2, budget: 5000,
+      hotelTags: [], hotelArea: '', foodLocation: '', foodTags: [],
+      foodBudget: 'Medium', dietType: 'Veg', diningVibe: 'Family',
+      itinDate: '', startPoint: '', startTime: '09:00',
+      exploreTarget: target, visitTime: 'Morning',
+    };
+    await runSearch(filters, searchSeed);
+  };
+
   const handleDestinationSelect = (dest: string) => {
     setSearchLocation(dest);
   };
@@ -171,8 +236,8 @@ export default function App() {
   const LOADING_LABELS: Record<string, string> = {
     Hotels:    `Ranking hotels in ${searchLocation} by your preferences…`,
     Food:      `Filtering what's actually worth eating in ${searchLocation}…`,
-    Itinerary: `Routing your perfect day in ${searchLocation}…`,
-    Explore:   `Surfacing what most visitors miss in ${searchLocation}…`,
+    Itinerary: `Building your AI-sequenced day plan for ${searchLocation}…`,
+    Explore:   `Building your personalised visit guide…`,
   };
 
   const renderLoading = () => (
@@ -189,6 +254,9 @@ export default function App() {
       )}
     </div>
   );
+
+  // Merge live itinerary type with ItineraryStop for ResultsView compatibility
+  const itineraryToDisplay = liveItinerary ?? MOCK_ITINERARY;
 
   const renderContent = () => {
     if (mainSection === 'history') {
@@ -207,6 +275,7 @@ export default function App() {
           tripCount={savedTrips.length}
           aiCount={aiCount}
           onLogout={handleLogout}
+          onSavedPlaces={() => setMainSection('history')}
         />
       );
     }
@@ -237,14 +306,45 @@ export default function App() {
             <ResultsView
               tab={activeTab}
               destination="Thanjavur"
-              hotels={activeTab === 'Hotels'    ? (liveResults as PlaceResult[] ?? MOCK_HOTELS) : MOCK_HOTELS}
-              food={activeTab === 'Food'         ? (liveResults as PlaceResult[] ?? MOCK_FOOD)   : MOCK_FOOD}
-              temples={activeTab === 'Temples'   ? (liveResults as PlaceResult[] ?? [])          : []}
-              itinerary={MOCK_ITINERARY}
-              explore={MOCK_EXPLORE}
+              isFirstItinerary={itineraryGenCount === 1}
+              hotels={activeTab === 'Hotels' ? (liveResults as PlaceResult[] ?? MOCK_HOTELS) : MOCK_HOTELS}
+              food={activeTab === 'Food'    ? (liveResults as PlaceResult[] ?? MOCK_FOOD)   : MOCK_FOOD}
+              itinerary={activeTab === 'Itinerary' ? itineraryToDisplay : MOCK_ITINERARY}
+              explore={activeTab === 'Explore' ? (liveExplore as ExploreGuide ?? MOCK_EXPLORE) : MOCK_EXPLORE}
               apiError={apiError}
-              onBack={() => setContent('dashboard')}
-              onRegenerate={() => { setLiveResults(null); setContent('loading'); runSearch(lastSearchFilters ?? { tab: activeTab, destination: 'Thanjavur', startDate: '', endDate: '', numPeople: 2, budget: 5000, hotelTags: [], hotelArea: '', foodLocation: '', foodTags: [], foodBudget: 'Medium', dietType: 'Veg', diningVibe: 'Family', itinDate: '', startPoint: '', startTime: '09:00', exploreTarget: '', visitTime: '' }); }}
+              onBack={() => {
+                if (backContext === 'itinerary-results') {
+                  setBackContext('dashboard');
+                  setActiveTab('Itinerary');
+                  setInitialTab('Itinerary');
+                  setContent('results');
+                } else {
+                  setInitialTab(activeTab);
+                  setContent('dashboard');
+                }
+              }}
+              backLabel={backContext === 'itinerary-results' ? 'Itinerary' : undefined}
+              onExploreStop={handleExploreStop}
+              onRegenerate={() => {
+                // Compute new seed directly to avoid async state race condition
+                const newSeed = searchSeed + 1;
+                setSearchSeed(newSeed);
+                setLiveResults(null);
+                setLiveExplore(null);
+                setLiveItinerary(null);
+                setContent('loading');
+                runSearch(
+                  lastSearchFilters ?? {
+                    tab: activeTab, destination: 'Thanjavur',
+                    startDate: '', endDate: '', numPeople: 2, budget: 5000,
+                    hotelTags: [], hotelArea: '', foodLocation: '', foodTags: [],
+                    foodBudget: 'Medium', dietType: 'Veg', diningVibe: 'Family',
+                    itinDate: '', startPoint: '', startTime: '09:00',
+                    exploreTarget: 'Brihadeeswarar Temple', visitTime: 'Morning',
+                  },
+                  newSeed,
+                );
+              }}
               onSave={handleSave}
               saved={isSaved}
               onSwitchTab={tab => { setInitialTab(tab); setActiveTab(tab); setContent('dashboard'); }}
@@ -273,7 +373,7 @@ export default function App() {
       <div className="min-h-screen" style={{ background: 'linear-gradient(145deg, #EFF6FF 0%, #F9FAFB 45%, #F5F3FF 100%)' }}>
         {/* Browse header with universal location bar */}
         <header className="sticky top-0 z-40 border-b" style={{ background: 'rgba(249,250,251,0.88)', backdropFilter: 'blur(20px)', borderColor: 'rgba(0,0,0,0.07)', boxShadow: '0 1px 12px rgba(28,100,242,0.06)' }}>
-          <div className="w-full px-4 sm:px-6 xl:px-[304px] h-14 grid items-center gap-3" style={{ gridTemplateColumns: 'auto 1fr auto' }}>
+          <div className="w-full max-w-[920px] mx-auto px-4 h-14 grid items-center gap-3" style={{ gridTemplateColumns: 'auto 1fr auto' }}>
             {/* Logo */}
             <button
               onClick={() => setAppScreen('landing')}

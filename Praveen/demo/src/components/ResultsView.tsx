@@ -1,15 +1,25 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  ArrowLeft, Star, MapPin, Clock, Navigation, Share2,
+  ArrowLeft, Star, MapPin, Clock, Navigation, Share2, Compass,
   ChevronRight, ChevronDown, Sparkles, Info, RefreshCw, Bookmark, BookmarkCheck,
-  Utensils, LandmarkIcon, CheckCircle, AlertTriangle, RotateCcw, Hotel, Route,
-  TrendingUp, TrendingDown, Minus, ImageIcon,
+  Utensils, CheckCircle, AlertTriangle, RotateCcw, Hotel, Route,
+  TrendingUp, TrendingDown, Minus, ImageIcon, ExternalLink, Map,
 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Badge } from './ui/Badge';
 import { Tab } from './ui/Tabs';
-import { PlaceResult, ItineraryStop, ExploreResult, TrafficLevel, ReviewItem } from '../mock/data';
+import { PlaceResult, ExploreResult, TrafficLevel, ReviewItem } from '../mock/data';
+import type { LiveItineraryStop } from '../api/client';
+
+// Accept both mock ItineraryStop and live LiveItineraryStop (structurally compatible)
+type ItineraryStop = {
+  stop: string; time: string; trafficNote: string; tip: string;
+  currentTraffic: TrafficLevel; yesterdayTraffic: TrafficLevel;
+  travelToNext?: string; departBy?: string; imgId?: string;
+  duration?: string; crowdLevel?: 'Low' | 'Moderate' | 'High';
+  reachNote?: string; entryFee?: string; highlights?: string[];
+} | LiveItineraryStop;
 import { fetchPhoto } from '../api/client';
 import { useToast } from './ui/Toast';
 
@@ -18,8 +28,7 @@ interface ResultsViewProps {
   destination: string;
   hotels?: PlaceResult[];
   food?: PlaceResult[];
-  temples?: PlaceResult[];
-  itinerary?: ItineraryStop[];
+  itinerary?: (ItineraryStop | LiveItineraryStop)[];
   explore?: ExploreResult;
   apiError?: boolean;
   onBack: () => void;
@@ -27,15 +36,18 @@ interface ResultsViewProps {
   onSave: () => void;
   saved?: boolean;
   onSwitchTab?: (tab: Tab) => void;
+  backLabel?: string;
+  onExploreStop?: (target: string) => void;
+  isFirstItinerary?: boolean;
 }
 
-/* ── Best restaurants near the hotel ─────────────────────────────────── */
+/* ── Best restaurants near Thanjavur hotels ──────────────────────────── */
 const NEARBY_RESTAURANTS = [
-  { name: 'Toit Brewpub',       dist: '0.8km', stars: 4.6, price: '₹₹₹', cuisine: 'Craft Beer',   dietVeg: false, aiNote: 'Lively rooftop spot — perfect after check-in, no reservation needed on weekdays.' },
-  { name: 'Meghana Foods',      dist: '1.2km', stars: 4.5, price: '₹₹',  cuisine: 'Biryani',      dietVeg: false, aiNote: 'Best biryani in the area — quick service, always fresh, cash preferred.' },
-  { name: 'Vidyarthi Bhavan',   dist: '1.5km', stars: 4.7, price: '₹',   cuisine: 'South Indian', dietVeg: true,  aiNote: 'Legendary pure-veg dosa spot — go before 9am to avoid a 30-min queue.' },
-  { name: 'Truffles',           dist: '2.1km', stars: 4.4, price: '₹₹',  cuisine: 'Continental',  dietVeg: false, aiNote: 'Great burgers and shakes — popular with families, open till midnight.' },
-  { name: 'The Permit Room',    dist: '2.8km', stars: 4.3, price: '₹₹₹', cuisine: 'Modern Indian', dietVeg: false, aiNote: 'Craft cocktails + modern Indian small plates — ideal for a dinner out.' },
+  { name: 'Sri Venkatramana Bhavan', dist: '0.4km', stars: 4.6, price: '₹',   cuisine: 'South Indian', dietVeg: true,  aiNote: 'Classic Thanjavur thali — banana-leaf meals, quick service, best before noon.' },
+  { name: 'Hotel Sathars',           dist: '0.9km', stars: 4.4, price: '₹',   cuisine: 'Biryani',      dietVeg: false, aiNote: 'Famous Ambur-style biryani — rice portions are generous, busy at lunch hours.' },
+  { name: 'Chola Mess',              dist: '1.3km', stars: 4.5, price: '₹',   cuisine: 'Chola Cuisine',dietVeg: true,  aiNote: 'Authentic Chola-era recipes — try the paal paniyaram and koozh for a heritage food experience.' },
+  { name: 'Bombay Bakes',            dist: '1.8km', stars: 4.2, price: '₹₹',  cuisine: 'Bakery & Café',dietVeg: true,  aiNote: 'Best filter coffee in central Thanjavur — ideal breakfast stop before Big Temple visit.' },
+  { name: 'Hotel Ramnath',           dist: '2.4km', stars: 4.3, price: '₹',   cuisine: 'South Indian', dietVeg: false, aiNote: 'Reliable local favourite — chicken curry and parotta combo is a crowd staple.' },
 ];
 
 /* ── Traffic styling ─────────────────────────────────────────────────── */
@@ -51,9 +63,46 @@ const TRAFFIC_BADGE: Record<TrafficLevel, { bg: string; text: string; dot: strin
   Heavy:    { bg: 'bg-red-50',    text: 'text-red-700',    dot: 'bg-red-500',    border: 'border-red-200'   },
 };
 
-function PlacePhoto({ color, name, photoRef }: { color: string; name: string; photoRef?: string | null }) {
+const uItinImg = (id: string) =>
+  `https://images.unsplash.com/photo-${id}?w=800&h=360&fit=crop&auto=format&q=85`;
+
+/* ── Preset images for first-generation itinerary stops ─────────────── */
+const PRESET_ITIN_IMAGES: Array<[string[], string]> = [
+  [['brihadeeswarar', 'big temple'],                    '1686310894901-d326b8722c13'],
+  [['palace', 'royal museum', 'maratha'],               '1622018135960-249abd263aeb'],
+  [['saraswathi', 'library'],                           '1568045919115-f2dacbaa1899'],
+  [['art gallery', 'chola bronze', 'nataraja'],         '1541781774459-bb2af2f05b55'],
+  [['airavatesvara', 'darasuram'],                      '1701665837448-cdbb9fab5a0d'],
+  [['gangaikonda'],                                     '1567529684892-09290a1b2d05'],
+  [['lunch', 'thali', 'mess', 'bhavan'],                '1711153419402-336ee48f2138'],
+  [['sivaganga', 'fort'],                               '1477587458883-47145ed94245'],
+  [['kaveri', 'river', 'anicut'],                       '1506905925346-21bda4d32df4'],
+];
+const FALLBACK_ITIN_IMGS = [
+  '1686310894901-d326b8722c13',
+  '1622018135960-249abd263aeb',
+  '1701665837448-cdbb9fab5a0d',
+  '1711153419402-336ee48f2138',
+  '1568045919115-f2dacbaa1899',
+];
+function getPresetImgId(stopName: string, idx: number): string {
+  const lower = stopName.toLowerCase();
+  for (const [kws, id] of PRESET_ITIN_IMAGES) {
+    if (kws.some(k => lower.includes(k))) return id;
+  }
+  return FALLBACK_ITIN_IMGS[idx % FALLBACK_ITIN_IMGS.length];
+}
+
+const CROWD_BADGE: Record<'Low' | 'Moderate' | 'High', { bg: string; text: string; dot: string; border: string }> = {
+  Low:      { bg: 'bg-green-50',  text: 'text-green-700',  dot: 'bg-green-500',  border: 'border-green-200' },
+  Moderate: { bg: 'bg-amber-50',  text: 'text-amber-700',  dot: 'bg-amber-500',  border: 'border-amber-200' },
+  High:     { bg: 'bg-red-50',    text: 'text-red-700',    dot: 'bg-red-500',    border: 'border-red-200'   },
+};
+
+function PlacePhoto({ color, name, photoRef, autoLoad }: { color: string; name: string; photoRef?: string | null; autoLoad?: boolean }) {
   const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [loading,  setLoading]  = useState(false);
+  const triggered = useRef(false);
 
   const loadPhoto = async () => {
     if (!photoRef || loading || photoUri) return;
@@ -62,6 +111,14 @@ function PlacePhoto({ color, name, photoRef }: { color: string; name: string; ph
     setPhotoUri(uri);
     setLoading(false);
   };
+
+  useEffect(() => {
+    if (autoLoad && photoRef && !triggered.current) {
+      triggered.current = true;
+      loadPhoto();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoLoad, photoRef]);
 
   if (photoUri) {
     return (
@@ -73,10 +130,13 @@ function PlacePhoto({ color, name, photoRef }: { color: string; name: string; ph
 
   return (
     <div className={`w-full h-28 rounded-t-xl ${color} flex items-center justify-center overflow-hidden relative`}>
+      {loading && (
+        <span className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin absolute" />
+      )}
       <span className="text-3xl font-display font-black text-white/40 uppercase tracking-widest">
         {name.charAt(0)}
       </span>
-      {photoRef && (
+      {photoRef && !autoLoad && (
         <button
           onClick={loadPhoto}
           disabled={loading}
@@ -158,7 +218,7 @@ function PlaceCard({ place, tab, rank = 0 }: { place: PlaceResult; tab: Tab; ran
       className="bg-surface border border-card-border rounded-xl overflow-hidden shadow-sm card-hover"
     >
       <div className="relative">
-        <PlacePhoto color={place.photoColor} name={place.name} photoRef={place.photoRef} />
+        <PlacePhoto color={place.photoColor} name={place.name} photoRef={place.photoRef} autoLoad={rank <= 3} />
         {rank === 1 && (
           <div className="absolute top-2 left-2 flex items-center gap-1.5 bg-brand px-2.5 py-1 rounded-lg shadow-sm">
             <Sparkles className="w-3 h-3 text-white" />
@@ -175,7 +235,7 @@ function PlaceCard({ place, tab, rank = 0 }: { place: PlaceResult; tab: Tab; ran
             <div className="flex items-center gap-1 mt-0.5 text-xs text-muted">
               <MapPin className="w-3 h-3 shrink-0" />
               <span className="truncate-1 text-[11px]">{place.address}</span>
-              <span className="shrink-0 text-[11px]">· {place.dist}km</span>
+              {place.dist > 0 && <span className="shrink-0 text-[11px]">· {place.dist}km</span>}
             </div>
           </div>
           <div className="flex items-center gap-1 shrink-0">
@@ -221,20 +281,20 @@ function PlaceCard({ place, tab, rank = 0 }: { place: PlaceResult; tab: Tab; ran
         {/* Gemini Trend Badge */}
         {place.trendVerdict && (
           <div className={`flex items-start gap-2 rounded-lg px-3 py-2 border ${
-            place.trendVerdict === 'improving' ? 'bg-green-50 border-green-200' :
-            place.trendVerdict === 'declining' ? 'bg-amber-50 border-amber-200' :
-                                                 'bg-gray-50 border-gray-200'
+            place.trendVerdict === 'improving' ? 'bg-success-soft border-success-medium/30' :
+            place.trendVerdict === 'declining' ? 'bg-warning-soft border-warning-medium/30' :
+                                                 'bg-bg-app border-border'
           }`}>
             {place.trendVerdict === 'improving'
-              ? <TrendingUp  className="w-3.5 h-3.5 text-green-600 shrink-0 mt-0.5" />
+              ? <TrendingUp  className="w-3.5 h-3.5 text-success shrink-0 mt-0.5" />
               : place.trendVerdict === 'declining'
-              ? <TrendingDown className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
-              : <Minus       className="w-3.5 h-3.5 text-gray-500 shrink-0 mt-0.5"  />
+              ? <TrendingDown className="w-3.5 h-3.5 text-warning shrink-0 mt-0.5" />
+              : <Minus       className="w-3.5 h-3.5 text-muted shrink-0 mt-0.5"  />
             }
             <div>
               <span className={`text-[10px] font-black uppercase tracking-wide ${
-                place.trendVerdict === 'improving' ? 'text-green-700' :
-                place.trendVerdict === 'declining' ? 'text-amber-700' : 'text-gray-600'
+                place.trendVerdict === 'improving' ? 'text-success' :
+                place.trendVerdict === 'declining' ? 'text-warning' : 'text-muted'
               }`}>
                 {place.trendVerdict === 'improving' ? 'Trending up lately' :
                  place.trendVerdict === 'declining' ? 'Mixed recent reviews' : 'Consistently rated'}
@@ -316,20 +376,20 @@ function PlaceCard({ place, tab, rank = 0 }: { place: PlaceResult; tab: Tab; ran
                 </div>
 
                 {/* Best for */}
-                <div className="bg-green-50 border border-green-200 rounded-xl px-4 py-3">
-                  <p className="text-[10px] font-black text-green-700 uppercase tracking-widest mb-1 flex items-center gap-1">
+                <div className="bg-success-soft border border-success-medium/30 rounded-xl px-4 py-3">
+                  <p className="text-[10px] font-black text-success uppercase tracking-widest mb-1 flex items-center gap-1">
                     <CheckCircle className="w-3 h-3" /> Best for
                   </p>
-                  <p className="text-xs text-green-800 leading-relaxed">{place.aiDetail.bestFor}</p>
+                  <p className="text-xs text-body leading-relaxed">{place.aiDetail.bestFor}</p>
                 </div>
 
                 {/* Caveat */}
                 {place.aiDetail.caveat && (
-                  <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
-                    <p className="text-[10px] font-black text-amber-700 uppercase tracking-widest mb-1 flex items-center gap-1">
+                  <div className="bg-warning-soft border border-warning-medium/30 rounded-xl px-4 py-3">
+                    <p className="text-[10px] font-black text-warning uppercase tracking-widest mb-1 flex items-center gap-1">
                       <AlertTriangle className="w-3 h-3" /> Watch out for
                     </p>
-                    <p className="text-xs text-amber-800 leading-relaxed">{place.aiDetail.caveat}</p>
+                    <p className="text-xs text-body leading-relaxed">{place.aiDetail.caveat}</p>
                   </div>
                 )}
               </div>
@@ -424,6 +484,30 @@ function PlaceCard({ place, tab, rank = 0 }: { place: PlaceResult; tab: Tab; ran
         )}
       </div>
 
+      {/* ── Book + Maps — primary action footer (Hotels only) ── */}
+      {tab === 'Hotels' && (
+        <div className="px-3 pb-3 pt-3 border-t border-border flex gap-2">
+          <a
+            href={place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 active:scale-[0.98] bg-brand text-white hover:bg-brand/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand"
+          >
+            <ExternalLink className="w-3.5 h-3.5" />
+            {place.websiteUri ? 'Book on website' : 'Check availability'}
+          </a>
+          <a
+            href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 active:scale-[0.98] border-2 border-border text-muted hover:border-brand hover:text-brand hover:bg-brand-softer focus:outline-none"
+          >
+            <Map className="w-3.5 h-3.5" />
+            Maps
+          </a>
+        </div>
+      )}
+
       {/* ── Get directions — primary action footer (Food only) ── */}
       {tab === 'Food' && (
         <div className="px-3 pb-3 pt-3 border-t border-border">
@@ -435,7 +519,7 @@ function PlaceCard({ place, tab, rank = 0 }: { place: PlaceResult; tab: Tab; ran
           >
             <Navigation className="w-4 h-4" />
             Get directions
-            <span className="text-white/55 text-[11px] font-normal ml-0.5">· {place.dist}km away</span>
+            {place.dist > 0 && <span className="text-white/55 text-[11px] font-normal ml-0.5">· {place.dist}km away</span>}
           </a>
         </div>
       )}
@@ -466,208 +550,317 @@ function getTravelMode(leg: string): { emoji: string; bg: string; color: string 
   return                          { emoji: '🚗', bg: '#EFF6FF', color: '#1C64F2' };
 }
 
-function ItineraryView({ stops, onRegenerate }: { stops: ItineraryStop[]; onRegenerate: () => void }) {
-  const [activeStop, setActiveStop] = useState<number | null>(null);
-  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+function ItineraryView({ stops, onRegenerate, onExploreStop, showPresetImages }: {
+  stops: (ItineraryStop | LiveItineraryStop)[];
+  onRegenerate: () => void;
+  onExploreStop?: (target: string) => void;
+  showPresetImages?: boolean;
+}) {
+  const [collapsed, setCollapsed] = useState(false);
 
-  const scrollToStop = (idx: number) => {
-    const next = idx === activeStop ? null : idx;
-    setActiveStop(next);
-    if (next !== null) {
-      setTimeout(() => {
-        cardRefs.current[next]?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }, 80);
-    }
-  };
+  const displayStops = showPresetImages
+    ? stops.map((s, i) => ({ ...s, imgId: (s as any).imgId ?? getPresetImgId(s.stop, i) }))
+    : stops;
 
   return (
-    <div className="space-y-4">
+    <div>
 
-      {/* ── Route map strip ─────────────────────────────────────── */}
-      <div className="bg-surface border border-card-border rounded-xl p-4">
-        <p className="text-[10px] font-black text-muted uppercase tracking-widest mb-3 flex items-center gap-1.5">
-          <Navigation className="w-3 h-3 text-brand" />
-          Your route — tap a stop
-        </p>
+      {/* ── Day overview — vertical timeline ─────────────────── */}
+      <div className="mb-4 rounded-2xl overflow-hidden border border-card-border shadow-sm" style={{ background: 'linear-gradient(160deg,#F5F3FF 0%,#EFF6FF 60%,#F9FAFB 100%)' }}>
 
-        <div className="overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
-          <div className="flex items-center min-w-max px-1 gap-0">
-
-            {/* Start node */}
-            <div className="flex flex-col items-center gap-1 shrink-0 px-1">
-              <div className="w-8 h-8 rounded-full bg-brand-softer border-2 border-brand flex items-center justify-center shrink-0">
-                <span className="text-[10px] font-black text-brand">▶</span>
-              </div>
-              <span className="text-[8px] font-bold text-brand text-center">Start</span>
+        {/* Header bar — click to collapse/expand */}
+        <button
+          type="button"
+          onClick={() => setCollapsed(c => !c)}
+          className="w-full px-4 py-3 flex items-center justify-between focus:outline-none"
+          style={{ background: 'linear-gradient(90deg,#7C3AED,#6366F1)', borderBottom: collapsed ? 'none' : '1px solid #7C3AED30' }}
+        >
+          <div className="flex items-center gap-2">
+            <Route className="w-4 h-4 text-white/90" />
+            <span className="text-[11px] font-black uppercase tracking-widest text-white/90">
+              Thanjavur · {stops.length}-stop day plan
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 bg-white/15 rounded-full px-2.5 py-1">
+              <Clock className="w-3 h-3 text-white/80" />
+              <span className="text-[10px] font-bold text-white/90">
+                {stops[0]?.time} – {stops[stops.length - 1]?.departBy ?? stops[stops.length - 1]?.time}
+              </span>
             </div>
+            <span className="text-white/70 transition-transform duration-300" style={{ transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)', display: 'inline-block' }}>
+              <ChevronDown className="w-4 h-4" />
+            </span>
+          </div>
+        </button>
 
-            {stops.map((stop, idx) => {
-              const mode = stop.travelToNext ? getTravelMode(stop.travelToNext) : null;
-              const timePart = stop.travelToNext?.split('·')[0]?.trim() ?? '';
-              const isActive = activeStop === idx;
+        {/* Vertical timeline — collapsible */}
+        <AnimatePresence initial={false}>
+        {!collapsed && (
+        <motion.div
+          key="timeline-body"
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: 'auto', opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          transition={{ duration: 0.28, ease: 'easeInOut' }}
+          style={{ overflow: 'hidden' }}
+        >
+        <div className="px-4 py-4">
+          {stops.map((stop, idx) => {
+            const isLast = idx === stops.length - 1;
+            const traffic = TRAFFIC_BADGE[stop.currentTraffic];
+            const crowd = stop.crowdLevel ? CROWD_BADGE[stop.crowdLevel] : null;
+            const tMode = stop.travelToNext ? getTravelMode(stop.travelToNext) : null;
+            const connectorColor = TRAFFIC_LINE_BG[stop.currentTraffic];
 
-              return (
-                <React.Fragment key={idx}>
-                  {/* Leg connector: traffic line + mode badge */}
-                  <div className="flex flex-col items-center gap-1 shrink-0 mx-1" style={{ minWidth: 60 }}>
-                    {/* Coloured traffic line */}
+            return (
+              <React.Fragment key={idx}>
+                {/* Stop row */}
+                <motion.button
+                  type="button"
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: idx * 0.06 }}
+                  onClick={() => document.getElementById(`itin-stop-${idx}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                  className="w-full text-left flex items-start gap-3 group focus:outline-none"
+                >
+                  {/* Left: node + vertical line */}
+                  <div className="flex flex-col items-center shrink-0" style={{ width: 36 }}>
                     <div
-                      className="h-1.5 w-full rounded-full"
-                      style={{ background: TRAFFIC_LINE_BG[stop.currentTraffic] }}
-                    />
-                    {/* Mode + time chip */}
-                    {mode && (
-                      <span
-                        className="text-[8px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap"
-                        style={{ background: mode.bg, color: mode.color }}
-                      >
-                        {mode.emoji} {timePart}
-                      </span>
-                    )}
-                    {/* Traffic trend dot */}
-                    <span
-                      className="text-[7px] font-semibold px-1 py-0.5 rounded-full"
-                      style={{
-                        background: TRAFFIC_LINE_BG[stop.currentTraffic] + '22',
-                        color: TRAFFIC_LINE_BG[stop.currentTraffic],
-                      }}
-                    >
-                      {stop.currentTraffic}
-                    </span>
-                  </div>
-
-                  {/* Stop circle */}
-                  <button
-                    onClick={() => scrollToStop(idx)}
-                    className="flex flex-col items-center gap-1 shrink-0 px-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-lg"
-                  >
-                    <div
-                      className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-black border-2 transition-all duration-200 ${
-                        isActive
-                          ? 'bg-brand text-white border-brand scale-110'
-                          : 'bg-white text-heading border-border hover:border-brand hover:text-brand'
-                      }`}
-                      style={isActive ? { boxShadow: '0 4px 14px rgba(28,100,242,0.35)' } : {}}
+                      className="w-9 h-9 rounded-full flex items-center justify-center font-black text-sm shadow-md ring-2 ring-white transition-transform group-hover:scale-110"
+                      style={{ background: 'linear-gradient(135deg,#7C3AED,#6366F1)', color: '#fff' }}
                     >
                       {idx + 1}
                     </div>
-                    <span className={`text-[8px] font-bold text-center leading-tight max-w-[52px] ${isActive ? 'text-brand' : 'text-muted'}`}>
-                      {stop.stop.split(' (')[0].split(' ').slice(0, 2).join(' ')}
-                    </span>
-                    <span className={`text-[7px] ${isActive ? 'text-brand/70 font-bold' : 'text-muted/60'}`}>
-                      {stop.time}
-                    </span>
-                  </button>
-                </React.Fragment>
-              );
-            })}
+                  </div>
+
+                  {/* Right: stop info */}
+                  <div className="flex-1 pb-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2 flex-wrap">
+                      <span className="text-[13px] font-bold text-heading leading-tight group-hover:text-purple-700 transition-colors truncate max-w-[200px]">
+                        {stop.stop}
+                      </span>
+                      <span className="bg-white border border-purple-100 text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 shadow-sm" style={{ color: '#7C3AED' }}>
+                        {stop.time}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                      {stop.duration && (
+                        <span className="flex items-center gap-0.5 bg-white border border-border text-[9px] font-bold text-muted px-1.5 py-0.5 rounded-full shadow-sm">
+                          <Clock className="w-2.5 h-2.5" />
+                          {stop.duration}
+                        </span>
+                      )}
+                      <span className={`flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${traffic.bg} ${traffic.text} ${traffic.border}`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${traffic.dot}`} />
+                        {stop.currentTraffic}
+                      </span>
+                      {crowd && (
+                        <span className={`flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${crowd.bg} ${crowd.text} ${crowd.border}`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${crowd.dot}`} />
+                          {stop.crowdLevel} crowd
+                        </span>
+                      )}
+                      {stop.entryFee && (
+                        <span className="bg-white border border-border text-[9px] font-semibold text-muted px-1.5 py-0.5 rounded-full shadow-sm">
+                          {stop.entryFee}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </motion.button>
+
+                {/* Connector between stops */}
+                {!isLast && stop.travelToNext && (
+                  <div className="flex items-stretch gap-3 py-0.5">
+                    {/* Colored vertical line */}
+                    <div className="flex flex-col items-center shrink-0" style={{ width: 36 }}>
+                      <div className="w-0.5 flex-1 rounded-full mx-auto" style={{ background: connectorColor, minHeight: 28 }} />
+                    </div>
+                    {/* Travel pill */}
+                    <div className="flex items-center gap-1.5 self-center py-1">
+                      <span className="text-base leading-none">{tMode?.emoji ?? '🚗'}</span>
+                      <span className="text-[9px] font-semibold text-muted">{stop.travelToNext}</span>
+                      {stop.departBy && (
+                        <span className="text-[9px] font-bold bg-white border border-border px-1.5 py-0.5 rounded-full shadow-sm" style={{ color: '#7C3AED' }}>
+                          depart {stop.departBy}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Spacer between rows with no connector */}
+                {!isLast && !stop.travelToNext && (
+                  <div className="flex items-stretch gap-3 py-0.5">
+                    <div className="flex flex-col items-center shrink-0" style={{ width: 36 }}>
+                      <div className="w-0.5 flex-1 rounded-full mx-auto bg-border" style={{ minHeight: 16 }} />
+                    </div>
+                  </div>
+                )}
+              </React.Fragment>
+            );
+          })}
+
+          {/* Finish node */}
+          <div className="flex items-center gap-3 mt-1">
+            <div className="w-9 h-9 rounded-full flex items-center justify-center text-base border-2 shadow-sm shrink-0" style={{ borderColor: '#22C55E', background: '#F0FDF4' }}>🏁</div>
+            <span className="text-[11px] font-bold text-green-700">Day complete</span>
           </div>
         </div>
 
-        {/* Traffic legend */}
-        <div className="flex items-center gap-3 mt-3 pt-2.5 border-t border-border flex-wrap">
+        {/* Footer: traffic legend */}
+        <div className="flex items-center gap-3 px-4 py-2.5 border-t border-border/60 flex-wrap" style={{ background: 'rgba(255,255,255,0.5)' }}>
           <span className="text-[9px] font-black text-muted uppercase tracking-widest">Traffic:</span>
           {(['Light', 'Moderate', 'Heavy'] as TrafficLevel[]).map(lvl => (
             <span key={lvl} className="flex items-center gap-1 text-[9px] font-semibold text-muted">
-              <span className="w-4 h-1.5 rounded-full" style={{ background: TRAFFIC_LINE_BG[lvl], display: 'inline-block' }} />
+              <span className="w-3 h-1.5 rounded-full inline-block" style={{ background: TRAFFIC_LINE_BG[lvl] }} />
               {lvl}
             </span>
           ))}
         </div>
+        </motion.div>
+        )}
+        </AnimatePresence>
       </div>
 
-      {/* ── Another plan CTA ─────────────────────────────────────── */}
-      <button
-        onClick={onRegenerate}
-        className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-dashed border-brand/30 text-xs font-bold text-brand hover:bg-brand-softer hover:border-brand/60 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
-      >
-        <RotateCcw className="w-3.5 h-3.5" />
-        Generate another plan
-      </button>
+      {/* ── Stop cards ───────────────────────────────────────── */}
+      <div className="space-y-1">
+        {displayStops.map((stop, idx) => {
+          const isLast = idx === stops.length - 1;
+          const mode = stop.travelToNext ? getTravelMode(stop.travelToNext) : null;
+          const traffic = TRAFFIC_BADGE[stop.currentTraffic];
+          const crowd = stop.crowdLevel ? CROWD_BADGE[stop.crowdLevel] : null;
 
-      {/* ── Stop cards ──────────────────────────────────────────── */}
-      {stops.map((item, idx) => {
-        const isActive = activeStop === idx;
-        const mode = item.travelToNext ? getTravelMode(item.travelToNext) : null;
-        const traffic = TRAFFIC_BADGE[item.currentTraffic];
+          return (
+            <div key={idx} id={`itin-stop-${idx}`}>
+              <motion.button
+                type="button"
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.07 }}
+                onClick={() => onExploreStop?.(stop.stop)}
+                className="w-full text-left rounded-2xl overflow-hidden border border-card-border shadow-sm group hover:border-brand/40 hover:shadow-md transition-all duration-200 focus:outline-none"
+              >
+                {/* ── Photo zone ──────────────────────────── */}
+                <div className="relative h-[185px]">
+                  {stop.imgId
+                    ? (
+                      <img
+                        src={uItinImg(stop.imgId)}
+                        alt={stop.stop}
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                      />
+                    )
+                    : <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg,#7C3AED,#6366F1)' }} />
+                  }
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-black/25" />
 
-        return (
-          <motion.div
-            key={idx}
-            ref={el => { cardRefs.current[idx] = el; }}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.06 }}
-            onClick={() => scrollToStop(idx)}
-            className={`bg-surface rounded-xl overflow-hidden shadow-sm cursor-pointer transition-all duration-200 ${
-              isActive ? 'border-2 border-brand' : 'border border-card-border hover:border-brand/40'
-            }`}
-          >
-            {/* Header */}
-            <div className={`px-4 py-3 flex items-center justify-between gap-3 border-b ${
-              isActive ? 'bg-brand-softer border-brand/20' : 'border-card-border'
-            }`}>
-              <div className="flex items-center gap-3">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black shrink-0 ${
-                  isActive ? 'bg-brand text-white' : 'bg-brand-softer text-brand'
-                }`}>
-                  {idx + 1}
+                  {/* Top: stop# + time + duration */}
+                  <div className="absolute top-3 left-3 right-3 flex items-start justify-between z-10">
+                    <span className="bg-white text-[9px] font-black px-2.5 py-1 rounded-full shadow-sm leading-none" style={{ color: '#7C3AED' }}>
+                      Stop {idx + 1}
+                    </span>
+                    <div className="flex flex-col items-end gap-1">
+                      <span className="bg-black/55 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-0.5 rounded-full leading-none">
+                        {stop.time}
+                      </span>
+                      {stop.duration && (
+                        <span className="bg-black/55 backdrop-blur-sm text-white/80 text-[9px] font-semibold px-2 py-0.5 rounded-full leading-none">
+                          ⏱ {stop.duration}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Bottom: name + badges + explore hint */}
+                  <div className="absolute bottom-0 left-0 right-0 p-3.5 z-10">
+                    <div className="flex items-end justify-between gap-2 mb-2">
+                      <h3 className="text-white font-display font-black text-[17px] leading-tight drop-shadow truncate">
+                        {stop.stop}
+                      </h3>
+                      <div className="shrink-0 flex items-center gap-1 bg-white/15 backdrop-blur-sm border border-white/30 text-white text-[9px] font-black px-2 py-1 rounded-full">
+                        <Compass className="w-2.5 h-2.5" /> Explore
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className={`inline-flex items-center gap-1 text-[9px] font-black px-2 py-0.5 rounded-full border ${traffic.bg} ${traffic.border} ${traffic.text}`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${traffic.dot}`} />
+                        {stop.currentTraffic} traffic
+                      </span>
+                      {crowd && stop.crowdLevel && (
+                        <span className={`inline-flex items-center gap-1 text-[9px] font-black px-2 py-0.5 rounded-full border ${crowd.bg} ${crowd.border} ${crowd.text}`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${crowd.dot}`} />
+                          {stop.crowdLevel} crowd
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-display font-bold text-sm text-heading leading-tight">{item.stop}</h3>
-                  <p className="text-[10px] text-muted mt-0.5">Arrive {item.time}</p>
+
+                {/* ── Info below photo ─────────────────────── */}
+                <div className="bg-surface px-3.5 pt-3 pb-3.5 space-y-2.5">
+                  <p className="text-xs text-body leading-relaxed italic border-l-2 border-brand/30 pl-2.5">
+                    "{stop.tip}"
+                  </p>
+                  {stop.reachNote && (
+                    <div className="flex items-start gap-1.5">
+                      <Navigation className="w-3 h-3 text-muted shrink-0 mt-0.5" />
+                      <p className="text-[10px] text-muted leading-relaxed">{stop.reachNote}</p>
+                    </div>
+                  )}
+                  {(stop.entryFee || (stop.highlights && stop.highlights.length > 0)) && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {stop.entryFee && (
+                        <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full bg-success-soft text-success border border-success-medium/30">
+                          🎟 {stop.entryFee}
+                        </span>
+                      )}
+                      {stop.highlights?.map(h => (
+                        <span key={h} className="text-[9px] font-semibold px-2 py-0.5 rounded-full bg-bg-app text-muted border border-border">
+                          {h}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              </div>
-              {item.departBy && (
-                <div className="text-right shrink-0">
-                  <p className="text-[9px] text-muted uppercase tracking-wide font-bold">Depart by</p>
-                  <p className="text-xs font-black text-heading">{item.departBy}</p>
+              </motion.button>
+
+              {/* Travel connector */}
+              {!isLast && mode && stop.travelToNext && (
+                <div className="flex items-center gap-3 py-2 px-1">
+                  <div className="flex flex-col items-center w-8 shrink-0">
+                    <div className="w-px h-3 bg-border" />
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-base" style={{ background: mode.bg }}>
+                      {mode.emoji}
+                    </div>
+                    <div className="w-px h-3 bg-border" />
+                  </div>
+                  <div className="flex-1 flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-xs font-semibold" style={{ background: mode.bg, color: mode.color }}>
+                    <span>{stop.travelToNext}</span>
+                    <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full" style={{ background: TRAFFIC_LINE_BG[stop.currentTraffic] + '25', color: TRAFFIC_LINE_BG[stop.currentTraffic] }}>
+                      {stop.currentTraffic}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {isLast && (
+                <div className="flex items-center gap-3 py-2 px-1">
+                  <div className="flex flex-col items-center w-8 shrink-0">
+                    <div className="w-px h-3 bg-border" />
+                    <div className="w-8 h-8 rounded-full bg-success/15 border-2 border-success flex items-center justify-center text-sm">🏁</div>
+                  </div>
+                  <span className="text-xs font-bold text-muted">Day complete · {stop.departBy ?? stop.time}</span>
                 </div>
               )}
             </div>
-
-            <div className="p-4 space-y-3">
-              {/* Tip */}
-              <p className="text-xs text-body leading-relaxed italic border-l-2 border-brand/30 pl-3">
-                "{item.tip}"
-              </p>
-
-              {/* Traffic trend — single pill */}
-              <div className="flex items-center gap-2">
-                <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-full border ${traffic.bg} ${traffic.border} ${traffic.text}`}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${traffic.dot}`} />
-                  {item.currentTraffic} traffic
-                </span>
-              </div>
-
-              {/* Connection to next stop */}
-              {mode && item.travelToNext && idx < stops.length - 1 && (
-                <div
-                  className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-xs font-semibold"
-                  style={{ background: mode.bg, color: mode.color }}
-                >
-                  <span className="text-base leading-none">{mode.emoji}</span>
-                  <span className="flex-1">{item.travelToNext} to next stop</span>
-                  <span
-                    className="text-[9px] font-black px-2 py-0.5 rounded-full"
-                    style={{ background: TRAFFIC_LINE_BG[item.currentTraffic] + '25', color: TRAFFIC_LINE_BG[item.currentTraffic] }}
-                  >
-                    {item.currentTraffic}
-                  </span>
-                </div>
-              )}
-            </div>
-          </motion.div>
-        );
-      })}
-
-      {/* Phase 2 note */}
-      <div className="flex items-start gap-3 px-4 py-3 bg-bg-app border border-border rounded-xl">
-        <Info className="w-3.5 h-3.5 text-muted shrink-0 mt-0.5" />
-        <p className="text-[10px] text-muted leading-relaxed">
-          <span className="font-bold text-heading">Phase 2:</span> Live navigation via Google Maps. Traffic updates in real time via Google Directions API.
-        </p>
+          );
+        })}
       </div>
+
     </div>
   );
 }
@@ -757,25 +950,34 @@ function ExploreView({ place }: { place: ExploreResult }) {
 }
 
 export function ResultsView({
-  tab, destination, hotels, food, temples = [], itinerary, explore, apiError,
+  tab, destination, hotels, food, itinerary, explore, apiError,
   onBack, onRegenerate, onSave, saved = false, onSwitchTab,
+  backLabel, onExploreStop, isFirstItinerary = false,
 }: ResultsViewProps) {
   const { toast } = useToast();
-  const results = tab === 'Hotels' ? hotels : tab === 'Food' ? food : tab === 'Temples' ? temples : [];
-  const count = tab === 'Itinerary' ? itinerary?.length : results?.length;
+  const results = tab === 'Hotels' ? hotels : tab === 'Food' ? food : [];
+  const count = tab === 'Itinerary' ? itinerary?.length : tab === 'Explore' ? 1 : results?.length;
 
   const handleSave = () => { onSave(); toast('Plan saved — find it under Trips.', 'success'); };
 
   return (
-    <div className="w-full px-4 sm:px-6 xl:px-[304px] py-4 pb-28 lg:pb-8">
+    <div className="w-full max-w-[920px] mx-auto px-4 py-4 pb-28 lg:pb-8">
 
-      {/* Top bar */}
-      <div className="flex items-center justify-between mb-5">
-        <button onClick={onBack} className="flex items-center gap-1.5 text-muted hover:text-heading text-sm font-semibold transition-colors">
-          <ArrowLeft className="w-4 h-4" /> Back
-        </button>
-        <span className="text-xs font-bold text-brand bg-brand-softer border border-brand-soft/30 px-3 py-1.5 rounded-full">
-          {destination} · {count} result{(count ?? 0) !== 1 ? 's' : ''}
+      {/* Top bar — breadcrumb navigation */}
+      <div className="flex items-center justify-between gap-2 mb-5">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <button
+            onClick={onBack}
+            className="flex items-center gap-1.5 shrink-0 px-2.5 py-1.5 rounded-xl border border-border bg-surface hover:bg-brand-softer hover:border-brand transition-all group"
+          >
+            <ArrowLeft className="w-3.5 h-3.5 text-muted group-hover:text-brand transition-colors" />
+            <span className="text-xs font-bold text-muted group-hover:text-brand transition-colors">{backLabel ?? tab}</span>
+          </button>
+          <ChevronRight className="w-3 h-3 text-muted/40 shrink-0" />
+          <span className="text-xs font-bold text-heading truncate">{destination}</span>
+        </div>
+        <span className="shrink-0 text-xs font-bold text-brand bg-brand-softer border border-brand-soft/30 px-3 py-1.5 rounded-full">
+          {destination} · {tab === 'Explore' ? 'AI guide' : `${count ?? 0} result${(count ?? 0) !== 1 ? 's' : ''}`}
         </span>
       </div>
 
@@ -788,12 +990,12 @@ export function ResultsView({
       )}
 
       {/* Results */}
-      <div className={tab === 'Hotels' || tab === 'Food' || tab === 'Temples' ? 'flex flex-col gap-5 mb-5' : 'space-y-4 mb-5'}>
-        {(tab === 'Hotels' || tab === 'Food' || tab === 'Temples') && results?.map((p, idx) => (
+      <div className={tab === 'Hotels' || tab === 'Food' ? 'flex flex-col gap-5 mb-5' : 'space-y-4 mb-5'}>
+        {(tab === 'Hotels' || tab === 'Food') && results?.map((p, idx) => (
           <PlaceCard key={p.id} place={p} tab={tab} rank={idx + 1} />
         ))}
-        {tab === 'Itinerary' && itinerary && <ItineraryView stops={itinerary} onRegenerate={onRegenerate} />}
-        {explore && tab !== 'Hotels' && tab !== 'Food' && tab !== 'Temples' && tab !== 'Itinerary' && <ExploreView place={explore} />}
+        {tab === 'Itinerary' && itinerary && <ItineraryView stops={itinerary} onRegenerate={onRegenerate} onExploreStop={onExploreStop} showPresetImages={isFirstItinerary} />}
+        {tab === 'Explore' && explore && <ExploreView place={explore} />}
       </div>
 
       {/* Actions */}
@@ -812,34 +1014,34 @@ export function ResultsView({
           <p className="text-[10px] font-bold text-muted uppercase tracking-widest mb-2.5 text-center">Complete your plan</p>
           <div className="grid grid-cols-2 gap-2">
             {tab === 'Hotels' && <>
-              <button onClick={() => onSwitchTab('Food')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-blue-50 transition-colors">
+              <button onClick={() => onSwitchTab('Food')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors">
                 <Utensils className="w-3.5 h-3.5" /> Find food nearby
               </button>
-              <button onClick={() => onSwitchTab('Itinerary')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-blue-50 transition-colors">
+              <button onClick={() => onSwitchTab('Itinerary')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors">
                 <Route className="w-3.5 h-3.5" /> Build my itinerary
               </button>
             </>}
             {tab === 'Food' && <>
-              <button onClick={() => onSwitchTab('Hotels')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-blue-50 transition-colors">
+              <button onClick={() => onSwitchTab('Hotels')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors">
                 <Hotel className="w-3.5 h-3.5" /> Find a hotel
               </button>
-              <button onClick={() => onSwitchTab('Itinerary')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-blue-50 transition-colors">
+              <button onClick={() => onSwitchTab('Itinerary')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors">
                 <Route className="w-3.5 h-3.5" /> Plan my day
               </button>
             </>}
             {tab === 'Itinerary' && <>
-              <button onClick={() => onSwitchTab('Hotels')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-blue-50 transition-colors">
+              <button onClick={() => onSwitchTab('Hotels')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors">
                 <Hotel className="w-3.5 h-3.5" /> Find hotels
               </button>
-              <button onClick={() => onSwitchTab('Food')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-blue-50 transition-colors">
+              <button onClick={() => onSwitchTab('Food')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors">
                 <Utensils className="w-3.5 h-3.5" /> Find food
               </button>
             </>}
-            {tab === 'Temples' && <>
-              <button onClick={() => onSwitchTab('Itinerary')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-blue-50 transition-colors">
+            {tab === 'Explore' && <>
+              <button onClick={() => onSwitchTab('Itinerary')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors">
                 <Route className="w-3.5 h-3.5" /> Plan a full day
               </button>
-              <button onClick={() => onSwitchTab('Hotels')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-blue-50 transition-colors">
+              <button onClick={() => onSwitchTab('Hotels')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors">
                 <Hotel className="w-3.5 h-3.5" /> Find hotels nearby
               </button>
             </>}
