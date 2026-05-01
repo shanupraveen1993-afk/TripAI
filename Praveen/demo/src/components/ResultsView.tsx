@@ -252,22 +252,71 @@ function PlaceCard({ place, tab, rank = 0 }: { place: PlaceResult; tab: Tab; ran
           </div>
         </div>
 
-        {/* Stats + tags row combined */}
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <div className="flex items-center gap-1 bg-yellow-400 text-white px-2 py-0.5 rounded-md text-[11px] font-bold">
-            <Star className="w-2.5 h-2.5 fill-current" /> {place.rating}
-            <span className="font-normal opacity-80">({place.reviewCount.toLocaleString()})</span>
+        {/* ── Rating metric block ───────────────────────────────── */}
+        <div className="flex items-stretch gap-3 bg-bg-app rounded-xl p-3 border border-border">
+          {/* Big rating number + star bar */}
+          <div className="flex flex-col items-center justify-center shrink-0 min-w-[52px]">
+            <span className="text-[28px] font-black text-heading leading-none tracking-tight">{place.rating}</span>
+            <div className="flex gap-0.5 mt-1">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star key={i} className={`w-3 h-3 ${
+                  i < Math.floor(place.rating)       ? 'fill-yellow-400 text-yellow-400' :
+                  i < place.rating                   ? 'fill-yellow-200 text-yellow-300' :
+                                                       'text-border'
+                }`} />
+              ))}
+            </div>
+            <span className="text-[9px] text-muted font-semibold mt-1 uppercase tracking-wide">Google</span>
           </div>
-          <Badge variant={place.openNow ? 'success' : 'danger'} dot pill>
-            {place.openNow ? 'Open' : 'Closed'}
-          </Badge>
-          <Badge variant="neutral" pill>{place.priceLevel}</Badge>
-          {place.tags.slice(0, 2).map(t => (
-            <span key={t} className="text-[10px] font-semibold bg-bg-app text-muted px-1.5 py-0.5 rounded border border-border uppercase tracking-wide">
-              {t}
-            </span>
-          ))}
+
+          {/* Divider */}
+          <div className="w-px bg-border shrink-0" />
+
+          {/* Review count + trend signal */}
+          <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
+            <div className="flex items-baseline gap-1">
+              <span className="text-sm font-black text-heading">{place.reviewCount.toLocaleString()}</span>
+              <span className="text-[11px] text-muted">verified reviews</span>
+            </div>
+            {place.trendVerdict && (
+              <div className="flex items-center gap-1.5">
+                {place.trendVerdict === 'improving'
+                  ? <TrendingUp  className="w-3 h-3 text-success shrink-0" />
+                  : place.trendVerdict === 'declining'
+                  ? <TrendingDown className="w-3 h-3 text-warning shrink-0" />
+                  : <Minus       className="w-3 h-3 text-muted shrink-0"   />
+                }
+                <span className={`text-[10px] font-bold ${
+                  place.trendVerdict === 'improving' ? 'text-success' :
+                  place.trendVerdict === 'declining' ? 'text-warning' : 'text-muted'
+                }`}>
+                  {place.trendVerdict === 'improving' ? 'Rising' :
+                   place.trendVerdict === 'declining' ? 'Falling' : 'Stable'}
+                </span>
+                <span className="text-[10px] text-muted/80 truncate">· {place.trendReason}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Open + price, stacked */}
+          <div className="flex flex-col items-end justify-center gap-1 shrink-0">
+            <Badge variant={place.openNow ? 'success' : 'danger'} dot pill>
+              {place.openNow ? 'Open' : 'Closed'}
+            </Badge>
+            <Badge variant="neutral" pill>{place.priceLevel}</Badge>
+          </div>
         </div>
+
+        {/* Tags row */}
+        {place.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {place.tags.slice(0, 3).map(t => (
+              <span key={t} className="text-[10px] font-semibold bg-bg-app text-muted px-1.5 py-0.5 rounded border border-border uppercase tracking-wide">
+                {t}
+              </span>
+            ))}
+          </div>
+        )}
 
         {/* AI Note */}
         <div className="bg-brand-softer border border-brand-soft/30 rounded-lg px-3 py-2.5 relative overflow-hidden">
@@ -278,59 +327,66 @@ function PlaceCard({ place, tab, rank = 0 }: { place: PlaceResult; tab: Tab; ran
           <p className="text-[11px] text-body leading-relaxed italic">"{place.aiNote}"</p>
         </div>
 
-        {/* Gemini Trend Badge */}
-        {place.trendVerdict && (
-          <div className={`flex items-start gap-2 rounded-lg px-3 py-2 border ${
-            place.trendVerdict === 'improving' ? 'bg-success-soft border-success-medium/30' :
-            place.trendVerdict === 'declining' ? 'bg-warning-soft border-warning-medium/30' :
-                                                 'bg-bg-app border-border'
-          }`}>
-            {place.trendVerdict === 'improving'
-              ? <TrendingUp  className="w-3.5 h-3.5 text-success shrink-0 mt-0.5" />
-              : place.trendVerdict === 'declining'
-              ? <TrendingDown className="w-3.5 h-3.5 text-warning shrink-0 mt-0.5" />
-              : <Minus       className="w-3.5 h-3.5 text-muted shrink-0 mt-0.5"  />
-            }
-            <div>
-              <span className={`text-[10px] font-black uppercase tracking-wide ${
-                place.trendVerdict === 'improving' ? 'text-success' :
-                place.trendVerdict === 'declining' ? 'text-warning' : 'text-muted'
-              }`}>
-                {place.trendVerdict === 'improving' ? 'Trending up lately' :
-                 place.trendVerdict === 'declining' ? 'Mixed recent reviews' : 'Consistently rated'}
+        {/* ── Top review — always visible ───────────────────────── */}
+        {place.reviews.length > 0 && (
+          <div className="border border-border rounded-xl overflow-hidden">
+            <div className="flex items-center gap-2 px-3 pt-2.5 pb-2 border-b border-border bg-bg-app">
+              <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+              <span className="text-[10px] font-black text-heading uppercase tracking-widest">What guests say</span>
+              <span className="ml-auto text-[9px] font-bold text-muted bg-border/50 px-1.5 py-0.5 rounded-full">
+                {place.reviewCount.toLocaleString()} total
               </span>
-              <p className="text-[10px] text-body mt-0.5">{place.trendReason}</p>
             </div>
+            <div className="p-3 space-y-1.5">
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-[10px] font-black text-white"
+                  style={{ background: AVATAR_COLORS[0] }}
+                >
+                  {place.reviews[0].author.charAt(0)}
+                </div>
+                <span className="text-[11px] font-bold text-heading">{place.reviews[0].author}</span>
+                <span className="text-[10px] text-muted">· {place.reviews[0].location}</span>
+                <div className="ml-auto flex gap-0.5 shrink-0">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} className={`w-2.5 h-2.5 ${i < place.reviews[0].stars ? 'fill-yellow-400 text-yellow-400' : 'text-border'}`} />
+                  ))}
+                </div>
+              </div>
+              <p className="text-[11px] text-body leading-relaxed italic line-clamp-2">"{place.reviews[0].text}"</p>
+              <p className="text-[9px] text-muted font-medium">{place.reviews[0].ago} · via Google Reviews</p>
+            </div>
+
+            {place.reviews.length > 1 && (
+              <>
+                <button
+                  onClick={() => setExpanded(!expanded)}
+                  className="w-full flex items-center justify-between px-3 py-2 border-t border-border text-[10px] font-bold text-brand hover:bg-brand-softer transition-colors"
+                >
+                  <span>{expanded ? 'Hide reviews' : `See all ${place.reviews.length} reviews`}</span>
+                  <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
+                </button>
+                <AnimatePresence>
+                  {expanded && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.22, ease: 'easeInOut' }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-3 pb-3 space-y-2 pt-2">
+                        {place.reviews.slice(1).map((r, i) => (
+                          <ReviewCard key={i} review={r} idx={i + 1} />
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </>
+            )}
           </div>
         )}
-
-        {/* Reviews accordion — social proof first */}
-        <button
-          onClick={() => setExpanded(!expanded)}
-          className="w-full flex items-center justify-between text-xs font-semibold text-muted hover:text-brand transition-colors py-1"
-        >
-          <span className="flex items-center gap-1.5">
-            <Star className="w-3 h-3 text-yellow-400" /> What real guests say
-          </span>
-          <ChevronRight className={`w-3.5 h-3.5 transition-transform ${expanded ? 'rotate-90' : ''}`} />
-        </button>
-
-        <AnimatePresence>
-          {expanded && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden"
-            >
-              <div className="space-y-2 pt-1">
-                {place.reviews.map((r, i) => (
-                  <ReviewCard key={i} review={r} idx={i} />
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {/* Full analysis expander */}
         <button
@@ -881,16 +937,31 @@ function ExploreView({ place }: { place: ExploreResult }) {
         </div>
       </div>
 
-      {/* Status + hours */}
-      <div className="flex items-center justify-between px-1">
-        <Badge variant={place.status === 'Open' ? 'success' : place.status === 'Busy' ? 'warning' : 'danger'} dot pill>
-          {place.status}
-        </Badge>
-        <span className="flex items-center gap-1 text-xs text-muted">
-          <Clock className="w-3 h-3" /> {place.openingHours}
-        </span>
-        <div className="flex items-center gap-1 text-xs text-yellow-600 font-bold">
-          <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" /> {place.rating}
+      {/* Rating metric block + status */}
+      <div className="flex items-stretch gap-3 bg-bg-app rounded-xl p-3 border border-border">
+        <div className="flex flex-col items-center justify-center shrink-0 min-w-[52px]">
+          <span className="text-[28px] font-black text-heading leading-none tracking-tight">{place.rating}</span>
+          <div className="flex gap-0.5 mt-1">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Star key={i} className={`w-3 h-3 ${
+                i < Math.floor(place.rating) ? 'fill-yellow-400 text-yellow-400' :
+                i < place.rating            ? 'fill-yellow-200 text-yellow-300' : 'text-border'
+              }`} />
+            ))}
+          </div>
+          <span className="text-[9px] text-muted font-semibold mt-1 uppercase tracking-wide">Google</span>
+        </div>
+        <div className="w-px bg-border shrink-0" />
+        <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
+          <span className="flex items-center gap-1 text-xs text-muted">
+            <Clock className="w-3 h-3 shrink-0" /> {place.openingHours}
+          </span>
+          <span className="text-[11px] text-muted">Based on Google reviews</span>
+        </div>
+        <div className="flex flex-col items-end justify-center shrink-0">
+          <Badge variant={place.status === 'Open' ? 'success' : place.status === 'Busy' ? 'warning' : 'danger'} dot pill>
+            {place.status}
+          </Badge>
         </div>
       </div>
 
@@ -930,22 +1001,62 @@ function ExploreView({ place }: { place: ExploreResult }) {
         ))}
       </div>
 
-      {/* Reviews */}
-      <button onClick={() => setExpanded(!expanded)} className="w-full flex items-center justify-between text-xs font-semibold text-muted hover:text-brand transition-colors py-1">
-        <span className="flex items-center gap-1.5"><Star className="w-3 h-3 text-yellow-400" /> What guests say</span>
-        <ChevronRight className={`w-3.5 h-3.5 transition-transform ${expanded ? 'rotate-90' : ''}`} />
-      </button>
-      <AnimatePresence>
-        {expanded && (
-          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-            <div className="space-y-2">
-              {place.reviews.map((r, i) => (
-                <ReviewCard key={i} review={r} idx={i} />
-              ))}
+      {/* Reviews — top review always visible */}
+      {place.reviews.length > 0 && (
+        <div className="border border-border rounded-xl overflow-hidden">
+          <div className="flex items-center gap-2 px-3 pt-2.5 pb-2 border-b border-border bg-bg-app">
+            <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+            <span className="text-[10px] font-black text-heading uppercase tracking-widest">What guests say</span>
+          </div>
+          <div className="p-3 space-y-1.5">
+            <div className="flex items-center gap-2">
+              <div
+                className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-[10px] font-black text-white"
+                style={{ background: AVATAR_COLORS[0] }}
+              >
+                {place.reviews[0].author.charAt(0)}
+              </div>
+              <span className="text-[11px] font-bold text-heading">{place.reviews[0].author}</span>
+              <span className="text-[10px] text-muted">· {place.reviews[0].location}</span>
+              <div className="ml-auto flex gap-0.5 shrink-0">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star key={i} className={`w-2.5 h-2.5 ${i < place.reviews[0].stars ? 'fill-yellow-400 text-yellow-400' : 'text-border'}`} />
+                ))}
+              </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <p className="text-[11px] text-body leading-relaxed italic line-clamp-2">"{place.reviews[0].text}"</p>
+            <p className="text-[9px] text-muted font-medium">{place.reviews[0].ago} · via Google Reviews</p>
+          </div>
+          {place.reviews.length > 1 && (
+            <>
+              <button
+                onClick={() => setExpanded(!expanded)}
+                className="w-full flex items-center justify-between px-3 py-2 border-t border-border text-[10px] font-bold text-brand hover:bg-brand-softer transition-colors"
+              >
+                <span>{expanded ? 'Hide reviews' : `See all ${place.reviews.length} reviews`}</span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
+              </button>
+              <AnimatePresence>
+                {expanded && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.22, ease: 'easeInOut' }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-3 pb-3 space-y-2 pt-2">
+                      {place.reviews.slice(1).map((r, i) => (
+                        <ReviewCard key={i} review={r} idx={i + 1} />
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </>
+          )}
+        </div>
+      )}
     </motion.div>
   );
 }
