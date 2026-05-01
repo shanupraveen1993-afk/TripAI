@@ -151,7 +151,7 @@ export default function App() {
           hotelTags:   filters.hotelTags,
           hotelArea:   filters.hotelArea,
           priceFilter: filters.priceFilter,
-          minRating:   filters.minRating === '4.5+' ? 4.5 : filters.minRating === '4.0+' ? 4.0 : 0,
+          minRating:   filters.minRating === '4.5+' ? 4.5 : filters.minRating === '4.0+' ? 4.0 : filters.minRating === '3.5+' ? 3.5 : 0,
           openNow:     filters.openNow,
           dietType:    filters.dietType,
           dineMode:    filters.dineMode,

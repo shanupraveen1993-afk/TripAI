@@ -119,9 +119,10 @@ interface UserFilters {
 
 // Price level buckets — inclusive to avoid empty results on boundary cases
 const PRICE_BUCKETS: Record<string, string[]> = {
-  '₹':   ['PRICE_LEVEL_FREE', 'PRICE_LEVEL_INEXPENSIVE'],
-  '₹₹':  ['PRICE_LEVEL_INEXPENSIVE', 'PRICE_LEVEL_MODERATE'],
-  '₹₹₹': ['PRICE_LEVEL_MODERATE', 'PRICE_LEVEL_EXPENSIVE', 'PRICE_LEVEL_VERY_EXPENSIVE'],
+  '₹':    ['PRICE_LEVEL_FREE', 'PRICE_LEVEL_INEXPENSIVE'],
+  '₹₹':   ['PRICE_LEVEL_INEXPENSIVE', 'PRICE_LEVEL_MODERATE'],
+  '₹₹₹':  ['PRICE_LEVEL_MODERATE', 'PRICE_LEVEL_EXPENSIVE'],
+  '₹₹₹₹': ['PRICE_LEVEL_EXPENSIVE', 'PRICE_LEVEL_VERY_EXPENSIVE'],
 };
 
 // Hard filter applied BEFORE Gemini — guarantees results match user constraints

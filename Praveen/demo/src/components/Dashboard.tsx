@@ -11,8 +11,8 @@ const uImg = (id: string, w = 320, h = 200) =>
 
 type DietType  = 'Any' | 'Veg' | 'Non-Veg';
 type DineMode  = 'Any' | 'Dine-in' | 'Takeout';
-type PriceFilter = 'Any' | '₹' | '₹₹' | '₹₹₹';
-type MinRating   = 'Any' | '4.0+' | '4.5+';
+type PriceFilter = 'Any' | '₹' | '₹₹' | '₹₹₹' | '₹₹₹₹';
+type MinRating   = 'Any' | '3.5+' | '4.0+' | '4.5+';
 
 /* ── Tab metadata ─────────────────────────────────────────────────────── */
 const TAB_META: Record<Tab, {
@@ -396,20 +396,32 @@ function LocationBar({ value, onChange, placeholder, autoDetect }: {
   );
 }
 
-/* ── Toggle group ────────────────────────────────────────────────────── */
-function ToggleGroup<T extends string>({ options, value, onChange, accent }: {
-  options: readonly T[]; value: T; onChange: (v: T) => void; accent: string;
+/* ── Tab-style segmented selector ───────────────────────────────────── */
+function ToggleGroup<T extends string>({ options, value, onChange, accent, renderLabel }: {
+  options: readonly T[];
+  value: T;
+  onChange: (v: T) => void;
+  accent: string;
+  renderLabel?: (o: T) => React.ReactNode;
 }) {
   return (
-    <div className="flex gap-1">
+    <div
+      className="flex p-0.5 rounded-xl gap-0.5"
+      style={{ background: '#F3F4F6' }}
+    >
       {options.map(o => (
-        <button key={o} type="button" onClick={() => onChange(o)}
-          className="flex-1 py-1.5 rounded-lg text-[10px] font-bold uppercase border transition-all"
+        <button
+          key={o}
+          type="button"
+          onClick={() => onChange(o)}
+          className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-[10px] text-[10px] font-bold transition-all duration-150"
           style={value === o
-            ? { background: accent, borderColor: accent, color: '#fff' }
-            : { background: '#fff', borderColor: '#E5E7EB', color: '#6B7280' }
+            ? { background: '#fff', color: accent, boxShadow: '0 1px 3px rgba(0,0,0,0.12)', fontWeight: 800 }
+            : { background: 'transparent', color: '#9CA3AF' }
           }
-        >{o}</button>
+        >
+          {renderLabel ? renderLabel(o) : o}
+        </button>
       ))}
     </div>
   );
@@ -599,34 +611,31 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             </button>
           </div>
 
-          {/* Price Range — amber style */}
+          {/* Price Range */}
           <div>
             <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
               Price Range
-              <Tooltip text="Hard-filtered by Google Places price tier. ₹ = budget, ₹₹ = mid-range, ₹₹₹ = premium." />
+              <Tooltip text="₹ = budget · ₹₹ = mid-range · ₹₹₹ = upscale · ₹₹₹₹ = luxury — hard-filtered before AI." />
             </label>
-            <ToggleGroup options={['Any', '₹', '₹₹', '₹₹₹'] as const} value={priceFilter} onChange={setPriceFilter} accent="#D97706" />
+            <ToggleGroup options={['Any', '₹', '₹₹', '₹₹₹', '₹₹₹₹'] as const} value={priceFilter} onChange={setPriceFilter} accent="#D97706" />
           </div>
 
-          {/* Min Rating — gold star style, visually distinct from price */}
+          {/* Min Rating — star label, gold accent */}
           <div>
             <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
               Min Rating
               <Tooltip text="Only shows hotels at or above this Google rating." />
             </label>
-            <div className="flex gap-1">
-              {(['Any', '4.0+', '4.5+'] as const).map(opt => (
-                <button key={opt} type="button" onClick={() => setMinRating(opt)}
-                  className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg text-[10px] font-bold border-2 transition-all"
-                  style={minRating === opt
-                    ? { borderColor: '#F59E0B', background: '#FFFBEB', color: '#92400E' }
-                    : { borderColor: '#E5E7EB', background: '#fff', color: '#6B7280' }}
-                >
-                  {opt !== 'Any' && <Star className="w-2.5 h-2.5 fill-current" />}
-                  {opt}
-                </button>
-              ))}
-            </div>
+            <ToggleGroup
+              options={['Any', '3.5+', '4.0+', '4.5+'] as const}
+              value={minRating}
+              onChange={setMinRating}
+              accent="#D97706"
+              renderLabel={o => o === 'Any'
+                ? <span>Any</span>
+                : <><Star className="w-2.5 h-2.5 fill-current" />{o}</>
+              }
+            />
           </div>
 
           {/* Hotel preference tags — always visible */}
@@ -658,13 +667,13 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             </button>
           </div>
 
-          {/* Price Range — amber */}
+          {/* Price Range */}
           <div>
             <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
               Price Range
-              <Tooltip text="Inexpensive (₹), moderate (₹₹), or premium (₹₹₹) — hard-filtered before AI sees results." />
+              <Tooltip text="₹ = budget · ₹₹ = mid-range · ₹₹₹ = upscale · ₹₹₹₹ = fine dining — hard-filtered before AI." />
             </label>
-            <ToggleGroup options={['Any', '₹', '₹₹', '₹₹₹'] as const} value={priceFilter} onChange={setPriceFilter} accent="#D97706" />
+            <ToggleGroup options={['Any', '₹', '₹₹', '₹₹₹', '₹₹₹₹'] as const} value={priceFilter} onChange={setPriceFilter} accent="#D97706" />
           </div>
 
           {/* Diet — green */}
