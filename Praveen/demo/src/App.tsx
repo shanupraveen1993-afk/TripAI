@@ -141,12 +141,12 @@ export default function App() {
         else setApiError(true);
       } else {
         const results = await fetchPlan(filters.tab, seed, {
-          hotelTags:  filters.hotelTags,
-          hotelArea:  filters.hotelArea,
-          budget:     filters.budget,
-          dietType:   filters.dietType,
-          foodBudget: filters.foodBudget,
-          diningVibe: filters.diningVibe,
+          hotelTags:   filters.hotelTags,
+          hotelArea:   filters.hotelArea,
+          priceFilter: filters.priceFilter,
+          minRating:   filters.minRating === '4.5+' ? 4.5 : filters.minRating === '4.0+' ? 4.0 : 0,
+          dietType:    filters.dietType,
+          dineMode:    filters.dineMode,
         });
         setLiveResults(results);
       }
@@ -216,9 +216,9 @@ export default function App() {
     setBackContext('itinerary-results');
     const filters: DashboardFilters = {
       tab: 'Explore', destination: searchLocation,
-      startDate: '', endDate: '', numPeople: 2, budget: 5000,
-      hotelTags: [], hotelArea: '', foodLocation: '', foodTags: [],
-      foodBudget: 'Medium', dietType: 'Veg', diningVibe: 'Family',
+      startDate: '', endDate: '', numPeople: 2, budget: 0,
+      hotelTags: [], hotelArea: '', priceFilter: 'Any', minRating: 'Any',
+      foodLocation: '', foodTags: [], dietType: 'Any', dineMode: 'Any',
       itinDate: '', startPoint: '', startTime: '09:00',
       exploreTarget: target, visitTime: 'Morning',
     };
@@ -338,9 +338,9 @@ export default function App() {
                 runSearch(
                   lastSearchFilters ?? {
                     tab: activeTab, destination: 'Thanjavur',
-                    startDate: '', endDate: '', numPeople: 2, budget: 5000,
-                    hotelTags: [], hotelArea: '', foodLocation: '', foodTags: [],
-                    foodBudget: 'Medium', dietType: 'Veg', diningVibe: 'Family',
+                    startDate: '', endDate: '', numPeople: 2, budget: 0,
+                    hotelTags: [], hotelArea: '', priceFilter: 'Any', minRating: 'Any',
+                    foodLocation: '', foodTags: [], dietType: 'Any', dineMode: 'Any',
                     itinDate: '', startPoint: '', startTime: '09:00',
                     exploreTarget: 'Brihadeeswarar Temple', visitTime: 'Morning',
                   },

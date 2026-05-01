@@ -9,9 +9,10 @@ import { Tab } from './ui/Tabs';
 const uImg = (id: string, w = 320, h = 200) =>
   `https://images.unsplash.com/photo-${id}?w=${w}&h=${h}&fit=crop&auto=format&q=80`;
 
-type FoodBudget = 'Low' | 'Medium' | 'High';
-type DietType   = 'Veg' | 'Non-Veg' | 'Pure Veg';
-type DiningVibe = 'Family' | 'Quick' | 'Leisure';
+type DietType  = 'Any' | 'Veg' | 'Non-Veg';
+type DineMode  = 'Any' | 'Dine-in' | 'Takeout';
+type PriceFilter = 'Any' | '₹' | '₹₹' | '₹₹₹';
+type MinRating   = 'Any' | '4.0+' | '4.5+';
 
 /* ── Tab metadata ─────────────────────────────────────────────────────── */
 const TAB_META: Record<Tab, {
@@ -182,7 +183,6 @@ interface QuickOverride {
   destination?: string;
   hotelTags?: string[];
   foodTags?: string[];
-  budget?: number;
   hotelArea?: string;
   dietType?: DietType;
   exploreTarget?: string;
@@ -212,7 +212,7 @@ const SMART_PICKS: Record<string, SmartPick[]> = {
     { label: 'Heritage stays',        sub: 'Hotels · Curated',    emoji: '🏛️', grad: 'linear-gradient(135deg,#D97706,#F59E0B)', imgId: '1708782462555-b3af03b4b3d2', overrides: { tab: 'Hotels',    hotelTags: ['Heritage'] } },
     { label: 'Plan my Bangalore day', sub: 'Full day · AI routed',emoji: '🗺️', grad: 'linear-gradient(135deg,#7C3AED,#6366F1)', imgId: '1708782462555-b3af03b4b3d2', overrides: { tab: 'Itinerary' } },
     { label: 'Top landmarks',         sub: 'What to see · Ranked',emoji: '🏯', grad: 'linear-gradient(135deg,#059669,#10B981)', imgId: '1708782462555-b3af03b4b3d2', overrides: { tab: 'Explore',   exploreTarget: 'Vidhana Soudha' } },
-    { label: 'Budget stays <₹3k',     sub: 'Hotels · Best value', emoji: '💰', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Hotels',    budget: 3000, hotelTags: ['Budget Friendly'] } },
+    { label: 'Budget stays <₹3k',     sub: 'Hotels · Best value', emoji: '💰', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Hotels',    hotelTags: ['Budget Friendly'] } },
     { label: 'Best biryani',          sub: 'Food · Non-veg',      emoji: '🍛', grad: 'linear-gradient(135deg,#EF4444,#F97316)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTags: ['Biryani'] } },
   ],
   goa: [
@@ -221,7 +221,7 @@ const SMART_PICKS: Record<string, SmartPick[]> = {
     { label: '1-day Goa plan',       sub: 'Itinerary · Beaches',  emoji: '🛵', grad: 'linear-gradient(135deg,#D97706,#F59E0B)', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Itinerary' } },
     { label: 'Must-see beaches',     sub: 'Explore · Ranked',     emoji: '🏖️', grad: 'linear-gradient(135deg,#7C3AED,#A78BFA)', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Explore',   exploreTarget: 'Calangute Beach' } },
     { label: 'Rooftop & night bars', sub: 'Food · Nightlife',     emoji: '🍹', grad: 'linear-gradient(135deg,#EF4444,#F97316)', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Food',      foodTags: ['Rooftop Dining', 'Craft Beer'] } },
-    { label: 'Budget beach stays',   sub: 'Hotels · Best value',  emoji: '💰', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Hotels',    budget: 4000, hotelTags: ['Budget Friendly'] } },
+    { label: 'Budget beach stays',   sub: 'Hotels · Best value',  emoji: '💰', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Hotels',    hotelTags: ['Budget Friendly'] } },
   ],
   mumbai: [
     { label: 'Bandra stays',         sub: 'Hotels · Trendy area', emoji: '🏙️', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Hotels',    hotelArea: 'Bandra' } },
@@ -253,7 +253,7 @@ const SMART_PICKS: Record<string, SmartPick[]> = {
     { label: 'Plan a full day',      sub: 'Itinerary · Optimised',emoji: '🗺️', grad: 'linear-gradient(135deg,#7C3AED,#6366F1)', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Itinerary' } },
     { label: 'Must-see spots',       sub: 'Explore · Don\'t miss',emoji: '🧭', grad: 'linear-gradient(135deg,#059669,#10B981)', imgId: '1708782462555-b3af03b4b3d2', overrides: { tab: 'Explore' } },
     { label: 'Budget stays',         sub: 'Hotels · Best value',  emoji: '💰', grad: 'linear-gradient(135deg,#6366F1,#A78BFA)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Hotels',    hotelTags: ['Budget Friendly'] } },
-    { label: 'Pure veg options',     sub: 'Food · Filtered',      emoji: '🥗', grad: 'linear-gradient(135deg,#059669,#34D399)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      dietType: 'Pure Veg' } },
+    { label: 'Pure veg options',     sub: 'Food · Filtered',      emoji: '🥗', grad: 'linear-gradient(135deg,#059669,#34D399)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      dietType: 'Veg' } },
   ],
 };
 
@@ -275,7 +275,7 @@ const TRENDING_OVERRIDES: Record<string, QuickOverride> = {
   'Sea view rooms':  { tab: 'Hotels',    hotelTags: ['Sea View'] },
   'Biryani spots':   { tab: 'Food',      foodTags: ['Biryani'] },
   'Rooftop dining':  { tab: 'Food',      foodTags: ['Rooftop Dining'] },
-  'Pure veg':        { tab: 'Food',      foodTags: ['Street Food'], dietType: 'Pure Veg' },
+  'Pure veg':        { tab: 'Food',      foodTags: ['Street Food'], dietType: 'Veg' },
   'Street food':     { tab: 'Food',      foodTags: ['Street Food'] },
   'Seafood':         { tab: 'Food',      foodTags: ['Seafood'] },
   'Craft beer bars': { tab: 'Food',      foodTags: ['Craft Beer'] },
@@ -476,20 +476,26 @@ function CategorySelector({ active, onChange }: { active: Tab; onChange: (t: Tab
 export interface DashboardFilters {
   tab: Tab;
   destination: string;
+  // Trip metadata (saved in history — not used as search constraints)
   startDate: string;
   endDate: string;
   numPeople: number;
   budget: number;
+  // Hotel filters — all hard-applied via Places API data
   hotelTags: string[];
   hotelArea: string;
+  priceFilter: string;   // 'Any' | '₹' | '₹₹' | '₹₹₹'
+  minRating: string;     // 'Any' | '4.0+' | '4.5+'
+  // Food filters — all hard-applied via Places API data
   foodLocation: string;
   foodTags: string[];
-  foodBudget: FoodBudget;
-  dietType: DietType;
-  diningVibe: DiningVibe;
+  dietType: DietType;    // hard-filtered via servesVegetarianFood
+  dineMode: string;      // hard-filtered via dineIn / takeout
+  // Itinerary
   itinDate: string;
   startPoint: string;
   startTime: string;
+  // Explore
   exploreTarget: string;
   visitTime: string;
 }
@@ -508,17 +514,14 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
   const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
 
   const [activeTab, setActiveTab]       = useState<Tab>(initialTab);
-  const [startDate, setStartDate]       = useState(today);
-  const [endDate, setEndDate]           = useState(tomorrow);
-  const [numPeople, setNumPeople]       = useState(2);
-  const [budget, setBudget]             = useState(0);
   const [hotelTags, setHotelTags]       = useState<string[]>([]);
   const [hotelArea, setHotelArea]       = useState('');
+  const [priceFilter, setPriceFilter]   = useState<PriceFilter>('Any');
+  const [minRating, setMinRating]       = useState<MinRating>('Any');
   const [foodLocation, setFoodLocation] = useState('');
   const [foodTags, setFoodTags]         = useState<string[]>([]);
-  const [foodBudget, setFoodBudget]     = useState<FoodBudget>('Medium');
-  const [dietType, setDietType]         = useState<DietType>('Veg');
-  const [diningVibe, setDiningVibe]     = useState<DiningVibe>('Family');
+  const [dietType, setDietType]         = useState<DietType>('Any');
+  const [dineMode, setDineMode]         = useState<DineMode>('Any');
   const [itinDate, setItinDate]         = useState(today);
   const [startPoint, setStartPoint]     = useState('');
   const [startTime, setStartTime]       = useState('09:00');
@@ -556,15 +559,15 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
   const buildFilters = (ov: QuickOverride = {}): DashboardFilters => ({
     tab:          ov.tab          ?? activeTab,
     destination:  ov.destination  ?? destination,
-    startDate, endDate, numPeople,
-    budget:       ov.budget       ?? budget,
+    startDate: '', endDate: '', numPeople: 2, budget: 0,
     hotelTags:    ov.hotelTags    ?? hotelTags,
     hotelArea:    ov.hotelArea    ?? hotelArea,
+    priceFilter,
+    minRating,
     foodLocation,
     foodTags:     ov.foodTags     ?? foodTags,
-    foodBudget,
-    dietType:     ov.dietType     ?? dietType,
-    diningVibe,
+    dietType:     (ov.dietType    ?? dietType) as DietType,
+    dineMode,
     itinDate, startPoint, startTime,
     exploreTarget: ov.exploreTarget ?? exploreTarget,
     visitTime,
@@ -583,44 +586,20 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       /* ── Hotels ─────────────────────────────────────────────── */
       case 'Hotels': return (
         <div className="space-y-3">
-          <div className="grid gap-2" style={{ gridTemplateColumns: '1fr 1fr 60px 1fr' }}>
+          <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1">Check-in</label>
-              <input type="date" value={startDate} onChange={e => {
-                  const v = e.target.value;
-                  setStartDate(v);
-                  if (v >= endDate) {
-                    const d = new Date(v);
-                    d.setDate(d.getDate() + 1);
-                    setEndDate(d.toISOString().split('T')[0]);
-                  }
-                }}
-                className="w-full bg-surface border border-border rounded-lg px-2 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-soft focus:border-brand transition-colors" />
+              <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
+                Price Range
+                <Tooltip text="Hard-filtered by Google Places price tier before AI ranking. ₹ = budget, ₹₹ = mid-range, ₹₹₹ = premium." />
+              </label>
+              <ToggleGroup options={['Any', '₹', '₹₹', '₹₹₹'] as const} value={priceFilter} onChange={setPriceFilter} accent="#1C64F2" />
             </div>
             <div>
-              <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1">Check-out</label>
-              <input type="date" value={endDate} min={startDate} onChange={e => setEndDate(e.target.value)}
-                className="w-full bg-surface border border-border rounded-lg px-2 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-soft focus:border-brand transition-colors" />
-            </div>
-            <div>
-              <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1">Pax</label>
-              <input type="number" min={1} max={20} value={numPeople} onChange={e => setNumPeople(parseInt(e.target.value))}
-                className="w-full bg-surface border border-border rounded-lg px-2 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-soft transition-colors text-center" />
-            </div>
-            <div>
-              <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1">Budget</label>
-              <div className="relative">
-                <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-bold text-muted select-none">₹</span>
-                <input
-                  type="number"
-                  min={1000}
-                  step={500}
-                  value={budget === 0 ? '' : budget}
-                  onChange={e => setBudget(e.target.value === '' ? 0 : Math.max(1000, parseInt(e.target.value) || 0))}
-                  placeholder="e.g. 15000"
-                  className="w-full bg-surface border border-border rounded-lg pl-6 pr-2 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-soft focus:border-brand transition-colors"
-                />
-              </div>
+              <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
+                Min Rating
+                <Tooltip text="Only shows hotels at or above this Google rating. Applied before AI sees results." />
+              </label>
+              <ToggleGroup options={['Any', '4.0+', '4.5+'] as const} value={minRating} onChange={setMinRating} accent="#1C64F2" />
             </div>
           </div>
 
@@ -693,13 +672,26 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
 
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1">Budget</label>
-              <ToggleGroup options={['Low', 'Medium', 'High'] as const} value={foodBudget} onChange={setFoodBudget} accent="#1C64F2" />
+              <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
+                Price Range
+                <Tooltip text="Hard-filtered by Google Places price tier — inexpensive (₹), moderate (₹₹), or premium (₹₹₹)." />
+              </label>
+              <ToggleGroup options={['Any', '₹', '₹₹', '₹₹₹'] as const} value={priceFilter} onChange={setPriceFilter} accent="#1C64F2" />
             </div>
             <div>
-              <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1">Diet</label>
-              <ToggleGroup options={['Veg', 'Non-Veg', 'Pure Veg'] as const} value={dietType} onChange={setDietType} accent="#1C64F2" />
+              <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
+                Diet
+                <Tooltip text="Veg filters places Google marks as servesVegetarianFood = true. Applied before AI ranking." />
+              </label>
+              <ToggleGroup options={['Any', 'Veg', 'Non-Veg'] as const} value={dietType} onChange={setDietType} accent="#1C64F2" />
             </div>
+          </div>
+          <div>
+            <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
+              Dining Mode
+              <Tooltip text="Filters by Google's actual dine-in or takeout availability flags. Applied before AI ranking." />
+            </label>
+            <ToggleGroup options={['Any', 'Dine-in', 'Takeout'] as const} value={dineMode} onChange={setDineMode} accent="#1C64F2" />
           </div>
 
           {/* ── Advanced toggle ─────────────────────────────────── */}
@@ -713,9 +705,9 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               <span className="text-[10px] font-black uppercase tracking-wide" style={{ color: '#1C64F2' }}>
                 Advanced filters
               </span>
-              {(foodTags.length + (diningVibe !== 'Family' ? 1 : 0)) > 0 && (
+              {foodTags.length > 0 && (
                 <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full" style={{ background: '#1C64F2', color: '#fff' }}>
-                  {foodTags.length + (diningVibe !== 'Family' ? 1 : 0)}
+                  {foodTags.length}
                 </span>
               )}
             </span>
@@ -733,26 +725,9 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               >
                 <div className="space-y-3 pt-1 border-t border-border mt-1">
                   <div className="pt-2">
-                    <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1">Dining Vibe</label>
-                    <div className="flex gap-1.5">
-                      {([['Family', '👨‍👩‍👧‍👦'], ['Quick', '⚡'], ['Leisure', '✨']] as const).map(([v, e]) => (
-                        <button key={v} type="button" onClick={() => setDiningVibe(v as DiningVibe)}
-                          className="flex-1 flex flex-col items-center gap-0.5 py-2 rounded-lg border-2 text-[10px] font-bold uppercase transition-all"
-                          style={diningVibe === v
-                            ? { borderColor: '#1C64F2', background: '#EBF5FF', color: '#1C64F2' }
-                            : { borderColor: '#E5E7EB', background: '#fff', color: '#6B7280' }
-                          }
-                        >
-                          <span className="text-base">{e}</span>{v}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
                     <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
-                      Cuisine & Vibe
-                      <Tooltip text="Tag any cuisine or vibe that fits. The AI filters and ranks before results load." />
+                      Cuisine Tags
+                      <Tooltip text="Tag any cuisine that fits. The AI uses these as hints when ranking results." />
                     </label>
                     <TagGrid tags={FOOD_TAGS} selected={foodTags} onToggle={toggleFoodTag} accent="#1C64F2" />
                   </div>
