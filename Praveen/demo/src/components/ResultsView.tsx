@@ -197,6 +197,11 @@ function PlaceCard({ place, tab, rank = 0 }: { place: PlaceResult; tab: Tab; ran
   const [bookmarked, setBookmarked]     = useState(false);
   const { toast } = useToast();
 
+  // Only surface 3★+ reviews, best first — 1-2★ signals are captured in trendVerdict/trendReason
+  const displayReviews = [...place.reviews]
+    .filter(r => r.stars >= 3)
+    .sort((a, b) => b.stars - a.stars);
+
   const share = () => {
     if (navigator.share) {
       navigator.share({ title: place.name, text: `Check out ${place.name}!`, url: window.location.href }).catch(() => {});
@@ -328,7 +333,7 @@ function PlaceCard({ place, tab, rank = 0 }: { place: PlaceResult; tab: Tab; ran
         </div>
 
         {/* ── Top review — always visible ───────────────────────── */}
-        {place.reviews.length > 0 && (
+        {displayReviews.length > 0 && (
           <div className="border border-border rounded-xl overflow-hidden">
             <div className="flex items-center gap-2 px-3 pt-2.5 pb-2 border-b border-border bg-bg-app">
               <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
@@ -343,27 +348,27 @@ function PlaceCard({ place, tab, rank = 0 }: { place: PlaceResult; tab: Tab; ran
                   className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-[10px] font-black text-white"
                   style={{ background: AVATAR_COLORS[0] }}
                 >
-                  {place.reviews[0].author.charAt(0)}
+                  {displayReviews[0].author.charAt(0)}
                 </div>
-                <span className="text-[11px] font-bold text-heading">{place.reviews[0].author}</span>
-                <span className="text-[10px] text-muted">· {place.reviews[0].location}</span>
+                <span className="text-[11px] font-bold text-heading">{displayReviews[0].author}</span>
+                <span className="text-[10px] text-muted">· {displayReviews[0].location}</span>
                 <div className="ml-auto flex gap-0.5 shrink-0">
                   {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} className={`w-2.5 h-2.5 ${i < place.reviews[0].stars ? 'fill-yellow-400 text-yellow-400' : 'text-border'}`} />
+                    <Star key={i} className={`w-2.5 h-2.5 ${i < displayReviews[0].stars ? 'fill-yellow-400 text-yellow-400' : 'text-border'}`} />
                   ))}
                 </div>
               </div>
-              <p className="text-[11px] text-body leading-relaxed italic line-clamp-2">"{place.reviews[0].text}"</p>
-              <p className="text-[9px] text-muted font-medium">{place.reviews[0].ago} · via Google Reviews</p>
+              <p className="text-[11px] text-body leading-relaxed italic line-clamp-2">"{displayReviews[0].text}"</p>
+              <p className="text-[9px] text-muted font-medium">{displayReviews[0].ago} · via Google Reviews</p>
             </div>
 
-            {place.reviews.length > 1 && (
+            {displayReviews.length > 1 && (
               <>
                 <button
                   onClick={() => setExpanded(!expanded)}
                   className="w-full flex items-center justify-between px-3 py-2 border-t border-border text-[10px] font-bold text-brand hover:bg-brand-softer transition-colors"
                 >
-                  <span>{expanded ? 'Hide reviews' : `See all ${place.reviews.length} reviews`}</span>
+                  <span>{expanded ? 'Hide reviews' : `See ${displayReviews.length - 1} more review${displayReviews.length > 2 ? 's' : ''}`}</span>
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
                 </button>
                 <AnimatePresence>
@@ -376,7 +381,7 @@ function PlaceCard({ place, tab, rank = 0 }: { place: PlaceResult; tab: Tab; ran
                       className="overflow-hidden"
                     >
                       <div className="px-3 pb-3 space-y-2 pt-2">
-                        {place.reviews.slice(1).map((r, i) => (
+                        {displayReviews.slice(1).map((r, i) => (
                           <ReviewCard key={i} review={r} idx={i + 1} />
                         ))}
                       </div>
@@ -384,6 +389,21 @@ function PlaceCard({ place, tab, rank = 0 }: { place: PlaceResult; tab: Tab; ran
                   )}
                 </AnimatePresence>
               </>
+            )}
+
+            {/* Transparency note */}
+            {place.googleMapsUri && (
+              <div className="px-3 py-2 border-t border-border bg-bg-app">
+                <a
+                  href={place.googleMapsUri}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[9px] text-muted hover:text-brand transition-colors flex items-center gap-1"
+                >
+                  <ExternalLink className="w-2.5 h-2.5 shrink-0" />
+                  Showing 3★+ reviews · See all {place.reviewCount.toLocaleString()} on Google
+                </a>
+              </div>
             )}
           </div>
         )}
