@@ -177,7 +177,9 @@ export default function App() {
       setBrowseAuthOpen(true);
       return;
     }
-    await runSearch(filters, searchSeed);
+    const newSeed = searchSeed + 1;
+    setSearchSeed(newSeed);
+    await runSearch(filters, newSeed);
   };
 
   // ── Save trip ───────────────────────────────────────────────────────────
@@ -311,7 +313,7 @@ export default function App() {
               food={activeTab === 'Food'    ? (liveResults as PlaceResult[] ?? MOCK_FOOD)   : MOCK_FOOD}
               itinerary={activeTab === 'Itinerary' ? itineraryToDisplay : MOCK_ITINERARY}
               explore={activeTab === 'Explore' ? (liveExplore as ExploreGuide ?? MOCK_EXPLORE) : MOCK_EXPLORE}
-              apiError={apiError}
+              apiError={apiError && !(activeTab === 'Itinerary' && itineraryGenCount <= 1)}
               onBack={() => {
                 if (backContext === 'itinerary-results') {
                   setBackContext('dashboard');

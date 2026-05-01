@@ -133,7 +133,7 @@ function PlacePhoto({ color, name, photoRef, autoLoad }: { color: string; name: 
       {loading && (
         <span className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin absolute" />
       )}
-      <span className="text-3xl font-display font-black text-white/40 uppercase tracking-widest">
+      <span className="text-3xl font-display font-black text-white/70 uppercase tracking-widest drop-shadow">
         {name.charAt(0)}
       </span>
       {photoRef && !autoLoad && (
@@ -871,10 +871,11 @@ function ExploreView({ place }: { place: ExploreResult }) {
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
       {/* Photo + header */}
-      <div className={`${place.photoColor} rounded-2xl h-52 flex items-end p-4`}>
-        <div>
+      <div className={`${place.photoColor} rounded-2xl h-52 flex items-end p-4 relative overflow-hidden`}>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent rounded-2xl" />
+        <div className="relative z-10">
           <h2 className="font-display font-black text-xl text-white drop-shadow">{place.name}</h2>
-          <p className="text-xs text-white/70 mt-1 flex items-center gap-1">
+          <p className="text-xs text-white/80 mt-1 flex items-center gap-1">
             <MapPin className="w-3 h-3" /> {place.address}
           </p>
         </div>
@@ -981,13 +982,6 @@ export function ResultsView({
         </span>
       </div>
 
-      {/* API Error banner */}
-      {apiError && (
-        <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 flex items-center gap-2 text-sm text-amber-700">
-          <AlertTriangle className="w-4 h-4 shrink-0" />
-          <span>Showing sample data — API keys not yet configured. Results will be real once you add your keys.</span>
-        </div>
-      )}
 
       {/* Results */}
       <div className={tab === 'Hotels' || tab === 'Food' ? 'flex flex-col gap-5 mb-5' : 'space-y-4 mb-5'}>

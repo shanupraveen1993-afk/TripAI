@@ -38,7 +38,7 @@ function mapPriceLevel(level: string): string {
   return map[level] ?? '₹₹';
 }
 
-const COLORS = ['bg-amber-200','bg-green-200','bg-blue-200','bg-purple-200','bg-rose-200','bg-teal-200'];
+const COLORS = ['bg-amber-600','bg-green-600','bg-blue-600','bg-purple-600','bg-rose-600','bg-teal-600'];
 
 // Pre-computed locally — no Gemini call needed
 const KEYWORD_BUCKETS: Record<string, string[]> = {
@@ -246,7 +246,7 @@ Return ONLY valid JSON. No markdown fences. No explanation text.`;
 
   try {
     const resp = await fetch(
-      `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`,
+      `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,
       {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -370,7 +370,7 @@ Return a JSON array of EXACTLY 5 stops. Return ONLY valid JSON. No markdown. No 
 
   try {
     const resp = await fetch(
-      `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`,
+      `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -465,7 +465,7 @@ Return ONLY valid JSON. No markdown. No explanation.`;
 
   try {
     const resp = await fetch(
-      `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`,
+      `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -482,9 +482,9 @@ Return ONLY valid JSON. No markdown. No explanation.`;
 }
 
 const EXPLORE_COLORS: Record<string, string> = {
-  Morning:   'bg-amber-200',
-  Afternoon: 'bg-orange-200',
-  Evening:   'bg-indigo-200',
+  Morning:   'bg-amber-600',
+  Afternoon: 'bg-orange-600',
+  Evening:   'bg-indigo-700',
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -531,7 +531,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             stars:    r.rating ?? 5,
             ago:      r.relativePublishTimeDescription ?? 'Recently',
           })),
-          photoColor: EXPLORE_COLORS[timeSlot] ?? 'bg-amber-200',
+          photoColor: EXPLORE_COLORS[timeSlot] ?? 'bg-amber-600',
           timeSlot,
         },
       });

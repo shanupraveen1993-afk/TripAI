@@ -72,7 +72,7 @@ export const MOCK_HOTELS: PlaceResult[] = [
       { text: 'The spa is absolutely divine, worth every rupee.', author: 'Ananya R.', location: 'Chennai', stars: 5, ago: '1 month ago' },
       { text: "Best breakfast buffet I've had in India.", author: 'Rahul K.', location: 'New Delhi', stars: 5, ago: '3 weeks ago' },
     ],
-    photoColor: 'bg-amber-200',
+    photoColor: 'bg-amber-600',
     aiDetail: {
       whyOverOthers: 'Ranked #1 over ITC Gardenia because reviewers in the last 90 days specifically cite the heritage wing renovation as complete and the new pool garden as "the best in Bangalore." ITC\'s pool reviews, while good, have fewer recent mentions.',
       dataPoints: [
@@ -95,7 +95,7 @@ export const MOCK_HOTELS: PlaceResult[] = [
       { text: 'Rooms are spacious and beautifully maintained.', author: 'Suresh B.', location: 'Hyderabad', stars: 4, ago: '3 weeks ago' },
       { text: 'Excellent for a family holiday.', author: 'Kavitha N.', location: 'Kochi', stars: 5, ago: '2 months ago' },
     ],
-    photoColor: 'bg-green-200',
+    photoColor: 'bg-green-600',
     aiDetail: {
       whyOverOthers: 'Beats Citrus and Bloom on family metrics — 20-acre garden gives children genuine outdoor space, and the heritage wing has the thickest walls, making it the quietest hotel in this list per reviewer noise complaints (only 2 in last 6 months vs 18 at Bloom).',
       dataPoints: [
@@ -118,7 +118,7 @@ export const MOCK_HOTELS: PlaceResult[] = [
       { text: 'WiFi was surprisingly fast.', author: 'Arjun M.', location: 'Jaipur', stars: 4, ago: '2 weeks ago' },
       { text: 'Clean rooms and friendly staff.', author: 'Divya P.', location: 'Bengaluru', stars: 4, ago: '1 month ago' },
     ],
-    photoColor: 'bg-blue-200',
+    photoColor: 'bg-blue-600',
     aiDetail: {
       whyOverOthers: 'Ranked above Bloom Hotel on budget metrics specifically — at ₹₹ price, Citrus delivers a full breakfast (Bloom charges ₹350 extra), free parking (Bloom ₹200/day), and 150 Mbps WiFi vs Bloom\'s 50 Mbps. Value-per-rupee score: Citrus 8.4, Bloom 6.9.',
       dataPoints: [
@@ -141,7 +141,7 @@ export const MOCK_HOTELS: PlaceResult[] = [
       { text: 'The pool is spectacular.', author: 'Nisha V.', location: 'Nagpur', stars: 5, ago: '3 weeks ago' },
       { text: 'Food at Cubbon Pavilion is outstanding.', author: 'Aditya L.', location: 'New Delhi', stars: 5, ago: '1 month ago' },
     ],
-    photoColor: 'bg-emerald-200',
+    photoColor: 'bg-emerald-600',
     aiDetail: {
       whyOverOthers: 'Unique in this list as the only LEED Platinum certified property in Bangalore — if sustainability is a factor, it\'s unmatched. Also has the best-rated restaurant (Cubbon Pavilion, 4.9 on Zomato) of any hotel in this set.',
       dataPoints: [
@@ -164,7 +164,7 @@ export const MOCK_HOTELS: PlaceResult[] = [
       { text: 'Rooms are small but very stylish.', author: 'Kiran B.', location: 'Pune', stars: 4, ago: '2 weeks ago' },
       { text: 'Rooftop has great views.', author: 'Pooja M.', location: 'Chennai', stars: 4, ago: '3 weeks ago' },
     ],
-    photoColor: 'bg-purple-200',
+    photoColor: 'bg-purple-600',
     aiDetail: {
       whyOverOthers: 'Wins purely on location — Indiranagar\'s 100 Feet Road puts you within walking distance of Bangalore\'s best café strip, bars, and restaurants. No other ₹₹ hotel in this set offers this neighbourhood access. Trade-off is room size.',
       dataPoints: [
@@ -190,7 +190,7 @@ export const MOCK_FOOD: PlaceResult[] = [
       { text: 'Queue early — gets packed by 8am.', author: 'Gopal V.', location: 'Mysuru', stars: 4, ago: '1 week ago' },
       { text: 'Authentic old-Bangalore flavours.', author: 'Suma K.', location: 'Bengaluru', stars: 5, ago: '2 weeks ago' },
     ],
-    photoColor: 'bg-yellow-200',
+    photoColor: 'bg-yellow-600',
     aiDetail: {
       whyOverOthers: 'Ranked first not just for food quality but for cultural significance — this is where the rava idli was invented in 1943. No other restaurant in Bangalore carries that historical weight. Review sentiment on "authenticity" scores 9.2/10 — highest in this food set.',
       dataPoints: [
@@ -213,7 +213,7 @@ export const MOCK_FOOD: PlaceResult[] = [
       { text: 'The ambience under the trees is magical.', author: 'Rekha S.', location: 'Mangaluru', stars: 5, ago: '2 weeks ago' },
       { text: 'Portions are generous, flavours are perfect.', author: 'Ajay R.', location: 'Hyderabad', stars: 5, ago: '1 month ago' },
     ],
-    photoColor: 'bg-cyan-200',
+    photoColor: 'bg-cyan-700',
     aiDetail: {
       whyOverOthers: 'Highest-rated restaurant in this entire set at 4.8 — and specifically for coastal cuisine it has no peer in Bangalore. The open-air courtyard setting under century-old trees is mentioned in 83% of reviews as a defining experience.',
       dataPoints: [
@@ -236,7 +236,7 @@ export const MOCK_FOOD: PlaceResult[] = [
       { text: 'Be ready for a 30-minute queue on weekends.', author: 'Mohan P.', location: 'Coimbatore', stars: 4, ago: '3 weeks ago' },
       { text: 'Worth every minute of the wait.', author: 'Usha B.', location: 'Mysuru', stars: 5, ago: '2 months ago' },
     ],
-    photoColor: 'bg-orange-200',
+    photoColor: 'bg-orange-600',
     aiDetail: {
       whyOverOthers: 'Highest total review count in this set (9,100) — more people have reviewed this dosa counter than any restaurant on this list. That volume of consistent praise over decades is the signal. The masala dosa here is ranked in multiple national "India\'s best dosa" lists.',
       dataPoints: [
@@ -259,7 +259,7 @@ export const MOCK_FOOD: PlaceResult[] = [
       { text: 'Always a crowd but worth it.', author: 'Anjali M.', location: 'Mumbai', stars: 4, ago: '1 week ago' },
       { text: 'The loaded fries are dangerous.', author: 'Ravi K.', location: 'Bengaluru', stars: 5, ago: '3 weeks ago' },
     ],
-    photoColor: 'bg-red-200',
+    photoColor: 'bg-red-600',
     aiDetail: {
       whyOverOthers: 'In the non-veg casual dining category, Truffles wins on crowd data — 4,200 reviews with sustained 4.3+ over 5+ years is rare for a mid-range burger joint. The pulled-pork burger has its own social media following with thousands of tagged posts.',
       dataPoints: [
@@ -282,7 +282,7 @@ export const MOCK_FOOD: PlaceResult[] = [
       { text: 'Food and ambience are both exceptional.', author: 'Siddharth A.', location: 'Bengaluru', stars: 5, ago: '1 week ago' },
       { text: 'Great for a date night.', author: 'Kavya R.', location: 'Mumbai', stars: 5, ago: '2 weeks ago' },
     ],
-    photoColor: 'bg-indigo-200',
+    photoColor: 'bg-indigo-600',
     aiDetail: {
       whyOverOthers: 'The only restaurant in this set where the experience itself — not just the food — is the product. The MG Road rooftop view at sunset is cited as "the best in Bangalore" in 89% of 5-star reviews. Live jazz evenings add an element no other restaurant here offers.',
       dataPoints: [
@@ -375,5 +375,5 @@ export const MOCK_EXPLORE: ExploreResult = {
     { text: "Entry is free but you need a valid ID — don't forget it.", author: 'Naveen K.', location: 'New Delhi', stars: 4, ago: '2 weeks ago' },
     { text: 'The neo-Dravidian pillars up close are stunning.', author: 'Preethi S.', location: 'Chennai', stars: 5, ago: '1 month ago' },
   ],
-  photoColor: 'bg-stone-300',
+  photoColor: 'bg-stone-600',
 };
