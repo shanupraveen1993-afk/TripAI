@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Search, Info, ChevronDown, Sparkles, MapPin, Navigation, X,
-  Hotel, Utensils, Route, Compass, Flame, Zap, Clock, SlidersHorizontal,
+  Hotel, Utensils, Route, Compass, Flame, Zap, Clock, Star,
 } from 'lucide-react';
 import { Tab } from './ui/Tabs';
 
@@ -481,16 +481,17 @@ export interface DashboardFilters {
   endDate: string;
   numPeople: number;
   budget: number;
-  // Hotel filters — all hard-applied via Places API data
+  // Hotel filters
   hotelTags: string[];
   hotelArea: string;
   priceFilter: string;   // 'Any' | '₹' | '₹₹' | '₹₹₹'
   minRating: string;     // 'Any' | '4.0+' | '4.5+'
-  // Food filters — all hard-applied via Places API data
+  openNow: boolean;      // hard-filtered via openNow boolean
+  // Food filters
   foodLocation: string;
   foodTags: string[];
-  dietType: DietType;    // hard-filtered via servesVegetarianFood
-  dineMode: string;      // hard-filtered via dineIn / takeout
+  dietType: DietType;
+  dineMode: string;
   // Itinerary
   itinDate: string;
   startPoint: string;
@@ -515,20 +516,16 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
 
   const [activeTab, setActiveTab]       = useState<Tab>(initialTab);
   const [hotelTags, setHotelTags]       = useState<string[]>([]);
-  const [hotelArea, setHotelArea]       = useState('');
   const [priceFilter, setPriceFilter]   = useState<PriceFilter>('Any');
   const [minRating, setMinRating]       = useState<MinRating>('Any');
-  const [foodLocation, setFoodLocation] = useState('');
+  const [openNow, setOpenNow]           = useState(false);
   const [foodTags, setFoodTags]         = useState<string[]>([]);
   const [dietType, setDietType]         = useState<DietType>('Any');
-  const [dineMode, setDineMode]         = useState<DineMode>('Any');
   const [itinDate, setItinDate]         = useState(today);
   const [startPoint, setStartPoint]     = useState('');
   const [startTime, setStartTime]       = useState('09:00');
   const [exploreTarget, setExploreTarget] = useState('');
   const [visitTime, setVisitTime]       = useState('Morning');
-  const [hotelAdvOpen, setHotelAdvOpen] = useState(false);
-  const [foodAdvOpen, setFoodAdvOpen]   = useState(false);
   const [categorySticky, setCategorySticky] = useState(true);
   const ctaSentinelRef = useRef<HTMLDivElement>(null);
 
@@ -561,13 +558,14 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
     destination:  ov.destination  ?? destination,
     startDate: '', endDate: '', numPeople: 2, budget: 0,
     hotelTags:    ov.hotelTags    ?? hotelTags,
-    hotelArea:    ov.hotelArea    ?? hotelArea,
+    hotelArea:    ov.hotelArea    ?? '',
     priceFilter,
     minRating,
-    foodLocation,
+    openNow,
+    foodLocation: '',
     foodTags:     ov.foodTags     ?? foodTags,
     dietType:     (ov.dietType    ?? dietType) as DietType,
-    dineMode,
+    dineMode:     'Any',
     itinDate, startPoint, startTime,
     exploreTarget: ov.exploreTarget ?? exploreTarget,
     visitTime,
@@ -586,155 +584,106 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       /* ── Hotels ─────────────────────────────────────────────── */
       case 'Hotels': return (
         <div className="space-y-3">
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
-                Price Range
-                <Tooltip text="Hard-filtered by Google Places price tier before AI ranking. ₹ = budget, ₹₹ = mid-range, ₹₹₹ = premium." />
-              </label>
-              <ToggleGroup options={['Any', '₹', '₹₹', '₹₹₹'] as const} value={priceFilter} onChange={setPriceFilter} accent="#1C64F2" />
-            </div>
-            <div>
-              <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
-                Min Rating
-                <Tooltip text="Only shows hotels at or above this Google rating. Applied before AI sees results." />
-              </label>
-              <ToggleGroup options={['Any', '4.0+', '4.5+'] as const} value={minRating} onChange={setMinRating} accent="#1C64F2" />
+          {/* Open Now chip */}
+          <div>
+            <button
+              type="button"
+              onClick={() => setOpenNow(v => !v)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold border-2 transition-all"
+              style={openNow
+                ? { borderColor: '#059669', background: '#ECFDF5', color: '#059669' }
+                : { borderColor: '#E5E7EB', background: '#fff', color: '#6B7280' }}
+            >
+              <span className={`w-2 h-2 rounded-full ${openNow ? 'bg-green-500' : 'bg-gray-300'}`} />
+              Open Now
+            </button>
+          </div>
+
+          {/* Price Range — amber style */}
+          <div>
+            <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
+              Price Range
+              <Tooltip text="Hard-filtered by Google Places price tier. ₹ = budget, ₹₹ = mid-range, ₹₹₹ = premium." />
+            </label>
+            <ToggleGroup options={['Any', '₹', '₹₹', '₹₹₹'] as const} value={priceFilter} onChange={setPriceFilter} accent="#D97706" />
+          </div>
+
+          {/* Min Rating — gold star style, visually distinct from price */}
+          <div>
+            <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
+              Min Rating
+              <Tooltip text="Only shows hotels at or above this Google rating." />
+            </label>
+            <div className="flex gap-1">
+              {(['Any', '4.0+', '4.5+'] as const).map(opt => (
+                <button key={opt} type="button" onClick={() => setMinRating(opt)}
+                  className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg text-[10px] font-bold border-2 transition-all"
+                  style={minRating === opt
+                    ? { borderColor: '#F59E0B', background: '#FFFBEB', color: '#92400E' }
+                    : { borderColor: '#E5E7EB', background: '#fff', color: '#6B7280' }}
+                >
+                  {opt !== 'Any' && <Star className="w-2.5 h-2.5 fill-current" />}
+                  {opt}
+                </button>
+              ))}
             </div>
           </div>
 
-          {/* ── Advanced toggle ─────────────────────────────────── */}
-          <button
-            type="button"
-            onClick={() => setHotelAdvOpen(v => !v)}
-            className="w-full flex items-center justify-between py-2 transition-opacity hover:opacity-80"
-          >
-            <span className="flex items-center gap-1.5">
-              <SlidersHorizontal className="w-3 h-3" style={{ color: '#1C64F2' }} />
-              <span className="text-[10px] font-black uppercase tracking-wide" style={{ color: '#1C64F2' }}>
-                Advanced filters
-              </span>
-              {(hotelTags.length + (hotelArea ? 1 : 0)) > 0 && (
-                <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full" style={{ background: '#1C64F2', color: '#fff' }}>
-                  {hotelTags.length + (hotelArea ? 1 : 0)}
-                </span>
-              )}
-            </span>
-            <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200`} style={{ color: '#1C64F2', transform: hotelAdvOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
-          </button>
-
-          <AnimatePresence>
-            {hotelAdvOpen && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.22, ease: 'easeInOut' }}
-                className="overflow-hidden"
-              >
-                <div className="space-y-3 pt-1 border-t border-border mt-1">
-                  <div className="pt-2">
-                    <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
-                      Preferences
-                      <Tooltip text="Select tags to personalise your results. Each tag refines the AI ranking — 2–3 tags gives the sharpest output." />
-                    </label>
-                    <TagGrid tags={HOTEL_TAGS} selected={hotelTags} onToggle={toggleHotelTag} accent="#1C64F2" />
-                  </div>
-
-                  <div>
-                    <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
-                      Visiting area
-                      <Tooltip text="We'll recommend hotels near your visiting place — so you spend less time commuting." />
-                    </label>
-                    <div className="relative">
-                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted" />
-                      <input type="text" placeholder="e.g. Lalbagh, MG Road, near airport…"
-                        value={hotelArea} onChange={e => setHotelArea(e.target.value)}
-                        className="w-full pl-9 pr-4 py-2 border border-border rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-brand-soft focus:border-brand transition-colors" />
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* Hotel preference tags — always visible */}
+          <div>
+            <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
+              Preferences
+              <Tooltip text="Each tag refines the AI ranking. 2–3 tags gives the sharpest result." />
+            </label>
+            <TagGrid tags={HOTEL_TAGS} selected={hotelTags} onToggle={toggleHotelTag} accent="#1C64F2" />
+          </div>
         </div>
       );
 
       /* ── Food ───────────────────────────────────────────────── */
       case 'Food': return (
         <div className="space-y-3">
+          {/* Open Now chip */}
           <div>
-            <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
-              Where are you right now?
-            </label>
-            <LocationBar value={foodLocation} onChange={setFoodLocation} placeholder="Area, street, or landmark…" autoDetect />
+            <button
+              type="button"
+              onClick={() => setOpenNow(v => !v)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold border-2 transition-all"
+              style={openNow
+                ? { borderColor: '#059669', background: '#ECFDF5', color: '#059669' }
+                : { borderColor: '#E5E7EB', background: '#fff', color: '#6B7280' }}
+            >
+              <span className={`w-2 h-2 rounded-full ${openNow ? 'bg-green-500' : 'bg-gray-300'}`} />
+              Open Now
+            </button>
           </div>
 
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
-                Price Range
-                <Tooltip text="Hard-filtered by Google Places price tier — inexpensive (₹), moderate (₹₹), or premium (₹₹₹)." />
-              </label>
-              <ToggleGroup options={['Any', '₹', '₹₹', '₹₹₹'] as const} value={priceFilter} onChange={setPriceFilter} accent="#1C64F2" />
-            </div>
-            <div>
-              <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
-                Diet
-                <Tooltip text="Veg filters places Google marks as servesVegetarianFood = true. Applied before AI ranking." />
-              </label>
-              <ToggleGroup options={['Any', 'Veg', 'Non-Veg'] as const} value={dietType} onChange={setDietType} accent="#1C64F2" />
-            </div>
-          </div>
+          {/* Price Range — amber */}
           <div>
             <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
-              Dining Mode
-              <Tooltip text="Filters by Google's actual dine-in or takeout availability flags. Applied before AI ranking." />
+              Price Range
+              <Tooltip text="Inexpensive (₹), moderate (₹₹), or premium (₹₹₹) — hard-filtered before AI sees results." />
             </label>
-            <ToggleGroup options={['Any', 'Dine-in', 'Takeout'] as const} value={dineMode} onChange={setDineMode} accent="#1C64F2" />
+            <ToggleGroup options={['Any', '₹', '₹₹', '₹₹₹'] as const} value={priceFilter} onChange={setPriceFilter} accent="#D97706" />
           </div>
 
-          {/* ── Advanced toggle ─────────────────────────────────── */}
-          <button
-            type="button"
-            onClick={() => setFoodAdvOpen(v => !v)}
-            className="w-full flex items-center justify-between py-2 transition-opacity hover:opacity-80"
-          >
-            <span className="flex items-center gap-1.5">
-              <SlidersHorizontal className="w-3 h-3" style={{ color: '#1C64F2' }} />
-              <span className="text-[10px] font-black uppercase tracking-wide" style={{ color: '#1C64F2' }}>
-                Advanced filters
-              </span>
-              {foodTags.length > 0 && (
-                <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full" style={{ background: '#1C64F2', color: '#fff' }}>
-                  {foodTags.length}
-                </span>
-              )}
-            </span>
-            <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200`} style={{ color: '#1C64F2', transform: foodAdvOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
-          </button>
+          {/* Diet — green */}
+          <div>
+            <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
+              Diet
+              <Tooltip text="Veg filters restaurants Google marks servesVegetarianFood = true." />
+            </label>
+            <ToggleGroup options={['Any', 'Veg', 'Non-Veg'] as const} value={dietType} onChange={setDietType} accent="#059669" />
+          </div>
 
-          <AnimatePresence>
-            {foodAdvOpen && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.22, ease: 'easeInOut' }}
-                className="overflow-hidden"
-              >
-                <div className="space-y-3 pt-1 border-t border-border mt-1">
-                  <div className="pt-2">
-                    <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
-                      Cuisine Tags
-                      <Tooltip text="Tag any cuisine that fits. The AI uses these as hints when ranking results." />
-                    </label>
-                    <TagGrid tags={FOOD_TAGS} selected={foodTags} onToggle={toggleFoodTag} accent="#1C64F2" />
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* Cuisine tags — always visible */}
+          <div>
+            <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
+              Cuisine
+              <Tooltip text="Tag any cuisine. The AI uses these as hints when ranking results." />
+            </label>
+            <TagGrid tags={FOOD_TAGS} selected={foodTags} onToggle={toggleFoodTag} accent="#D97706" />
+          </div>
         </div>
       );
 

@@ -3,7 +3,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 const PLACES_KEY = process.env.GOOGLE_PLACES_API_KEY ?? '';
 const GEMINI_KEY  = process.env.GEMINI_API_KEY ?? '';
 
-// photos excluded → stays in Advanced tier (not Enterprise), saves quota
+// All fields in Advanced tier — no Enterprise upgrade needed
 const FIELD_MASK = [
   'places.id',
   'places.displayName',
@@ -13,9 +13,22 @@ const FIELD_MASK = [
   'places.reviews',
   'places.priceLevel',
   'places.regularOpeningHours',
+  'places.currentOpeningHours',
   'places.types',
   'places.websiteUri',
   'places.googleMapsUri',
+  'places.businessStatus',
+  // Amenity booleans — hard-filter and Gemini signal
+  'places.servesVegetarianFood',
+  'places.dineIn',
+  'places.takeout',
+  'places.delivery',
+  'places.outdoorSeating',
+  'places.goodForGroups',
+  'places.goodForChildren',
+  'places.reservable',
+  'places.servesCoffee',
+  'places.parkingOptions',
 ].join(',');
 
 // Separate field mask when we need photo refs (Hotels / Food only)
@@ -95,12 +108,63 @@ async function fetchPlaces(query: string, searchSeed = 0, withPhotos = false) {
 }
 
 interface UserFilters {
-  hotelTags?:  string[];
-  hotelArea?:  string;
-  budget?:     number;
-  dietType?:   string;
-  foodBudget?: string;
-  diningVibe?: string;
+  hotelTags?:   string[];
+  hotelArea?:   string;
+  priceFilter?: string;   // 'Any' | '₹' | '₹₹' | '₹₹₹' — hard-filtered via priceLevel
+  minRating?:   number;   // 0 = any; hard-filtered via rating field
+  openNow?:     boolean;  // hard-filtered via openNow boolean from Places API
+  dietType?:    string;   // 'Any' | 'Veg' | 'Non-Veg' — hard-filtered via servesVegetarianFood
+  dineMode?:    string;   // 'Any' | 'Dine-in' | 'Takeout' — hard-filtered via dineIn/takeout
+}
+
+// Price level buckets — inclusive to avoid empty results on boundary cases
+const PRICE_BUCKETS: Record<string, string[]> = {
+  '₹':   ['PRICE_LEVEL_FREE', 'PRICE_LEVEL_INEXPENSIVE'],
+  '₹₹':  ['PRICE_LEVEL_INEXPENSIVE', 'PRICE_LEVEL_MODERATE'],
+  '₹₹₹': ['PRICE_LEVEL_MODERATE', 'PRICE_LEVEL_EXPENSIVE', 'PRICE_LEVEL_VERY_EXPENSIVE'],
+};
+
+// Hard filter applied BEFORE Gemini — guarantees results match user constraints
+function applyHardFilters(places: any[], tab: string, f: UserFilters): any[] {
+  let out = places;
+
+  // 1. Price level
+  if (f.priceFilter && f.priceFilter !== 'Any') {
+    const allowed = PRICE_BUCKETS[f.priceFilter] ?? [];
+    const n = out.filter(p => !p.priceLevel || allowed.includes(p.priceLevel));
+    if (n.length >= 2) out = n;
+  }
+
+  // 2. Minimum rating
+  if (f.minRating && f.minRating > 0) {
+    const n = out.filter(p => (p.rating ?? 0) >= (f.minRating ?? 0));
+    if (n.length >= 2) out = n;
+  }
+
+  // 2b. Open Now
+  if (f.openNow) {
+    const n = out.filter(p => p.regularOpeningHours?.openNow === true || p.currentOpeningHours?.openNow === true);
+    if (n.length >= 2) out = n;
+  }
+
+  // 3. Vegetarian (Food only) — uses Places servesVegetarianFood boolean
+  if (tab === 'Food' && f.dietType === 'Veg') {
+    const n = out.filter(p => p.servesVegetarianFood === true);
+    if (n.length >= 2) out = n;
+  }
+
+  // 4. Dining mode (Food only) — uses Places dineIn / takeout boolean
+  if (tab === 'Food') {
+    if (f.dineMode === 'Dine-in') {
+      const n = out.filter(p => p.dineIn === true);
+      if (n.length >= 2) out = n;
+    } else if (f.dineMode === 'Takeout') {
+      const n = out.filter(p => p.takeout === true);
+      if (n.length >= 2) out = n;
+    }
+  }
+
+  return out;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -150,7 +214,7 @@ async function geminiRankAndAnalyse(
       rating:       p.rating ?? 0,
       totalReviews: p.userRatingCount ?? 0,
       priceLevel:   p.priceLevel ?? 'PRICE_LEVEL_MODERATE',
-      openNow:      p.regularOpeningHours?.openNow ?? true,
+      openNow:      p.regularOpeningHours?.openNow ?? p.currentOpeningHours?.openNow ?? true,
       trendDelta:   recentAvg !== null ? +(recentAvg - (p.rating ?? 0)).toFixed(1) : 0,
       recentAvg,
       reviewDepth,
@@ -160,6 +224,15 @@ async function geminiRankAndAnalyse(
         text:  (r.text?.text ?? '').slice(0, 120),
         ago:   r.relativePublishTimeDescription ?? '',
       })),
+      // Amenity signals from Places API — helps Gemini give more relevant notes
+      servesVeg:   p.servesVegetarianFood ?? null,
+      dineIn:      p.dineIn               ?? null,
+      takeout:     p.takeout              ?? null,
+      outdoor:     p.outdoorSeating       ?? null,
+      goodGroups:  p.goodForGroups        ?? null,
+      parking:     p.parkingOptions?.freeParkingLot ? 'free' : p.parkingOptions?.paidParkingLot ? 'paid' : null,
+      coffee:      p.servesCoffee         ?? null,
+      reservable:  p.reservable           ?? null,
     };
   });
 
@@ -168,21 +241,22 @@ async function geminiRankAndAnalyse(
   const criteria: Criterion[] = [];
 
   if (tab === 'Hotels') {
-    if (filters.budget)
-      criteria.push({ label: 'Budget', value: `₹${filters.budget.toLocaleString()} total trip`, weight: 'critical' });
+    if (filters.priceFilter && filters.priceFilter !== 'Any')
+      criteria.push({ label: 'Price tier', value: filters.priceFilter, weight: 'important' });
+    if (filters.minRating && filters.minRating > 0)
+      criteria.push({ label: 'Min rating', value: `${filters.minRating}+`, weight: 'important' });
     if (filters.hotelTags?.length)
       criteria.push({ label: 'Required features', value: filters.hotelTags.join(', '), weight: 'critical' });
     if (filters.hotelArea)
       criteria.push({ label: 'Preferred area', value: `near ${filters.hotelArea}`, weight: 'important' });
-    // All Thanjavur hotel visitors implicitly want proximity to Big Temple
     criteria.push({ label: 'Implicit need', value: 'walkable or close to Brihadeeswarar Temple', weight: 'important' });
   } else if (tab === 'Food') {
-    if (filters.dietType)
+    if (filters.dietType && filters.dietType !== 'Any')
       criteria.push({ label: 'Diet', value: filters.dietType, weight: 'critical' });
-    if (filters.foodBudget)
-      criteria.push({ label: 'Spend level', value: filters.foodBudget, weight: 'important' });
-    if (filters.diningVibe)
-      criteria.push({ label: 'Dining vibe', value: filters.diningVibe, weight: 'important' });
+    if (filters.priceFilter && filters.priceFilter !== 'Any')
+      criteria.push({ label: 'Price tier', value: filters.priceFilter, weight: 'important' });
+    if (filters.dineMode && filters.dineMode !== 'Any')
+      criteria.push({ label: 'Dining mode', value: filters.dineMode, weight: 'important' });
     criteria.push({ label: 'Implicit need', value: 'authentic Thanjavur / Tamil cuisine', weight: 'nice-to-have' });
   }
 
@@ -230,6 +304,7 @@ TASK: Return a JSON array of EXACTLY ${places.length} items in RANKED ORDER (bes
   "rank": <1 = best match, integer>,
   "trendVerdict": "improving" | "declining" | "stable",
   "trendReason": "<max 12 words — MUST quote or closely paraphrase words from the actual review text provided>",
+  "reviewSummary": "<2 sentences — synthesise what reviewers most frequently praise about this place; use words or phrases from the actual review texts; lead with the strongest positive; do NOT mention ranking or visitor criteria>",
   "aiNote": "<max 18 words — personalised to THIS visitor's stated criteria — must reference at least one criterion>",
   "whyOverOthers": "<max 30 words — compare against the OTHER places in this exact list; cite specific numbers, unique features, or gaps the others have>",
   "bestFor": "<10 words — describe the ideal visitor type for this place>",
@@ -238,6 +313,7 @@ TASK: Return a JSON array of EXACTLY ${places.length} items in RANKED ORDER (bes
 
 QUALITY RULES:
 - trendReason must use words found in the review text, not invented
+- reviewSummary must sound like a concise summary of real visitor feedback, grounded in review text
 - aiNote must feel personal — "matches your Heritage + Pool request" not "popular with visitors"
 - whyOverOthers must name or describe the alternatives: "unlike the other hotels here, this one..."
 - caveat should only appear for real drawbacks (noise, distance, service issues from reviews)
@@ -266,6 +342,7 @@ Return ONLY valid JSON. No markdown fences. No explanation text.`;
       rank:          i + 1,
       trendVerdict:  'stable',
       trendReason:   'Consistently reviewed by recent visitors.',
+      reviewSummary: 'Well-rated by recent visitors in Thanjavur. Reviews highlight quality and value.',
       aiNote:        'Well-rated option for Thanjavur visitors.',
       whyOverOthers: 'Strong overall rating in the Thanjavur area.',
       bestFor:       'Visitors exploring Thanjavur.',
@@ -564,12 +641,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const searchSeed = parseInt((req.body?.searchSeed ?? '0') as string, 10);
 
   const filters: UserFilters = {
-    hotelTags:  req.body?.hotelTags  ?? [],
-    hotelArea:  req.body?.hotelArea  ?? '',
-    budget:     req.body?.budget     ?? 0,
-    dietType:   req.body?.dietType   ?? '',
-    foodBudget: req.body?.foodBudget ?? '',
-    diningVibe: req.body?.diningVibe ?? '',
+    hotelTags:   req.body?.hotelTags   ?? [],
+    hotelArea:   req.body?.hotelArea   ?? '',
+    priceFilter: req.body?.priceFilter ?? 'Any',
+    minRating:   Number(req.body?.minRating ?? 0),
+    openNow:     req.body?.openNow === true,
+    dietType:    req.body?.dietType    ?? 'Any',
+    dineMode:    req.body?.dineMode    ?? 'Any',
   };
 
   // Wire area filter directly into Places query — more precise results, same API cost
@@ -583,9 +661,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const rawPlaces = await fetchPlaces(query, searchSeed, true);
 
-    // Drop low-signal places before Gemini — saves tokens, improves result quality
-    const qualified    = rawPlaces.filter(p => (p.rating ?? 0) >= 3.8 && (p.userRatingCount ?? 0) >= 10);
-    const placesToRank = qualified.length >= 3 ? qualified : rawPlaces;
+    // Hard filter first — guarantees results match user constraints (price, veg, dine mode)
+    const hardFiltered = applyHardFilters(rawPlaces, tab, filters);
+
+    // Then drop low-signal places — saves Gemini tokens, improves ranking quality
+    const qualified    = hardFiltered.filter(p => (p.rating ?? 0) >= 3.8 && (p.userRatingCount ?? 0) >= 10);
+    const placesToRank = qualified.length >= 2 ? qualified : hardFiltered;
 
     // Gemini ranks all places comparatively and returns them in best-first order
     const rankedAi = await geminiRankAndAnalyse(placesToRank, tab, filters);
@@ -597,10 +678,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const results = reorderedPlaces.map((p: any, i: number) => {
       const ai = sorted[i] ?? {};
 
-      // Show longest reviews in the UI — more useful than the first 3
+      // Show up to 5 reviews (Places API Advanced limit), longest first — detail = trust
       const uiReviews = [...(p.reviews ?? [])]
         .sort((a, b) => (b.text?.text?.length ?? 0) - (a.text?.text?.length ?? 0))
-        .slice(0, 3)
+        .slice(0, 5)
         .map((r: any) => ({
           text:     r.text?.text ?? '',
           author:   r.authorAttribution?.displayName ?? 'Visitor',
@@ -621,6 +702,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         tags:        (p.types ?? []).slice(0, 5).map((t: string) =>
                        t.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())
                      ),
+        reviewSummary: ai.reviewSummary ?? '',
         aiNote:       ai.aiNote       ?? 'Popular with Thanjavur visitors.',
         trendVerdict: ai.trendVerdict ?? 'stable',
         trendReason:  ai.trendReason  ?? 'Consistently reviewed by visitors.',

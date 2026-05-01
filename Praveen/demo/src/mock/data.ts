@@ -23,6 +23,7 @@ export interface PlaceResult {
   priceLevel: '₹' | '₹₹' | '₹₹₹' | '₹₹₹₹' | 'Free';
   openNow: boolean;
   tags: string[];
+  reviewSummary?: string;
   aiNote: string;
   trendVerdict?: 'improving' | 'declining' | 'stable';
   trendReason?: string;

@@ -152,6 +152,7 @@ export default function App() {
           hotelArea:   filters.hotelArea,
           priceFilter: filters.priceFilter,
           minRating:   filters.minRating === '4.5+' ? 4.5 : filters.minRating === '4.0+' ? 4.0 : 0,
+          openNow:     filters.openNow,
           dietType:    filters.dietType,
           dineMode:    filters.dineMode,
         });
@@ -224,7 +225,7 @@ export default function App() {
     const filters: DashboardFilters = {
       tab: 'Explore', destination: searchLocation,
       startDate: '', endDate: '', numPeople: 2, budget: 0,
-      hotelTags: [], hotelArea: '', priceFilter: 'Any', minRating: 'Any',
+      hotelTags: [], hotelArea: '', priceFilter: 'Any', minRating: 'Any', openNow: false,
       foodLocation: '', foodTags: [], dietType: 'Any', dineMode: 'Any',
       itinDate: '', startPoint: '', startTime: '09:00',
       exploreTarget: target, visitTime: 'Morning',
@@ -346,7 +347,7 @@ export default function App() {
                   lastSearchFilters ?? {
                     tab: activeTab, destination: 'Thanjavur',
                     startDate: '', endDate: '', numPeople: 2, budget: 0,
-                    hotelTags: [], hotelArea: '', priceFilter: 'Any', minRating: 'Any',
+                    hotelTags: [], hotelArea: '', priceFilter: 'Any', minRating: 'Any', openNow: false,
                     foodLocation: '', foodTags: [], dietType: 'Any', dineMode: 'Any',
                     itinDate: '', startPoint: '', startTime: '09:00',
                     exploreTarget: 'Brihadeeswarar Temple', visitTime: 'Morning',
