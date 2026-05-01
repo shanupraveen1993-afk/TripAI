@@ -136,9 +136,16 @@ export default function App() {
         if (guide) setLiveExplore(guide);
         else setApiError(true);
       } else if (filters.tab === 'Itinerary') {
-        const stops = await fetchItinerary(filters.startTime, seed);
-        if (stops.length > 0) { setLiveItinerary(stops); setItineraryGenCount(c => c + 1); }
-        else setApiError(true);
+        if (itineraryGenCount === 0) {
+          // First visit: show Thanjavur preset instantly — no API call
+          setLiveItinerary(null);          // null → falls back to MOCK_ITINERARY (Thanjavur preset)
+          setItineraryGenCount(1);
+        } else {
+          // "Try different" or second+ search: generate a fresh plan via AI
+          const stops = await fetchItinerary(filters.startTime, seed);
+          if (stops.length > 0) { setLiveItinerary(stops); setItineraryGenCount(c => c + 1); }
+          else setApiError(true);
+        }
       } else {
         const results = await fetchPlan(filters.tab, seed, {
           hotelTags:   filters.hotelTags,
