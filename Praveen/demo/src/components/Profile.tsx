@@ -8,6 +8,7 @@ interface ProfileProps {
   tripCount: number;
   aiCount: number;
   onLogout: () => void;
+  onSavedPlaces?: () => void;
 }
 
 function TravelBadge({ count }: { count: number }) {
@@ -28,7 +29,7 @@ const MENU_ITEMS = [
   { icon: <Bell className="w-4 h-4" />, label: 'Notifications', desc: 'Trip reminders and updates' },
 ];
 
-export function Profile({ user, tripCount, aiCount, onLogout }: ProfileProps) {
+export function Profile({ user, tripCount, aiCount, onLogout, onSavedPlaces }: ProfileProps) {
   const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
   return (
@@ -96,6 +97,7 @@ export function Profile({ user, tripCount, aiCount, onLogout }: ProfileProps) {
         {MENU_ITEMS.map((item, i) => (
           <button
             key={item.label}
+            onClick={item.label === 'Saved Places' ? onSavedPlaces : undefined}
             className={[
               'w-full flex items-center gap-3 px-4 py-4 text-sm text-left hover:bg-bg-app transition-colors group',
               i > 0 ? 'border-t border-border' : '',

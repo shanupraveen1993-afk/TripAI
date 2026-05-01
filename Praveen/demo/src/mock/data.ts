@@ -27,6 +27,8 @@ export interface PlaceResult {
   trendVerdict?: 'improving' | 'declining' | 'stable';
   trendReason?: string;
   photoRef?: string | null;
+  websiteUri?: string | null;
+  googleMapsUri?: string | null;
   reviews: ReviewItem[];
   photoColor: string;
   aiDetail: AiDetail;

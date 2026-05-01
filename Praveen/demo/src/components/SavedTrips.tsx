@@ -27,14 +27,14 @@ const TAB_ICONS: Record<Tab, React.ReactNode> = {
   Hotels:    <Hotel        className="w-5 h-5" />,
   Food:      <Utensils     className="w-5 h-5" />,
   Itinerary: <Route        className="w-5 h-5" />,
-  Temples:   <LandmarkIcon className="w-5 h-5" />,
+  Explore:   <LandmarkIcon className="w-5 h-5" />,
 };
 
 const TAB_COLORS: Record<Tab, string> = {
   Hotels:    'bg-accent-soft text-accent border-accent/20',
   Food:      'bg-warning-soft text-warning border-warning-medium/30',
   Itinerary: 'bg-success-soft text-success border-success-medium/30',
-  Temples:   'bg-vibe-soft text-vibe border-vibe/20',
+  Explore:   'bg-vibe-soft text-vibe border-vibe/20',
 };
 
 function TripCard({ trip, onDelete, onView }: { trip: SavedTrip; onDelete: () => void; onView: () => void }) {
