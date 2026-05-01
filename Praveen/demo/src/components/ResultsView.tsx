@@ -3,12 +3,14 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   ArrowLeft, Star, MapPin, Clock, Navigation, Share2,
   ChevronRight, ChevronDown, Sparkles, Info, RefreshCw, Bookmark, BookmarkCheck,
-  Utensils, Compass, CheckCircle, AlertTriangle, RotateCcw, Hotel, Route,
+  Utensils, LandmarkIcon, CheckCircle, AlertTriangle, RotateCcw, Hotel, Route,
+  TrendingUp, TrendingDown, Minus, ImageIcon,
 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Badge } from './ui/Badge';
 import { Tab } from './ui/Tabs';
 import { PlaceResult, ItineraryStop, ExploreResult, TrafficLevel, ReviewItem } from '../mock/data';
+import { fetchPhoto } from '../api/client';
 import { useToast } from './ui/Toast';
 
 interface ResultsViewProps {
@@ -16,8 +18,10 @@ interface ResultsViewProps {
   destination: string;
   hotels?: PlaceResult[];
   food?: PlaceResult[];
+  temples?: PlaceResult[];
   itinerary?: ItineraryStop[];
   explore?: ExploreResult;
+  apiError?: boolean;
   onBack: () => void;
   onRegenerate: () => void;
   onSave: () => void;
@@ -47,12 +51,44 @@ const TRAFFIC_BADGE: Record<TrafficLevel, { bg: string; text: string; dot: strin
   Heavy:    { bg: 'bg-red-50',    text: 'text-red-700',    dot: 'bg-red-500',    border: 'border-red-200'   },
 };
 
-function PlacePhoto({ color, name }: { color: string; name: string }) {
+function PlacePhoto({ color, name, photoRef }: { color: string; name: string; photoRef?: string | null }) {
+  const [photoUri, setPhotoUri] = useState<string | null>(null);
+  const [loading,  setLoading]  = useState(false);
+
+  const loadPhoto = async () => {
+    if (!photoRef || loading || photoUri) return;
+    setLoading(true);
+    const uri = await fetchPhoto(photoRef);
+    setPhotoUri(uri);
+    setLoading(false);
+  };
+
+  if (photoUri) {
+    return (
+      <div className="w-full h-28 rounded-t-xl overflow-hidden">
+        <img src={photoUri} alt={name} className="w-full h-full object-cover" />
+      </div>
+    );
+  }
+
   return (
-    <div className={`w-full h-28 rounded-t-xl ${color} flex items-center justify-center overflow-hidden`}>
+    <div className={`w-full h-28 rounded-t-xl ${color} flex items-center justify-center overflow-hidden relative`}>
       <span className="text-3xl font-display font-black text-white/40 uppercase tracking-widest">
         {name.charAt(0)}
       </span>
+      {photoRef && (
+        <button
+          onClick={loadPhoto}
+          disabled={loading}
+          className="absolute bottom-2 right-2 flex items-center gap-1 bg-white/80 hover:bg-white text-xs font-semibold px-2 py-1 rounded-lg shadow transition-all"
+        >
+          {loading
+            ? <span className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
+            : <ImageIcon className="w-3 h-3" />
+          }
+          {loading ? 'Loading…' : 'Show Photo'}
+        </button>
+      )}
     </div>
   );
 }
@@ -122,7 +158,7 @@ function PlaceCard({ place, tab, rank = 0 }: { place: PlaceResult; tab: Tab; ran
       className="bg-surface border border-card-border rounded-xl overflow-hidden shadow-sm card-hover"
     >
       <div className="relative">
-        <PlacePhoto color={place.photoColor} name={place.name} />
+        <PlacePhoto color={place.photoColor} name={place.name} photoRef={place.photoRef} />
         {rank === 1 && (
           <div className="absolute top-2 left-2 flex items-center gap-1.5 bg-brand px-2.5 py-1 rounded-lg shadow-sm">
             <Sparkles className="w-3 h-3 text-white" />
@@ -181,6 +217,32 @@ function PlaceCard({ place, tab, rank = 0 }: { place: PlaceResult; tab: Tab; ran
           </div>
           <p className="text-[11px] text-body leading-relaxed italic">"{place.aiNote}"</p>
         </div>
+
+        {/* Gemini Trend Badge */}
+        {place.trendVerdict && (
+          <div className={`flex items-start gap-2 rounded-lg px-3 py-2 border ${
+            place.trendVerdict === 'improving' ? 'bg-green-50 border-green-200' :
+            place.trendVerdict === 'declining' ? 'bg-amber-50 border-amber-200' :
+                                                 'bg-gray-50 border-gray-200'
+          }`}>
+            {place.trendVerdict === 'improving'
+              ? <TrendingUp  className="w-3.5 h-3.5 text-green-600 shrink-0 mt-0.5" />
+              : place.trendVerdict === 'declining'
+              ? <TrendingDown className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
+              : <Minus       className="w-3.5 h-3.5 text-gray-500 shrink-0 mt-0.5"  />
+            }
+            <div>
+              <span className={`text-[10px] font-black uppercase tracking-wide ${
+                place.trendVerdict === 'improving' ? 'text-green-700' :
+                place.trendVerdict === 'declining' ? 'text-amber-700' : 'text-gray-600'
+              }`}>
+                {place.trendVerdict === 'improving' ? 'Trending up lately' :
+                 place.trendVerdict === 'declining' ? 'Mixed recent reviews' : 'Consistently rated'}
+              </span>
+              <p className="text-[10px] text-body mt-0.5">{place.trendReason}</p>
+            </div>
+          </div>
+        )}
 
         {/* Reviews accordion — social proof first */}
         <button
@@ -331,7 +393,7 @@ function PlaceCard({ place, tab, rank = 0 }: { place: PlaceResult; tab: Tab; ran
                               title="AI overview"
                               className={`p-1 rounded-lg transition-colors ${openAiRow === i ? 'bg-brand text-white' : 'text-muted hover:text-brand hover:bg-brand-softer'}`}
                             >
-                              <Compass className="w-3 h-3" />
+                              <Sparkles className="w-3 h-3" />
                             </button>
                           </div>
                         </motion.div>
@@ -695,12 +757,12 @@ function ExploreView({ place }: { place: ExploreResult }) {
 }
 
 export function ResultsView({
-  tab, destination, hotels, food, itinerary, explore,
+  tab, destination, hotels, food, temples = [], itinerary, explore, apiError,
   onBack, onRegenerate, onSave, saved = false, onSwitchTab,
 }: ResultsViewProps) {
   const { toast } = useToast();
-  const results = tab === 'Hotels' ? hotels : tab === 'Food' ? food : [];
-  const count = tab === 'Itinerary' ? itinerary?.length : tab === 'Explore' ? 1 : results?.length;
+  const results = tab === 'Hotels' ? hotels : tab === 'Food' ? food : tab === 'Temples' ? temples : [];
+  const count = tab === 'Itinerary' ? itinerary?.length : results?.length;
 
   const handleSave = () => { onSave(); toast('Plan saved — find it under Trips.', 'success'); };
 
@@ -717,13 +779,21 @@ export function ResultsView({
         </span>
       </div>
 
+      {/* API Error banner */}
+      {apiError && (
+        <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 flex items-center gap-2 text-sm text-amber-700">
+          <AlertTriangle className="w-4 h-4 shrink-0" />
+          <span>Showing sample data — API keys not yet configured. Results will be real once you add your keys.</span>
+        </div>
+      )}
+
       {/* Results */}
-      <div className={tab === 'Hotels' || tab === 'Food' ? 'flex flex-col gap-5 mb-5' : 'space-y-4 mb-5'}>
-        {(tab === 'Hotels' || tab === 'Food') && results?.map((p, idx) => (
+      <div className={tab === 'Hotels' || tab === 'Food' || tab === 'Temples' ? 'flex flex-col gap-5 mb-5' : 'space-y-4 mb-5'}>
+        {(tab === 'Hotels' || tab === 'Food' || tab === 'Temples') && results?.map((p, idx) => (
           <PlaceCard key={p.id} place={p} tab={tab} rank={idx + 1} />
         ))}
         {tab === 'Itinerary' && itinerary && <ItineraryView stops={itinerary} onRegenerate={onRegenerate} />}
-        {tab === 'Explore' && explore && <ExploreView place={explore} />}
+        {explore && tab !== 'Hotels' && tab !== 'Food' && tab !== 'Temples' && tab !== 'Itinerary' && <ExploreView place={explore} />}
       </div>
 
       {/* Actions */}
@@ -765,7 +835,7 @@ export function ResultsView({
                 <Utensils className="w-3.5 h-3.5" /> Find food
               </button>
             </>}
-            {tab === 'Explore' && <>
+            {tab === 'Temples' && <>
               <button onClick={() => onSwitchTab('Itinerary')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-blue-50 transition-colors">
                 <Route className="w-3.5 h-3.5" /> Plan a full day
               </button>

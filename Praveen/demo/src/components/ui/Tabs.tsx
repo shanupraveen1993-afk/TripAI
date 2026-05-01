@@ -1,16 +1,16 @@
 import React from 'react';
-import { Hotel, Utensils, Route, Compass } from 'lucide-react';
+import { Hotel, Utensils, Route, LandmarkIcon } from 'lucide-react';
 
-export type Tab = 'Hotels' | 'Food' | 'Itinerary' | 'Explore';
+export type Tab = 'Hotels' | 'Food' | 'Itinerary' | 'Temples';
 
 const TAB_ICONS: Record<Tab, React.ReactNode> = {
-  Hotels:    <Hotel className="w-4 h-4" />,
-  Food:      <Utensils className="w-4 h-4" />,
-  Itinerary: <Route className="w-4 h-4" />,
-  Explore:   <Compass className="w-4 h-4" />,
+  Hotels:    <Hotel        className="w-4 h-4" />,
+  Food:      <Utensils     className="w-4 h-4" />,
+  Itinerary: <Route        className="w-4 h-4" />,
+  Temples:   <LandmarkIcon className="w-4 h-4" />,
 };
 
-export const TABS: Tab[] = ['Hotels', 'Food', 'Itinerary', 'Explore'];
+export const TABS: Tab[] = ['Hotels', 'Food', 'Itinerary', 'Temples'];
 
 interface TabBarProps {
   active: Tab;

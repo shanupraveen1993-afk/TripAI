@@ -437,7 +437,7 @@ const CATEGORIES: { label: Tab; desc: string; glow: string; illustration: React.
   { label: 'Hotels',    glow: '#3B82F6', illustration: <HotelScene />,   desc: 'Not 150 unfiltered options. AI-ranked picks by budget, area, and what you care about — applied before you see a single result.' },
   { label: 'Food',      glow: '#F59E0B', illustration: <FoodScene />,    desc: 'Worth the queue or skip it? Diet, vibe, and distance — filtered before you open another app.' },
   { label: 'Itinerary', glow: '#8B5CF6', illustration: <ItinScene />,    desc: 'Your whole day, no backtracking. Stops sequenced around your hotel — so you\'re not zigzagging across the city like a tourist.' },
-  { label: 'Explore',   glow: '#10B981', illustration: <ExploreScene />, desc: 'The spots Google Maps buries. Entry costs, best visit times, crowd flow — before you show up and figure it out the hard way.' },
+  { label: 'Temples',   glow: '#10B981', illustration: <ExploreScene />, desc: 'Brihadeeswarar to Airavatesvara. Entry times, dress code, crowd patterns — so you don\'t figure it out after the 2km walk.' },
 ];
 
 /* ══════════════════════════════════════════════════════════════════════

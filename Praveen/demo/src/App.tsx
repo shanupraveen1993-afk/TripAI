@@ -14,7 +14,9 @@ import { Button } from './components/ui/Button';
 import { Tab } from './components/ui/Tabs';
 import {
   MOCK_HOTELS, MOCK_FOOD, MOCK_ITINERARY, MOCK_EXPLORE,
+  PlaceResult,
 } from './mock/data';
+import { fetchPlan, PlanResult } from './api/client';
 
 type AppScreen = 'landing' | 'browse' | 'app';
 type ContentScreen = 'dashboard' | 'loading' | 'results';
@@ -28,7 +30,9 @@ export default function App() {
   const [mainSection, setMainSection] = useState<MainSection>('home');
   const [contentScreen, setContent]   = useState<ContentScreen>('dashboard');
   const [user, setUser]               = useState<User | null>(null);
-  const [searchLocation, setSearchLocation] = useState('Bangalore');
+  const [searchLocation, setSearchLocation] = useState('Thanjavur');
+  const [liveResults, setLiveResults]       = useState<PlanResult[] | null>(null);
+  const [apiError, setApiError]             = useState(false);
   const [activeTab, setActiveTab]     = useState<Tab>('Hotels');
   const [initialTab, setInitialTab]   = useState<Tab | undefined>(undefined);
   const [savedTrips, setSavedTrips]   = useState<SavedTrip[]>([]);
@@ -86,11 +90,18 @@ export default function App() {
   // ── Core search logic ───────────────────────────────────────────────────
   const runSearch = async (filters: DashboardFilters) => {
     setActiveTab(filters.tab);
-    setSearchLocation(filters.destination);
+    setSearchLocation('Thanjavur');
     setLastSearchFilters(filters);
     setContent('loading');
     setIsSaved(false);
-    await sleep(1800);
+    setLiveResults(null);
+    setApiError(false);
+    try {
+      const results = await fetchPlan(filters.tab);
+      setLiveResults(results);
+    } catch {
+      setApiError(true);
+    }
     setAiCount(c => c + 1);
     setContent('results');
     // auto-log to history
@@ -225,13 +236,15 @@ export default function App() {
           <motion.div key="results" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
             <ResultsView
               tab={activeTab}
-              destination={searchLocation}
-              hotels={MOCK_HOTELS}
-              food={MOCK_FOOD}
+              destination="Thanjavur"
+              hotels={activeTab === 'Hotels'    ? (liveResults as PlaceResult[] ?? MOCK_HOTELS) : MOCK_HOTELS}
+              food={activeTab === 'Food'         ? (liveResults as PlaceResult[] ?? MOCK_FOOD)   : MOCK_FOOD}
+              temples={activeTab === 'Temples'   ? (liveResults as PlaceResult[] ?? [])          : []}
               itinerary={MOCK_ITINERARY}
               explore={MOCK_EXPLORE}
+              apiError={apiError}
               onBack={() => setContent('dashboard')}
-              onRegenerate={() => { setContent('loading'); sleep(1500).then(() => setContent('results')); }}
+              onRegenerate={() => { setLiveResults(null); setContent('loading'); runSearch(lastSearchFilters ?? { tab: activeTab, destination: 'Thanjavur', startDate: '', endDate: '', numPeople: 2, budget: 5000, hotelTags: [], hotelArea: '', foodLocation: '', foodTags: [], foodBudget: 'Medium', dietType: 'Veg', diningVibe: 'Family', itinDate: '', startPoint: '', startTime: '09:00', exploreTarget: '', visitTime: '' }); }}
               onSave={handleSave}
               saved={isSaved}
               onSwitchTab={tab => { setInitialTab(tab); setActiveTab(tab); setContent('dashboard'); }}

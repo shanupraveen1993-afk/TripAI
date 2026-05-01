@@ -24,6 +24,9 @@ export interface PlaceResult {
   openNow: boolean;
   tags: string[];
   aiNote: string;
+  trendVerdict?: 'improving' | 'declining' | 'stable';
+  trendReason?: string;
+  photoRef?: string | null;
   reviews: ReviewItem[];
   photoColor: string;
   aiDetail: AiDetail;

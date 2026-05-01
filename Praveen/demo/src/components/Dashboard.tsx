@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Search, Info, ChevronDown, Sparkles, MapPin, Navigation, X,
-  Hotel, Utensils, Route, Compass, Flame, Zap, Clock, SlidersHorizontal,
+  Hotel, Utensils, Route, LandmarkIcon, Flame, Zap, Clock, SlidersHorizontal,
 } from 'lucide-react';
 import { Tab } from './ui/Tabs';
 
@@ -24,59 +24,60 @@ const TAB_META: Record<Tab, {
   trending: string[];
 }> = {
   Hotels: {
-    icon:        <Hotel    className="w-4 h-4" />,
-    bigIcon:     <Hotel    className="w-6 h-6" />,
+    icon:        <Hotel        className="w-4 h-4" />,
+    bigIcon:     <Hotel        className="w-6 h-6" />,
     accent:      '#1C64F2',
     accentBg:    '#EBF5FF',
     accentBorder:'#1C64F2',
     accentSoft:  '#1C64F215',
     label:       'Hotels',
-    headline:    'What\'s the best hotel here for you?',
-    sub:         'AI ranks every option by budget, area, and what you actually care about.',
-    trending:    ['Budget stays', 'Rooftop pool', 'Heritage hotels', 'Near airport', 'Business hotels', 'Sea view rooms'],
+    headline:    'Best hotel in Thanjavur for you?',
+    sub:         'AI ranks by budget, distance to the Big Temple, and what reviewers actually say.',
+    trending:    ['Near Big Temple', 'Budget stays', 'Heritage hotels', 'Temple Nearby', 'Family rooms', 'AC rooms'],
   },
   Food: {
-    icon:        <Utensils className="w-4 h-4" />,
-    bigIcon:     <Utensils className="w-6 h-6" />,
+    icon:        <Utensils     className="w-4 h-4" />,
+    bigIcon:     <Utensils     className="w-6 h-6" />,
     accent:      '#D97706',
     accentBg:    '#FFFBEB',
     accentBorder:'#D97706',
     accentSoft:  '#D9770615',
     label:       'Food',
-    headline:    'What\'s actually worth eating here?',
-    sub:         'Diet, vibe, distance — filtered in before you see a result. Not after.',
-    trending:    ['Biryani spots', 'Rooftop dining', 'Pure veg', 'Street food', 'Seafood', 'Craft beer bars'],
+    headline:    'What\'s worth eating in Thanjavur?',
+    sub:         'Authentic Chola-era cuisine, filter coffee, and local thali — ranked before you see them.',
+    trending:    ['Thanjavur thali', 'Filter coffee', 'Pure veg', 'South Indian', 'Street food', 'Biryani spots'],
   },
   Itinerary: {
-    icon:        <Route    className="w-4 h-4" />,
-    bigIcon:     <Route    className="w-6 h-6" />,
+    icon:        <Route        className="w-4 h-4" />,
+    bigIcon:     <Route        className="w-6 h-6" />,
     accent:      '#7C3AED',
     accentBg:    '#F5F3FF',
     accentBorder:'#7C3AED',
     accentSoft:  '#7C3AED15',
     label:       'Itinerary',
-    headline:    'Build a day that doesn\'t waste yours.',
-    sub:         'AI routes your stops around your hotel — less commuting, more actually being there.',
-    trending:    ['Family day out', 'Couple getaway', 'Solo explorer', 'Heritage walk', '1-day plan', 'Hidden gems'],
+    headline:    'Your perfect day in Thanjavur.',
+    sub:         'Big Temple → Palace → Art Gallery → Saraswathi Mahal — timed so you don\'t miss anything.',
+    trending:    ['Big Temple morning', 'Full day heritage', 'Family outing', 'Couple getaway', '1-day plan', 'Photography walk'],
   },
-  Explore: {
-    icon:        <Compass  className="w-4 h-4" />,
-    bigIcon:     <Compass  className="w-6 h-6" />,
+  Temples: {
+    icon:        <LandmarkIcon className="w-4 h-4" />,
+    bigIcon:     <LandmarkIcon className="w-6 h-6" />,
     accent:      '#059669',
     accentBg:    '#ECFDF5',
     accentBorder:'#059669',
     accentSoft:  '#05966915',
-    label:       'Explore',
-    headline:    'What\'s actually worth your time here?',
-    sub:         'Entry costs, crowd times, what to skip — so you don\'t figure it out after walking 2km.',
-    trending:    ['Monuments', 'Nature spots', 'Night markets', 'Art galleries', 'Adventure parks', 'Viewpoints'],
+    label:       'Temples',
+    headline:    'Thanjavur\'s sacred temples, ranked.',
+    sub:         'Brihadeeswarar, Gangaikonda, Airavatesvara — entry times, crowd info, and what to know before you go.',
+    trending:    ['Brihadeeswarar Temple', 'Gangaikonda Cholapuram', 'Airavatesvara Temple', 'Dress code info', 'Best visit time', 'Photography spots'],
   },
 };
 
-const TABS: Tab[] = ['Hotels', 'Food', 'Itinerary', 'Explore'];
+const TABS: Tab[] = ['Hotels', 'Food', 'Itinerary', 'Temples'];
 
 /* ── Dynamic popular spots per destination ───────────────────────────── */
 const DESTINATION_SPOTS: Record<string, string[]> = {
+  thanjavur: ['Brihadeeswarar Temple', 'Royal Palace Museum', 'Saraswathi Mahal Library', 'Thanjavur Art Gallery', 'Vijayanagara Fort', 'Gangaikonda Cholapuram', 'Airavatesvara Temple', 'River Kaveri'],
   bangalore: ['Lalbagh Botanical Garden', 'Cubbon Park', 'Vidhana Soudha', 'Bangalore Palace', 'ISKCON Temple', 'Commercial Street', 'Nandi Hills', 'Bull Temple'],
   paris:     ['Eiffel Tower', 'Louvre Museum', 'Notre-Dame Cathedral', 'Champs-Élysées', 'Musée d\'Orsay', 'Sacré-Cœur', 'Versailles', 'Seine River Cruise'],
   mumbai:    ['Gateway of India', 'Marine Drive', 'Elephanta Caves', 'Bandra-Worli Sea Link', 'Chhatrapati Shivaji Museum', 'Juhu Beach', 'Siddhivinayak Temple', 'Dharavi'],
@@ -112,21 +113,21 @@ const FOOD_TAGS = [
 
 /* ── Quick presets ───────────────────────────────────────────────────── */
 const QUICK_PRESETS: Array<{ label: string; emoji: string; tab: Tab }> = [
-  { label: 'Weekend trip',   emoji: '🏖️', tab: 'Hotels' },
-  { label: 'Business stay',  emoji: '💼', tab: 'Hotels' },
-  { label: 'Family outing',  emoji: '👨‍👩‍👧', tab: 'Itinerary' },
-  { label: 'Best eats',      emoji: '🍽️', tab: 'Food' },
-  { label: 'Plan my day',    emoji: '🗺️', tab: 'Itinerary' },
+  { label: 'Near Big Temple', emoji: '🛕', tab: 'Hotels' },
+  { label: 'Local thali',     emoji: '🍛', tab: 'Food' },
+  { label: 'Plan my day',     emoji: '🗺️', tab: 'Itinerary' },
+  { label: 'Find temples',    emoji: '🏛️', tab: 'Temples' },
+  { label: 'Filter coffee',   emoji: '☕', tab: 'Food' },
 ];
 
 /* ── Destination inspiration cards ──────────────────────────────────── */
 const INSPIRATION_CITIES = [
-  { city: 'Goa',          emoji: '🌊', hook: 'Beaches & night vibes',    grad: 'linear-gradient(135deg,#3B82F6,#06B6D4)' },
-  { city: 'Jaipur',       emoji: '🏰', hook: 'Forts, food & royalty',    grad: 'linear-gradient(135deg,#F59E0B,#EF4444)' },
-  { city: 'Manali',       emoji: '⛰️', hook: 'Snow, silence & pine',     grad: 'linear-gradient(135deg,#6366F1,#3B82F6)' },
-  { city: 'Coorg',        emoji: '🌿', hook: 'Coffee, mist & calm',      grad: 'linear-gradient(135deg,#059669,#10B981)' },
-  { city: 'Pondicherry',  emoji: '🛵', hook: 'French quarter & beaches', grad: 'linear-gradient(135deg,#D97706,#F59E0B)' },
-  { city: 'Mysuru',       emoji: '🪔', hook: 'Palaces & filter coffee',  grad: 'linear-gradient(135deg,#7C3AED,#A78BFA)' },
+  { city: 'Big Temple',      emoji: '🛕', hook: 'UNESCO · Chola masterpiece', grad: 'linear-gradient(135deg,#D97706,#F59E0B)' },
+  { city: 'Royal Palace',    emoji: '🏰', hook: 'Maratha history & art',      grad: 'linear-gradient(135deg,#7C3AED,#A78BFA)' },
+  { city: 'Saraswathi Mahal',emoji: '📚', hook: '60,000 rare manuscripts',    grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)' },
+  { city: 'Kumbakonam',      emoji: '🌊', hook: 'Temple tanks & ghats',       grad: 'linear-gradient(135deg,#059669,#10B981)' },
+  { city: 'Gangaikonda',     emoji: '🏛️', hook: 'Hidden Chola capital',       grad: 'linear-gradient(135deg,#6366F1,#3B82F6)' },
+  { city: 'Darasuram',       emoji: '🪔', hook: 'Airavatesvara Temple',       grad: 'linear-gradient(135deg,#EF4444,#F97316)' },
 ];
 
 /* ── Quick search override type ─────────────────────────────────────── */
@@ -151,11 +152,19 @@ interface SmartPick {
 }
 
 const SMART_PICKS: Record<string, SmartPick[]> = {
+  thanjavur: [
+    { label: 'Near Big Temple',    sub: 'Hotels · Best location', emoji: '🛕', grad: 'linear-gradient(135deg,#D97706,#F59E0B)', overrides: { tab: 'Hotels',    hotelTags: ['Temple Nearby'] } },
+    { label: 'Thanjavur thali',    sub: 'Food · Authentic',       emoji: '🍛', grad: 'linear-gradient(135deg,#EF4444,#F97316)', overrides: { tab: 'Food',      foodTags: ['Thali', 'South Indian'] } },
+    { label: 'Brihadeeswarar',     sub: 'Temples · UNESCO site',  emoji: '🏛️', grad: 'linear-gradient(135deg,#7C3AED,#A78BFA)', overrides: { tab: 'Temples' } },
+    { label: '1-day Thanjavur',    sub: 'Itinerary · AI routed',  emoji: '🗺️', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', overrides: { tab: 'Itinerary' } },
+    { label: 'Budget stays',       sub: 'Hotels · Best value',    emoji: '💰', grad: 'linear-gradient(135deg,#059669,#10B981)', overrides: { tab: 'Hotels',    budget: 3000, hotelTags: ['Budget Friendly'] } },
+    { label: 'Filter coffee spots',sub: 'Food · Local cafes',     emoji: '☕', grad: 'linear-gradient(135deg,#6366F1,#A78BFA)', overrides: { tab: 'Food',      foodTags: ['Cafe'] } },
+  ],
   bangalore: [
     { label: 'Best coffee & cafes',  sub: 'Quick · Near you',     emoji: '☕', grad: 'linear-gradient(135deg,#6366F1,#A78BFA)', overrides: { tab: 'Food',      foodTags: ['Cafe'] } },
     { label: 'Heritage stays',        sub: 'Hotels · Curated',    emoji: '🏛️', grad: 'linear-gradient(135deg,#D97706,#F59E0B)', overrides: { tab: 'Hotels',    hotelTags: ['Heritage'] } },
     { label: 'Plan my Bangalore day', sub: 'Full day · AI routed',emoji: '🗺️', grad: 'linear-gradient(135deg,#7C3AED,#6366F1)', overrides: { tab: 'Itinerary' } },
-    { label: 'Top landmarks',         sub: 'What to see · Ranked',emoji: '🏯', grad: 'linear-gradient(135deg,#059669,#10B981)', overrides: { tab: 'Explore',   exploreTarget: 'Vidhana Soudha' } },
+    { label: 'Top landmarks',         sub: 'What to see · Ranked',emoji: '🏯', grad: 'linear-gradient(135deg,#059669,#10B981)', overrides: { tab: 'Temples',   exploreTarget: 'Vidhana Soudha' } },
     { label: 'Budget stays <₹3k',     sub: 'Hotels · Best value', emoji: '💰', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', overrides: { tab: 'Hotels',    budget: 3000, hotelTags: ['Budget Friendly'] } },
     { label: 'Best biryani',          sub: 'Food · Non-veg',      emoji: '🍛', grad: 'linear-gradient(135deg,#EF4444,#F97316)', overrides: { tab: 'Food',      foodTags: ['Biryani'] } },
   ],
@@ -163,31 +172,31 @@ const SMART_PICKS: Record<string, SmartPick[]> = {
     { label: 'Beach hotels',         sub: 'Sea view · Rated',     emoji: '🌊', grad: 'linear-gradient(135deg,#0284C7,#06B6D4)', overrides: { tab: 'Hotels',    hotelTags: ['Sea View'] } },
     { label: 'Best seafood',         sub: 'Fresh · Near beach',   emoji: '🦞', grad: 'linear-gradient(135deg,#059669,#10B981)', overrides: { tab: 'Food',      foodTags: ['Seafood'] } },
     { label: '1-day Goa plan',       sub: 'Itinerary · Beaches',  emoji: '🛵', grad: 'linear-gradient(135deg,#D97706,#F59E0B)', overrides: { tab: 'Itinerary' } },
-    { label: 'Must-see beaches',     sub: 'Explore · Ranked',     emoji: '🏖️', grad: 'linear-gradient(135deg,#7C3AED,#A78BFA)', overrides: { tab: 'Explore',   exploreTarget: 'Calangute Beach' } },
+    { label: 'Must-see beaches',     sub: 'Explore · Ranked',     emoji: '🏖️', grad: 'linear-gradient(135deg,#7C3AED,#A78BFA)', overrides: { tab: 'Temples',   exploreTarget: 'Calangute Beach' } },
     { label: 'Rooftop & night bars', sub: 'Food · Nightlife',     emoji: '🍹', grad: 'linear-gradient(135deg,#EF4444,#F97316)', overrides: { tab: 'Food',      foodTags: ['Rooftop Dining', 'Craft Beer'] } },
     { label: 'Budget beach stays',   sub: 'Hotels · Best value',  emoji: '💰', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', overrides: { tab: 'Hotels',    budget: 4000, hotelTags: ['Budget Friendly'] } },
   ],
   mumbai: [
     { label: 'Bandra stays',         sub: 'Hotels · Trendy area', emoji: '🏙️', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', overrides: { tab: 'Hotels',    hotelArea: 'Bandra' } },
     { label: 'Street food',          sub: 'Iconic Mumbai eats',   emoji: '🌯', grad: 'linear-gradient(135deg,#D97706,#F59E0B)', overrides: { tab: 'Food',      foodTags: ['Street Food'] } },
-    { label: 'Marine Drive',         sub: 'Explore · Landmark',   emoji: '🌆', grad: 'linear-gradient(135deg,#0284C7,#06B6D4)', overrides: { tab: 'Explore',   exploreTarget: 'Marine Drive' } },
+    { label: 'Marine Drive',         sub: 'Explore · Landmark',   emoji: '🌆', grad: 'linear-gradient(135deg,#0284C7,#06B6D4)', overrides: { tab: 'Temples',   exploreTarget: 'Marine Drive' } },
     { label: 'Full day Mumbai',      sub: 'Itinerary · AI plan',  emoji: '🗺️', grad: 'linear-gradient(135deg,#7C3AED,#6366F1)', overrides: { tab: 'Itinerary' } },
     { label: 'Rooftop dining',       sub: 'Food · Special eve',   emoji: '🍽️', grad: 'linear-gradient(135deg,#EF4444,#F97316)', overrides: { tab: 'Food',      foodTags: ['Rooftop Dining'] } },
     { label: 'Business hotels',      sub: 'Hotels · Corporate',   emoji: '💼', grad: 'linear-gradient(135deg,#059669,#10B981)', overrides: { tab: 'Hotels',    hotelTags: ['Business'] } },
   ],
   jaipur: [
-    { label: 'Heritage palaces',     sub: 'Explore · Pink City',  emoji: '🏰', grad: 'linear-gradient(135deg,#D97706,#EF4444)', overrides: { tab: 'Explore',   exploreTarget: 'Amber Fort' } },
+    { label: 'Heritage palaces',     sub: 'Explore · Pink City',  emoji: '🏰', grad: 'linear-gradient(135deg,#D97706,#EF4444)', overrides: { tab: 'Temples',   exploreTarget: 'Amber Fort' } },
     { label: 'Royal palace stays',   sub: 'Hotels · Heritage',    emoji: '🏯', grad: 'linear-gradient(135deg,#7C3AED,#A78BFA)', overrides: { tab: 'Hotels',    hotelTags: ['Heritage'] } },
     { label: 'Rajasthani thali',     sub: 'Food · Authentic',     emoji: '🍛', grad: 'linear-gradient(135deg,#EF4444,#F97316)', overrides: { tab: 'Food',      foodTags: ['Thali'] } },
     { label: 'Pink City walk',       sub: 'Itinerary · Full day', emoji: '🛺', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', overrides: { tab: 'Itinerary' } },
-    { label: 'Bazaar & markets',     sub: 'Explore · Shopping',   emoji: '🛍️', grad: 'linear-gradient(135deg,#059669,#10B981)', overrides: { tab: 'Explore',   exploreTarget: 'Johari Bazaar' } },
+    { label: 'Bazaar & markets',     sub: 'Explore · Shopping',   emoji: '🛍️', grad: 'linear-gradient(135deg,#059669,#10B981)', overrides: { tab: 'Temples',   exploreTarget: 'Johari Bazaar' } },
     { label: 'Rooftop with views',   sub: 'Food · Fort views',    emoji: '✨', grad: 'linear-gradient(135deg,#6366F1,#A78BFA)', overrides: { tab: 'Food',      foodTags: ['Rooftop Dining'] } },
   ],
   delhi: [
     { label: 'Old Delhi heritage',   sub: 'Itinerary · Walk',     emoji: '🕌', grad: 'linear-gradient(135deg,#EF4444,#F97316)', overrides: { tab: 'Itinerary' } },
     { label: 'Budget central stays', sub: 'Hotels · Best value',  emoji: '💰', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', overrides: { tab: 'Hotels',    hotelTags: ['Budget Friendly'] } },
     { label: 'Chandni Chowk food',   sub: 'Street food · Iconic', emoji: '🥙', grad: 'linear-gradient(135deg,#D97706,#F59E0B)', overrides: { tab: 'Food',      foodTags: ['Street Food'] } },
-    { label: 'Red Fort',             sub: 'Explore · Must-see',   emoji: '🏰', grad: 'linear-gradient(135deg,#7C3AED,#6366F1)', overrides: { tab: 'Explore',   exploreTarget: 'Red Fort' } },
+    { label: 'Red Fort',             sub: 'Explore · Must-see',   emoji: '🏰', grad: 'linear-gradient(135deg,#7C3AED,#6366F1)', overrides: { tab: 'Temples',   exploreTarget: 'Red Fort' } },
     { label: 'Fine dining',          sub: 'Food · Top picks',     emoji: '🍽️', grad: 'linear-gradient(135deg,#059669,#10B981)', overrides: { tab: 'Food',      foodTags: ['Buffet'] } },
     { label: 'Heritage hotels',      sub: 'Hotels · Old Delhi',   emoji: '🏛️', grad: 'linear-gradient(135deg,#EF4444,#D97706)', overrides: { tab: 'Hotels',    hotelTags: ['Heritage'] } },
   ],
@@ -195,7 +204,7 @@ const SMART_PICKS: Record<string, SmartPick[]> = {
     { label: 'Top rated hotels',     sub: 'Hotels · AI ranked',   emoji: '🏨', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', overrides: { tab: 'Hotels' } },
     { label: 'Best eats nearby',     sub: 'Food · Highly rated',  emoji: '🍽️', grad: 'linear-gradient(135deg,#D97706,#F59E0B)', overrides: { tab: 'Food' } },
     { label: 'Plan a full day',      sub: 'Itinerary · Optimised',emoji: '🗺️', grad: 'linear-gradient(135deg,#7C3AED,#6366F1)', overrides: { tab: 'Itinerary' } },
-    { label: 'Must-see spots',       sub: 'Explore · Don\'t miss',emoji: '🧭', grad: 'linear-gradient(135deg,#059669,#10B981)', overrides: { tab: 'Explore' } },
+    { label: 'Must-see spots',       sub: 'Explore · Don\'t miss',emoji: '🧭', grad: 'linear-gradient(135deg,#059669,#10B981)', overrides: { tab: 'Temples' } },
     { label: 'Budget stays',         sub: 'Hotels · Best value',  emoji: '💰', grad: 'linear-gradient(135deg,#6366F1,#A78BFA)', overrides: { tab: 'Hotels',    hotelTags: ['Budget Friendly'] } },
     { label: 'Pure veg options',     sub: 'Food · Filtered',      emoji: '🥗', grad: 'linear-gradient(135deg,#059669,#34D399)', overrides: { tab: 'Food',      dietType: 'Pure Veg' } },
   ],
@@ -228,13 +237,15 @@ const TRENDING_OVERRIDES: Record<string, QuickOverride> = {
   'Solo explorer':   { tab: 'Itinerary' },
   'Heritage walk':   { tab: 'Itinerary' },
   '1-day plan':      { tab: 'Itinerary' },
-  'Hidden gems':     { tab: 'Explore' },
-  'Monuments':       { tab: 'Explore',   exploreTarget: 'Monuments' },
-  'Nature spots':    { tab: 'Explore',   exploreTarget: 'Nature spots' },
-  'Night markets':   { tab: 'Explore',   exploreTarget: 'Night markets' },
-  'Art galleries':   { tab: 'Explore',   exploreTarget: 'Art galleries' },
-  'Adventure parks': { tab: 'Explore',   exploreTarget: 'Adventure parks' },
-  'Viewpoints':      { tab: 'Explore',   exploreTarget: 'Viewpoints' },
+  'Brihadeeswarar Temple':       { tab: 'Temples' },
+  'Gangaikonda Cholapuram':      { tab: 'Temples' },
+  'Airavatesvara Temple':        { tab: 'Temples' },
+  'Dress code info':             { tab: 'Temples' },
+  'Best visit time':             { tab: 'Temples' },
+  'Photography spots':           { tab: 'Temples' },
+  'Photography walk':            { tab: 'Itinerary' },
+  'Big Temple morning':          { tab: 'Itinerary' },
+  'Full day heritage':           { tab: 'Itinerary' },
 };
 
 /* ── Tooltip ─────────────────────────────────────────────────────────── */
@@ -706,36 +717,15 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         </div>
       );
 
-      /* ── Explore ─────────────────────────────────────────────── */
-      case 'Explore': return (
+      /* ── Temples ─────────────────────────────────────────────── */
+      case 'Temples': return (
         <div className="space-y-3">
-          <div>
-            <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
-              Popular in {destination || 'your destination'}
-            </label>
-            <div className="relative">
-              <select value={exploreTarget} onChange={e => setExploreTarget(e.target.value)}
-                className="w-full bg-surface border border-border rounded-lg px-3 py-2 text-xs appearance-none focus:outline-none focus:ring-2 focus:ring-brand-soft transition-colors">
-                <option value="">Select a popular spot…</option>
-                {popularSpots.map(s => <option key={s} value={s}>{s}</option>)}
-                <option value="custom">Other — type below</option>
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted pointer-events-none" />
-            </div>
+          <div className="rounded-lg p-3 border border-border" style={{ background: '#ECFDF5' }}>
+            <p className="text-[11px] text-body leading-relaxed">
+              <span className="font-bold text-heading">Thanjavur — Temple Capital of Tamil Nadu</span><br />
+              Home to 3 UNESCO World Heritage temples. AI shows entry times, dress code, crowd patterns, and best photography spots.
+            </p>
           </div>
-
-          {(exploreTarget === '' || exploreTarget === 'custom') && (
-            <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}>
-              <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1">Search any place</label>
-              <div className="relative">
-                <input type="text" placeholder="Type any place name…"
-                  value={exploreTarget === 'custom' ? '' : exploreTarget}
-                  onChange={e => setExploreTarget(e.target.value)}
-                  className="w-full pl-8 pr-4 py-2 border border-border rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-brand-soft transition-colors" />
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted" />
-              </div>
-            </motion.div>
-          )}
 
           <div>
             <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
@@ -743,6 +733,12 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             </label>
             <input type="time" value={visitTime} onChange={e => setVisitTime(e.target.value)}
               className="w-full bg-surface border border-border rounded-lg px-2 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-soft transition-colors" />
+          </div>
+
+          <div className="rounded-lg p-2.5 border border-border bg-white">
+            <p className="text-[10px] text-muted leading-relaxed">
+              Dress code required at all temples — covered shoulders and below-knee clothing. Remove footwear before entry.
+            </p>
           </div>
         </div>
       );
@@ -795,10 +791,10 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               : <Search className="w-4 h-4" />
             }
             {loading ? 'AI is on it…' : (
-              activeTab === 'Hotels'    ? 'Find my hotel' :
-              activeTab === 'Food'      ? 'Find restaurants' :
-              activeTab === 'Itinerary' ? 'Build my day plan' :
-              'Find what\'s worth seeing'
+              activeTab === 'Hotels'    ? 'Find my hotel in Thanjavur' :
+              activeTab === 'Food'      ? 'Find restaurants in Thanjavur' :
+              activeTab === 'Itinerary' ? 'Build my Thanjavur day plan' :
+              'Find Thanjavur temples'
             )}
           </button>
         </div>
