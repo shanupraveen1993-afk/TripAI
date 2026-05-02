@@ -105,13 +105,17 @@ function getSpotsForDestination(destination: string): string[] {
   return DESTINATION_SPOTS.default;
 }
 
-/* ── Hotel tags ──────────────────────────────────────────────────────── */
+/* ── Hotel tags — Thanjavur-relevant only ────────────────────────────── */
 const HOTEL_TAGS = [
-  'Heritage', 'Pool', 'Family', 'Business', 'Quiet', 'Spa',
-  'AC Rooms', 'WiFi', 'Gym', 'Parking', 'Rooftop',
-  'Temple Nearby', 'Near Railway Station', 'River View',
-  'Veg Kitchen', 'Breakfast Included', 'Late Checkout',
-  'Honeymoon', 'Couple Friendly', 'Budget Friendly',
+  // Location (high accuracy)
+  'Temple Nearby', 'Near Railway Station', 'Near Bus Stand', 'City Centre',
+  // Type
+  'Heritage', 'Budget Friendly', 'Family', 'Business',
+  // Amenities common in Thanjavur
+  'AC Rooms', 'WiFi', 'Parking', 'In-House Restaurant',
+  'Rooftop Restaurant', 'Veg Kitchen', 'Breakfast Included',
+  // Guest type
+  'Couple Friendly', 'Honeymoon',
 ];
 
 /* ── Food tags ───────────────────────────────────────────────────────── */
@@ -604,21 +608,6 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       /* ── Hotels ─────────────────────────────────────────────── */
       case 'Hotels': return (
         <div className="space-y-3">
-          {/* Open Now chip */}
-          <div>
-            <button
-              type="button"
-              onClick={() => setOpenNow(v => !v)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold border-2 transition-all"
-              style={openNow
-                ? { borderColor: '#059669', background: '#ECFDF5', color: '#059669' }
-                : { borderColor: '#E5E7EB', background: '#fff', color: '#6B7280' }}
-            >
-              <span className={`w-2 h-2 rounded-full ${openNow ? 'bg-green-500' : 'bg-gray-300'}`} />
-              Open Now
-            </button>
-          </div>
-
           {/* Price Range — per-night INR ranges */}
           <div>
             <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">

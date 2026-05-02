@@ -42,27 +42,27 @@ const QUERIES: Record<string, string> = {
 
 // Hotel tag → search query term — changes the Google Places query so results differ per selection
 const HOTEL_TAG_SEARCH: Record<string, string> = {
+  // Location-based (highest accuracy — Places API understands proximity)
+  'Temple Nearby':        'hotel near Brihadeeswarar Temple Big Temple',
+  'Near Railway Station': 'hotel near Thanjavur railway junction station',
+  'Near Bus Stand':       'hotel near Thanjavur new bus stand',
+  'City Centre':          'hotel Thanjavur city centre main road',
+  // Type
   'Heritage':             'heritage boutique historical hotel',
-  'Pool':                 'hotel with swimming pool',
-  'Business':             'business corporate hotel',
   'Budget Friendly':      'budget affordable economy hotel',
-  'Luxury':               'luxury premium 5-star hotel',
-  'Family':               'family hotel kids friendly',
-  'Quiet':                'quiet peaceful resort hotel',
-  'Spa':                  'hotel with spa wellness',
-  'Gym':                  'hotel with gym fitness centre',
-  'AC Rooms':             'air conditioned hotel',
+  'Family':               'family hotel',
+  'Business':             'business corporate hotel',
+  // Amenities
+  'AC Rooms':             'air conditioned hotel AC',
   'WiFi':                 'hotel wifi',
   'Parking':              'hotel with parking',
-  'Rooftop':              'rooftop hotel terrace',
-  'Temple Nearby':        'hotel near Brihadeeswarar Big Temple',
-  'Near Railway Station': 'hotel near Thanjavur railway station',
-  'River View':           'hotel river view Kaveri',
+  'In-House Restaurant':  'hotel with restaurant dining',
+  'Rooftop Restaurant':   'rooftop restaurant hotel terrace',
   'Veg Kitchen':          'vegetarian pure veg hotel',
-  'Breakfast Included':   'hotel with breakfast',
-  'Late Checkout':        'hotel',
-  'Honeymoon':            'romantic honeymoon couple hotel',
+  'Breakfast Included':   'hotel breakfast included',
+  // Guest type
   'Couple Friendly':      'couple friendly hotel',
+  'Honeymoon':            'romantic honeymoon hotel',
 };
 
 // Hotel price range → extra query keyword so Places returns price-relevant results
@@ -376,6 +376,21 @@ async function geminiRankAndAnalyse(
       ? Math.round(allReviews.reduce((s: number, r) => s + (r.text?.text?.length ?? 0), 0) / allReviews.length)
       : 0;
 
+    // Check if the hotel's name or reviews actually mention selected tags —
+    // gives Gemini hard evidence to exclude non-matching places
+    const allText = [
+      (p.displayName?.text ?? '').toLowerCase(),
+      (p.formattedAddress  ?? '').toLowerCase(),
+      ...allReviews.map((r: any) => (r.text?.text ?? '').toLowerCase()),
+    ].join(' ');
+
+    const selectedTags = tab === 'Hotels' ? (filters.hotelTags ?? []) : (filters.foodTags ?? []);
+    const tagMentions: Record<string, boolean> = {};
+    for (const tag of selectedTags) {
+      const keywords = (HOTEL_TAG_SEARCH[tag] ?? tag).toLowerCase().split(' ').filter(k => k.length > 3);
+      tagMentions[tag] = keywords.some(k => allText.includes(k));
+    }
+
     return {
       idx:          i,
       name:         p.displayName?.text ?? '',
@@ -392,7 +407,9 @@ async function geminiRankAndAnalyse(
         text:  (r.text?.text ?? '').slice(0, 120),
         ago:   r.relativePublishTimeDescription ?? '',
       })),
-      // Amenity signals from Places API — helps Gemini give more relevant notes
+      // tagMentions: which selected tags are actually mentioned in name/reviews
+      tagMentions,
+      // Amenity signals from Places API
       servesVeg:   p.servesVegetarianFood ?? null,
       dineIn:      p.dineIn               ?? null,
       takeout:     p.takeout              ?? null,
@@ -437,11 +454,13 @@ async function geminiRankAndAnalyse(
   // ── Step 3: Build ranking rules specific to the tab ──────────────────────
   const rankingRules = tab === 'Hotels' ? `
 RANKING RULES for Hotels:
-1. Eliminate any place that clearly cannot meet CRITICAL criteria (wrong price tier, missing required features)
-2. Among remaining: rank by (a) match to required features, (b) proximity to Big Temple, (c) value relative to budget, (d) overall rating × log(totalReviews)
+1. Check tagMentions for each place — this tells you if the place's name or reviews actually mention the selected tags.
+   - If a tag is CRITICAL and tagMentions[tag] = false for a place → rank that place LAST (rank = total places count)
+   - If ALL places have tagMentions[tag] = false for a CRITICAL tag → rank by quality anyway (no place can be excluded)
+2. Among tag-matching places: rank by (a) tagMentions score (most tags confirmed = first), (b) proximity to Big Temple, (c) rating × log(totalReviews)
 3. A hotel with 4.3 rating + 2000 reviews outranks 4.7 + 50 reviews (volume = trust signal)
-4. reviewDepth > 150 → visitors write detailed feedback → higher trust; reviewDepth < 50 → short reviews → lower trust
-5. If two hotels are similar, the one with better recent trend wins` : tab === 'Food' ? `
+4. reviewDepth > 150 → higher trust; reviewDepth < 50 → lower trust
+5. If two hotels match equally, the one with better recent trend wins` : tab === 'Food' ? `
 RANKING RULES for Food:
 1. Eliminate any place that violates CRITICAL diet constraint (e.g. non-veg items only when visitor is Pure Veg)
 2. Among remaining: rank by (a) diet match, (b) spend level match, (c) bucket scores, (d) review volume
