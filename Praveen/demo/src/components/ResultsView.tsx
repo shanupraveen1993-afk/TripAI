@@ -245,11 +245,43 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                 <span className="text-[10px] font-black text-white">#{rank}</span>
               </div>
             )}
-            <div className="absolute bottom-0 left-0 right-0 px-3 pb-3">
-              <h3 className="font-display font-black text-base text-white drop-shadow truncate">{place.name}</h3>
-              <p className="text-[10px] text-white/75 truncate flex items-center gap-1 mt-0.5">
-                <MapPin className="w-2.5 h-2.5 shrink-0" />{place.address}
-              </p>
+            <div className="absolute bottom-0 left-0 right-0 px-3 pb-3 flex items-end justify-between gap-2">
+              <div className="min-w-0 flex-1">
+                <h3 className="font-display font-black text-base text-white drop-shadow truncate">{place.name}</h3>
+                <p className="text-[10px] text-white/75 truncate flex items-center gap-1 mt-0.5">
+                  <MapPin className="w-2.5 h-2.5 shrink-0" />{place.address}
+                </p>
+              </div>
+              {/* Action buttons — right of name */}
+              <div className="flex items-center gap-1 shrink-0 pb-0.5">
+                {tab === 'Hotels' && (
+                  <>
+                    <a
+                      href={place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`}
+                      target="_blank" rel="noopener noreferrer"
+                      className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold text-white bg-white/20 backdrop-blur-sm hover:bg-white/35 transition-colors"
+                    >
+                      <ExternalLink className="w-3 h-3" />Book
+                    </a>
+                    <a
+                      href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
+                      target="_blank" rel="noopener noreferrer"
+                      className="flex items-center justify-center p-1.5 rounded-lg text-white bg-white/20 backdrop-blur-sm hover:bg-white/35 transition-colors"
+                    >
+                      <Map className="w-3 h-3" />
+                    </a>
+                  </>
+                )}
+                {tab === 'Food' && (
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
+                    target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold text-white bg-white/20 backdrop-blur-sm hover:bg-white/35 transition-colors"
+                  >
+                    <Navigation className="w-3 h-3" />Directions
+                  </a>
+                )}
+              </div>
             </div>
           </div>
           <div className="px-3 py-3 space-y-2">
@@ -317,6 +349,35 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             </div>
           </div>
           <div className="flex items-center gap-1 shrink-0">
+            {/* Book + Map (Hotels) or Directions (Food) — right of name */}
+            {tab === 'Hotels' && (
+              <>
+                <a
+                  href={place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-brand text-white hover:bg-brand/90 transition-colors"
+                >
+                  <ExternalLink className="w-3 h-3" />Book
+                </a>
+                <a
+                  href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="p-1.5 rounded-lg text-muted hover:text-brand hover:bg-brand-softer border border-border transition-colors"
+                  title="Open in Maps"
+                >
+                  <Map className="w-3.5 h-3.5" />
+                </a>
+              </>
+            )}
+            {tab === 'Food' && (
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
+                target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-bold border border-brand text-brand hover:bg-brand hover:text-white transition-colors"
+              >
+                <Navigation className="w-3 h-3" />Directions
+              </a>
+            )}
             <button
               onClick={toggleBookmark}
               className={`p-1.5 rounded-lg transition-colors ${bookmarked ? 'text-brand bg-brand-softer' : 'text-muted hover:text-brand hover:bg-brand-softer'}`}
@@ -639,45 +700,6 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
       </div>
       )}
 
-      {/* ── Book + Maps — always visible (Hotels) ── */}
-      {tab === 'Hotels' && (
-        <div className="px-3 pb-3 pt-3 border-t border-border flex gap-2">
-          <a
-            href={place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 active:scale-[0.98] bg-brand text-white hover:bg-brand/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand"
-          >
-            <ExternalLink className="w-3.5 h-3.5" />
-            {place.websiteUri ? 'Book on website' : 'Check availability'}
-          </a>
-          <a
-            href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 active:scale-[0.98] border-2 border-border text-muted hover:border-brand hover:text-brand hover:bg-brand-softer focus:outline-none"
-          >
-            <Map className="w-3.5 h-3.5" />
-            Maps
-          </a>
-        </div>
-      )}
-
-      {/* ── Get directions — always visible (Food) ── */}
-      {tab === 'Food' && (
-        <div className="px-3 pb-3 pt-3 border-t border-border">
-          <a
-            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 active:scale-[0.98] border-2 border-brand text-brand bg-white hover:bg-brand hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-soft"
-          >
-            <Navigation className="w-4 h-4" />
-            Get directions
-            {place.dist > 0 && <span className="text-[11px] font-normal ml-0.5 opacity-70">· {place.dist}km away</span>}
-          </a>
-        </div>
-      )}
     </motion.div>
   );
 }
