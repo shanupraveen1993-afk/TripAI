@@ -245,43 +245,11 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                 <span className="text-[10px] font-black text-white">#{rank}</span>
               </div>
             )}
-            <div className="absolute bottom-0 left-0 right-0 px-3 pb-3 flex items-end justify-between gap-2">
-              <div className="min-w-0 flex-1">
-                <h3 className="font-display font-black text-base text-white drop-shadow truncate">{place.name}</h3>
-                <p className="text-[10px] text-white/75 truncate flex items-center gap-1 mt-0.5">
-                  <MapPin className="w-2.5 h-2.5 shrink-0" />{place.address}
-                </p>
-              </div>
-              {/* Action buttons — right of name */}
-              <div className="flex items-center gap-1 shrink-0 pb-0.5">
-                {tab === 'Hotels' && (
-                  <>
-                    <a
-                      href={place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`}
-                      target="_blank" rel="noopener noreferrer"
-                      className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold text-white bg-white/20 backdrop-blur-sm hover:bg-white/35 transition-colors"
-                    >
-                      <ExternalLink className="w-3 h-3" />Book
-                    </a>
-                    <a
-                      href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
-                      target="_blank" rel="noopener noreferrer"
-                      className="flex items-center justify-center p-1.5 rounded-lg text-white bg-white/20 backdrop-blur-sm hover:bg-white/35 transition-colors"
-                    >
-                      <Map className="w-3 h-3" />
-                    </a>
-                  </>
-                )}
-                {tab === 'Food' && (
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
-                    target="_blank" rel="noopener noreferrer"
-                    className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold text-white bg-white/20 backdrop-blur-sm hover:bg-white/35 transition-colors"
-                  >
-                    <Navigation className="w-3 h-3" />Directions
-                  </a>
-                )}
-              </div>
+            <div className="absolute bottom-0 left-0 right-0 px-3 pb-3">
+              <h3 className="font-display font-black text-base text-white drop-shadow truncate">{place.name}</h3>
+              <p className="text-[10px] text-white/75 truncate flex items-center gap-1 mt-0.5">
+                <MapPin className="w-2.5 h-2.5 shrink-0" />{place.address}
+              </p>
             </div>
           </div>
           <div className="px-3 py-3 space-y-2">
@@ -304,10 +272,80 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               <Sparkles className="w-3 h-3 text-brand shrink-0 mt-0.5" />
               {place.aiNote}
             </p>
+
+            {/* Why AI recommended it? row */}
+            <button
+              onClick={() => setShowAnalysis(v => !v)}
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl border border-border bg-bg-app hover:bg-brand-softer hover:border-brand/30 transition-all duration-200"
+            >
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-3.5 h-3.5 text-brand shrink-0" />
+                <span className="text-xs font-bold text-heading">Why AI recommended it?</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] text-muted">Full AI analysis</span>
+                <ChevronDown className={`w-4 h-4 text-brand transition-transform duration-200 ${showAnalysis ? 'rotate-180' : ''}`} />
+              </div>
+            </button>
+            <AnimatePresence>
+              {showAnalysis && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25, ease: 'easeInOut' }}
+                  className="overflow-hidden"
+                >
+                  <div className="space-y-2 pt-1">
+                    <div className="bg-surface border border-border rounded-xl p-3">
+                      <p className="text-[10px] font-black text-brand uppercase tracking-widest mb-1 flex items-center gap-1.5">
+                        <Trophy className="w-3 h-3" /> Why ranked above others
+                      </p>
+                      <p className="text-xs text-body leading-relaxed">{place.aiDetail.whyOverOthers}</p>
+                    </div>
+                    <div className="bg-success-soft border border-success-medium/30 rounded-xl px-3 py-2.5">
+                      <p className="text-[10px] font-black text-success uppercase tracking-widest mb-1 flex items-center gap-1">
+                        <CheckCircle className="w-3 h-3" /> Best for
+                      </p>
+                      <p className="text-xs text-body leading-relaxed">{place.aiDetail.bestFor}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Prominent action buttons */}
+            {tab === 'Hotels' && (
+              <div className="flex gap-2 pt-1">
+                <a
+                  href={place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold bg-brand text-white hover:bg-brand/90 transition-colors active:scale-[0.98]"
+                >
+                  <ExternalLink className="w-4 h-4" />Book
+                </a>
+                <a
+                  href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border-2 border-slate-200 text-slate-600 hover:border-brand hover:text-brand transition-colors active:scale-[0.98]"
+                >
+                  <Map className="w-4 h-4" />Map
+                </a>
+              </div>
+            )}
+            {tab === 'Food' && (
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
+                target="_blank" rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-sm font-bold bg-emerald-500 text-white hover:bg-emerald-600 transition-colors active:scale-[0.98] pt-1"
+              >
+                <Navigation className="w-4 h-4" />Get Directions
+                {place.dist > 0 && <span className="text-white/70 text-xs font-normal">· {place.dist}km</span>}
+              </a>
+            )}
+
             {/* Expand button */}
             <button
               onClick={() => setCardCollapsed(false)}
-              className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl bg-brand text-white text-xs font-bold hover:bg-brand/90 transition-colors"
+              className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl border border-border text-body bg-bg-app text-xs font-semibold hover:border-brand hover:text-brand transition-colors"
             >
               <ChevronDown className="w-3.5 h-3.5" />
               Show full details & reviews
@@ -348,24 +386,22 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               {place.dist > 0 && <span className="shrink-0 text-[11px]">· {place.dist}km</span>}
             </div>
           </div>
-          <div className="flex items-center gap-1 shrink-0">
-            {/* Book + Map (Hotels) or Directions (Food) — right of name */}
+          <div className="flex items-center gap-1.5 shrink-0">
             {tab === 'Hotels' && (
               <>
                 <a
                   href={place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`}
                   target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-brand text-white hover:bg-brand/90 transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-brand text-white hover:bg-brand/90 transition-colors active:scale-[0.97] shadow-sm"
                 >
-                  <ExternalLink className="w-3 h-3" />Book
+                  <ExternalLink className="w-3.5 h-3.5" />Book
                 </a>
                 <a
                   href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
                   target="_blank" rel="noopener noreferrer"
-                  className="p-1.5 rounded-lg text-muted hover:text-brand hover:bg-brand-softer border border-border transition-colors"
-                  title="Open in Maps"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border-2 border-slate-200 text-slate-600 hover:border-brand hover:text-brand transition-colors active:scale-[0.97]"
                 >
-                  <Map className="w-3.5 h-3.5" />
+                  <Map className="w-3.5 h-3.5" />Map
                 </a>
               </>
             )}
@@ -373,21 +409,11 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               <a
                 href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
                 target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-bold border border-brand text-brand hover:bg-brand hover:text-white transition-colors"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-emerald-500 text-white hover:bg-emerald-600 transition-colors active:scale-[0.97] shadow-sm"
               >
-                <Navigation className="w-3 h-3" />Directions
+                <Navigation className="w-3.5 h-3.5" />Directions
               </a>
             )}
-            <button
-              onClick={toggleBookmark}
-              className={`p-1.5 rounded-lg transition-colors ${bookmarked ? 'text-brand bg-brand-softer' : 'text-muted hover:text-brand hover:bg-brand-softer'}`}
-              title={bookmarked ? 'Saved' : 'Save this place'}
-            >
-              {bookmarked ? <BookmarkCheck className="w-3.5 h-3.5" /> : <Bookmark className="w-3.5 h-3.5" />}
-            </button>
-            <button onClick={share} className="p-1.5 text-muted hover:text-brand hover:bg-brand-softer rounded-lg transition-colors">
-              <Share2 className="w-3.5 h-3.5" />
-            </button>
           </div>
         </div>
 
@@ -502,32 +528,35 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             </div>
           )}
 
-          {/* Google link */}
-          {place.googleMapsUri && (
-            <div className="px-3 py-2 border-t border-border">
+          {/* Explore all reviews — bottom-right subtle link */}
+          <div className="px-3 py-2 border-t border-border flex items-center justify-between">
+            <span className="text-[9px] text-muted">Showing top 3★+ reviews</span>
+            {(place.googleMapsUri) && (
               <a
                 href={place.googleMapsUri}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[9px] text-muted hover:text-brand transition-colors flex items-center gap-1"
+                className="text-[10px] text-muted hover:text-brand transition-colors flex items-center gap-1 font-medium"
               >
-                <ExternalLink className="w-2.5 h-2.5 shrink-0" />
-                Showing 3★+ reviews · See all {place.reviewCount.toLocaleString()} on Google
+                Explore all reviews <ExternalLink className="w-3 h-3 shrink-0" />
               </a>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
-        {/* Full analysis expander — trend + AI insight */}
+        {/* Why AI recommended it? — expandable analysis row */}
         <button
           onClick={() => setShowAnalysis(v => !v)}
-          className="w-full flex items-center justify-between text-xs font-bold text-brand hover:text-brand/80 bg-brand-softer hover:bg-brand-soft/30 border border-brand-soft/40 rounded-lg px-3 py-2 transition-all duration-200"
+          className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl border border-border bg-bg-app hover:bg-brand-softer hover:border-brand/30 transition-all duration-200"
         >
-          <span className="flex items-center gap-1.5">
-            <Sparkles className="w-3 h-3" />
-            {showAnalysis ? 'Hide AI analysis ↑' : 'Show AI analysis ↓'}
-          </span>
-          <span className="text-[9px] font-black bg-brand text-white px-2 py-0.5 rounded-full uppercase tracking-wide">Trend + Insight</span>
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-3.5 h-3.5 text-brand shrink-0" />
+            <span className="text-xs font-bold text-heading">Why AI recommended it?</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-[10px] text-muted font-medium">Full AI analysis</span>
+            <ChevronDown className={`w-4 h-4 text-brand transition-transform duration-200 ${showAnalysis ? 'rotate-180' : ''}`} />
+          </div>
         </button>
 
         <AnimatePresence>
