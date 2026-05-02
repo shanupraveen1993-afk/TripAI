@@ -61,6 +61,16 @@ export default function App() {
   const [lastSearchFilters, setLastSearchFilters] = useState<DashboardFilters | null>(null);
   const [backContext, setBackContext] = useState<'dashboard' | 'itinerary-results'>('dashboard');
 
+  // Scroll to top whenever the dashboard becomes the active screen
+  useEffect(() => {
+    if (contentScreen === 'dashboard') window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [contentScreen]);
+
+  // Also scroll to top when navigating between main sections (history, profile)
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [mainSection]);
+
   // Persist user session and saved trips across page refreshes
   useEffect(() => {
     try {
@@ -133,21 +143,20 @@ export default function App() {
     setApiError(false);
     try {
       if (filters.tab === 'Explore') {
-        const guide = await fetchExploreGuide(filters.exploreTarget, filters.visitTime);
-        if (guide) setLiveExplore(guide);
-        else setApiError(true);
+        // Explore always uses preset data — no API call needed
       } else if (filters.tab === 'Itinerary') {
         if (itineraryGenCount === 0) {
           // First visit: show Thanjavur preset instantly — no API call
-          setLiveItinerary(null);          // null → falls back to MOCK_ITINERARY (Thanjavur preset)
+          setLiveItinerary(null);
           setItineraryGenCount(1);
         } else {
-          // "Try different" or second+ search: generate a fresh plan via AI
+          // "Try different plan": generate a fresh AI day plan
           const stops = await fetchItinerary(filters.startTime, seed);
           if (stops.length > 0) { setLiveItinerary(stops); setItineraryGenCount(c => c + 1); }
           else setApiError(true);
         }
       } else {
+        // Hotels / Food — ALWAYS live API, results must match user filters
         const results = await fetchPlan(filters.tab, seed, {
           hotelTags:   filters.hotelTags,
           hotelArea:   filters.hotelArea,
@@ -158,11 +167,12 @@ export default function App() {
           dietType:    filters.dietType,
           dineMode:    filters.dineMode,
         });
-        // Show first 10; fall back to mock when API returns empty
-        setLiveResults(results.length > 0 ? results.slice(0, 10) : null);
+        // Never fall back to mock — show results or empty/error state
+        setLiveResults(results.length > 0 ? results.slice(0, 10) : []);
         if (results.length === 0) setApiError(true);
       }
     } catch {
+      // Hotels/Food: leave liveResults as null so empty state renders
       setApiError(true);
     }
     setAiCount(c => c + 1);
@@ -322,11 +332,11 @@ export default function App() {
               destination="Thanjavur"
               isFirstItinerary={itineraryGenCount === 1}
               isLoadingMore={isLoadingMore}
-              hotels={activeTab === 'Hotels' ? (liveResults as PlaceResult[] ?? MOCK_HOTELS) : MOCK_HOTELS}
-              food={activeTab === 'Food'    ? (liveResults as PlaceResult[] ?? MOCK_FOOD)   : MOCK_FOOD}
+              hotels={activeTab === 'Hotels' ? (liveResults as PlaceResult[] ?? []) : []}
+              food={activeTab === 'Food'    ? (liveResults as PlaceResult[] ?? []) : []}
               itinerary={activeTab === 'Itinerary' ? itineraryToDisplay : MOCK_ITINERARY}
-              explore={activeTab === 'Explore' ? (liveExplore as ExploreGuide ?? MOCK_EXPLORE) : MOCK_EXPLORE}
-              apiError={apiError && !(activeTab === 'Itinerary' && itineraryGenCount <= 1)}
+              explore={MOCK_EXPLORE}
+              apiError={apiError && activeTab !== 'Explore' && !(activeTab === 'Itinerary' && itineraryGenCount <= 1)}
               onBack={() => {
                 if (backContext === 'itinerary-results') {
                   setBackContext('dashboard');

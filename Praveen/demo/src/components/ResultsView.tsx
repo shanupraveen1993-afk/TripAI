@@ -1193,6 +1193,37 @@ export function ResultsView({
       </div>
 
 
+      {/* Empty / error state — Hotels and Food only */}
+      {(tab === 'Hotels' || tab === 'Food') && (results?.length ?? 0) === 0 && !isLoadingMore && (
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col items-center text-center py-16 px-6 gap-5 mb-5"
+        >
+          <div className={`w-14 h-14 rounded-2xl flex items-center justify-center border ${apiError ? 'bg-warning-soft border-warning-medium/30' : 'bg-bg-app border-border'}`}>
+            {apiError
+              ? <AlertTriangle className="w-6 h-6 text-warning" />
+              : <Info className="w-6 h-6 text-muted" />}
+          </div>
+          <div className="space-y-1.5 max-w-xs">
+            <p className="font-display font-bold text-sm text-heading">
+              {apiError ? 'Search unavailable' : 'No results match your filters'}
+            </p>
+            <p className="text-xs text-muted leading-relaxed">
+              {apiError
+                ? 'Could not connect to the search service. Check your API key configuration or try again.'
+                : 'No places in Thanjavur matched all your selected filters. Try removing the price range, rating, or diet restriction.'}
+            </p>
+          </div>
+          <button
+            onClick={onBack}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-brand text-brand text-sm font-bold hover:bg-brand hover:text-white transition-all"
+          >
+            <ArrowLeft className="w-4 h-4" /> Adjust filters
+          </button>
+        </motion.div>
+      )}
+
       {/* Results */}
       <div className={tab === 'Hotels' || tab === 'Food' ? 'flex flex-col gap-5 mb-5' : 'space-y-4 mb-5'}>
         {(tab === 'Hotels' || tab === 'Food') && results?.map((p, idx) => (
