@@ -858,58 +858,169 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
   /* ── City-lock full screen — shown when destination ≠ Thanjavur ─── */
   if (!isThanjavur(destination) && destination.trim() !== '') {
     return (
-      <div className="w-full max-w-[920px] mx-auto py-4 pb-24 lg:pb-4 px-4">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key="city-lock"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{    opacity: 0, y: 16 }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
-            className="flex flex-col items-center justify-center text-center py-16 px-6 min-h-[60vh] gap-6"
-          >
-            {/* Glow ring behind the temple */}
-            <div className="relative flex items-center justify-center">
-              <div className="absolute w-28 h-28 rounded-full opacity-20 animate-pulse"
-                style={{ background: 'radial-gradient(circle, #F97316, transparent)' }} />
-              <span className="text-6xl relative z-10 drop-shadow-lg">🛕</span>
-            </div>
+      <div
+        className="w-full relative overflow-hidden flex flex-col items-center justify-center min-h-[92vh] px-5 py-12"
+        style={{ background: 'linear-gradient(160deg,#06080F 0%,#0B0F1E 50%,#100816 100%)' }}
+      >
+        {/* ── Keyframe injection ─────────────────────────────────────── */}
+        <style>{`
+          @keyframes cl-ring { 0%,100%{transform:scale(1);opacity:.18} 50%{transform:scale(1.08);opacity:.32} }
+          @keyframes cl-ring2 { 0%,100%{transform:scale(1);opacity:.10} 50%{transform:scale(1.12);opacity:.22} }
+          @keyframes cl-ring3 { 0%,100%{transform:scale(1);opacity:.06} 50%{transform:scale(1.18);opacity:.14} }
+          @keyframes cl-scan { 0%{top:-4px;opacity:0} 10%{opacity:.6} 90%{opacity:.2} 100%{top:100%;opacity:0} }
+          @keyframes cl-float { 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-8px)} }
+          @keyframes cl-dot { 0%,100%{opacity:.15} 50%{opacity:.55} }
+        `}</style>
 
-            {/* Heading */}
-            <div className="space-y-2 max-w-sm">
-              <p className="font-display font-black text-2xl text-heading leading-tight">
-                We're live in Thanjavur
-              </p>
-              <p className="text-sm text-body leading-relaxed">
-                Rolling out to every city in India — <strong className="text-heading">{destination}</strong> is on the list.
-                You'll be the first to explore it when it's ready.
-              </p>
-            </div>
+        {/* ── Dot grid ─────────────────────────────────────────────── */}
+        <div className="absolute inset-0 pointer-events-none" style={{
+          backgroundImage: 'radial-gradient(circle, rgba(251,146,60,0.18) 1px, transparent 1px)',
+          backgroundSize: '32px 32px',
+          maskImage: 'radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 80%)',
+        }} />
 
-            {/* Made in India badge */}
-            <div className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold tracking-wide"
-              style={{ background: 'linear-gradient(135deg,#FFF7ED,#FFF3E0)', border: '1.5px solid #FDBA74', color: '#C2410C' }}>
-              <span>🇮🇳</span>
-              <span>#MadeInIndia · All cities coming soon</span>
-            </div>
+        {/* ── Scan line ────────────────────────────────────────────── */}
+        <div className="absolute left-0 right-0 h-[2px] pointer-events-none z-10" style={{
+          background: 'linear-gradient(90deg, transparent, rgba(251,146,60,0.5), transparent)',
+          animation: 'cl-scan 4s ease-in-out infinite',
+        }} />
 
-            {/* Try Thanjavur CTA */}
-            <button
-              type="button"
-              onClick={() => onDestinationSelect?.('Thanjavur')}
-              className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all duration-200 active:scale-[0.97] text-white hover:brightness-110 shadow-md hover:shadow-lg"
-              style={{ background: 'linear-gradient(135deg,#1C64F2,#3B82F6)' }}
-            >
-              <span>Explore Thanjavur instead</span>
-              <ChevronRight className="w-4 h-4" />
-            </button>
+        {/* ── Floating ambient orbs ───────────────────────────────── */}
+        <div className="absolute top-1/4 left-1/4 w-72 h-72 rounded-full pointer-events-none" style={{
+          background: 'radial-gradient(circle, rgba(251,146,60,0.07), transparent 70%)', filter: 'blur(40px)',
+        }} />
+        <div className="absolute bottom-1/4 right-1/4 w-56 h-56 rounded-full pointer-events-none" style={{
+          background: 'radial-gradient(circle, rgba(99,102,241,0.08), transparent 70%)', filter: 'blur(40px)',
+        }} />
 
-            {/* Soft footnote */}
-            <p className="text-[10px] text-muted mt-2">
-              Built with love for India · Expanding city by city 🇮🇳
-            </p>
-          </motion.div>
-        </AnimatePresence>
+        {/* ── Pulsing concentric rings + temple ─────────────────── */}
+        <div className="relative flex items-center justify-center mb-8" style={{ animation: 'cl-float 4s ease-in-out infinite' }}>
+          {/* Ring 3 — outermost */}
+          <div className="absolute rounded-full border border-orange-400/20" style={{
+            width: 200, height: 200, animation: 'cl-ring3 3.6s ease-in-out infinite 0.8s',
+          }} />
+          {/* Ring 2 */}
+          <div className="absolute rounded-full border border-orange-400/30" style={{
+            width: 148, height: 148, animation: 'cl-ring2 3.6s ease-in-out infinite 0.4s',
+          }} />
+          {/* Ring 1 — inner */}
+          <div className="absolute rounded-full border-2 border-orange-400/40" style={{
+            width: 104, height: 104, animation: 'cl-ring 3.6s ease-in-out infinite',
+          }} />
+          {/* Core glow disk */}
+          <div className="absolute w-16 h-16 rounded-full" style={{
+            background: 'radial-gradient(circle, rgba(251,146,60,0.35), transparent 70%)',
+            filter: 'blur(12px)',
+          }} />
+          {/* Temple emoji */}
+          <span className="relative z-10 select-none" style={{
+            fontSize: '3.5rem', lineHeight: 1,
+            filter: 'drop-shadow(0 0 18px rgba(251,146,60,0.9)) drop-shadow(0 0 40px rgba(251,146,60,0.4))',
+          }}>🛕</span>
+        </div>
+
+        {/* ── City signal badge ────────────────────────────────────── */}
+        <motion.div
+          initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-full mb-5 text-[11px] font-mono font-bold tracking-widest uppercase"
+          style={{
+            background: 'rgba(255,255,255,0.04)',
+            border: '1px solid rgba(239,68,68,0.35)',
+            color: '#F87171',
+          }}
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+          Signal not found · {destination}
+        </motion.div>
+
+        {/* ── Headline ─────────────────────────────────────────────── */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
+          className="text-center mb-4"
+        >
+          <h1 className="font-display font-black tracking-tight leading-none mb-1" style={{
+            fontSize: 'clamp(2rem, 7vw, 3.2rem)',
+            background: 'linear-gradient(135deg, #FB923C 0%, #FBBF24 50%, #FB923C 100%)',
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+            backgroundSize: '200% auto', backgroundClip: 'text',
+          }}>
+            LIVE IN THANJAVUR
+          </h1>
+          <p className="text-[11px] font-mono tracking-[0.3em] uppercase mt-1" style={{ color: 'rgba(251,191,36,0.5)' }}>
+            AI · Travel · India
+          </p>
+        </motion.div>
+
+        {/* ── Glass info card ───────────────────────────────────────── */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }}
+          className="w-full max-w-xs text-center px-5 py-4 rounded-2xl mb-6"
+          style={{
+            background: 'rgba(255,255,255,0.04)',
+            border: '1px solid rgba(255,255,255,0.09)',
+            backdropFilter: 'blur(12px)',
+          }}
+        >
+          <p className="text-[13px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.65)' }}>
+            Every city in India is on its way.
+            <span className="font-bold" style={{ color: 'rgba(255,255,255,0.9)' }}> {destination}</span> will be live soon —
+            you'll be the first to explore it.
+          </p>
+        </motion.div>
+
+        {/* ── Made in India badge ───────────────────────────────────── */}
+        <motion.div
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.28 }}
+          className="flex items-center gap-2 px-4 py-1.5 rounded-full mb-8 text-[10px] font-bold tracking-widest uppercase"
+          style={{
+            background: 'rgba(251,146,60,0.08)',
+            border: '1px solid rgba(251,146,60,0.3)',
+            color: 'rgba(251,146,60,0.85)',
+          }}
+        >
+          <span>🇮🇳</span>
+          <span>#MadeInIndia · All Cities Coming Soon</span>
+        </motion.div>
+
+        {/* ── CTA button ───────────────────────────────────────────── */}
+        <motion.button
+          type="button"
+          onClick={() => onDestinationSelect?.('Thanjavur')}
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.33 }}
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+          className="flex items-center gap-3 px-8 py-3.5 rounded-2xl font-bold text-sm text-white relative overflow-hidden"
+          style={{
+            background: 'linear-gradient(135deg, #F97316, #FB923C)',
+            boxShadow: '0 0 32px rgba(249,115,22,0.45), 0 0 8px rgba(249,115,22,0.3), inset 0 1px 0 rgba(255,255,255,0.15)',
+          }}
+        >
+          <span className="relative z-10">Try Thanjavur</span>
+          <ChevronRight className="w-4 h-4 relative z-10" />
+          {/* Button shine */}
+          <div className="absolute inset-0 opacity-20" style={{
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 60%)',
+          }} />
+        </motion.button>
+
+        {/* ── Floating pixel dots ───────────────────────────────────── */}
+        {[
+          { top: '12%', left: '8%',  delay: '0s',    size: 3 },
+          { top: '22%', left: '88%', delay: '0.8s',  size: 2 },
+          { top: '72%', left: '6%',  delay: '1.4s',  size: 2 },
+          { top: '80%', left: '90%', delay: '0.4s',  size: 3 },
+          { top: '45%', left: '4%',  delay: '2s',    size: 2 },
+          { top: '55%', left: '94%', delay: '1.2s',  size: 2 },
+        ].map((d, i) => (
+          <div key={i} className="absolute rounded-full pointer-events-none" style={{
+            top: d.top, left: d.left,
+            width: d.size, height: d.size,
+            background: '#FB923C',
+            animation: `cl-dot 2.5s ease-in-out infinite ${d.delay}`,
+          }} />
+        ))}
       </div>
     );
   }
