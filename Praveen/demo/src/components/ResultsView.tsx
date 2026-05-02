@@ -222,6 +222,30 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
     toast(bookmarked ? `Removed ${place.name}` : `${place.name} saved`, bookmarked ? 'info' : 'success');
   };
 
+  const actionButtons = (
+    <div className="flex items-center gap-1.5 shrink-0">
+      {tab === 'Hotels' && (<>
+        <a href={place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`}
+          target="_blank" rel="noopener noreferrer"
+          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-brand text-white hover:bg-brand/90 transition-colors active:scale-[0.97] shadow-sm">
+          <ExternalLink className="w-3.5 h-3.5" />Book
+        </a>
+        <a href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
+          target="_blank" rel="noopener noreferrer"
+          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border-2 border-slate-200 text-slate-600 hover:border-brand hover:text-brand transition-colors active:scale-[0.97]">
+          <Map className="w-3.5 h-3.5" />Map
+        </a>
+      </>)}
+      {tab === 'Food' && (
+        <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
+          target="_blank" rel="noopener noreferrer"
+          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-emerald-500 text-white hover:bg-emerald-600 transition-colors active:scale-[0.97] shadow-sm">
+          <Navigation className="w-3.5 h-3.5" />Directions
+        </a>
+      )}
+    </div>
+  );
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -229,193 +253,91 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
       transition={{ delay: animDelay, duration: 0.35, ease: 'easeOut' }}
       className="bg-surface border border-card-border rounded-xl overflow-hidden shadow-sm card-hover"
     >
-      {/* ── Collapsed state — compact AI summary card ──────────────── */}
+
+      {/* ══ COMPACT STATE ══════════════════════════════════════════════ */}
       {cardCollapsed && (
         <div>
-          <div className="relative h-32 overflow-hidden">
-            <PlacePhoto color={place.photoColor} name={place.name} photoRef={place.photoRef} autoLoad />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-            {rank === 1 ? (
-              <div className="absolute top-2 left-2 flex items-center gap-1.5 bg-brand px-2.5 py-1 rounded-lg shadow-sm">
-                <Sparkles className="w-3 h-3 text-white" />
-                <span className="text-[10px] font-black text-white uppercase tracking-widest">AI Top Pick</span>
+          {/* Top row: rank badge + name/address + action buttons */}
+          <div className="flex items-start gap-3 px-3 pt-3 pb-2">
+            {/* Rank badge */}
+            <div className="shrink-0 mt-0.5">
+              {rank === 1
+                ? <div className="flex items-center gap-1 bg-brand px-2 py-1 rounded-lg"><Sparkles className="w-3 h-3 text-white" /><span className="text-[9px] font-black text-white uppercase tracking-widest">Top Pick</span></div>
+                : <div className="w-6 h-6 rounded-full bg-bg-app border border-border flex items-center justify-center"><span className="text-[10px] font-black text-muted">#{rank}</span></div>
+              }
+            </div>
+            {/* Name + meta */}
+            <div className="flex-1 min-w-0">
+              <h3 className="font-display font-bold text-sm text-heading leading-snug truncate">{place.name}</h3>
+              <div className="flex items-center gap-1 mt-0.5 flex-wrap">
+                <div className="flex items-center gap-0.5">
+                  <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                  <span className="text-[11px] font-black text-heading">{place.rating}</span>
+                  <span className="text-[10px] text-muted ml-0.5">({place.reviewCount.toLocaleString()})</span>
+                </div>
+                <span className="text-muted text-[10px]">·</span>
+                <Badge variant={place.openNow ? 'success' : 'danger'} dot pill>{place.openNow ? 'Open' : 'Closed'}</Badge>
+                <Badge variant="neutral" pill>{place.priceLevel}</Badge>
+                {place.dist > 0 && <span className="text-[10px] text-muted">· {place.dist}km</span>}
               </div>
-            ) : (
-              <div className="absolute top-2 left-2 bg-black/55 backdrop-blur-sm px-2 py-1 rounded-lg shadow-sm">
-                <span className="text-[10px] font-black text-white">#{rank}</span>
-              </div>
-            )}
-            <div className="absolute bottom-0 left-0 right-0 px-3 pb-3">
-              <h3 className="font-display font-black text-base text-white drop-shadow truncate">{place.name}</h3>
-              <p className="text-[10px] text-white/75 truncate flex items-center gap-1 mt-0.5">
+              <p className="text-[10px] text-muted flex items-center gap-1 mt-0.5 truncate">
                 <MapPin className="w-2.5 h-2.5 shrink-0" />{place.address}
               </p>
             </div>
+            {/* Action buttons — right side */}
+            {actionButtons}
           </div>
-          <div className="px-3 py-3 space-y-2">
-            {/* Rating + Open pill in one row */}
-            <div className="flex items-center gap-2">
-              <span className="text-[22px] font-black text-heading leading-none">{place.rating}</span>
-              <div className="flex gap-0.5">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className={`w-3 h-3 ${i < Math.floor(place.rating) ? 'fill-yellow-400 text-yellow-400' : i < place.rating ? 'fill-yellow-200 text-yellow-300' : 'text-border'}`} />
-                ))}
-              </div>
-              <span className="text-[10px] text-muted">({place.reviewCount.toLocaleString()})</span>
-              <div className="ml-auto flex items-center gap-1">
-                <Badge variant={place.openNow ? 'success' : 'danger'} dot pill>{place.openNow ? 'Open' : 'Closed'}</Badge>
-                <Badge variant="neutral" pill>{place.priceLevel}</Badge>
-              </div>
-            </div>
-            {/* Brief AI note */}
-            <p className="text-xs text-body leading-relaxed flex items-start gap-1.5">
+
+          {/* AI insight line */}
+          <div className="px-3 pb-3">
+            <p className="text-[11px] text-body leading-relaxed line-clamp-2 flex items-start gap-1.5">
               <Sparkles className="w-3 h-3 text-brand shrink-0 mt-0.5" />
               {place.aiNote}
             </p>
-
-            {/* Why AI recommended it? row */}
-            <button
-              onClick={() => setShowAnalysis(v => !v)}
-              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl border border-border bg-bg-app hover:bg-brand-softer hover:border-brand/30 transition-all duration-200"
-            >
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-3.5 h-3.5 text-brand shrink-0" />
-                <span className="text-xs font-bold text-heading">Why AI recommended it?</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-[10px] text-muted">Full AI analysis</span>
-                <ChevronDown className={`w-4 h-4 text-brand transition-transform duration-200 ${showAnalysis ? 'rotate-180' : ''}`} />
-              </div>
-            </button>
-            <AnimatePresence>
-              {showAnalysis && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25, ease: 'easeInOut' }}
-                  className="overflow-hidden"
-                >
-                  <div className="space-y-2 pt-1">
-                    <div className="bg-surface border border-border rounded-xl p-3">
-                      <p className="text-[10px] font-black text-brand uppercase tracking-widest mb-1 flex items-center gap-1.5">
-                        <Trophy className="w-3 h-3" /> Why ranked above others
-                      </p>
-                      <p className="text-xs text-body leading-relaxed">{place.aiDetail.whyOverOthers}</p>
-                    </div>
-                    <div className="bg-success-soft border border-success-medium/30 rounded-xl px-3 py-2.5">
-                      <p className="text-[10px] font-black text-success uppercase tracking-widest mb-1 flex items-center gap-1">
-                        <CheckCircle className="w-3 h-3" /> Best for
-                      </p>
-                      <p className="text-xs text-body leading-relaxed">{place.aiDetail.bestFor}</p>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Prominent action buttons */}
-            {tab === 'Hotels' && (
-              <div className="flex gap-2 pt-1">
-                <a
-                  href={place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`}
-                  target="_blank" rel="noopener noreferrer"
-                  className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold bg-brand text-white hover:bg-brand/90 transition-colors active:scale-[0.98]"
-                >
-                  <ExternalLink className="w-4 h-4" />Book
-                </a>
-                <a
-                  href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
-                  target="_blank" rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border-2 border-slate-200 text-slate-600 hover:border-brand hover:text-brand transition-colors active:scale-[0.98]"
-                >
-                  <Map className="w-4 h-4" />Map
-                </a>
-              </div>
-            )}
-            {tab === 'Food' && (
-              <a
-                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
-                target="_blank" rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-sm font-bold bg-emerald-500 text-white hover:bg-emerald-600 transition-colors active:scale-[0.98] pt-1"
-              >
-                <Navigation className="w-4 h-4" />Get Directions
-                {place.dist > 0 && <span className="text-white/70 text-xs font-normal">· {place.dist}km</span>}
-              </a>
-            )}
-
-            {/* Expand button */}
-            <button
-              onClick={() => setCardCollapsed(false)}
-              className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl border border-border text-body bg-bg-app text-xs font-semibold hover:border-brand hover:text-brand transition-colors"
-            >
-              <ChevronDown className="w-3.5 h-3.5" />
-              Show full details & reviews
-            </button>
           </div>
+
+          {/* Subtle expand — NOT a styled button, just a text row */}
+          <button
+            onClick={() => setCardCollapsed(false)}
+            className="w-full flex items-center justify-between px-3 py-2.5 border-t border-border text-muted hover:text-brand transition-colors group"
+          >
+            <span className="flex items-center gap-1.5 text-[11px] font-medium">
+              <Sparkles className="w-3 h-3 text-brand/60 group-hover:text-brand transition-colors shrink-0" />
+              Why AI recommended it? · Show full analysis &amp; reviews
+            </span>
+            <ChevronDown className="w-3.5 h-3.5 shrink-0 group-hover:text-brand transition-colors" />
+          </button>
         </div>
       )}
 
-      {/* ── Full expanded card ──────────────────────────────────────── */}
+      {/* ══ EXPANDED STATE ══════════════════════════════════════════════ */}
       {!cardCollapsed && (
       <div>
-      <div className="relative">
-        <PlacePhoto color={place.photoColor} name={place.name} photoRef={place.photoRef} autoLoad={rank <= 3} />
-        {rank === 1 && (
-          <div className="absolute top-2 left-2 flex items-center gap-1.5 bg-brand px-2.5 py-1 rounded-lg shadow-sm">
-            <Sparkles className="w-3 h-3 text-white" />
-            <span className="text-[10px] font-black text-white uppercase tracking-widest">AI Top Pick</span>
-          </div>
-        )}
-        {/* Collapse button — always available so users can minimise any card */}
-        <button
-          onClick={() => setCardCollapsed(true)}
-          className="absolute top-2 right-2 flex items-center gap-1 bg-black/50 backdrop-blur-sm hover:bg-black/70 text-white text-[10px] font-bold px-2 py-1 rounded-lg transition-all"
-        >
-          <ChevronDown className="w-3 h-3 rotate-180" />
-          Collapse
-        </button>
-      </div>
 
-      <div className="p-3 space-y-2">
-        {/* Header row */}
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex-1 min-w-0">
-            <h3 className="font-display font-bold text-sm text-heading truncate-1">{place.name}</h3>
-            <div className="flex items-center gap-1 mt-0.5 text-xs text-muted">
-              <MapPin className="w-3 h-3 shrink-0" />
-              <span className="truncate-1 text-[11px]">{place.address}</span>
-              {place.dist > 0 && <span className="shrink-0 text-[11px]">· {place.dist}km</span>}
+        {/* Photo */}
+        <div className="relative">
+          <PlacePhoto color={place.photoColor} name={place.name} photoRef={place.photoRef} autoLoad={rank <= 3} />
+          {rank === 1 && (
+            <div className="absolute top-2 left-2 flex items-center gap-1.5 bg-brand px-2.5 py-1 rounded-lg shadow-sm">
+              <Sparkles className="w-3 h-3 text-white" />
+              <span className="text-[10px] font-black text-white uppercase tracking-widest">AI Top Pick</span>
             </div>
-          </div>
-          <div className="flex items-center gap-1.5 shrink-0">
-            {tab === 'Hotels' && (
-              <>
-                <a
-                  href={place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`}
-                  target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-brand text-white hover:bg-brand/90 transition-colors active:scale-[0.97] shadow-sm"
-                >
-                  <ExternalLink className="w-3.5 h-3.5" />Book
-                </a>
-                <a
-                  href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
-                  target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border-2 border-slate-200 text-slate-600 hover:border-brand hover:text-brand transition-colors active:scale-[0.97]"
-                >
-                  <Map className="w-3.5 h-3.5" />Map
-                </a>
-              </>
-            )}
-            {tab === 'Food' && (
-              <a
-                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
-                target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-emerald-500 text-white hover:bg-emerald-600 transition-colors active:scale-[0.97] shadow-sm"
-              >
-                <Navigation className="w-3.5 h-3.5" />Directions
-              </a>
-            )}
-          </div>
+          )}
         </div>
+
+        <div className="p-3 space-y-3">
+          {/* Name + action buttons */}
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex-1 min-w-0">
+              <h3 className="font-display font-bold text-sm text-heading leading-snug">{place.name}</h3>
+              <div className="flex items-center gap-1 mt-0.5 text-muted">
+                <MapPin className="w-3 h-3 shrink-0" />
+                <span className="text-[11px] truncate">{place.address}</span>
+                {place.dist > 0 && <span className="shrink-0 text-[11px]">· {place.dist}km</span>}
+              </div>
+            </div>
+            {actionButtons}
+          </div>
 
         {/* ── Rating metric block ───────────────────────────────── */}
         <div className="flex items-stretch gap-3 bg-bg-app rounded-xl p-3 border border-border">
@@ -544,100 +466,78 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           </div>
         </div>
 
-        {/* Why AI recommended it? — expandable analysis row */}
-        <button
-          onClick={() => setShowAnalysis(v => !v)}
-          className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl border border-border bg-bg-app hover:bg-brand-softer hover:border-brand/30 transition-all duration-200"
-        >
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-3.5 h-3.5 text-brand shrink-0" />
-            <span className="text-xs font-bold text-heading">Why AI recommended it?</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-[10px] text-muted font-medium">Full AI analysis</span>
-            <ChevronDown className={`w-4 h-4 text-brand transition-transform duration-200 ${showAnalysis ? 'rotate-180' : ''}`} />
-          </div>
-        </button>
+          {/* ── Why AI recommended it — always visible section ── */}
+          <div className="space-y-2 border-t border-border pt-3">
+            <p className="text-[10px] font-black text-brand uppercase tracking-widest flex items-center gap-1.5">
+              <Sparkles className="w-3 h-3" /> Why AI recommended it
+            </p>
 
-        <AnimatePresence>
-          {showAnalysis && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.25, ease: 'easeInOut' }}
-              className="overflow-hidden"
-            >
-              <div className="space-y-3 pt-1">
-                {/* Trend */}
-                {place.trendVerdict && (
-                  <div className={`flex items-start gap-2.5 rounded-xl px-3 py-3 border ${
-                    place.trendVerdict === 'improving' ? 'bg-success-soft border-success-medium/30' :
-                    place.trendVerdict === 'declining' ? 'bg-warning-soft border-warning-medium/30' :
-                                                         'bg-bg-app border-border'
+            {/* Trend */}
+            {place.trendVerdict && (
+              <div className={`flex items-start gap-2.5 rounded-xl px-3 py-2.5 border ${
+                place.trendVerdict === 'improving' ? 'bg-success-soft border-success-medium/30' :
+                place.trendVerdict === 'declining' ? 'bg-warning-soft border-warning-medium/30' :
+                                                     'bg-bg-app border-border'
+              }`}>
+                {place.trendVerdict === 'improving'
+                  ? <TrendingUp  className="w-3.5 h-3.5 text-success shrink-0 mt-0.5" />
+                  : place.trendVerdict === 'declining'
+                  ? <TrendingDown className="w-3.5 h-3.5 text-warning shrink-0 mt-0.5" />
+                  : <Minus       className="w-3.5 h-3.5 text-muted shrink-0 mt-0.5"   />
+                }
+                <div>
+                  <p className={`text-[10px] font-black uppercase tracking-wide ${
+                    place.trendVerdict === 'improving' ? 'text-success' :
+                    place.trendVerdict === 'declining' ? 'text-warning' : 'text-muted'
                   }`}>
-                    {place.trendVerdict === 'improving'
-                      ? <TrendingUp  className="w-4 h-4 text-success shrink-0 mt-0.5" />
-                      : place.trendVerdict === 'declining'
-                      ? <TrendingDown className="w-4 h-4 text-warning shrink-0 mt-0.5" />
-                      : <Minus       className="w-4 h-4 text-muted shrink-0 mt-0.5"   />
-                    }
-                    <div>
-                      <p className={`text-[10px] font-black uppercase tracking-wide ${
-                        place.trendVerdict === 'improving' ? 'text-success' :
-                        place.trendVerdict === 'declining' ? 'text-warning' : 'text-muted'
-                      }`}>
-                        {place.trendVerdict === 'improving' ? 'Rising — recent reviews score higher'
-                          : place.trendVerdict === 'declining' ? 'Falling — recent reviews score lower'
-                          : 'Proven — visitors keep coming back and rating it the same'}
-                      </p>
-                      <p className="text-[11px] text-body mt-0.5 leading-relaxed">{place.trendReason}</p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Why over others */}
-                <div className="bg-surface border border-border rounded-xl p-3 space-y-1.5">
-                  <p className="text-[10px] font-black text-brand uppercase tracking-widest flex items-center gap-1.5">
-                    <Trophy className="w-3 h-3" /> Why ranked above others
+                    {place.trendVerdict === 'improving' ? 'Rising — recent reviews score higher'
+                      : place.trendVerdict === 'declining' ? 'Falling — recent reviews score lower'
+                      : 'Proven — consistent ratings over time'}
                   </p>
-                  <p className="text-xs text-body leading-relaxed">{place.aiDetail.whyOverOthers}</p>
+                  <p className="text-[11px] text-body mt-0.5 leading-relaxed">{place.trendReason}</p>
                 </div>
-
-                {/* Data signals */}
-                <div className="bg-surface border border-border rounded-xl p-3 space-y-2">
-                  <p className="text-[10px] font-black text-heading uppercase tracking-widest">Data signals</p>
-                  <ul className="space-y-1.5">
-                    {place.aiDetail.dataPoints.map((dp, i) => (
-                      <li key={i} className="flex items-start gap-2 text-xs text-body">
-                        <span className="w-1.5 h-1.5 rounded-full bg-brand mt-1.5 shrink-0" />
-                        {dp}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Best for */}
-                <div className="bg-success-soft border border-success-medium/30 rounded-xl px-3 py-2.5">
-                  <p className="text-[10px] font-black text-success uppercase tracking-widest mb-1 flex items-center gap-1">
-                    <CheckCircle className="w-3 h-3" /> Best for
-                  </p>
-                  <p className="text-xs text-body leading-relaxed">{place.aiDetail.bestFor}</p>
-                </div>
-
-                {/* Caveat */}
-                {place.aiDetail.caveat && (
-                  <div className="bg-warning-soft border border-warning-medium/30 rounded-xl px-3 py-2.5">
-                    <p className="text-[10px] font-black text-warning uppercase tracking-widest mb-1 flex items-center gap-1">
-                      <AlertTriangle className="w-3 h-3" /> Watch out for
-                    </p>
-                    <p className="text-xs text-body leading-relaxed">{place.aiDetail.caveat}</p>
-                  </div>
-                )}
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            )}
+
+            {/* Why over others */}
+            <div className="bg-surface border border-border rounded-xl p-3 space-y-1">
+              <p className="text-[10px] font-black text-brand uppercase tracking-widest flex items-center gap-1.5">
+                <Trophy className="w-3 h-3" /> Why ranked above others
+              </p>
+              <p className="text-xs text-body leading-relaxed">{place.aiDetail.whyOverOthers}</p>
+            </div>
+
+            {/* Data signals */}
+            <div className="bg-surface border border-border rounded-xl p-3 space-y-2">
+              <p className="text-[10px] font-black text-heading uppercase tracking-widest">Data signals</p>
+              <ul className="space-y-1.5">
+                {place.aiDetail.dataPoints.map((dp, i) => (
+                  <li key={i} className="flex items-start gap-2 text-xs text-body">
+                    <span className="w-1.5 h-1.5 rounded-full bg-brand mt-1.5 shrink-0" />
+                    {dp}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Best for + Caveat row */}
+            <div className="grid grid-cols-1 gap-2">
+              <div className="bg-success-soft border border-success-medium/30 rounded-xl px-3 py-2.5">
+                <p className="text-[10px] font-black text-success uppercase tracking-widest mb-1 flex items-center gap-1">
+                  <CheckCircle className="w-3 h-3" /> Best for
+                </p>
+                <p className="text-xs text-body leading-relaxed">{place.aiDetail.bestFor}</p>
+              </div>
+              {place.aiDetail.caveat && (
+                <div className="bg-warning-soft border border-warning-medium/30 rounded-xl px-3 py-2.5">
+                  <p className="text-[10px] font-black text-warning uppercase tracking-widest mb-1 flex items-center gap-1">
+                    <AlertTriangle className="w-3 h-3" /> Watch out for
+                  </p>
+                  <p className="text-xs text-body leading-relaxed">{place.aiDetail.caveat}</p>
+                </div>
+              )}
+            </div>
+          </div>
 
         {/* Best restaurants nearby — Hotels tab only */}
         {tab === 'Hotels' && (
@@ -724,7 +624,19 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             </AnimatePresence>
           </div>
         )}
-      </div>
+        </div>{/* end p-3 space-y-3 */}
+
+        {/* Subtle collapse — same style as compact expand row */}
+        <button
+          onClick={() => setCardCollapsed(true)}
+          className="w-full flex items-center justify-between px-3 py-2.5 border-t border-border text-muted hover:text-brand transition-colors group"
+        >
+          <span className="flex items-center gap-1.5 text-[11px] font-medium">
+            <ChevronDown className="w-3 h-3 rotate-180 text-brand/60 group-hover:text-brand transition-colors shrink-0" />
+            Collapse
+          </span>
+          <ChevronDown className="w-3.5 h-3.5 shrink-0 rotate-180 group-hover:text-brand transition-colors" />
+        </button>
 
       </div>
       )}
