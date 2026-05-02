@@ -63,22 +63,31 @@ interface PlanFilters {
   hotelTags?:   string[];
   hotelArea?:   string;
   foodTags?:    string[];
-  priceFilter?: string;   // 'Any' | '₹' | '₹₹' | '₹₹₹'
+  priceFilter?: string;   // 'Any' | INR range
   minRating?:   number;   // 0 = any
   openNow?:     boolean;
-  dietType?:    string;   // 'Any' | 'Veg' | 'Non-Veg'
+  dietType?:    string;   // 'Any' | 'Veg' | 'Non-Veg' | 'Pure Veg'
   dineMode?:    string;   // 'Any' | 'Dine-in' | 'Takeout'
+  mealTime?:    string;   // 'Any' | 'Breakfast' | 'Lunch' | 'Dinner'
 }
 
-export async function fetchPlan(tab: string, seed = 0, filters: PlanFilters = {}): Promise<PlanResult[]> {
+export interface PlanResponse {
+  results:          PlanResult[];   // AI-recommended — shown immediately
+  secondaryResults: PlanResult[];   // Lower-confidence — served 2-at-a-time on Load More
+}
+
+export async function fetchPlan(tab: string, seed = 0, filters: PlanFilters = {}): Promise<PlanResponse> {
   const r = await fetch('/api/plan', {
     method:  'POST',
     headers: { 'Content-Type': 'application/json' },
     body:    JSON.stringify({ tab, searchSeed: seed, ...filters }),
   });
   if (!r.ok) throw new Error(`API error ${r.status}`);
-  const data = await r.json() as { results: PlanResult[] };
-  return data.results ?? [];
+  const data = await r.json() as PlanResponse;
+  return {
+    results:          data.results          ?? [],
+    secondaryResults: data.secondaryResults ?? [],
+  };
 }
 
 export async function fetchItinerary(startTime = '09:00', seed = 0): Promise<LiveItineraryStop[]> {

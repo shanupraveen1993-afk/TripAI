@@ -13,14 +13,19 @@ const isThanjavur = (dest: string) =>
 const uImg = (id: string, w = 320, h = 200) =>
   `https://images.unsplash.com/photo-${id}?w=${w}&h=${h}&fit=crop&auto=format&q=80`;
 
-type DietType      = 'Any' | 'Veg' | 'Non-Veg';
+type DietType      = 'Any' | 'Veg' | 'Non-Veg' | 'Pure Veg';
 type DineMode      = 'Any' | 'Dine-in' | 'Takeout';
+type MealTime      = 'Any' | 'Breakfast' | 'Lunch' | 'Dinner';
 type MinRating     = 'Any' | '3.5+' | '4.0+' | '4.5+';
-// Hotel price ranges (actual INR per night) and food cost tiers (keyword-based)
+// Hotel price ranges (actual INR per night) and food cost tiers (review-derived INR per person)
 const HOTEL_PRICE_OPTIONS = ['Any', '₹1K-5K', '₹5K-10K', '₹15K+'] as const;
-const FOOD_COST_OPTIONS   = ['Any', 'Low Cost', 'Medium Cost', 'High Cost', 'Expensive'] as const;
+const FOOD_COST_OPTIONS   = ['Any', 'Under ₹100', '₹100–300', '₹300–600', '₹600+'] as const;
 const FOOD_COST_LABELS: Record<string, string> = {
-  'Any': 'Any', 'Low Cost': 'Low', 'Medium Cost': 'Mid', 'High Cost': 'High', 'Expensive': 'Fine',
+  'Any': 'Any', 'Under ₹100': '<₹100', '₹100–300': '₹100-300', '₹300–600': '₹300-600', '₹600+': '₹600+',
+};
+const MEAL_TIME_OPTIONS = ['Any', 'Breakfast', 'Lunch', 'Dinner'] as const;
+const MEAL_TIME_ICONS: Record<string, string> = {
+  'Any': '🍽️', 'Breakfast': '🌅', 'Lunch': '☀️', 'Dinner': '🌙',
 };
 
 /* ── Tab metadata ─────────────────────────────────────────────────────── */
@@ -517,6 +522,7 @@ export interface DashboardFilters {
   foodTags: string[];
   dietType: DietType;
   dineMode: string;
+  mealTime: MealTime;
   // Itinerary
   itinDate: string;
   startPoint: string;
@@ -545,6 +551,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
   const [openNow, setOpenNow]           = useState(false);
   const [foodTags, setFoodTags]         = useState<string[]>([]);
   const [dietType, setDietType]         = useState<DietType>('Any');
+  const [mealTime, setMealTime]         = useState<MealTime>('Any');
   const [itinDate, setItinDate]         = useState(today);
   const [startPoint, setStartPoint]     = useState('');
   const [startTime, setStartTime]       = useState('09:00');
@@ -637,6 +644,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
     foodTags:     ov.foodTags     ?? foodTags,
     dietType:     (ov.dietType    ?? dietType) as DietType,
     dineMode:     'Any',
+    mealTime,
     itinDate, startPoint, startTime,
     exploreTarget: ov.exploreTarget ?? exploreTarget,
     visitTime,
@@ -702,6 +710,69 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       /* ── Food ───────────────────────────────────────────────── */
       case 'Food': return (
         <div className="space-y-3">
+          {/* Cuisine tags — PRIMARY filter, shown first */}
+          <div>
+            <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
+              Cuisine
+              <Tooltip text="Select a cuisine type — this is the primary search anchor. AI ranks results that match your selection first." />
+              {tagsLoading && <span className="ml-auto text-[9px] text-brand font-semibold animate-pulse">Updating…</span>}
+            </label>
+            <TagGrid tags={dynamicFoodTags} selected={foodTags} onToggle={toggleFoodTag} accent="#D97706" />
+          </div>
+
+          {/* Meal Time */}
+          <div>
+            <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
+              Meal Time
+              <Tooltip text="Breakfast = tiffin / idli-dosa spots · Lunch = thali / meals · Dinner = restaurant / biryani. Changes what Google returns." />
+            </label>
+            <ToggleGroup
+              options={MEAL_TIME_OPTIONS}
+              value={mealTime}
+              onChange={setMealTime}
+              accent="#D97706"
+              renderLabel={o => (
+                <span className="flex items-center gap-1">
+                  <span>{MEAL_TIME_ICONS[o]}</span>
+                  <span>{o}</span>
+                </span>
+              )}
+            />
+          </div>
+
+          {/* Diet — 4 options including Pure Veg */}
+          <div>
+            <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
+              Diet
+              <Tooltip text="Veg = serves vegetarian options · Pure Veg = only vegetarian food, no non-veg items at all · Non-Veg = ranked by non-veg review mentions." />
+            </label>
+            <ToggleGroup
+              options={['Any', 'Veg', 'Non-Veg', 'Pure Veg'] as const}
+              value={dietType}
+              onChange={setDietType}
+              accent="#059669"
+              renderLabel={o => o === 'Pure Veg'
+                ? <span className="flex items-center gap-0.5"><span>🌿</span><span>Pure Veg</span></span>
+                : <span>{o}</span>
+              }
+            />
+          </div>
+
+          {/* Price per person — INR ranges from review analysis */}
+          <div>
+            <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
+              Price / Person
+              <Tooltip text="Derived from what Google reviewers say about price. Under ₹100 = street food / mess · ₹100-300 = everyday dining · ₹300-600 = premium · ₹600+ = fine dining." />
+            </label>
+            <ToggleGroup
+              options={FOOD_COST_OPTIONS}
+              value={priceFilter}
+              onChange={setPriceFilter}
+              accent="#D97706"
+              renderLabel={o => FOOD_COST_LABELS[o] ?? o}
+            />
+          </div>
+
           {/* Open Now chip */}
           <div>
             <button
@@ -715,40 +786,6 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               <span className={`w-2 h-2 rounded-full ${openNow ? 'bg-green-500' : 'bg-gray-300'}`} />
               Open Now
             </button>
-          </div>
-
-          {/* Cost Tier — keyword-frequency based */}
-          <div>
-            <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
-              Cost Level
-              <Tooltip text="Low = budget meals · Mid = everyday dining · High = premium · Fine = fine dining. Filtered by review keyword frequency, not just price symbol." />
-            </label>
-            <ToggleGroup
-              options={FOOD_COST_OPTIONS}
-              value={priceFilter}
-              onChange={setPriceFilter}
-              accent="#D97706"
-              renderLabel={o => FOOD_COST_LABELS[o] ?? o}
-            />
-          </div>
-
-          {/* Diet — green */}
-          <div>
-            <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
-              Diet
-              <Tooltip text="Veg filters restaurants Google marks servesVegetarianFood = true." />
-            </label>
-            <ToggleGroup options={['Any', 'Veg', 'Non-Veg'] as const} value={dietType} onChange={setDietType} accent="#059669" />
-          </div>
-
-          {/* Cuisine tags — dynamic per city */}
-          <div>
-            <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
-              Cuisine
-              <Tooltip text="Tags are drawn from real restaurants in this city — most popular first." />
-              {tagsLoading && <span className="ml-auto text-[9px] text-brand font-semibold animate-pulse">Updating…</span>}
-            </label>
-            <TagGrid tags={dynamicFoodTags} selected={foodTags} onToggle={toggleFoodTag} accent="#D97706" />
           </div>
         </div>
       );

@@ -18,7 +18,7 @@ import {
 } from './mock/data';
 import {
   fetchPlan, fetchItinerary, fetchExploreGuide,
-  PlanResult, ExploreGuide, LiveItineraryStop,
+  PlanResult, PlanResponse, ExploreGuide, LiveItineraryStop,
 } from './api/client';
 
 type AppScreen = 'landing' | 'browse' | 'app';
@@ -42,6 +42,7 @@ export default function App() {
   const [contentScreen, setContent]   = useState<ContentScreen>('dashboard');
   const [searchLocation, setSearchLocation] = useState('Thanjavur');
   const [liveResults, setLiveResults]       = useState<PlanResult[] | null>(null);
+  const [resultPool,  setResultPool]        = useState<PlanResult[]>([]);   // secondary pool for Load More
   const [liveExplore, setLiveExplore]       = useState<ExploreGuide | null>(null);
   const [liveItinerary, setLiveItinerary]   = useState<LiveItineraryStop[] | null>(null);
   const [apiError, setApiError]             = useState(false);
@@ -138,6 +139,7 @@ export default function App() {
     setContent('loading');
     setIsSaved(false);
     setLiveResults(null);
+    setResultPool([]);
     setLiveExplore(null);
     setLiveItinerary(null);
     setApiError(false);
@@ -156,8 +158,8 @@ export default function App() {
           else setApiError(true);
         }
       } else {
-        // Hotels / Food — ALWAYS live API, results must match user filters
-        const results = await fetchPlan(filters.tab, seed, {
+        // Hotels / Food — fetch 20, Gemini splits into recommended + secondary
+        const { results, secondaryResults } = await fetchPlan(filters.tab, seed, {
           hotelTags:   filters.hotelTags,
           hotelArea:   filters.hotelArea,
           foodTags:    filters.foodTags,
@@ -166,14 +168,17 @@ export default function App() {
           openNow:     filters.openNow,
           dietType:    filters.dietType,
           dineMode:    filters.dineMode,
+          mealTime:    filters.mealTime,
         });
-        // Show results; if empty it means filters were too strict — NOT an API error
-        setLiveResults(results.slice(0, 10));
+        // Show AI-recommended results immediately; secondary pool feeds Load More
+        setLiveResults(results);
+        setResultPool(secondaryResults);
       }
     } catch {
       // API completely failed — fall back to sample data so the demo still works
       if (filters.tab === 'Hotels') setLiveResults(MOCK_HOTELS.slice(0, 10) as unknown as PlanResult[]);
       else if (filters.tab === 'Food') setLiveResults(MOCK_FOOD.slice(0, 10) as unknown as PlanResult[]);
+      setResultPool([]);
       setApiError(true);
     }
     setAiCount(c => c + 1);
@@ -241,7 +246,7 @@ export default function App() {
       tab: 'Explore', destination: searchLocation,
       startDate: '', endDate: '', numPeople: 2, budget: 0,
       hotelTags: [], hotelArea: '', priceFilter: 'Any', minRating: 'Any', openNow: false,
-      foodLocation: '', foodTags: [], dietType: 'Any', dineMode: 'Any',
+      foodLocation: '', foodTags: [], dietType: 'Any', dineMode: 'Any', mealTime: 'Any',
       itinDate: '', startPoint: '', startTime: '09:00',
       exploreTarget: target, visitTime: 'Morning',
     };
@@ -356,25 +361,37 @@ export default function App() {
                 setSearchSeed(newSeed);
 
                 if (activeTab === 'Hotels' || activeTab === 'Food') {
-                  // Append 2 more results with same filters — no full reload
                   const f = lastSearchFilters;
-                  setIsLoadingMore(true);
-                  try {
-                    const more = await fetchPlan(activeTab, newSeed, {
-                      hotelTags:   f?.hotelTags,
-                      hotelArea:   f?.hotelArea,
-                      foodTags:    f?.foodTags,
-                      priceFilter: f?.priceFilter,
-                      minRating:   f?.minRating === '4.5+' ? 4.5 : f?.minRating === '4.0+' ? 4.0 : f?.minRating === '3.5+' ? 3.5 : 0,
-                      openNow:     f?.openNow,
-                      dietType:    f?.dietType,
-                      dineMode:    f?.dineMode,
-                    });
-                    if (more.length > 0) {
-                      setLiveResults(prev => [...(prev ?? []), ...more.slice(0, 2)]);
-                    }
-                  } catch { /* silent — existing results stay */ }
-                  setIsLoadingMore(false);
+
+                  if (resultPool.length > 0) {
+                    // ── Pool has items → instant, no spinner, no API call ──────
+                    const next2 = resultPool.slice(0, 2);
+                    setLiveResults(prev => [...(prev ?? []), ...next2]);
+                    setResultPool(prev => prev.slice(2));
+                  } else {
+                    // ── Pool exhausted → fresh fetch with new seed ────────────
+                    setIsLoadingMore(true);
+                    try {
+                      const { results: more, secondaryResults: moreSecondary } = await fetchPlan(activeTab, newSeed, {
+                        hotelTags:   f?.hotelTags,
+                        hotelArea:   f?.hotelArea,
+                        foodTags:    f?.foodTags,
+                        priceFilter: f?.priceFilter,
+                        minRating:   f?.minRating === '4.5+' ? 4.5 : f?.minRating === '4.0+' ? 4.0 : f?.minRating === '3.5+' ? 3.5 : 0,
+                        openNow:     f?.openNow,
+                        dietType:    f?.dietType,
+                        dineMode:    f?.dineMode,
+                        mealTime:    f?.mealTime,
+                      });
+                      // All fresh results go into pool; show first 2 immediately
+                      const freshPool = [...more, ...moreSecondary];
+                      if (freshPool.length > 0) {
+                        setLiveResults(prev => [...(prev ?? []), ...freshPool.slice(0, 2)]);
+                        setResultPool(freshPool.slice(2));
+                      }
+                    } catch { /* silent — existing results stay */ }
+                    setIsLoadingMore(false);
+                  }
                 } else {
                   // Itinerary: full replace with new AI plan
                   setLiveItinerary(null);
@@ -384,7 +401,7 @@ export default function App() {
                       tab: activeTab, destination: 'Thanjavur',
                       startDate: '', endDate: '', numPeople: 2, budget: 0,
                       hotelTags: [], hotelArea: '', priceFilter: 'Any', minRating: 'Any', openNow: false,
-                      foodLocation: '', foodTags: [], dietType: 'Any', dineMode: 'Any',
+                      foodLocation: '', foodTags: [], dietType: 'Any', dineMode: 'Any', mealTime: 'Any',
                       itinDate: '', startPoint: '', startTime: '09:00',
                       exploreTarget: 'Brihadeeswarar Temple', visitTime: 'Morning',
                     },

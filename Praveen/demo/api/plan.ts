@@ -73,18 +73,22 @@ const HOTEL_PRICE_QUERY: Record<string, string> = {
 };
 
 function buildHotelQuery(filters: UserFilters): string {
-  const tags     = (filters.hotelTags ?? []).filter(t => t);
-  const tagTerms = tags.slice(0, 2).map(t => HOTEL_TAG_SEARCH[t] ?? t).join(' ');
-  const priceKw  = (filters.priceFilter && filters.priceFilter !== 'Any')
+  const tags = (filters.hotelTags ?? []).filter(t => t);
+  const priceKw = (filters.priceFilter && filters.priceFilter !== 'Any')
     ? (HOTEL_PRICE_QUERY[filters.priceFilter] ?? '') : '';
 
   if (filters.hotelArea) {
-    return `${priceKw} ${tagTerms} hotel near ${filters.hotelArea} Thanjavur Tamil Nadu`.replace(/\s+/g,' ').trim();
+    // All tags included — first tag is primary anchor for area-specific search
+    const tagTerms = tags.map(t => HOTEL_TAG_SEARCH[t] ?? t).join(' ');
+    return `${priceKw} ${tagTerms} hotel near ${filters.hotelArea} Thanjavur Tamil Nadu`.replace(/\s+/g, ' ').trim();
   }
-  if (tagTerms) {
-    return `${priceKw} ${tagTerms} in Thanjavur Tamil Nadu`.replace(/\s+/g,' ').trim();
+  if (tags.length > 0) {
+    // First tag is the primary query anchor; remaining tags are modifiers
+    const primaryTerm   = HOTEL_TAG_SEARCH[tags[0]] ?? tags[0];
+    const modifierTerms = tags.slice(1).map(t => HOTEL_TAG_SEARCH[t] ?? t).join(' ');
+    return `${priceKw} ${primaryTerm} ${modifierTerms} in Thanjavur Tamil Nadu`.replace(/\s+/g, ' ').trim();
   }
-  return `${priceKw} hotels in Thanjavur Tamil Nadu near Brihadeeswarar Temple`.replace(/\s+/g,' ').trim();
+  return `${priceKw} hotels in Thanjavur Tamil Nadu near Brihadeeswarar Temple`.replace(/\s+/g, ' ').trim();
 }
 
 // Thanjavur city centre — used for location-restricted and location-biased searches
@@ -169,7 +173,7 @@ async function fetchPlaces(
     },
     body: JSON.stringify({
       textQuery:      prefix + query,
-      maxResultCount: 10,
+      maxResultCount: 20,
       languageCode:   'en',
       rankPreference,
       ...(minRating > 0 ? { minRating } : {}),
@@ -198,12 +202,13 @@ function filterThanjavurOnly(places: any[]): any[] {
 interface UserFilters {
   hotelTags?:   string[];
   hotelArea?:   string;
-  foodTags?:    string[];  // cuisine/type tags — wired into Places query
-  priceFilter?: string;   // 'Any' | '₹' | '₹₹' | '₹₹₹' — hard-filtered via priceLevel
+  foodTags?:    string[];  // cuisine/type tags — primary query anchor
+  priceFilter?: string;   // 'Any' | INR range label — hard-filtered via priceLevel + review keywords
   minRating?:   number;   // 0 = any; hard-filtered via rating field
   openNow?:     boolean;  // hard-filtered via openNow boolean from Places API
-  dietType?:    string;   // 'Any' | 'Veg' | 'Non-Veg' — hard-filtered via servesVegetarianFood
+  dietType?:    string;   // 'Any' | 'Veg' | 'Non-Veg' | 'Pure Veg' — hard-filtered via servesVegetarianFood + review scan
   dineMode?:    string;   // 'Any' | 'Dine-in' | 'Takeout' — hard-filtered via dineIn/takeout
+  mealTime?:    string;   // 'Any' | 'Breakfast' | 'Lunch' | 'Dinner' — injected into Places query
 }
 
 // Map UI food tags → search-friendly terms for Places API query
@@ -227,15 +232,37 @@ const FOOD_TAG_SEARCH: Record<string, string> = {
   'Outdoor Seating':'outdoor restaurant',
 };
 
+// Meal time → search keyword map
+const MEAL_TIME_QUERY: Record<string, string> = {
+  'Breakfast': 'breakfast idli dosa tiffin morning coffee',
+  'Lunch':     'lunch thali meals rice sambar afternoon',
+  'Dinner':    'dinner restaurant night biryani',
+};
+
 function buildFoodQuery(filters: UserFilters): string {
-  const tags      = (filters.foodTags ?? []).filter(t => t);
-  // Combine up to 2 tags so the query is specific but not over-constrained
-  const tagTerms  = tags.slice(0, 2).map(t => FOOD_TAG_SEARCH[t] ?? t.toLowerCase()).join(' ');
-  const dietPfx   = filters.dietType === 'Veg' ? 'vegetarian pure veg ' : '';
-  const pricePfx  = filters.priceFilter === 'Low Cost'  ? 'budget cheap '   :
-                    filters.priceFilter === 'Expensive'  ? 'fine dining '    : '';
-  const baseTerm  = tagTerms || 'restaurant';
-  return `${pricePfx}${dietPfx}${baseTerm} in Thanjavur Tamil Nadu`.replace(/\s+/g,' ').trim();
+  const tags = (filters.foodTags ?? []).filter(t => t);
+
+  // First selected tag is the primary anchor; remaining tags are modifiers
+  // No slice limit — all selected tags inform the query
+  const primaryTag   = tags.length > 0 ? (FOOD_TAG_SEARCH[tags[0]] ?? tags[0].toLowerCase()) : '';
+  const modifierTags = tags.slice(1).map(t => FOOD_TAG_SEARCH[t] ?? t.toLowerCase()).join(' ');
+  const tagTerms     = [primaryTag, modifierTags].filter(Boolean).join(' ');
+
+  // Diet prefix — Pure Veg is stricter than Veg
+  const dietPfx = filters.dietType === 'Pure Veg' ? 'pure vegetarian only veg no non-veg ' :
+                  filters.dietType === 'Veg'       ? 'vegetarian veg '                      : '';
+
+  // Price prefix (new INR labels)
+  const pricePfx = filters.priceFilter === 'Under ₹100' ? 'budget cheap street food ' :
+                   filters.priceFilter === '₹600+'       ? 'fine dining premium '      : '';
+
+  // Meal time prefix — injects meal-specific keywords so Places returns relevant results
+  const mealPfx = (filters.mealTime && filters.mealTime !== 'Any')
+    ? (MEAL_TIME_QUERY[filters.mealTime] ?? '') + ' '
+    : '';
+
+  const baseTerm = tagTerms || 'restaurant';
+  return `${mealPfx}${pricePfx}${dietPfx}${baseTerm} in Thanjavur Tamil Nadu`.replace(/\s+/g, ' ').trim();
 }
 
 // Hotel price range buckets — inclusive on boundaries to avoid empty results
@@ -252,20 +279,24 @@ const PRICE_BUCKETS: Record<string, string[]> = {
 };
 
 // Food cost tier — keyword frequency analysis across all reviews
-// A place matches a tier if its reviews repeat keywords from that category most
+// INR ranges derived from Thanjavur Google review price mentions:
+//   Under ₹100  = street food / mess / budget tiffin
+//   ₹100–300    = everyday restaurant / local thali
+//   ₹300–600    = mid-premium dining
+//   ₹600+       = fine dining / luxury
 const FOOD_COST_KEYWORDS: Record<string, string[]> = {
-  'Low Cost':    ['cheap', 'affordable', 'budget', 'pocket', 'inexpensive', 'low price', 'economical', 'very cheap', 'low cost', 'cheap and', 'affordable price'],
-  'Medium Cost': ['reasonable', 'value for money', 'moderate', 'mid-range', 'worth it', 'decent price', 'fair price', 'average price', 'not too expensive', 'good value'],
-  'High Cost':   ['pricey', 'a bit expensive', 'costly', 'slightly expensive', 'overpriced', 'on the expensive', 'not cheap', 'expensive but', 'premium price'],
-  'Expensive':   ['fine dining', 'luxury', 'very expensive', 'high-end', 'splurge', 'lavish', 'top-end', 'extravagant', 'premium dining'],
+  'Under ₹100': ['cheap', 'affordable', 'budget', 'pocket', 'inexpensive', 'low price', 'economical', 'very cheap', 'low cost', 'cheap and', 'affordable price', '50 rupees', '80 rupees', 'very affordable'],
+  '₹100–300':   ['reasonable', 'value for money', 'moderate', 'worth it', 'decent price', 'fair price', 'average price', 'not too expensive', 'good value', 'mid-range', '100 rupees', '150 rupees', '200 rupees'],
+  '₹300–600':   ['pricey', 'a bit expensive', 'costly', 'slightly expensive', 'on the expensive', 'not cheap', 'expensive but', 'premium price', '300 rupees', '400 rupees', '500 rupees'],
+  '₹600+':      ['fine dining', 'luxury', 'very expensive', 'high-end', 'splurge', 'lavish', 'top-end', 'extravagant', 'premium dining', '600 rupees', '700 rupees', '800 rupees', 'expensive restaurant'],
 };
 
 // Google Places price level → food cost tier mapping (used as fallback when keyword score is 0)
 const FOOD_PRICE_LEVEL_MAP: Record<string, string[]> = {
-  'Low Cost':    ['PRICE_LEVEL_FREE', 'PRICE_LEVEL_INEXPENSIVE'],
-  'Medium Cost': ['PRICE_LEVEL_INEXPENSIVE', 'PRICE_LEVEL_MODERATE'],
-  'High Cost':   ['PRICE_LEVEL_MODERATE', 'PRICE_LEVEL_EXPENSIVE'],
-  'Expensive':   ['PRICE_LEVEL_EXPENSIVE', 'PRICE_LEVEL_VERY_EXPENSIVE'],
+  'Under ₹100': ['PRICE_LEVEL_FREE', 'PRICE_LEVEL_INEXPENSIVE'],
+  '₹100–300':   ['PRICE_LEVEL_INEXPENSIVE', 'PRICE_LEVEL_MODERATE'],
+  '₹300–600':   ['PRICE_LEVEL_MODERATE', 'PRICE_LEVEL_EXPENSIVE'],
+  '₹600+':      ['PRICE_LEVEL_EXPENSIVE', 'PRICE_LEVEL_VERY_EXPENSIVE'],
 };
 
 function scoreFoodCost(reviews: any[], category: string): number {
@@ -314,11 +345,31 @@ function applyHardFilters(places: any[], tab: string, f: UserFilters): any[] {
     if (n.length >= 1) out = n;
   }
 
-  // 3. Vegetarian (Food only) — uses Places servesVegetarianFood boolean
-  if (tab === 'Food' && f.dietType === 'Veg') {
-    const n = out.filter(p => p.servesVegetarianFood === true);
-    // Only enforce if we found veg-flagged places — Places data is inconsistent
-    if (n.length >= 2) out = n;
+  // 3. Diet filter (Food only)
+  if (tab === 'Food') {
+    if (f.dietType === 'Veg') {
+      const n = out.filter(p => p.servesVegetarianFood === true);
+      if (n.length >= 2) out = n;
+    } else if (f.dietType === 'Pure Veg') {
+      // Pure Veg: must flag vegetarian AND reviews must not be dominated by non-veg mentions
+      const NON_VEG_KW = ['chicken', 'mutton', 'beef', 'pork', 'fish', 'prawn', 'shrimp', 'crab', 'egg', 'non veg', 'nonveg', 'non-veg', 'meat'];
+      const n = out.filter(p => {
+        if (p.servesVegetarianFood === false) return false;
+        const reviewText = (p.reviews ?? []).map((r: any) => (r.text?.text ?? '').toLowerCase()).join(' ');
+        const nonVegHits = NON_VEG_KW.filter(kw => reviewText.includes(kw)).length;
+        return nonVegHits < 3; // allow up to 2 mentions (reviewer may compare); 3+ = non-veg dominant
+      });
+      if (n.length >= 1) out = n;
+    } else if (f.dietType === 'Non-Veg') {
+      // Non-Veg: prefer places where reviews mention non-veg items — sort by non-veg keyword hits
+      const NON_VEG_KW = ['chicken', 'mutton', 'fish', 'prawn', 'biryani', 'crab', 'meat', 'non veg'];
+      const scored = out.map(p => {
+        const text = (p.reviews ?? []).map((r: any) => (r.text?.text ?? '').toLowerCase()).join(' ');
+        return { place: p, score: NON_VEG_KW.filter(kw => text.includes(kw)).length };
+      });
+      const sorted = scored.sort((a, b) => b.score - a.score).map(({ place }) => place);
+      out = sorted;
+    }
   }
 
   // 4. Dining mode (Food only)
@@ -436,12 +487,16 @@ async function geminiRankAndAnalyse(
       criteria.push({ label: 'Preferred area', value: `near ${filters.hotelArea}`, weight: 'important' });
     criteria.push({ label: 'Implicit need', value: 'walkable or close to Brihadeeswarar Temple', weight: 'important' });
   } else if (tab === 'Food') {
-    if (filters.dietType && filters.dietType !== 'Any')
+    if (filters.dietType === 'Pure Veg')
+      criteria.push({ label: 'Diet', value: 'Pure Veg — must serve ONLY vegetarian food, no non-veg items at all', weight: 'critical' });
+    else if (filters.dietType && filters.dietType !== 'Any')
       criteria.push({ label: 'Diet', value: filters.dietType, weight: 'critical' });
     if (filters.foodTags?.length)
-      criteria.push({ label: 'Cuisine / type', value: filters.foodTags.join(', '), weight: 'critical' });
+      criteria.push({ label: 'Cuisine / type (PRIMARY)', value: filters.foodTags.join(', '), weight: 'critical' });
+    if (filters.mealTime && filters.mealTime !== 'Any')
+      criteria.push({ label: 'Meal time', value: filters.mealTime + ' — rank places that specialise in this meal highest', weight: 'critical' });
     if (filters.priceFilter && filters.priceFilter !== 'Any')
-      criteria.push({ label: 'Price tier', value: filters.priceFilter, weight: 'important' });
+      criteria.push({ label: 'Price range (per person)', value: filters.priceFilter, weight: 'important' });
     if (filters.dineMode && filters.dineMode !== 'Any')
       criteria.push({ label: 'Dining mode', value: filters.dineMode, weight: 'important' });
     criteria.push({ label: 'Implicit need', value: 'authentic Thanjavur / Tamil cuisine', weight: 'nice-to-have' });
@@ -451,32 +506,55 @@ async function geminiRankAndAnalyse(
     ? criteria.map(c => `  - [${c.weight.toUpperCase()}] ${c.label}: ${c.value}`).join('\n')
     : '  - No specific preferences stated (rank by quality and review signals)';
 
-  // ── Step 3: Build ranking rules specific to the tab ──────────────────────
+  // ── Step 3: Build ranking + selection rules specific to the tab ──────────
   const rankingRules = tab === 'Hotels' ? `
 RANKING RULES for Hotels:
-1. Check tagMentions for each place — this tells you if the place's name or reviews actually mention the selected tags.
-   - If a tag is CRITICAL and tagMentions[tag] = false for a place → rank that place LAST (rank = total places count)
-   - If ALL places have tagMentions[tag] = false for a CRITICAL tag → rank by quality anyway (no place can be excluded)
-2. Among tag-matching places: rank by (a) tagMentions score (most tags confirmed = first), (b) proximity to Big Temple, (c) rating × log(totalReviews)
-3. A hotel with 4.3 rating + 2000 reviews outranks 4.7 + 50 reviews (volume = trust signal)
-4. reviewDepth > 150 → higher trust; reviewDepth < 50 → lower trust
-5. If two hotels match equally, the one with better recent trend wins` : tab === 'Food' ? `
+1. CRITERIA FIRST — the visitor profile above is the primary filter. A place that perfectly matches tag criteria at 4.1★ beats a 4.8★ place with no tag match.
+2. Check tagMentions for each place:
+   - CRITICAL tag with tagMentions[tag] = false → rank LAST, set recommended=false
+   - If ALL places have tagMentions[tag] = false → rank by quality (no exclusion possible)
+3. Among tag-matching places: rank by (a) tagMentions score, (b) rating × log(totalReviews), (c) recent trend
+4. Trust signal: 4.3★ × 2000 reviews outranks 4.7★ × 50 reviews
+5. reviewDepth > 150 → higher trust; < 50 → lower trust
+6. Declining trend is a penalty — rank below stable/improving at same quality` : tab === 'Food' ? `
 RANKING RULES for Food:
-1. Eliminate any place that violates CRITICAL diet constraint (e.g. non-veg items only when visitor is Pure Veg)
-2. Among remaining: rank by (a) diet match, (b) spend level match, (c) bucket scores, (d) review volume
-3. Bucket scoring: buckets.hygiene + buckets.taste are weighted 2× — if both ≥ 3, strong recommendation
-4. If diningVibe matches a bucket name (e.g. "ambience"), double-weight that bucket score
-5. reviewDepth > 150 = detailed reviewer community = trust signal
-6. Authentic local cuisine beats international at same rating for Thanjavur visitors
-7. A packed local spot with 4.4 + 3000 reviews outranks 4.8 + 80 reviews` : `
-RANKING RULES: rank by overall rating weighted by review volume`;
+1. CRITERIA FIRST — visitor's diet, meal time, cuisine tags, and price range are the primary filters.
+2. Pure Veg constraint: any place with non-veg dominance in reviews → rank LAST, recommended=false
+3. Meal time match: if Breakfast selected, tiffin/idli/dosa spots rank above general restaurants
+4. Tag match: cuisine tag in name or reviews → rank above non-matching places at same quality
+5. Bucket scoring: buckets.hygiene + buckets.taste weighted 2× — both ≥ 3 = strong signal
+6. Authentic Thanjavur/Tamil cuisine beats international at same rating for local visitors
+7. 4.4★ × 3000 reviews outranks 4.8★ × 80 reviews — volume = real footfall signal
+8. Price range match: if price tier selected, places whose review keywords match that tier rank higher` : `
+RANKING RULES: rank by criteria fit first, then rating × log(reviewCount)`;
 
-  // ── Step 4: Compose the prompt ────────────────────────────────────────────
-  const prompt = `You are a Thanjavur travel expert and data analyst. Rank and annotate these ${places.length} ${tab.toLowerCase()} for a visitor with these needs:
+  // ── Step 4: Selection criteria for "recommended" flag ─────────────────────
+  const selectionRules = `
+SELECTION RULES — set "recommended": true or false for EACH place:
+
+recommended=true ONLY when ALL of these hold:
+  A. CRITERIA FIT: Place genuinely matches the visitor's stated criteria (tags, diet, meal time, price range)
+     - If tags selected: at least one tag confirmed in tagMentions
+     - If Pure Veg: servesVeg===true AND reviews show no non-veg dominance
+     - If meal time ≠ Any: place type/reviews align with that meal period
+     - If price range selected: priceLevel or keyword scores align with the selected tier
+  B. QUALITY FLOOR: rating >= 4.0 AND totalReviews >= 20
+  C. TREND: trendVerdict is "stable" or "improving" (NOT "declining")
+  D. NO HARD CONFLICTS: caveat does not directly contradict a CRITICAL visitor criterion
+
+recommended=false when: criteria fit is weak, quality is below floor, trend is declining, or conflicts exist
+
+FALLBACK: If fewer than 3 places qualify for recommended=true, relax criterion B to (rating >= 3.8, totalReviews >= 10) and remove criterion C until at least 3 places are recommended. Never leave all as recommended=false.
+
+IMPORTANT: recommended places will be shown as the primary AI result set. Non-recommended places appear as secondary "Load More" options. Your selection directly decides what the visitor sees first — make it count.`;
+
+  // ── Step 5: Compose the prompt ────────────────────────────────────────────
+  const prompt = `You are a Thanjavur travel expert and data analyst. Rank, select, and annotate these ${places.length} ${tab.toLowerCase()} for a visitor with these needs:
 
 VISITOR PROFILE:
 ${criteriaStr}
 ${rankingRules}
+${selectionRules}
 
 TREND INTERPRETATION (use trendDelta field):
 - trendDelta > +0.2 → "improving" (recent reviewers rate higher than historical avg)
@@ -491,21 +569,23 @@ TASK: Return a JSON array of EXACTLY ${places.length} items in RANKED ORDER (bes
 [{
   "originalIdx": <idx from input, integer>,
   "rank": <1 = best match, integer>,
+  "recommended": <true | false — see SELECTION RULES above>,
   "trendVerdict": "improving" | "declining" | "stable",
   "trendReason": "<max 12 words — MUST quote or closely paraphrase words from the actual review text provided>",
-  "reviewSummary": "<2 sentences — synthesise what reviewers most frequently praise about this place; use words or phrases from the actual review texts; lead with the strongest positive; do NOT mention ranking or visitor criteria>",
-  "aiNote": "<max 18 words — personalised to THIS visitor's stated criteria — must reference at least one criterion>",
-  "whyOverOthers": "<max 30 words — compare against the OTHER places in this exact list; cite specific numbers, unique features, or gaps the others have>",
+  "reviewSummary": "<2 sentences — synthesise what reviewers most frequently praise; use words from actual review texts; lead with strongest positive; do NOT mention ranking or visitor criteria>",
+  "aiNote": "<max 18 words — personalised to THIS visitor's criteria — must reference at least one criterion>",
+  "whyOverOthers": "<max 30 words — compare against the OTHER places in this exact list; cite specific numbers, unique features, or gaps>",
   "bestFor": "<10 words — describe the ideal visitor type for this place>",
-  "caveat": "<one sentence specific drawback, or null — only include if genuinely significant>"
+  "caveat": "<one sentence specific drawback, or null — only if genuinely significant>"
 }]
 
 QUALITY RULES:
 - trendReason must use words found in the review text, not invented
-- reviewSummary must sound like a concise summary of real visitor feedback, grounded in review text
-- aiNote must feel personal — "matches your Heritage + Pool request" not "popular with visitors"
+- reviewSummary must sound like a summary of real visitor feedback, grounded in review text
+- aiNote must feel personal — "matches your Heritage + Temple Nearby request" not "popular with visitors"
 - whyOverOthers must name or describe the alternatives: "unlike the other hotels here, this one..."
-- caveat should only appear for real drawbacks (noise, distance, service issues from reviews)
+- caveat only for real drawbacks (noise, distance, service issues cited in reviews)
+- recommended must reflect genuine criteria fit — do not recommend places that miss CRITICAL criteria
 
 Return ONLY valid JSON. No markdown fences. No explanation text.`;
 
@@ -571,9 +651,19 @@ Return ONLY valid JSON. No markdown fences. No explanation text.`;
         ? `Top in this set: ${s.rating}★ × ${s.totalReviews.toLocaleString()} reviews — highest combined trust signal`
         : `${s.rating}★ with ${s.totalReviews.toLocaleString()} reviews — ${parseFloat(diff) >= 0 ? `${diff} above` : 'near'} the group average of ${avgRating.toFixed(1)}★`;
 
+      // recommended: true if quality floor + no declining trend
+      // Fallback logic mirrors the Gemini selection rules — at least top half recommended
+      const qualityOk    = s.rating >= 4.0 && s.totalReviews >= 20;
+      const trendOk      = trendVerdict !== 'declining';
+      const tagSelected  = (tab === 'Hotels' ? filters.hotelTags : filters.foodTags ?? []) ?? [];
+      const tagOk        = tagSelected.length === 0 || Object.values(s.tagMentions ?? {}).some(Boolean);
+      let recommended    = qualityOk && trendOk && tagOk;
+
+      // Ensure at least 3 recommended in fallback — relax threshold
       return {
         originalIdx:   i,
         rank:          i + 1,
+        recommended,
         trendVerdict,
         trendReason,
         reviewSummary,
@@ -582,6 +672,19 @@ Return ONLY valid JSON. No markdown fences. No explanation text.`;
         bestFor,
         caveat:        null,
       };
+    }).map((item, _, arr) => {
+      // Fallback safety: if fewer than 3 recommended, promote top-rated non-recommended until 3 exist
+      const recommendedCount = arr.filter(x => x.recommended).length;
+      if (!item.recommended && recommendedCount < 3) {
+        const promotionThreshold = arr
+          .filter(x => !x.recommended)
+          .sort((a, b) => b.rank - a.rank)
+          .slice(0, 3 - recommendedCount);
+        if (promotionThreshold.some(p => p.originalIdx === item.originalIdx)) {
+          return { ...item, recommended: true };
+        }
+      }
+      return item;
     });
   }
 }
@@ -884,6 +987,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     openNow:     req.body?.openNow === true,
     dietType:    req.body?.dietType    ?? 'Any',
     dineMode:    req.body?.dineMode    ?? 'Any',
+    mealTime:    req.body?.mealTime    ?? 'Any',
   };
 
   // Build query from filters — changes the Places search so different filters → different results
@@ -905,19 +1009,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const qualified    = hardFiltered.filter(p => (p.rating ?? 0) >= 3.8 && (p.userRatingCount ?? 0) >= 10);
     const placesToRank = qualified.length >= 2 ? qualified : hardFiltered;
 
-    // Gemini ranks all places comparatively and returns them in best-first order
+    // Gemini ranks all places and flags recommended=true/false per selection rules
     const rankedAi = await geminiRankAndAnalyse(placesToRank, tab, filters);
 
-    // Sort by Gemini's rank (ascending) then map to original place objects
+    // Sort by Gemini's rank (ascending); recommended places come first naturally
     const sorted          = [...rankedAi].sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99));
     const reorderedPlaces = sorted.map((ai: any) => placesToRank[ai.originalIdx ?? 0] ?? placesToRank[0]);
 
-    const results = reorderedPlaces.map((p: any, i: number) => {
-      const ai = sorted[i] ?? {};
-
-      // Show up to 5 reviews (Places API Advanced limit), longest first — detail = trust
+    // Build the full result shape for every place
+    const buildPlaceResult = (p: any, ai: any, globalIdx: number) => {
       const uiReviews = [...(p.reviews ?? [])]
-        .sort((a, b) => (b.text?.text?.length ?? 0) - (a.text?.text?.length ?? 0))
+        .sort((a: any, b: any) => (b.text?.text?.length ?? 0) - (a.text?.text?.length ?? 0))
         .slice(0, 5)
         .map((r: any) => ({
           text:     r.text?.text ?? '',
@@ -927,7 +1029,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           ago:      r.relativePublishTimeDescription ?? 'Recently',
         }));
 
-      // Dynamic fallbacks derived from real place data — used when Gemini field is null
       const rating      = p.rating ?? 0;
       const reviewCount = p.userRatingCount ?? 0;
       const priceStr    = mapPriceLevel(p.priceLevel ?? '');
@@ -938,9 +1039,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const trendReasonFB = recentAvgFB !== null
         ? `Recent visitors rate it ${recentAvgFB}★ — ${recentAvgFB >= rating ? 'matching' : 'near'} the ${rating}★ overall average`
         : `${rating}★ across ${reviewCount.toLocaleString()} reviews — consistent visitor satisfaction`;
-      const whyOverOthersFB = i === 0
-        ? `Top-ranked: ${rating}★ across ${reviewCount.toLocaleString()} reviews — strongest trust signal in this set`
-        : `${rating}★ with ${reviewCount.toLocaleString()} reviews — #${i + 1} of ${placesToRank.length} ${tab.toLowerCase()} analysed`;
+      const whyOverOthersFB = globalIdx === 0
+        ? `Top-ranked: ${rating}★ across ${reviewCount.toLocaleString()} reviews — strongest criteria match in this set`
+        : `${rating}★ with ${reviewCount.toLocaleString()} reviews — #${globalIdx + 1} of ${placesToRank.length} ${tab.toLowerCase()} analysed`;
       const isVeg = p.servesVegetarianFood === true;
       const bestForFB = tab === 'Hotels'
         ? (priceStr === '₹' || priceStr === '₹₹'
@@ -957,7 +1058,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         : `${rating}★ rated by ${reviewCount.toLocaleString()} verified visitors in Thanjavur.`;
 
       return {
-        id:          p.id ?? `place-${i}`,
+        id:          p.id ?? `place-${globalIdx}`,
         name:        p.displayName?.text ?? 'Unknown',
         address:     p.formattedAddress  ?? 'Thanjavur, Tamil Nadu',
         dist:        0,
@@ -969,28 +1070,46 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                        t.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())
                      ),
         reviewSummary: ai.reviewSummary || reviewSummaryFB,
-        aiNote:       ai.aiNote       || `${rating}★ across ${reviewCount.toLocaleString()} reviews — verified quality`,
-        trendVerdict: ai.trendVerdict ?? 'stable',
-        trendReason:  ai.trendReason  || trendReasonFB,
+        aiNote:       ai.aiNote        || `${rating}★ across ${reviewCount.toLocaleString()} reviews — verified quality`,
+        trendVerdict: ai.trendVerdict  ?? 'stable',
+        trendReason:  ai.trendReason   || trendReasonFB,
         reviews:      uiReviews,
-        photoColor:   COLORS[i % COLORS.length],
+        photoColor:   COLORS[globalIdx % COLORS.length],
         photoRef:     p.photos?.[0]?.name ?? null,
-        websiteUri:   p.websiteUri   ?? null,
+        websiteUri:   p.websiteUri    ?? null,
         googleMapsUri: p.googleMapsUri ?? null,
         aiDetail: {
           whyOverOthers: ai.whyOverOthers || whyOverOthersFB,
           dataPoints: [
-            `${rating} ★ across ${reviewCount.toLocaleString()} reviews`,
+            `${rating}★ across ${reviewCount.toLocaleString()} reviews`,
             `${p.formattedAddress ?? 'Thanjavur, Tamil Nadu'}`,
-            `AI rank: #${ai.rank ?? i + 1} of ${placesToRank.length} ${tab.toLowerCase()} analysed`,
+            `AI rank: #${ai.rank ?? globalIdx + 1} of ${placesToRank.length} ${tab.toLowerCase()} analysed`,
           ],
           bestFor: ai.bestFor || bestForFB,
           ...(ai.caveat ? { caveat: ai.caveat } : {}),
         },
       };
+    };
+
+    // Split into AI-recommended (shown first) and secondary (served on Load More)
+    const recommended: any[] = [];
+    const secondary:   any[] = [];
+
+    reorderedPlaces.forEach((p: any, i: number) => {
+      const ai = sorted[i] ?? {};
+      const result = buildPlaceResult(p, ai, i);
+      if (ai.recommended === true) {
+        recommended.push(result);
+      } else {
+        secondary.push(result);
+      }
     });
 
-    return res.json({ results });
+    // Safety: if Gemini returned no recommended places, treat all as recommended
+    const finalResults    = recommended.length > 0 ? recommended : reorderedPlaces.map((p: any, i: number) => buildPlaceResult(p, sorted[i] ?? {}, i));
+    const finalSecondary  = recommended.length > 0 ? secondary   : [];
+
+    return res.json({ results: finalResults, secondaryResults: finalSecondary });
   } catch (err) {
     console.error('[/api/plan]', err);
     return res.status(500).json({ error: 'Failed to fetch places data' });
