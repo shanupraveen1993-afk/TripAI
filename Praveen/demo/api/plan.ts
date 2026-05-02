@@ -126,6 +126,11 @@ async function fetchPlaces(
       ...locationParam,
     }),
   });
+  if (!r.ok) {
+    const errBody = await r.text();
+    console.error(`[Places API] HTTP ${r.status}:`, errBody);
+    throw new Error(`Places API error ${r.status}`);
+  }
   const data = await r.json() as { places?: any[] };
   return data.places ?? [];
 }

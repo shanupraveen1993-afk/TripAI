@@ -167,12 +167,13 @@ export default function App() {
           dietType:    filters.dietType,
           dineMode:    filters.dineMode,
         });
-        // Never fall back to mock — show results or empty/error state
-        setLiveResults(results.length > 0 ? results.slice(0, 10) : []);
-        if (results.length === 0) setApiError(true);
+        // Show results; if empty it means filters were too strict — NOT an API error
+        setLiveResults(results.slice(0, 10));
       }
     } catch {
-      // Hotels/Food: leave liveResults as null so empty state renders
+      // API completely failed — fall back to sample data so the demo still works
+      if (filters.tab === 'Hotels') setLiveResults(MOCK_HOTELS.slice(0, 10) as unknown as PlanResult[]);
+      else if (filters.tab === 'Food') setLiveResults(MOCK_FOOD.slice(0, 10) as unknown as PlanResult[]);
       setApiError(true);
     }
     setAiCount(c => c + 1);
