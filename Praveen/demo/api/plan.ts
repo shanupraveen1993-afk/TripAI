@@ -40,6 +40,9 @@ const QUERIES: Record<string, string> = {
   Itinerary: 'top tourist attractions in Thanjavur Tamil Nadu',
 };
 
+// Thanjavur city centre — used for location-restricted and location-biased searches
+const THANJAVUR_CENTER = { latitude: 10.787, longitude: 79.1378 };
+
 function mapPriceLevel(level: string): string {
   const map: Record<string, string> = {
     PRICE_LEVEL_FREE:          'Free',
@@ -86,9 +89,28 @@ const SEED_PREFIX: Record<number, string> = {
   3: 'popular budget ',
 };
 
-async function fetchPlaces(query: string, searchSeed = 0, withPhotos = false) {
+// Hotels/Food use locationRestriction (strict — only Thanjavur city).
+// Itinerary/Explore use locationBias (prefers Thanjavur but allows nearby heritage sites).
+async function fetchPlaces(
+  query: string,
+  searchSeed = 0,
+  withPhotos = false,
+  radiusKm = 15,
+  strictLocation = true,
+) {
   const rankPreference = SEED_RANK[searchSeed % 4] ?? 'RELEVANCE';
   const prefix         = SEED_PREFIX[searchSeed % 4] ?? '';
+
+  const circleParam = {
+    circle: {
+      center: THANJAVUR_CENTER,
+      radius: radiusKm * 1000,
+    },
+  };
+  const locationParam = strictLocation
+    ? { locationRestriction: circleParam }
+    : { locationBias: circleParam };
+
   const r = await fetch('https://places.googleapis.com/v1/places:searchText', {
     method: 'POST',
     headers: {
@@ -98,18 +120,30 @@ async function fetchPlaces(query: string, searchSeed = 0, withPhotos = false) {
     },
     body: JSON.stringify({
       textQuery:      prefix + query,
-      maxResultCount: 8,
+      maxResultCount: 10,
       languageCode:   'en',
       rankPreference,
+      ...locationParam,
     }),
   });
   const data = await r.json() as { places?: any[] };
   return data.places ?? [];
 }
 
+// Ensure results are actually in Thanjavur — removes stray nearby-city results
+function filterThanjavurOnly(places: any[]): any[] {
+  const inCity = places.filter(p => {
+    const addr = (p.formattedAddress ?? '').toLowerCase();
+    return addr.includes('thanjavur') || addr.includes('tanjore');
+  });
+  // Only enforce if we have enough results; otherwise keep all to avoid empty set
+  return inCity.length >= 2 ? inCity : places;
+}
+
 interface UserFilters {
   hotelTags?:   string[];
   hotelArea?:   string;
+  foodTags?:    string[];  // cuisine/type tags — wired into Places query
   priceFilter?: string;   // 'Any' | '₹' | '₹₹' | '₹₹₹' — hard-filtered via priceLevel
   minRating?:   number;   // 0 = any; hard-filtered via rating field
   openNow?:     boolean;  // hard-filtered via openNow boolean from Places API
@@ -117,23 +151,105 @@ interface UserFilters {
   dineMode?:    string;   // 'Any' | 'Dine-in' | 'Takeout' — hard-filtered via dineIn/takeout
 }
 
-// Price level buckets — inclusive to avoid empty results on boundary cases
+// Map UI food tags → search-friendly terms for Places API query
+const FOOD_TAG_SEARCH: Record<string, string> = {
+  'Seafood':        'seafood fish restaurant',
+  'Biryani':        'biryani restaurant',
+  'Thali':          'thali meals restaurant',
+  'South Indian':   'South Indian restaurant',
+  'North Indian':   'North Indian restaurant',
+  'Street Food':    'street food stalls',
+  'Filter Coffee':  'filter coffee café',
+  'Cafe':           'café coffee shop',
+  'Banana Leaf':    'banana leaf meals',
+  'Tiffin':         'tiffin idli dosa breakfast',
+  'Chinese':        'Chinese restaurant',
+  'Sweets':         'sweet shop mithai',
+  'Bakery':         'bakery',
+  'Fast Food':      'fast food',
+  'Buffet':         'buffet restaurant',
+  'Rooftop Dining': 'rooftop restaurant',
+  'Outdoor Seating':'outdoor restaurant',
+};
+
+function buildFoodQuery(filters: UserFilters): string {
+  const tags = (filters.foodTags ?? []).filter(t => t);
+  const tagTerm = tags.length > 0
+    ? (FOOD_TAG_SEARCH[tags[0]] ?? tags[0].toLowerCase())
+    : 'restaurant';
+  const dietPrefix = filters.dietType === 'Veg' ? 'vegetarian ' : '';
+  return `${dietPrefix}${tagTerm} in Thanjavur Tamil Nadu`;
+}
+
+// Hotel price range buckets — inclusive on boundaries to avoid empty results
 const PRICE_BUCKETS: Record<string, string[]> = {
+  // New hotel price-range labels
+  '₹1K-5K':   ['PRICE_LEVEL_FREE', 'PRICE_LEVEL_INEXPENSIVE'],
+  '₹5K-10K':  ['PRICE_LEVEL_INEXPENSIVE', 'PRICE_LEVEL_MODERATE'],
+  '₹15K+':    ['PRICE_LEVEL_EXPENSIVE', 'PRICE_LEVEL_VERY_EXPENSIVE'],
+  // Legacy symbol labels kept for any cached/old requests
   '₹':    ['PRICE_LEVEL_FREE', 'PRICE_LEVEL_INEXPENSIVE'],
   '₹₹':   ['PRICE_LEVEL_INEXPENSIVE', 'PRICE_LEVEL_MODERATE'],
   '₹₹₹':  ['PRICE_LEVEL_MODERATE', 'PRICE_LEVEL_EXPENSIVE'],
   '₹₹₹₹': ['PRICE_LEVEL_EXPENSIVE', 'PRICE_LEVEL_VERY_EXPENSIVE'],
 };
 
+// Food cost tier — keyword frequency analysis across all reviews
+// A place matches a tier if its reviews repeat keywords from that category most
+const FOOD_COST_KEYWORDS: Record<string, string[]> = {
+  'Low Cost':    ['cheap', 'affordable', 'budget', 'pocket', 'inexpensive', 'low price', 'economical', 'very cheap', 'low cost', 'cheap and', 'affordable price'],
+  'Medium Cost': ['reasonable', 'value for money', 'moderate', 'mid-range', 'worth it', 'decent price', 'fair price', 'average price', 'not too expensive', 'good value'],
+  'High Cost':   ['pricey', 'a bit expensive', 'costly', 'slightly expensive', 'overpriced', 'on the expensive', 'not cheap', 'expensive but', 'premium price'],
+  'Expensive':   ['fine dining', 'luxury', 'very expensive', 'high-end', 'splurge', 'lavish', 'top-end', 'extravagant', 'premium dining'],
+};
+
+// Google Places price level → food cost tier mapping (used as fallback when keyword score is 0)
+const FOOD_PRICE_LEVEL_MAP: Record<string, string[]> = {
+  'Low Cost':    ['PRICE_LEVEL_FREE', 'PRICE_LEVEL_INEXPENSIVE'],
+  'Medium Cost': ['PRICE_LEVEL_INEXPENSIVE', 'PRICE_LEVEL_MODERATE'],
+  'High Cost':   ['PRICE_LEVEL_MODERATE', 'PRICE_LEVEL_EXPENSIVE'],
+  'Expensive':   ['PRICE_LEVEL_EXPENSIVE', 'PRICE_LEVEL_VERY_EXPENSIVE'],
+};
+
+function scoreFoodCost(reviews: any[], category: string): number {
+  const text = reviews.map(r => (r.text?.text ?? '').toLowerCase()).join(' ');
+  const keywords = FOOD_COST_KEYWORDS[category] ?? [];
+  return keywords.filter(k => text.includes(k)).length;
+}
+
 // Hard filter applied BEFORE Gemini — guarantees results match user constraints
 function applyHardFilters(places: any[], tab: string, f: UserFilters): any[] {
   let out = places;
 
-  // 1. Price level
+  // 1. Price / cost filter
   if (f.priceFilter && f.priceFilter !== 'Any') {
-    const allowed = PRICE_BUCKETS[f.priceFilter] ?? [];
-    const n = out.filter(p => !p.priceLevel || allowed.includes(p.priceLevel));
-    if (n.length >= 2) out = n;
+    const isFoodCostLabel = Object.keys(FOOD_COST_KEYWORDS).includes(f.priceFilter);
+
+    if (isFoodCostLabel && tab === 'Food') {
+      // Keyword-frequency based food cost filter
+      const allowedLevels = FOOD_PRICE_LEVEL_MAP[f.priceFilter] ?? [];
+
+      const scored = out.map(p => ({
+        place:         p,
+        keywordScore:  scoreFoodCost(p.reviews ?? [], f.priceFilter!),
+        levelMatch:    allowedLevels.includes(p.priceLevel ?? '') || !p.priceLevel,
+      }));
+
+      // Include if keyword score > 0 OR Google priceLevel matches the tier
+      const filtered = scored.filter(({ keywordScore, levelMatch }) => keywordScore > 0 || levelMatch);
+
+      if (filtered.length >= 2) {
+        // Sort highest keyword match first so Gemini sees the strongest signals at the top
+        out = filtered
+          .sort((a, b) => b.keywordScore - a.keywordScore)
+          .map(({ place }) => place);
+      }
+    } else {
+      // Hotel price range filter (₹1K-5K / ₹5K-10K / ₹15K+ or legacy ₹/₹₹/₹₹₹/₹₹₹₹)
+      const allowed = PRICE_BUCKETS[f.priceFilter] ?? [];
+      const n = out.filter(p => !p.priceLevel || allowed.includes(p.priceLevel));
+      if (n.length >= 2) out = n;
+    }
   }
 
   // 2. Minimum rating
@@ -254,6 +370,8 @@ async function geminiRankAndAnalyse(
   } else if (tab === 'Food') {
     if (filters.dietType && filters.dietType !== 'Any')
       criteria.push({ label: 'Diet', value: filters.dietType, weight: 'critical' });
+    if (filters.foodTags?.length)
+      criteria.push({ label: 'Cuisine / type', value: filters.foodTags.join(', '), weight: 'critical' });
     if (filters.priceFilter && filters.priceFilter !== 'Any')
       criteria.push({ label: 'Price tier', value: filters.priceFilter, weight: 'important' });
     if (filters.dineMode && filters.dineMode !== 'Any')
@@ -337,18 +455,64 @@ Return ONLY valid JSON. No markdown fences. No explanation text.`;
     if (Array.isArray(parsed) && parsed.length > 0) return parsed;
     throw new Error('empty');
   } catch {
-    // Fallback: preserve original order with neutral annotations
-    return places.map((_, i) => ({
-      originalIdx:   i,
-      rank:          i + 1,
-      trendVerdict:  'stable',
-      trendReason:   'Consistently reviewed by recent visitors.',
-      reviewSummary: 'Well-rated by recent visitors in Thanjavur. Reviews highlight quality and value.',
-      aiNote:        'Well-rated option for Thanjavur visitors.',
-      whyOverOthers: 'Strong overall rating in the Thanjavur area.',
-      bestFor:       'Visitors exploring Thanjavur.',
-      caveat:        null,
-    }));
+    // Fallback: compute from real data — no static strings
+    const avgRating = summaries.length > 0
+      ? summaries.reduce((a, s) => a + s.rating, 0) / summaries.length : 4.0;
+
+    return summaries.map((s, i) => {
+      // trendVerdict + trendReason from pre-computed trendDelta / recentAvg
+      let trendVerdict = 'stable';
+      let trendReason: string;
+      if (s.recentAvg !== null) {
+        if (s.trendDelta > 0.2) {
+          trendVerdict = 'improving';
+          trendReason  = `Recent visitors rate it ${s.recentAvg}★ — above the ${s.rating}★ historical average`;
+        } else if (s.trendDelta < -0.3) {
+          trendVerdict = 'declining';
+          trendReason  = `Recent visitors rate it ${s.recentAvg}★ — below the ${s.rating}★ historical average`;
+        } else {
+          trendReason = `Recent visitors rate it ${s.recentAvg}★ — matching the ${s.rating}★ all-time average`;
+        }
+      } else {
+        trendReason = `${s.rating}★ across ${s.totalReviews.toLocaleString()} reviews — no recent drift detected`;
+      }
+
+      // reviewSummary from actual review text snippets
+      const reviewTexts = s.reviews.filter(r => r.text && r.text.length > 15).slice(0, 2);
+      const reviewSummary = reviewTexts.length > 0
+        ? `${s.rating}★ across ${s.totalReviews.toLocaleString()} reviews. Visitors say: "${reviewTexts[0].text.slice(0, 80).trim()}"`
+        : `${s.rating}★ rated by ${s.totalReviews.toLocaleString()} verified visitors in Thanjavur.`;
+
+      // bestFor from price level + tab + veg signal
+      let bestFor: string;
+      if (tab === 'Hotels') {
+        const tier = s.priceLevel === 'PRICE_LEVEL_INEXPENSIVE' || s.priceLevel === 'PRICE_LEVEL_FREE'
+          ? 'budget-focused' : s.priceLevel === 'PRICE_LEVEL_EXPENSIVE' || s.priceLevel === 'PRICE_LEVEL_VERY_EXPENSIVE'
+          ? 'premium comfort' : 'mid-range value';
+        bestFor = `Travellers wanting ${tier} — ${s.totalReviews.toLocaleString()} guests confirmed ${s.rating}★`;
+      } else {
+        const vegLabel = s.servesVeg === true ? 'vegetarian' : s.servesVeg === false ? 'non-veg' : '';
+        bestFor = `${vegLabel ? vegLabel + ' diners — ' : ''}${s.totalReviews.toLocaleString()} reviews confirm ${s.rating}★ quality`;
+      }
+
+      // whyOverOthers from rating vs set average
+      const diff = (s.rating - avgRating).toFixed(1);
+      const whyOverOthers = i === 0
+        ? `Top in this set: ${s.rating}★ × ${s.totalReviews.toLocaleString()} reviews — highest combined trust signal`
+        : `${s.rating}★ with ${s.totalReviews.toLocaleString()} reviews — ${parseFloat(diff) >= 0 ? `${diff} above` : 'near'} the group average of ${avgRating.toFixed(1)}★`;
+
+      return {
+        originalIdx:   i,
+        rank:          i + 1,
+        trendVerdict,
+        trendReason,
+        reviewSummary,
+        aiNote:        `${s.rating}★ across ${s.totalReviews.toLocaleString()} reviews — verified quality for Thanjavur visitors`,
+        whyOverOthers,
+        bestFor,
+        caveat:        null,
+      };
+    });
   }
 }
 
@@ -583,7 +747,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const timeSlot     = (req.body?.timeSlot ?? 'Morning') as string;
 
     try {
-      const places = await fetchPlaces(`${locationName} Thanjavur Tamil Nadu`);
+      const places = await fetchPlaces(`${locationName} Thanjavur Tamil Nadu`, 0, false, 50, false);
       const place  = places[0] ?? {};
       const guide  = await geminiExploreGuide(place, locationName, timeSlot);
 
@@ -625,7 +789,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const searchSeed = parseInt((req.body?.searchSeed ?? '0') as string, 10);
 
     try {
-      const rawPlaces = await fetchPlaces(QUERIES.Itinerary, searchSeed);
+      const rawPlaces = await fetchPlaces(QUERIES.Itinerary, searchSeed, false, 35, false);
       const stops     = await geminiItinerary(rawPlaces, startTime);
 
       if (stops.length === 0) {
@@ -644,6 +808,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const filters: UserFilters = {
     hotelTags:   req.body?.hotelTags   ?? [],
     hotelArea:   req.body?.hotelArea   ?? '',
+    foodTags:    req.body?.foodTags    ?? [],
     priceFilter: req.body?.priceFilter ?? 'Any',
     minRating:   Number(req.body?.minRating ?? 0),
     openNow:     req.body?.openNow === true,
@@ -651,19 +816,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     dineMode:    req.body?.dineMode    ?? 'Any',
   };
 
-  // Wire area filter directly into Places query — more precise results, same API cost
-  let query = QUERIES[tab] ?? QUERIES.Hotels;
-  if (tab === 'Hotels' && filters.hotelArea) {
+  // Build query from filters — Food uses cuisine tags + diet, Hotels uses area
+  let query: string;
+  if (tab === 'Food') {
+    query = buildFoodQuery(filters);
+  } else if (tab === 'Hotels' && filters.hotelArea) {
     query = `hotels near ${filters.hotelArea} Thanjavur Tamil Nadu`;
-  } else if (tab === 'Food' && filters.hotelArea) {
-    query = `restaurants near ${filters.hotelArea} Thanjavur Tamil Nadu`;
+  } else {
+    query = QUERIES[tab] ?? QUERIES.Hotels;
   }
 
   try {
-    const rawPlaces = await fetchPlaces(query, searchSeed, true);
+    // Strict 15km radius around Thanjavur centre — only returns places actually in the city
+    const rawPlaces     = await fetchPlaces(query, searchSeed, true, 15, true);
+    // Secondary guard: drop any result whose address doesn't mention Thanjavur/Tanjore
+    const localPlaces   = filterThanjavurOnly(rawPlaces);
 
     // Hard filter first — guarantees results match user constraints (price, veg, dine mode)
-    const hardFiltered = applyHardFilters(rawPlaces, tab, filters);
+    const hardFiltered = applyHardFilters(localPlaces, tab, filters);
 
     // Then drop low-signal places — saves Gemini tokens, improves ranking quality
     const qualified    = hardFiltered.filter(p => (p.rating ?? 0) >= 3.8 && (p.userRatingCount ?? 0) >= 10);
@@ -691,35 +861,64 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           ago:      r.relativePublishTimeDescription ?? 'Recently',
         }));
 
+      // Dynamic fallbacks derived from real place data — used when Gemini field is null
+      const rating      = p.rating ?? 0;
+      const reviewCount = p.userRatingCount ?? 0;
+      const priceStr    = mapPriceLevel(p.priceLevel ?? '');
+      const recent5     = [...(p.reviews ?? [])].slice(0, 5);
+      const recentAvgFB = recent5.length > 0
+        ? +(recent5.reduce((s: number, r: any) => s + (r.rating ?? 0), 0) / recent5.length).toFixed(1)
+        : null;
+      const trendReasonFB = recentAvgFB !== null
+        ? `Recent visitors rate it ${recentAvgFB}★ — ${recentAvgFB >= rating ? 'matching' : 'near'} the ${rating}★ overall average`
+        : `${rating}★ across ${reviewCount.toLocaleString()} reviews — consistent visitor satisfaction`;
+      const whyOverOthersFB = i === 0
+        ? `Top-ranked: ${rating}★ across ${reviewCount.toLocaleString()} reviews — strongest trust signal in this set`
+        : `${rating}★ with ${reviewCount.toLocaleString()} reviews — #${i + 1} of ${placesToRank.length} ${tab.toLowerCase()} analysed`;
+      const isVeg = p.servesVegetarianFood === true;
+      const bestForFB = tab === 'Hotels'
+        ? (priceStr === '₹' || priceStr === '₹₹'
+            ? `Budget-conscious visitors — ${reviewCount.toLocaleString()} reviews confirm value`
+            : `Visitors seeking ${priceStr} comfort — ${rating}★ confirmed by ${reviewCount.toLocaleString()} guests`)
+        : (isVeg
+            ? `Vegetarian diners — ${reviewCount.toLocaleString()} reviews, ${rating}★ satisfaction`
+            : `Food enthusiasts — ${rating}★ across ${reviewCount.toLocaleString()} Thanjavur reviews`);
+      const topReviewText = [...(p.reviews ?? [])]
+        .sort((a: any, b: any) => (b.text?.text?.length ?? 0) - (a.text?.text?.length ?? 0))
+        .find((r: any) => (r.text?.text ?? '').length > 15);
+      const reviewSummaryFB = topReviewText
+        ? `${rating}★ across ${reviewCount.toLocaleString()} reviews. Visitors say: "${(topReviewText.text?.text ?? '').slice(0, 80).trim()}"`
+        : `${rating}★ rated by ${reviewCount.toLocaleString()} verified visitors in Thanjavur.`;
+
       return {
         id:          p.id ?? `place-${i}`,
         name:        p.displayName?.text ?? 'Unknown',
         address:     p.formattedAddress  ?? 'Thanjavur, Tamil Nadu',
         dist:        0,
-        rating:      p.rating        ?? 0,
-        reviewCount: p.userRatingCount ?? 0,
-        priceLevel:  mapPriceLevel(p.priceLevel ?? ''),
+        rating,
+        reviewCount,
+        priceLevel:  priceStr,
         openNow:     p.regularOpeningHours?.openNow ?? true,
         tags:        (p.types ?? []).slice(0, 5).map((t: string) =>
                        t.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())
                      ),
-        reviewSummary: ai.reviewSummary ?? '',
-        aiNote:       ai.aiNote       ?? 'Popular with Thanjavur visitors.',
+        reviewSummary: ai.reviewSummary || reviewSummaryFB,
+        aiNote:       ai.aiNote       || `${rating}★ across ${reviewCount.toLocaleString()} reviews — verified quality`,
         trendVerdict: ai.trendVerdict ?? 'stable',
-        trendReason:  ai.trendReason  ?? 'Consistently reviewed by visitors.',
+        trendReason:  ai.trendReason  || trendReasonFB,
         reviews:      uiReviews,
         photoColor:   COLORS[i % COLORS.length],
         photoRef:     p.photos?.[0]?.name ?? null,
         websiteUri:   p.websiteUri   ?? null,
         googleMapsUri: p.googleMapsUri ?? null,
         aiDetail: {
-          whyOverOthers: ai.whyOverOthers ?? 'Strong overall rating among Thanjavur options.',
+          whyOverOthers: ai.whyOverOthers || whyOverOthersFB,
           dataPoints: [
-            `${p.rating ?? 'N/A'} ★ across ${(p.userRatingCount ?? 0).toLocaleString()} reviews`,
+            `${rating} ★ across ${reviewCount.toLocaleString()} reviews`,
             `${p.formattedAddress ?? 'Thanjavur, Tamil Nadu'}`,
             `AI rank: #${ai.rank ?? i + 1} of ${placesToRank.length} ${tab.toLowerCase()} analysed`,
           ],
-          bestFor: ai.bestFor ?? `Visitors exploring Thanjavur.`,
+          bestFor: ai.bestFor || bestForFB,
           ...(ai.caveat ? { caveat: ai.caveat } : {}),
         },
       };

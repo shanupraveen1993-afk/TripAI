@@ -45,6 +45,7 @@ export default function App() {
   const [liveExplore, setLiveExplore]       = useState<ExploreGuide | null>(null);
   const [liveItinerary, setLiveItinerary]   = useState<LiveItineraryStop[] | null>(null);
   const [apiError, setApiError]             = useState(false);
+  const [isLoadingMore, setIsLoadingMore]   = useState(false);
   const [searchSeed, setSearchSeed]         = useState(0);
   const [activeTab, setActiveTab]     = useState<Tab>('Hotels');
   const [initialTab, setInitialTab]   = useState<Tab | undefined>(undefined);
@@ -150,13 +151,15 @@ export default function App() {
         const results = await fetchPlan(filters.tab, seed, {
           hotelTags:   filters.hotelTags,
           hotelArea:   filters.hotelArea,
+          foodTags:    filters.foodTags,
           priceFilter: filters.priceFilter,
           minRating:   filters.minRating === '4.5+' ? 4.5 : filters.minRating === '4.0+' ? 4.0 : filters.minRating === '3.5+' ? 3.5 : 0,
           openNow:     filters.openNow,
           dietType:    filters.dietType,
           dineMode:    filters.dineMode,
         });
-        setLiveResults(results);
+        // Show first 10; more are appended 2-at-a-time via "Load More"
+        setLiveResults(results.slice(0, 10));
       }
     } catch {
       setApiError(true);
@@ -317,6 +320,7 @@ export default function App() {
               tab={activeTab}
               destination="Thanjavur"
               isFirstItinerary={itineraryGenCount === 1}
+              isLoadingMore={isLoadingMore}
               hotels={activeTab === 'Hotels' ? (liveResults as PlaceResult[] ?? MOCK_HOTELS) : MOCK_HOTELS}
               food={activeTab === 'Food'    ? (liveResults as PlaceResult[] ?? MOCK_FOOD)   : MOCK_FOOD}
               itinerary={activeTab === 'Itinerary' ? itineraryToDisplay : MOCK_ITINERARY}
@@ -335,25 +339,46 @@ export default function App() {
               }}
               backLabel={backContext === 'itinerary-results' ? 'Itinerary' : undefined}
               onExploreStop={handleExploreStop}
-              onRegenerate={() => {
-                // Compute new seed directly to avoid async state race condition
+              onRegenerate={async () => {
                 const newSeed = searchSeed + 1;
                 setSearchSeed(newSeed);
-                setLiveResults(null);
-                setLiveExplore(null);
-                setLiveItinerary(null);
-                setContent('loading');
-                runSearch(
-                  lastSearchFilters ?? {
-                    tab: activeTab, destination: 'Thanjavur',
-                    startDate: '', endDate: '', numPeople: 2, budget: 0,
-                    hotelTags: [], hotelArea: '', priceFilter: 'Any', minRating: 'Any', openNow: false,
-                    foodLocation: '', foodTags: [], dietType: 'Any', dineMode: 'Any',
-                    itinDate: '', startPoint: '', startTime: '09:00',
-                    exploreTarget: 'Brihadeeswarar Temple', visitTime: 'Morning',
-                  },
-                  newSeed,
-                );
+
+                if (activeTab === 'Hotels' || activeTab === 'Food') {
+                  // Append 2 more results with same filters — no full reload
+                  const f = lastSearchFilters;
+                  setIsLoadingMore(true);
+                  try {
+                    const more = await fetchPlan(activeTab, newSeed, {
+                      hotelTags:   f?.hotelTags,
+                      hotelArea:   f?.hotelArea,
+                      foodTags:    f?.foodTags,
+                      priceFilter: f?.priceFilter,
+                      minRating:   f?.minRating === '4.5+' ? 4.5 : f?.minRating === '4.0+' ? 4.0 : f?.minRating === '3.5+' ? 3.5 : 0,
+                      openNow:     f?.openNow,
+                      dietType:    f?.dietType,
+                      dineMode:    f?.dineMode,
+                    });
+                    if (more.length > 0) {
+                      setLiveResults(prev => [...(prev ?? []), ...more.slice(0, 2)]);
+                    }
+                  } catch { /* silent — existing results stay */ }
+                  setIsLoadingMore(false);
+                } else {
+                  // Itinerary: full replace with new AI plan
+                  setLiveItinerary(null);
+                  setContent('loading');
+                  runSearch(
+                    lastSearchFilters ?? {
+                      tab: activeTab, destination: 'Thanjavur',
+                      startDate: '', endDate: '', numPeople: 2, budget: 0,
+                      hotelTags: [], hotelArea: '', priceFilter: 'Any', minRating: 'Any', openNow: false,
+                      foodLocation: '', foodTags: [], dietType: 'Any', dineMode: 'Any',
+                      itinDate: '', startPoint: '', startTime: '09:00',
+                      exploreTarget: 'Brihadeeswarar Temple', visitTime: 'Morning',
+                    },
+                    newSeed,
+                  );
+                }
               }}
               onSave={handleSave}
               saved={isSaved}

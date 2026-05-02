@@ -62,6 +62,7 @@ export interface ExploreGuide {
 interface PlanFilters {
   hotelTags?:   string[];
   hotelArea?:   string;
+  foodTags?:    string[];
   priceFilter?: string;   // 'Any' | '₹' | '₹₹' | '₹₹₹'
   minRating?:   number;   // 0 = any
   openNow?:     boolean;

@@ -22,6 +22,7 @@ type ItineraryStop = {
 } | LiveItineraryStop;
 import { fetchPhoto } from '../api/client';
 import { useToast } from './ui/Toast';
+import { PlaceCardSkeleton } from './ui/Skeleton';
 
 interface ResultsViewProps {
   tab: Tab;
@@ -31,6 +32,7 @@ interface ResultsViewProps {
   itinerary?: (ItineraryStop | LiveItineraryStop)[];
   explore?: ExploreResult;
   apiError?: boolean;
+  isLoadingMore?: boolean;
   onBack: () => void;
   onRegenerate: () => void;
   onSave: () => void;
@@ -189,7 +191,11 @@ function ReviewCard({ review, idx }: { review: ReviewItem; idx: number }) {
   );
 }
 
-function PlaceCard({ place, tab, rank = 0 }: { place: PlaceResult; tab: Tab; rank?: number }) {
+function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = false }: {
+  place: PlaceResult; tab: Tab; rank?: number; animDelay?: number; defaultCollapsed?: boolean;
+}) {
+  // rank-1 AI Top Pick cards start collapsed to save space; all others start expanded
+  const [cardCollapsed, setCardCollapsed] = useState(defaultCollapsed);
   const [expanded, setExpanded]         = useState(false);
   const [showAnalysis, setShowAnalysis] = useState(false);
   const [showNearby, setShowNearby]     = useState(false);
@@ -218,10 +224,69 @@ function PlaceCard({ place, tab, rank = 0 }: { place: PlaceResult; tab: Tab; ran
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: animDelay, duration: 0.35, ease: 'easeOut' }}
       className="bg-surface border border-card-border rounded-xl overflow-hidden shadow-sm card-hover"
     >
+      {/* ── Collapsed state — compact AI summary card ──────────────── */}
+      {cardCollapsed && (
+        <div>
+          <div className="relative h-32 overflow-hidden">
+            <PlacePhoto color={place.photoColor} name={place.name} photoRef={place.photoRef} autoLoad />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+            {rank === 1 ? (
+              <div className="absolute top-2 left-2 flex items-center gap-1.5 bg-brand px-2.5 py-1 rounded-lg shadow-sm">
+                <Sparkles className="w-3 h-3 text-white" />
+                <span className="text-[10px] font-black text-white uppercase tracking-widest">AI Top Pick</span>
+              </div>
+            ) : (
+              <div className="absolute top-2 left-2 bg-black/55 backdrop-blur-sm px-2 py-1 rounded-lg shadow-sm">
+                <span className="text-[10px] font-black text-white">#{rank}</span>
+              </div>
+            )}
+            <div className="absolute bottom-0 left-0 right-0 px-3 pb-3">
+              <h3 className="font-display font-black text-base text-white drop-shadow truncate">{place.name}</h3>
+              <p className="text-[10px] text-white/75 truncate flex items-center gap-1 mt-0.5">
+                <MapPin className="w-2.5 h-2.5 shrink-0" />{place.address}
+              </p>
+            </div>
+          </div>
+          <div className="px-3 py-3 space-y-2">
+            {/* Rating + Open pill in one row */}
+            <div className="flex items-center gap-2">
+              <span className="text-[22px] font-black text-heading leading-none">{place.rating}</span>
+              <div className="flex gap-0.5">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star key={i} className={`w-3 h-3 ${i < Math.floor(place.rating) ? 'fill-yellow-400 text-yellow-400' : i < place.rating ? 'fill-yellow-200 text-yellow-300' : 'text-border'}`} />
+                ))}
+              </div>
+              <span className="text-[10px] text-muted">({place.reviewCount.toLocaleString()})</span>
+              <div className="ml-auto flex items-center gap-1">
+                <Badge variant={place.openNow ? 'success' : 'danger'} dot pill>{place.openNow ? 'Open' : 'Closed'}</Badge>
+                <Badge variant="neutral" pill>{place.priceLevel}</Badge>
+              </div>
+            </div>
+            {/* Brief AI note */}
+            <p className="text-xs text-body leading-relaxed flex items-start gap-1.5">
+              <Sparkles className="w-3 h-3 text-brand shrink-0 mt-0.5" />
+              {place.aiNote}
+            </p>
+            {/* Expand button */}
+            <button
+              onClick={() => setCardCollapsed(false)}
+              className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl bg-brand text-white text-xs font-bold hover:bg-brand/90 transition-colors"
+            >
+              <ChevronDown className="w-3.5 h-3.5" />
+              Show full details & reviews
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Full expanded card ──────────────────────────────────────── */}
+      {!cardCollapsed && (
+      <div>
       <div className="relative">
         <PlacePhoto color={place.photoColor} name={place.name} photoRef={place.photoRef} autoLoad={rank <= 3} />
         {rank === 1 && (
@@ -230,6 +295,14 @@ function PlaceCard({ place, tab, rank = 0 }: { place: PlaceResult; tab: Tab; ran
             <span className="text-[10px] font-black text-white uppercase tracking-widest">AI Top Pick</span>
           </div>
         )}
+        {/* Collapse button — always available so users can minimise any card */}
+        <button
+          onClick={() => setCardCollapsed(true)}
+          className="absolute top-2 right-2 flex items-center gap-1 bg-black/50 backdrop-blur-sm hover:bg-black/70 text-white text-[10px] font-bold px-2 py-1 rounded-lg transition-all"
+        >
+          <ChevronDown className="w-3 h-3 rotate-180" />
+          Collapse
+        </button>
       </div>
 
       <div className="p-3 space-y-2">
@@ -296,7 +369,7 @@ function PlaceCard({ place, tab, rank = 0 }: { place: PlaceResult; tab: Tab; ran
                   place.trendVerdict === 'declining' ? 'text-warning' : 'text-muted'
                 }`}>
                   {place.trendVerdict === 'improving' ? 'Rising' :
-                   place.trendVerdict === 'declining' ? 'Falling' : 'Stable'}
+                   place.trendVerdict === 'declining' ? 'Falling' : 'Proven'}
                 </span>
                 <span className="text-[10px] text-muted/80 truncate">· {place.trendReason}</span>
               </div>
@@ -426,7 +499,7 @@ function PlaceCard({ place, tab, rank = 0 }: { place: PlaceResult; tab: Tab; ran
                       }`}>
                         {place.trendVerdict === 'improving' ? 'Rising — recent reviews score higher'
                           : place.trendVerdict === 'declining' ? 'Falling — recent reviews score lower'
-                          : 'Stable — consistent review pattern'}
+                          : 'Proven — visitors keep coming back and rating it the same'}
                       </p>
                       <p className="text-[11px] text-body mt-0.5 leading-relaxed">{place.trendReason}</p>
                     </div>
@@ -601,6 +674,8 @@ function PlaceCard({ place, tab, rank = 0 }: { place: PlaceResult; tab: Tab; ran
             {place.dist > 0 && <span className="text-white/55 text-[11px] font-normal ml-0.5">· {place.dist}km away</span>}
           </a>
         </div>
+      )}
+      </div>
       )}
     </motion.div>
   );
@@ -1086,6 +1161,7 @@ function ExploreView({ place }: { place: ExploreResult }) {
 
 export function ResultsView({
   tab, destination, hotels, food, itinerary, explore, apiError,
+  isLoadingMore = false,
   onBack, onRegenerate, onSave, saved = false, onSwitchTab,
   backLabel, onExploreStop, isFirstItinerary = false,
 }: ResultsViewProps) {
@@ -1120,17 +1196,61 @@ export function ResultsView({
       {/* Results */}
       <div className={tab === 'Hotels' || tab === 'Food' ? 'flex flex-col gap-5 mb-5' : 'space-y-4 mb-5'}>
         {(tab === 'Hotels' || tab === 'Food') && results?.map((p, idx) => (
-          <PlaceCard key={p.id} place={p} tab={tab} rank={idx + 1} />
+          <React.Fragment key={p.id}>
+            {/* Section headers between result tiers */}
+            {idx === 0 && (
+              <div className="flex items-center gap-2 -mb-2">
+                <Sparkles className="w-3.5 h-3.5 text-brand" />
+                <span className="text-[10px] font-black text-brand uppercase tracking-widest">AI Recommended</span>
+                <div className="flex-1 h-px bg-brand/20" />
+              </div>
+            )}
+            {idx === 1 && (
+              <div className="flex items-center gap-2 -mb-2">
+                <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+                <span className="text-[10px] font-black text-amber-600 uppercase tracking-widest">Best Options</span>
+                <div className="flex-1 h-px bg-amber-200" />
+              </div>
+            )}
+            {idx === 3 && (results?.length ?? 0) > 3 && (
+              <div className="flex items-center gap-2 -mb-2">
+                <Info className="w-3.5 h-3.5 text-muted" />
+                <span className="text-[10px] font-black text-muted uppercase tracking-widest">Also Consider</span>
+                <div className="flex-1 h-px bg-border" />
+              </div>
+            )}
+            <PlaceCard
+              place={p}
+              tab={tab}
+              rank={idx + 1}
+              animDelay={0}
+              defaultCollapsed={true}
+            />
+          </React.Fragment>
         ))}
+        {/* Inline skeleton for "loading 2 more" — no full-page reload */}
+        {(tab === 'Hotels' || tab === 'Food') && isLoadingMore && (
+          <>
+            <PlaceCardSkeleton />
+            <PlaceCardSkeleton />
+          </>
+        )}
         {tab === 'Itinerary' && itinerary && <ItineraryView stops={itinerary} onRegenerate={onRegenerate} onExploreStop={onExploreStop} showPresetImages={isFirstItinerary} />}
         {tab === 'Explore' && explore && <ExploreView place={explore} />}
       </div>
 
-      {/* Actions */}
+      {/* Actions — hide "Try different" for Explore */}
       <div className="flex gap-3">
-        <Button variant="outline" onClick={onRegenerate} icon={<RefreshCw className="w-4 h-4" />} className="flex-1">
-          Try a different set
-        </Button>
+        {(tab === 'Hotels' || tab === 'Food') && (
+          <Button variant="outline" onClick={onRegenerate} disabled={isLoadingMore} icon={<ChevronDown className={`w-4 h-4 ${isLoadingMore ? 'animate-bounce' : ''}`} />} className="flex-1">
+            {isLoadingMore ? 'Loading 2 more…' : 'Load More'}
+          </Button>
+        )}
+        {tab === 'Itinerary' && (
+          <Button variant="outline" onClick={onRegenerate} disabled={isLoadingMore} icon={<RefreshCw className={`w-4 h-4 ${isLoadingMore ? 'animate-spin' : ''}`} />} className="flex-1">
+            {isLoadingMore ? 'Regenerating…' : 'Try a different plan'}
+          </Button>
+        )}
         <Button onClick={handleSave} icon={saved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />} className="flex-1" variant={saved ? 'success' : 'brand'}>
           {saved ? 'Plan saved' : 'Save this plan'}
         </Button>

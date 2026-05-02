@@ -9,6 +9,9 @@ import { Modal } from './ui/Modal';
 import { AuthForm } from './AuthForm';
 import { Tab } from './ui/Tabs';
 
+const uImg = (id: string, w = 800, h = 560) =>
+  `https://images.unsplash.com/photo-${id}?w=${w}&h=${h}&fit=crop&auto=format&q=80`;
+
 interface LandingPageProps {
   onTabSelect: (tab: Tab, dest?: string) => void;
   isLoggedIn: boolean;
@@ -37,18 +40,18 @@ function CityRotator({ city }: { city: string }) {
 
 /* ── City poster slider ───────────────────────────────────────────────── */
 const CITY_POSTERS = [
-  { city: 'Bangalore', gradient: 'from-green-600 to-emerald-400',  emoji: '🏨' },
-  { city: 'Goa',       gradient: 'from-teal-500 to-cyan-300',      emoji: '🍽️' },
-  { city: 'Jaipur',    gradient: 'from-pink-500 to-rose-300',      emoji: '🏯' },
-  { city: 'Mumbai',    gradient: 'from-orange-500 to-amber-300',   emoji: '🌆' },
-  { city: 'Delhi',     gradient: 'from-red-500 to-orange-300',     emoji: '🏨' },
-  { city: 'Hyderabad', gradient: 'from-amber-500 to-yellow-300',   emoji: '🍛' },
-  { city: 'Chennai',   gradient: 'from-blue-600 to-sky-300',       emoji: '🦞' },
-  { city: 'Udaipur',   gradient: 'from-purple-600 to-violet-300',  emoji: '🏰' },
-  { city: 'Kochi',     gradient: 'from-lime-600 to-green-300',     emoji: '🌊' },
-  { city: 'Kolkata',   gradient: 'from-indigo-600 to-blue-400',    emoji: '🍜' },
-  { city: 'Pune',      gradient: 'from-stone-500 to-amber-300',    emoji: '☕' },
-  { city: 'Rishikesh', gradient: 'from-sky-600 to-blue-300',       emoji: '🏕️' },
+  { city: 'Bangalore', gradient: 'from-green-600 to-emerald-400',  emoji: '🏨', imgId: '1708782462555-b3af03b4b3d2' },
+  { city: 'Goa',       gradient: 'from-teal-500 to-cyan-300',      emoji: '🍽️', imgId: '1512343879784-a960bf40e7f2' },
+  { city: 'Jaipur',    gradient: 'from-pink-500 to-rose-300',      emoji: '🏯', imgId: '1477587458883-47145ed94245' },
+  { city: 'Mumbai',    gradient: 'from-orange-500 to-amber-300',   emoji: '🌆', imgId: '1598434192043-71111c1b3f41' },
+  { city: 'Delhi',     gradient: 'from-red-500 to-orange-300',     emoji: '🏨', imgId: '1587474260584-136574528ed5' },
+  { city: 'Hyderabad', gradient: 'from-amber-500 to-yellow-300',   emoji: '🍛', imgId: '1657981630164-769503f3a9a8' },
+  { city: 'Chennai',   gradient: 'from-blue-600 to-sky-300',       emoji: '🦞', imgId: '1602216056096-3b40cc0c9944' },
+  { city: 'Udaipur',   gradient: 'from-purple-600 to-violet-300',  emoji: '🏰', imgId: '1622018135960-249abd263aeb' },
+  { city: 'Kochi',     gradient: 'from-lime-600 to-green-300',     emoji: '🌊', imgId: '1590123727499-3c2a4b5dc30a' },
+  { city: 'Kolkata',   gradient: 'from-indigo-600 to-blue-400',    emoji: '🍜', imgId: '1558618666-fcd25c85cd64' },
+  { city: 'Pune',      gradient: 'from-stone-500 to-amber-300',    emoji: '☕', imgId: '1509042239860-f550ce710b93' },
+  { city: 'Rishikesh', gradient: 'from-sky-600 to-blue-300',       emoji: '🏕️', imgId: '1506905925346-21bda4d32df4' },
 ];
 
 function CityPosterSlider() {
@@ -58,10 +61,9 @@ function CityPosterSlider() {
       <div className="animate-marquee flex gap-3" style={{ width: 'max-content' }}>
         {doubled.map((p, i) => (
           <div key={i} className={`bg-gradient-to-br ${p.gradient} rounded-2xl flex-shrink-0 w-36 h-44 relative overflow-hidden flex flex-col justify-end p-3 shadow-lg`}>
-            <span className="absolute top-3 right-3 text-2xl">{p.emoji}</span>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/65 to-transparent rounded-2xl" />
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/8 to-transparent -translate-x-full rounded-2xl"
-              style={{ animation: 'shimmer 3.5s ease-in-out infinite' }} />
+            <img src={uImg(p.imgId, 144, 176)} alt={p.city} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+            <span className="absolute top-3 right-3 text-2xl z-10">{p.emoji}</span>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/75 to-black/20 rounded-2xl" />
             <p className="relative z-10 text-white font-display font-black text-sm leading-tight">{p.city}</p>
           </div>
         ))}
@@ -72,14 +74,14 @@ function CityPosterSlider() {
 
 /* ── Hero destinations — single source of truth for both left + right ── */
 export const HERO_DESTINATIONS = [
-  { city: 'Goa',       subtitle: 'Restaurant · Calangute · AI #1 pick',  gradient: 'from-orange-800 via-amber-700 to-yellow-500', emoji: '🍽️', badge: '4.7★ · Most Reviewed',        aiPick: 'Top seafood pick near your hotel — open late, matches your casual beachside dining preference.',       tags: ['Restaurant','Seafood','Beach']   },
-  { city: 'Jaipur',    subtitle: 'Hotel · Civil Lines · AI #1 pick',     gradient: 'from-pink-800 via-rose-700 to-pink-400',      emoji: '🏨', badge: '4.9★ · Heritage Stay',        aiPick: 'Only property in your budget with rooftop dining + heritage rating + 4.9★ Google score.',            tags: ['Hotel','Heritage','Rooftop']     },
-  { city: 'Bangalore', subtitle: 'Hotel · Indiranagar · AI #1 pick',     gradient: 'from-slate-800 via-slate-700 to-blue-600',    emoji: '🏨', badge: '4.8★ · Top Rated Hotel',      aiPick: 'Best match for business stays — rooftop pool, free breakfast, 0.3km from MG Road metro.',            tags: ['Hotel','Business','Pool']        },
-  { city: 'Mumbai',    subtitle: 'Restaurant · Bandra West · AI #1',     gradient: 'from-indigo-800 via-blue-700 to-sky-500',     emoji: '🍽️', badge: '4.6★ · AI Recommended',       aiPick: 'Best pure-veg pick in Bandra — family-friendly, quick service, matches your diet & budget.',         tags: ['Restaurant','Pure Veg','Family'] },
-  { city: 'Delhi',     subtitle: 'Itinerary · Old Delhi · AI #1 pick',   gradient: 'from-red-900 via-rose-800 to-orange-600',     emoji: '🏯', badge: '4.8★ · Heritage Walk',        aiPick: 'Sequenced around Jama Masjid → Chandni Chowk → Red Fort — avoids noon heat, starts at 7am.',        tags: ['Itinerary','Heritage','History'] },
-  { city: 'Udaipur',   subtitle: 'Hotel · Lake Pichola · AI #1 pick',    gradient: 'from-violet-900 via-purple-800 to-fuchsia-600',emoji: '🏰', badge: '4.9★ · Lake View Palace',    aiPick: 'Only heritage property with unobstructed lake view under ₹8000/night — books out fast on weekends.', tags: ['Hotel','Lake View','Heritage']   },
-  { city: 'Hyderabad', subtitle: 'Food · Banjara Hills · AI #1 pick',    gradient: 'from-amber-900 via-yellow-800 to-orange-500', emoji: '🍛', badge: '4.7★ · Biryani Capital',      aiPick: 'Highest-rated dum biryani within 2km — reviewers say this is the closest thing to Paradise Biryani.', tags: ['Food','Biryani','Non-Veg']       },
-  { city: 'Chennai',   subtitle: 'Explore · Marina Beach · AI #1 pick',  gradient: 'from-cyan-900 via-sky-800 to-blue-500',       emoji: '🌊', badge: '4.6★ · Coastal Landmark',    aiPick: 'Best visited at 6am — AI identified Tuesday mornings as the quietest slot before weekend crowds.',    tags: ['Explore','Beach','Landmark']    },
+  { city: 'Goa',       subtitle: 'Restaurant · Calangute · AI #1 pick',  gradient: 'from-orange-800 via-amber-700 to-yellow-500', emoji: '🍽️', badge: '4.7★ · Most Reviewed',        aiPick: 'Top seafood pick near your hotel — open late, matches your casual beachside dining preference.',       tags: ['Restaurant','Seafood','Beach'],   imgId: '1496442226666-8d4d0e62e6e9' },
+  { city: 'Jaipur',    subtitle: 'Hotel · Civil Lines · AI #1 pick',     gradient: 'from-pink-800 via-rose-700 to-pink-400',      emoji: '🏨', badge: '4.9★ · Heritage Stay',        aiPick: 'Only property in your budget with rooftop dining + heritage rating + 4.9★ Google score.',            tags: ['Hotel','Heritage','Rooftop'],     imgId: '1477587458883-47145ed94245' },
+  { city: 'Bangalore', subtitle: 'Hotel · Indiranagar · AI #1 pick',     gradient: 'from-slate-800 via-slate-700 to-blue-600',    emoji: '🏨', badge: '4.8★ · Top Rated Hotel',      aiPick: 'Best match for business stays — rooftop pool, free breakfast, 0.3km from MG Road metro.',            tags: ['Hotel','Business','Pool'],        imgId: '1708782462555-b3af03b4b3d2' },
+  { city: 'Mumbai',    subtitle: 'Restaurant · Bandra West · AI #1',     gradient: 'from-indigo-800 via-blue-700 to-sky-500',     emoji: '🍽️', badge: '4.6★ · AI Recommended',       aiPick: 'Best pure-veg pick in Bandra — family-friendly, quick service, matches your diet & budget.',         tags: ['Restaurant','Pure Veg','Family'], imgId: '1598434192043-71111c1b3f41' },
+  { city: 'Delhi',     subtitle: 'Itinerary · Old Delhi · AI #1 pick',   gradient: 'from-red-900 via-rose-800 to-orange-600',     emoji: '🏯', badge: '4.8★ · Heritage Walk',        aiPick: 'Sequenced around Jama Masjid → Chandni Chowk → Red Fort — avoids noon heat, starts at 7am.',        tags: ['Itinerary','Heritage','History'], imgId: '1587474260584-136574528ed5' },
+  { city: 'Udaipur',   subtitle: 'Hotel · Lake Pichola · AI #1 pick',    gradient: 'from-violet-900 via-purple-800 to-fuchsia-600',emoji: '🏰', badge: '4.9★ · Lake View Palace',    aiPick: 'Only heritage property with unobstructed lake view under ₹8000/night — books out fast on weekends.', tags: ['Hotel','Lake View','Heritage'],   imgId: '1622018135960-249abd263aeb' },
+  { city: 'Hyderabad', subtitle: 'Food · Banjara Hills · AI #1 pick',    gradient: 'from-amber-900 via-yellow-800 to-orange-500', emoji: '🍛', badge: '4.7★ · Biryani Capital',      aiPick: 'Highest-rated dum biryani within 2km — reviewers say this is the closest thing to Paradise Biryani.', tags: ['Food','Biryani','Non-Veg'],       imgId: '1657981630164-769503f3a9a8' },
+  { city: 'Chennai',   subtitle: 'Explore · Marina Beach · AI #1 pick',  gradient: 'from-cyan-900 via-sky-800 to-blue-500',       emoji: '🌊', badge: '4.6★ · Coastal Landmark',    aiPick: 'Best visited at 6am — AI identified Tuesday mornings as the quietest slot before weekend crowds.',    tags: ['Explore','Beach','Landmark'],    imgId: '1602216056096-3b40cc0c9944' },
 ];
 
 /* ── Hero photo panel — controlled by shared heroActive index ─────────── */
@@ -94,10 +96,17 @@ function HeroPhotoPanel({ active, setActive }: { active: number; setActive: (i: 
       style={{ height: '560px', boxShadow: '0 0 60px rgba(59,130,246,0.18), 0 30px 60px rgba(0,0,0,0.6)' }}
     >
       <AnimatePresence mode="sync">
-        <motion.div key={active} initial={{ opacity: 0, scale: 1.05 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }} className={`absolute inset-0 bg-gradient-to-br ${d.gradient}`} />
+        <motion.img
+          key={active}
+          src={uImg(d.imgId, 900, 580)}
+          alt={d.city}
+          initial={{ opacity: 0, scale: 1.05 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
       </AnimatePresence>
-      <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle at 30% 20%, rgba(255,255,255,0.15) 0%, transparent 60%)' }} />
       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
       <div className="absolute top-5 left-5 bg-white/15 backdrop-blur-md border border-white/25 text-white text-xs font-bold px-3.5 py-1.5 rounded-full">{d.badge}</div>
       <div className="absolute top-4 right-5 text-5xl drop-shadow-lg select-none">{d.emoji}</div>

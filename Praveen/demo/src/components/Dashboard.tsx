@@ -9,10 +9,15 @@ import { Tab } from './ui/Tabs';
 const uImg = (id: string, w = 320, h = 200) =>
   `https://images.unsplash.com/photo-${id}?w=${w}&h=${h}&fit=crop&auto=format&q=80`;
 
-type DietType  = 'Any' | 'Veg' | 'Non-Veg';
-type DineMode  = 'Any' | 'Dine-in' | 'Takeout';
-type PriceFilter = 'Any' | '₹' | '₹₹' | '₹₹₹' | '₹₹₹₹';
-type MinRating   = 'Any' | '3.5+' | '4.0+' | '4.5+';
+type DietType      = 'Any' | 'Veg' | 'Non-Veg';
+type DineMode      = 'Any' | 'Dine-in' | 'Takeout';
+type MinRating     = 'Any' | '3.5+' | '4.0+' | '4.5+';
+// Hotel price ranges (actual INR per night) and food cost tiers (keyword-based)
+const HOTEL_PRICE_OPTIONS = ['Any', '₹1K-5K', '₹5K-10K', '₹15K+'] as const;
+const FOOD_COST_OPTIONS   = ['Any', 'Low Cost', 'Medium Cost', 'High Cost', 'Expensive'] as const;
+const FOOD_COST_LABELS: Record<string, string> = {
+  'Any': 'Any', 'Low Cost': 'Low', 'Medium Cost': 'Mid', 'High Cost': 'High', 'Expensive': 'Fine',
+};
 
 /* ── Tab metadata ─────────────────────────────────────────────────────── */
 const TAB_META: Record<Tab, {
@@ -528,7 +533,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
 
   const [activeTab, setActiveTab]       = useState<Tab>(initialTab);
   const [hotelTags, setHotelTags]       = useState<string[]>([]);
-  const [priceFilter, setPriceFilter]   = useState<PriceFilter>('Any');
+  const [priceFilter, setPriceFilter]   = useState('Any');
   const [minRating, setMinRating]       = useState<MinRating>('Any');
   const [openNow, setOpenNow]           = useState(false);
   const [foodTags, setFoodTags]         = useState<string[]>([]);
@@ -542,6 +547,9 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
   const ctaSentinelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { setActiveTab(initialTab); }, [initialTab]);
+
+  // Reset price filter when switching tabs — hotel ranges and food cost tiers are different
+  useEffect(() => { setPriceFilter('Any'); }, [activeTab]);
 
   useEffect(() => {
     const el = ctaSentinelRef.current;
@@ -611,13 +619,18 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             </button>
           </div>
 
-          {/* Price Range */}
+          {/* Price Range — per-night INR ranges */}
           <div>
             <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
-              Price Range
-              <Tooltip text="₹ = budget · ₹₹ = mid-range · ₹₹₹ = upscale · ₹₹₹₹ = luxury — hard-filtered before AI." />
+              Price / Night
+              <Tooltip text="₹1K-5K = budget · ₹5K-10K = mid-range · ₹15K+ = luxury — hard-filtered before AI ranking." />
             </label>
-            <ToggleGroup options={['Any', '₹', '₹₹', '₹₹₹', '₹₹₹₹'] as const} value={priceFilter} onChange={setPriceFilter} accent="#D97706" />
+            <ToggleGroup
+              options={HOTEL_PRICE_OPTIONS}
+              value={priceFilter}
+              onChange={setPriceFilter}
+              accent="#D97706"
+            />
           </div>
 
           {/* Min Rating — star label, gold accent */}
@@ -667,13 +680,19 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             </button>
           </div>
 
-          {/* Price Range */}
+          {/* Cost Tier — keyword-frequency based */}
           <div>
             <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
-              Price Range
-              <Tooltip text="₹ = budget · ₹₹ = mid-range · ₹₹₹ = upscale · ₹₹₹₹ = fine dining — hard-filtered before AI." />
+              Cost Level
+              <Tooltip text="Low = budget meals · Mid = everyday dining · High = premium · Fine = fine dining. Filtered by review keyword frequency, not just price symbol." />
             </label>
-            <ToggleGroup options={['Any', '₹', '₹₹', '₹₹₹', '₹₹₹₹'] as const} value={priceFilter} onChange={setPriceFilter} accent="#D97706" />
+            <ToggleGroup
+              options={FOOD_COST_OPTIONS}
+              value={priceFilter}
+              onChange={setPriceFilter}
+              accent="#D97706"
+              renderLabel={o => FOOD_COST_LABELS[o] ?? o}
+            />
           </div>
 
           {/* Diet — green */}
