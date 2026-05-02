@@ -61,7 +61,7 @@ function CityPosterSlider() {
       <div className="animate-marquee flex gap-3" style={{ width: 'max-content' }}>
         {doubled.map((p, i) => (
           <div key={i} className={`bg-gradient-to-br ${p.gradient} rounded-2xl flex-shrink-0 w-36 h-44 relative overflow-hidden flex flex-col justify-end p-3 shadow-lg`}>
-            <img src={uImg(p.imgId, 144, 176)} alt={p.city} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+            <img src={uImg(p.imgId, 144, 176)} alt={p.city} className="absolute inset-0 w-full h-full object-cover" loading="eager" />
             <span className="absolute top-3 right-3 text-2xl z-10">{p.emoji}</span>
             <div className="absolute inset-0 bg-gradient-to-t from-black/75 to-black/20 rounded-2xl" />
             <p className="relative z-10 text-white font-display font-black text-sm leading-tight">{p.city}</p>
@@ -95,22 +95,28 @@ function HeroPhotoPanel({ active, setActive }: { active: number; setActive: (i: 
       className="relative w-full rounded-3xl overflow-hidden"
       style={{ height: '560px', boxShadow: '0 0 60px rgba(59,130,246,0.18), 0 30px 60px rgba(0,0,0,0.6)' }}
     >
-      <AnimatePresence mode="sync">
+      {/* All images pre-rendered so browser loads them all in parallel on mount.
+          Stable keys mean no remount on transition — just opacity/scale update. */}
+      {HERO_DESTINATIONS.map((dest, i) => (
         <motion.img
-          key={active}
-          src={uImg(d.imgId, 900, 580)}
-          alt={d.city}
-          initial={{ opacity: 0, scale: 1.05 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
+          key={i}
+          src={uImg(dest.imgId, 900, 580)}
+          alt={dest.city}
+          loading="eager"
           className="absolute inset-0 w-full h-full object-cover"
+          initial={{ opacity: 0 }}
+          animate={{
+            opacity: i === active ? 1 : 0,
+            scale:   i === active ? 1 : 1.04,
+          }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+          style={{ willChange: 'opacity, transform', zIndex: i === active ? 1 : 0 }}
         />
-      </AnimatePresence>
-      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
-      <div className="absolute top-5 left-5 bg-white/15 backdrop-blur-md border border-white/25 text-white text-xs font-bold px-3.5 py-1.5 rounded-full">{d.badge}</div>
-      <div className="absolute top-4 right-5 text-5xl drop-shadow-lg select-none">{d.emoji}</div>
-      <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col gap-4">
+      ))}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" style={{ zIndex: 2 }} />
+      <div className="absolute top-5 left-5 bg-white/15 backdrop-blur-md border border-white/25 text-white text-xs font-bold px-3.5 py-1.5 rounded-full" style={{ zIndex: 3 }}>{d.badge}</div>
+      <div className="absolute top-4 right-5 text-5xl drop-shadow-lg select-none" style={{ zIndex: 3 }}>{d.emoji}</div>
+      <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col gap-4" style={{ zIndex: 3 }}>
         <AnimatePresence mode="wait">
           <motion.div key={active} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.3 }}>
             <div className="flex flex-wrap gap-2 mb-3">

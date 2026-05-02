@@ -158,8 +158,9 @@ export default function App() {
           dietType:    filters.dietType,
           dineMode:    filters.dineMode,
         });
-        // Show first 10; more are appended 2-at-a-time via "Load More"
-        setLiveResults(results.slice(0, 10));
+        // Show first 10; fall back to mock when API returns empty
+        setLiveResults(results.length > 0 ? results.slice(0, 10) : null);
+        if (results.length === 0) setApiError(true);
       }
     } catch {
       setApiError(true);
