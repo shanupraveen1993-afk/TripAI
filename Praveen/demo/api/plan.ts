@@ -101,15 +101,16 @@ async function fetchPlaces(
   const rankPreference = SEED_RANK[searchSeed % 4] ?? 'RELEVANCE';
   const prefix         = SEED_PREFIX[searchSeed % 4] ?? '';
 
-  const circleParam = {
-    circle: {
-      center: THANJAVUR_CENTER,
-      radius: radiusKm * 1000,
+  // Places API (New) v1: locationRestriction only accepts rectangle, not circle.
+  // Use locationBias (circle) for all searches — filterThanjavurOnly enforces strict locality.
+  const locationParam = {
+    locationBias: {
+      circle: {
+        center: THANJAVUR_CENTER,
+        radius: radiusKm * 1000,
+      },
     },
   };
-  const locationParam = strictLocation
-    ? { locationRestriction: circleParam }
-    : { locationBias: circleParam };
 
   const r = await fetch('https://places.googleapis.com/v1/places:searchText', {
     method: 'POST',
