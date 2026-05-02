@@ -40,6 +40,53 @@ const QUERIES: Record<string, string> = {
   Itinerary: 'top tourist attractions in Thanjavur Tamil Nadu',
 };
 
+// Hotel tag → search query term — changes the Google Places query so results differ per selection
+const HOTEL_TAG_SEARCH: Record<string, string> = {
+  'Heritage':             'heritage boutique historical hotel',
+  'Pool':                 'hotel with swimming pool',
+  'Business':             'business corporate hotel',
+  'Budget Friendly':      'budget affordable economy hotel',
+  'Luxury':               'luxury premium 5-star hotel',
+  'Family':               'family hotel kids friendly',
+  'Quiet':                'quiet peaceful resort hotel',
+  'Spa':                  'hotel with spa wellness',
+  'Gym':                  'hotel with gym fitness centre',
+  'AC Rooms':             'air conditioned hotel',
+  'WiFi':                 'hotel wifi',
+  'Parking':              'hotel with parking',
+  'Rooftop':              'rooftop hotel terrace',
+  'Temple Nearby':        'hotel near Brihadeeswarar Big Temple',
+  'Near Railway Station': 'hotel near Thanjavur railway station',
+  'River View':           'hotel river view Kaveri',
+  'Veg Kitchen':          'vegetarian pure veg hotel',
+  'Breakfast Included':   'hotel with breakfast',
+  'Late Checkout':        'hotel',
+  'Honeymoon':            'romantic honeymoon couple hotel',
+  'Couple Friendly':      'couple friendly hotel',
+};
+
+// Hotel price range → extra query keyword so Places returns price-relevant results
+const HOTEL_PRICE_QUERY: Record<string, string> = {
+  '₹1K-5K':  'budget affordable',
+  '₹5K-10K': 'mid-range',
+  '₹15K+':   'luxury premium',
+};
+
+function buildHotelQuery(filters: UserFilters): string {
+  const tags     = (filters.hotelTags ?? []).filter(t => t);
+  const tagTerms = tags.slice(0, 2).map(t => HOTEL_TAG_SEARCH[t] ?? t).join(' ');
+  const priceKw  = (filters.priceFilter && filters.priceFilter !== 'Any')
+    ? (HOTEL_PRICE_QUERY[filters.priceFilter] ?? '') : '';
+
+  if (filters.hotelArea) {
+    return `${priceKw} ${tagTerms} hotel near ${filters.hotelArea} Thanjavur Tamil Nadu`.replace(/\s+/g,' ').trim();
+  }
+  if (tagTerms) {
+    return `${priceKw} ${tagTerms} in Thanjavur Tamil Nadu`.replace(/\s+/g,' ').trim();
+  }
+  return `${priceKw} hotels in Thanjavur Tamil Nadu near Brihadeeswarar Temple`.replace(/\s+/g,' ').trim();
+}
+
 // Thanjavur city centre — used for location-restricted and location-biased searches
 const THANJAVUR_CENTER = { latitude: 10.787, longitude: 79.1378 };
 
@@ -97,6 +144,7 @@ async function fetchPlaces(
   withPhotos = false,
   radiusKm = 15,
   strictLocation = true,
+  minRating = 0,
 ) {
   const rankPreference = SEED_RANK[searchSeed % 4] ?? 'RELEVANCE';
   const prefix         = SEED_PREFIX[searchSeed % 4] ?? '';
@@ -124,6 +172,7 @@ async function fetchPlaces(
       maxResultCount: 10,
       languageCode:   'en',
       rankPreference,
+      ...(minRating > 0 ? { minRating } : {}),
       ...locationParam,
     }),
   });
@@ -179,12 +228,14 @@ const FOOD_TAG_SEARCH: Record<string, string> = {
 };
 
 function buildFoodQuery(filters: UserFilters): string {
-  const tags = (filters.foodTags ?? []).filter(t => t);
-  const tagTerm = tags.length > 0
-    ? (FOOD_TAG_SEARCH[tags[0]] ?? tags[0].toLowerCase())
-    : 'restaurant';
-  const dietPrefix = filters.dietType === 'Veg' ? 'vegetarian ' : '';
-  return `${dietPrefix}${tagTerm} in Thanjavur Tamil Nadu`;
+  const tags      = (filters.foodTags ?? []).filter(t => t);
+  // Combine up to 2 tags so the query is specific but not over-constrained
+  const tagTerms  = tags.slice(0, 2).map(t => FOOD_TAG_SEARCH[t] ?? t.toLowerCase()).join(' ');
+  const dietPfx   = filters.dietType === 'Veg' ? 'vegetarian pure veg ' : '';
+  const pricePfx  = filters.priceFilter === 'Low Cost'  ? 'budget cheap '   :
+                    filters.priceFilter === 'Expensive'  ? 'fine dining '    : '';
+  const baseTerm  = tagTerms || 'restaurant';
+  return `${pricePfx}${dietPfx}${baseTerm} in Thanjavur Tamil Nadu`.replace(/\s+/g,' ').trim();
 }
 
 // Hotel price range buckets — inclusive on boundaries to avoid empty results
@@ -223,67 +274,61 @@ function scoreFoodCost(reviews: any[], category: string): number {
   return keywords.filter(k => text.includes(k)).length;
 }
 
-// Hard filter applied BEFORE Gemini — guarantees results match user constraints
+// Hard filter applied BEFORE Gemini — guarantees results match user constraints.
+// Query-level filtering (buildHotelQuery / buildFoodQuery + minRating in Places API)
+// handles tags, cuisine, and rating. This function handles post-retrieval booleans.
 function applyHardFilters(places: any[], tab: string, f: UserFilters): any[] {
   let out = places;
 
-  // 1. Price / cost filter
+  // 1. Price / cost filter (secondary — query already pulls price-relevant results)
   if (f.priceFilter && f.priceFilter !== 'Any') {
     const isFoodCostLabel = Object.keys(FOOD_COST_KEYWORDS).includes(f.priceFilter);
 
     if (isFoodCostLabel && tab === 'Food') {
-      // Keyword-frequency based food cost filter
+      // Score by keyword frequency; sort best-match first (don't hard-exclude)
       const allowedLevels = FOOD_PRICE_LEVEL_MAP[f.priceFilter] ?? [];
-
       const scored = out.map(p => ({
-        place:         p,
-        keywordScore:  scoreFoodCost(p.reviews ?? [], f.priceFilter!),
-        levelMatch:    allowedLevels.includes(p.priceLevel ?? '') || !p.priceLevel,
+        place:        p,
+        keywordScore: scoreFoodCost(p.reviews ?? [], f.priceFilter!),
+        levelMatch:   allowedLevels.includes(p.priceLevel ?? ''),
       }));
-
-      // Include if keyword score > 0 OR Google priceLevel matches the tier
-      const filtered = scored.filter(({ keywordScore, levelMatch }) => keywordScore > 0 || levelMatch);
-
-      if (filtered.length >= 2) {
-        // Sort highest keyword match first so Gemini sees the strongest signals at the top
-        out = filtered
-          .sort((a, b) => b.keywordScore - a.keywordScore)
-          .map(({ place }) => place);
-      }
-    } else {
-      // Hotel price range filter (₹1K-5K / ₹5K-10K / ₹15K+ or legacy ₹/₹₹/₹₹₹/₹₹₹₹)
+      // Keep all but sort by relevance — weakly matching places appear last for Gemini
+      out = scored
+        .sort((a, b) => (b.keywordScore + (b.levelMatch ? 2 : 0)) - (a.keywordScore + (a.levelMatch ? 2 : 0)))
+        .map(({ place }) => place);
+    } else if (tab === 'Hotels') {
+      // Hotels: filter by priceLevel when available; keep places with no priceLevel as fallback
       const allowed = PRICE_BUCKETS[f.priceFilter] ?? [];
-      const n = out.filter(p => !p.priceLevel || allowed.includes(p.priceLevel));
-      if (n.length >= 2) out = n;
+      const matched = out.filter(p => allowed.includes(p.priceLevel ?? ''));
+      // Only enforce if we got ≥2 with known price; otherwise keep all (no priceLevel data)
+      if (matched.length >= 2) out = matched;
     }
   }
 
-  // 2. Minimum rating
-  if (f.minRating && f.minRating > 0) {
-    const n = out.filter(p => (p.rating ?? 0) >= (f.minRating ?? 0));
-    if (n.length >= 2) out = n;
-  }
-
-  // 2b. Open Now
+  // 2. Open Now — hard exclude closed places (keep undefined/null as "unknown = open")
   if (f.openNow) {
-    const n = out.filter(p => p.regularOpeningHours?.openNow === true || p.currentOpeningHours?.openNow === true);
-    if (n.length >= 2) out = n;
+    const n = out.filter(p => {
+      const isOpen = p.regularOpeningHours?.openNow ?? p.currentOpeningHours?.openNow;
+      return isOpen !== false; // keep true and undefined, exclude only explicit false
+    });
+    if (n.length >= 1) out = n;
   }
 
   // 3. Vegetarian (Food only) — uses Places servesVegetarianFood boolean
   if (tab === 'Food' && f.dietType === 'Veg') {
     const n = out.filter(p => p.servesVegetarianFood === true);
+    // Only enforce if we found veg-flagged places — Places data is inconsistent
     if (n.length >= 2) out = n;
   }
 
-  // 4. Dining mode (Food only) — uses Places dineIn / takeout boolean
+  // 4. Dining mode (Food only)
   if (tab === 'Food') {
     if (f.dineMode === 'Dine-in') {
       const n = out.filter(p => p.dineIn === true);
-      if (n.length >= 2) out = n;
+      if (n.length >= 1) out = n;
     } else if (f.dineMode === 'Takeout') {
       const n = out.filter(p => p.takeout === true);
-      if (n.length >= 2) out = n;
+      if (n.length >= 1) out = n;
     }
   }
 
@@ -822,19 +867,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     dineMode:    req.body?.dineMode    ?? 'Any',
   };
 
-  // Build query from filters — Food uses cuisine tags + diet, Hotels uses area
-  let query: string;
-  if (tab === 'Food') {
-    query = buildFoodQuery(filters);
-  } else if (tab === 'Hotels' && filters.hotelArea) {
-    query = `hotels near ${filters.hotelArea} Thanjavur Tamil Nadu`;
-  } else {
-    query = QUERIES[tab] ?? QUERIES.Hotels;
-  }
+  // Build query from filters — changes the Places search so different filters → different results
+  const query = tab === 'Food' ? buildFoodQuery(filters) : buildHotelQuery(filters);
+
+  // Pass minRating directly to Places API so Google pre-filters — stricter than post-filter
+  const apiMinRating = (filters.minRating ?? 0) > 0 ? (filters.minRating ?? 0) : 0;
 
   try {
-    // Strict 15km radius around Thanjavur centre — only returns places actually in the city
-    const rawPlaces     = await fetchPlaces(query, searchSeed, true, 15, true);
+    // 15km radius around Thanjavur centre; minRating applied at Places API level
+    const rawPlaces     = await fetchPlaces(query, searchSeed, true, 15, true, apiMinRating);
     // Secondary guard: drop any result whose address doesn't mention Thanjavur/Tanjore
     const localPlaces   = filterThanjavurOnly(rawPlaces);
 
