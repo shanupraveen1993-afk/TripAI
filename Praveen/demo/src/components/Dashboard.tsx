@@ -346,19 +346,19 @@ function Tooltip({ text }: { text: string }) {
 }
 
 /* ── Location bar ────────────────────────────────────────────────────── */
-function LocationBar({ value, onChange, placeholder, autoDetect }: {
+function LocationBar({ value, onChange, placeholder, autoDetect, mockResolvedLocation = 'Thanjavur' }: {
   value: string;
   onChange: (v: string) => void;
   placeholder: string;
   autoDetect?: boolean;
+  mockResolvedLocation?: string;
 }) {
   const [detecting, setDetecting] = useState(false);
   const autoRan = useRef(false);
 
   const detect = () => {
     setDetecting(true);
-    // Phase 1: simulate GPS resolving to Thanjavur
-    setTimeout(() => { onChange('Thanjavur'); setDetecting(false); }, 1800);
+    setTimeout(() => { onChange(mockResolvedLocation); setDetecting(false); }, 1800);
   };
 
   // Auto-trigger on mount when autoDetect=true and no value yet
@@ -550,6 +550,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
   const [minRating, setMinRating]       = useState<MinRating>('Any');
   const [openNow, setOpenNow]           = useState(false);
   const [foodTags, setFoodTags]         = useState<string[]>([]);
+  const [foodLocation, setFoodLocation] = useState('');
   const [dietType, setDietType]         = useState<DietType>('Any');
   const [mealTime, setMealTime]         = useState<MealTime>('Any');
   const [itinDate, setItinDate]         = useState(today);
@@ -640,7 +641,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
     priceFilter,
     minRating,
     openNow,
-    foodLocation: '',
+    foodLocation,
     foodTags:     ov.foodTags     ?? foodTags,
     dietType:     (ov.dietType    ?? dietType) as DietType,
     dineMode:     'Any',
@@ -710,20 +711,54 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       /* ── Food ───────────────────────────────────────────────── */
       case 'Food': return (
         <div className="space-y-3">
-          {/* Cuisine tags — PRIMARY filter, shown first */}
+
+          {/* Location — auto-detect demo (mocked to New Bus Stand, Thanjavur) */}
           <div>
             <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
-              Cuisine
-              <Tooltip text="Select a cuisine type — this is the primary search anchor. AI ranks results that match your selection first." />
-              {tagsLoading && <span className="ml-auto text-[9px] text-brand font-semibold animate-pulse">Updating…</span>}
+              <MapPin className="w-3 h-3 text-brand" />
+              Your Area
+              <span className="text-[9px] font-normal text-muted normal-case tracking-normal">(optional)</span>
+              <Tooltip text="We detect your area to find the nearest restaurants. Mock demo: resolves to 'New Bus Stand, Thanjavur'. You can also type any area manually." />
             </label>
-            <TagGrid tags={dynamicFoodTags} selected={foodTags} onToggle={toggleFoodTag} accent="#D97706" />
+            <LocationBar
+              value={foodLocation}
+              onChange={setFoodLocation}
+              placeholder="e.g. New Bus Stand, Big Temple area…"
+              autoDetect={true}
+              mockResolvedLocation="New Bus Stand, Thanjavur"
+            />
+            {!foodLocation && (
+              <p className="text-[9px] text-muted mt-1 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse inline-block" />
+                Demo: tap <span className="font-bold text-brand">Near me</span> to see location auto-detect
+              </p>
+            )}
+          </div>
+
+          {/* Diet — 4 options including Pure Veg */}
+          <div>
+            <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
+              Diet
+              <span className="text-[9px] font-normal text-muted normal-case tracking-normal">(optional)</span>
+              <Tooltip text="Veg = serves vegetarian options · Pure Veg = only vegetarian food, no non-veg items at all · Non-Veg = ranked by non-veg review mentions." />
+            </label>
+            <ToggleGroup
+              options={['Any', 'Veg', 'Non-Veg', 'Pure Veg'] as const}
+              value={dietType}
+              onChange={setDietType}
+              accent="#059669"
+              renderLabel={o => o === 'Pure Veg'
+                ? <span className="flex items-center gap-0.5"><span>🌿</span><span>Pure Veg</span></span>
+                : <span>{o}</span>
+              }
+            />
           </div>
 
           {/* Meal Time */}
           <div>
             <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
               Meal Time
+              <span className="text-[9px] font-normal text-muted normal-case tracking-normal">(optional)</span>
               <Tooltip text="Breakfast = tiffin / idli-dosa spots · Lunch = thali / meals · Dinner = restaurant / biryani. Changes what Google returns." />
             </label>
             <ToggleGroup
@@ -740,28 +775,11 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             />
           </div>
 
-          {/* Diet — 4 options including Pure Veg */}
-          <div>
-            <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
-              Diet
-              <Tooltip text="Veg = serves vegetarian options · Pure Veg = only vegetarian food, no non-veg items at all · Non-Veg = ranked by non-veg review mentions." />
-            </label>
-            <ToggleGroup
-              options={['Any', 'Veg', 'Non-Veg', 'Pure Veg'] as const}
-              value={dietType}
-              onChange={setDietType}
-              accent="#059669"
-              renderLabel={o => o === 'Pure Veg'
-                ? <span className="flex items-center gap-0.5"><span>🌿</span><span>Pure Veg</span></span>
-                : <span>{o}</span>
-              }
-            />
-          </div>
-
           {/* Price per person — INR ranges from review analysis */}
           <div>
             <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
               Price / Person
+              <span className="text-[9px] font-normal text-muted normal-case tracking-normal">(optional)</span>
               <Tooltip text="Derived from what Google reviewers say about price. Under ₹100 = street food / mess · ₹100-300 = everyday dining · ₹300-600 = premium · ₹600+ = fine dining." />
             </label>
             <ToggleGroup
@@ -771,6 +789,17 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               accent="#D97706"
               renderLabel={o => FOOD_COST_LABELS[o] ?? o}
             />
+          </div>
+
+          {/* Cuisine tags — optional, shown last */}
+          <div>
+            <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
+              Cuisine
+              <span className="text-[9px] font-normal text-muted normal-case tracking-normal">(optional)</span>
+              <Tooltip text="Select a cuisine type — used as a search anchor. AI prioritises results that match your selection." />
+              {tagsLoading && <span className="ml-auto text-[9px] text-brand font-semibold animate-pulse">Updating…</span>}
+            </label>
+            <TagGrid tags={dynamicFoodTags} selected={foodTags} onToggle={toggleFoodTag} accent="#D97706" />
           </div>
 
           {/* Open Now chip */}

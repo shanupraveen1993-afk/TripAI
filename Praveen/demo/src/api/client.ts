@@ -60,15 +60,16 @@ export interface ExploreGuide {
 }
 
 interface PlanFilters {
-  hotelTags?:   string[];
-  hotelArea?:   string;
-  foodTags?:    string[];
-  priceFilter?: string;   // 'Any' | INR range
-  minRating?:   number;   // 0 = any
-  openNow?:     boolean;
-  dietType?:    string;   // 'Any' | 'Veg' | 'Non-Veg' | 'Pure Veg'
-  dineMode?:    string;   // 'Any' | 'Dine-in' | 'Takeout'
-  mealTime?:    string;   // 'Any' | 'Breakfast' | 'Lunch' | 'Dinner'
+  hotelTags?:    string[];
+  hotelArea?:    string;
+  foodTags?:     string[];
+  foodLocation?: string;   // area within Thanjavur e.g. "New Bus Stand"
+  priceFilter?:  string;   // 'Any' | INR range
+  minRating?:    number;   // 0 = any
+  openNow?:      boolean;
+  dietType?:     string;   // 'Any' | 'Veg' | 'Non-Veg' | 'Pure Veg'
+  dineMode?:     string;   // 'Any' | 'Dine-in' | 'Takeout'
+  mealTime?:     string;   // 'Any' | 'Breakfast' | 'Lunch' | 'Dinner'
 }
 
 export interface PlanResponse {

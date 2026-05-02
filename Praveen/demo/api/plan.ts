@@ -200,15 +200,16 @@ function filterThanjavurOnly(places: any[]): any[] {
 }
 
 interface UserFilters {
-  hotelTags?:   string[];
-  hotelArea?:   string;
-  foodTags?:    string[];  // cuisine/type tags — primary query anchor
-  priceFilter?: string;   // 'Any' | INR range label — hard-filtered via priceLevel + review keywords
-  minRating?:   number;   // 0 = any; hard-filtered via rating field
-  openNow?:     boolean;  // hard-filtered via openNow boolean from Places API
-  dietType?:    string;   // 'Any' | 'Veg' | 'Non-Veg' | 'Pure Veg' — hard-filtered via servesVegetarianFood + review scan
-  dineMode?:    string;   // 'Any' | 'Dine-in' | 'Takeout' — hard-filtered via dineIn/takeout
-  mealTime?:    string;   // 'Any' | 'Breakfast' | 'Lunch' | 'Dinner' — injected into Places query
+  hotelTags?:    string[];
+  hotelArea?:    string;
+  foodTags?:     string[];  // cuisine/type tags — primary query anchor
+  foodLocation?: string;    // area within Thanjavur e.g. "New Bus Stand" — narrows Places search
+  priceFilter?:  string;   // 'Any' | INR range label — hard-filtered via priceLevel + review keywords
+  minRating?:    number;   // 0 = any; hard-filtered via rating field
+  openNow?:      boolean;  // hard-filtered via openNow boolean from Places API
+  dietType?:     string;   // 'Any' | 'Veg' | 'Non-Veg' | 'Pure Veg' — hard-filtered via servesVegetarianFood + review scan
+  dineMode?:     string;   // 'Any' | 'Dine-in' | 'Takeout' — hard-filtered via dineIn/takeout
+  mealTime?:     string;   // 'Any' | 'Breakfast' | 'Lunch' | 'Dinner' — injected into Places query
 }
 
 // Map UI food tags → search-friendly terms for Places API query
@@ -262,7 +263,11 @@ function buildFoodQuery(filters: UserFilters): string {
     : '';
 
   const baseTerm = tagTerms || 'restaurant';
-  return `${mealPfx}${pricePfx}${dietPfx}${baseTerm} in Thanjavur Tamil Nadu`.replace(/\s+/g, ' ').trim();
+  // If user has provided a specific area, narrow the search to that locality
+  const locationSuffix = (filters.foodLocation && filters.foodLocation.trim())
+    ? `near ${filters.foodLocation} Thanjavur`
+    : 'in Thanjavur Tamil Nadu';
+  return `${mealPfx}${pricePfx}${dietPfx}${baseTerm} ${locationSuffix}`.replace(/\s+/g, ' ').trim();
 }
 
 // Hotel price range buckets — inclusive on boundaries to avoid empty results
@@ -979,15 +984,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const searchSeed = parseInt((req.body?.searchSeed ?? '0') as string, 10);
 
   const filters: UserFilters = {
-    hotelTags:   req.body?.hotelTags   ?? [],
-    hotelArea:   req.body?.hotelArea   ?? '',
-    foodTags:    req.body?.foodTags    ?? [],
-    priceFilter: req.body?.priceFilter ?? 'Any',
-    minRating:   Number(req.body?.minRating ?? 0),
-    openNow:     req.body?.openNow === true,
-    dietType:    req.body?.dietType    ?? 'Any',
-    dineMode:    req.body?.dineMode    ?? 'Any',
-    mealTime:    req.body?.mealTime    ?? 'Any',
+    hotelTags:    req.body?.hotelTags    ?? [],
+    hotelArea:    req.body?.hotelArea    ?? '',
+    foodTags:     req.body?.foodTags     ?? [],
+    foodLocation: req.body?.foodLocation ?? '',
+    priceFilter:  req.body?.priceFilter  ?? 'Any',
+    minRating:    Number(req.body?.minRating ?? 0),
+    openNow:      req.body?.openNow === true,
+    dietType:     req.body?.dietType     ?? 'Any',
+    dineMode:     req.body?.dineMode     ?? 'Any',
+    mealTime:     req.body?.mealTime     ?? 'Any',
   };
 
   // Build query from filters — changes the Places search so different filters → different results
