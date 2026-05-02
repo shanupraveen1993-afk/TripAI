@@ -636,7 +636,10 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
         )}
       </div>
 
-      {/* ── Book + Maps — primary action footer (Hotels only) ── */}
+      </div>
+      )}
+
+      {/* ── Book + Maps — always visible (Hotels) ── */}
       {tab === 'Hotels' && (
         <div className="px-3 pb-3 pt-3 border-t border-border flex gap-2">
           <a
@@ -660,7 +663,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
         </div>
       )}
 
-      {/* ── Get directions — primary action footer (Food only) ── */}
+      {/* ── Get directions — always visible (Food) ── */}
       {tab === 'Food' && (
         <div className="px-3 pb-3 pt-3 border-t border-border">
           <a
@@ -671,11 +674,9 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           >
             <Navigation className="w-4 h-4" />
             Get directions
-            {place.dist > 0 && <span className="text-white/55 text-[11px] font-normal ml-0.5">· {place.dist}km away</span>}
+            {place.dist > 0 && <span className="text-[11px] font-normal ml-0.5 opacity-70">· {place.dist}km away</span>}
           </a>
         </div>
-      )}
-      </div>
       )}
     </motion.div>
   );

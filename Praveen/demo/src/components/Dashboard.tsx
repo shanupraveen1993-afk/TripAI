@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  Search, Info, ChevronDown, Sparkles, MapPin, Navigation, X,
+  Search, Info, ChevronDown, ChevronRight, Sparkles, MapPin, Navigation, X,
   Hotel, Utensils, Route, Compass, Flame, Zap, Clock, Star,
 } from 'lucide-react';
 import { fetchCityTags } from '../api/client';
@@ -855,6 +855,65 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
 
   const smartPicks = getSmartPicks(destination);
 
+  /* ── City-lock full screen — shown when destination ≠ Thanjavur ─── */
+  if (!isThanjavur(destination) && destination.trim() !== '') {
+    return (
+      <div className="w-full max-w-[920px] mx-auto py-4 pb-24 lg:pb-4 px-4">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key="city-lock"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{    opacity: 0, y: 16 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            className="flex flex-col items-center justify-center text-center py-16 px-6 min-h-[60vh] gap-6"
+          >
+            {/* Glow ring behind the temple */}
+            <div className="relative flex items-center justify-center">
+              <div className="absolute w-28 h-28 rounded-full opacity-20 animate-pulse"
+                style={{ background: 'radial-gradient(circle, #F97316, transparent)' }} />
+              <span className="text-6xl relative z-10 drop-shadow-lg">🛕</span>
+            </div>
+
+            {/* Heading */}
+            <div className="space-y-2 max-w-sm">
+              <p className="font-display font-black text-2xl text-heading leading-tight">
+                We're live in Thanjavur
+              </p>
+              <p className="text-sm text-body leading-relaxed">
+                Rolling out to every city in India — <strong className="text-heading">{destination}</strong> is on the list.
+                You'll be the first to explore it when it's ready.
+              </p>
+            </div>
+
+            {/* Made in India badge */}
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold tracking-wide"
+              style={{ background: 'linear-gradient(135deg,#FFF7ED,#FFF3E0)', border: '1.5px solid #FDBA74', color: '#C2410C' }}>
+              <span>🇮🇳</span>
+              <span>#MadeInIndia · All cities coming soon</span>
+            </div>
+
+            {/* Try Thanjavur CTA */}
+            <button
+              type="button"
+              onClick={() => onDestinationSelect?.('Thanjavur')}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all duration-200 active:scale-[0.97] text-white hover:brightness-110 shadow-md hover:shadow-lg"
+              style={{ background: 'linear-gradient(135deg,#1C64F2,#3B82F6)' }}
+            >
+              <span>Explore Thanjavur instead</span>
+              <ChevronRight className="w-4 h-4" />
+            </button>
+
+            {/* Soft footnote */}
+            <p className="text-[10px] text-muted mt-2">
+              Built with love for India · Expanding city by city 🇮🇳
+            </p>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full max-w-[920px] mx-auto py-4 pb-24 lg:pb-4 px-4 space-y-3">
 
@@ -865,42 +924,6 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       >
         <CategorySelector active={activeTab} onChange={t => setActiveTab(t)} />
       </div>
-
-      {/* ── City-lock notice — shown when destination ≠ Thanjavur ── */}
-      <AnimatePresence>
-        {!isThanjavur(destination) && (
-          <motion.div
-            key="city-notice"
-            initial={{ opacity: 0, y: -8, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0,  scale: 1    }}
-            exit={{    opacity: 0, y: -8, scale: 0.98 }}
-            transition={{ duration: 0.25, ease: 'easeOut' }}
-            className="relative z-10 rounded-xl px-4 py-3 flex items-start gap-3 overflow-hidden"
-            style={{
-              background: 'linear-gradient(135deg, #FFF7ED 0%, #FFF3E0 100%)',
-              border: '1.5px solid #FDBA74',
-            }}
-          >
-            {/* Saffron glow blob */}
-            <div
-              className="absolute -top-6 -right-6 w-24 h-24 rounded-full opacity-20 pointer-events-none"
-              style={{ background: 'radial-gradient(circle, #F97316, transparent)' }}
-            />
-            <span className="text-xl leading-none mt-0.5 shrink-0">🛕</span>
-            <div className="min-w-0 flex-1">
-              <p className="text-[13px] font-bold text-orange-800 leading-snug">
-                Currently live in Thanjavur
-              </p>
-              <p className="text-[11px] text-orange-700 mt-0.5 leading-relaxed">
-                Results are showing for Thanjavur right now. We're rolling out to every city in India — you'll be the first to know.
-              </p>
-              <p className="text-[10px] font-bold text-orange-500 mt-1.5 tracking-wide">
-                🇮🇳 &nbsp;#MadeInIndia · All cities coming soon
-              </p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* ── Filter card — white below ──────────────────────────── */}
       <motion.div
