@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Search, Info, ChevronDown, Sparkles, MapPin, Navigation, X,
   Hotel, Utensils, Route, Compass, Flame, Zap, Clock, Star,
 } from 'lucide-react';
+import { fetchCityTags } from '../api/client';
 import { Tab } from './ui/Tabs';
 
 const uImg = (id: string, w = 320, h = 200) =>
@@ -533,7 +534,6 @@ interface DashboardProps {
 
 export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loading, recentSearches = [], onDestinationSelect }: DashboardProps) {
   const today    = new Date().toISOString().split('T')[0];
-  const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
 
   const [activeTab, setActiveTab]       = useState<Tab>(initialTab);
   const [hotelTags, setHotelTags]       = useState<string[]>([]);
@@ -549,6 +549,50 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
   const [visitTime, setVisitTime]       = useState('Morning');
   const [categorySticky, setCategorySticky] = useState(true);
   const ctaSentinelRef = useRef<HTMLDivElement>(null);
+
+  // Dynamic tags — updated when city changes
+  const [dynamicHotelTags, setDynamicHotelTags] = useState<string[]>(HOTEL_TAGS);
+  const [dynamicFoodTags,  setDynamicFoodTags]  = useState<string[]>(FOOD_TAGS);
+  const [tagsLoading, setTagsLoading]           = useState(false);
+  const tagsCache = useRef<Record<string, { hotel: string[]; food: string[] }>>({});
+  const tagsDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const loadTagsForCity = useCallback(async (city: string) => {
+    const key = city.trim().toLowerCase();
+    if (!key || key.length < 2) return;
+
+    // Serve from cache instantly
+    if (tagsCache.current[key]) {
+      setDynamicHotelTags(tagsCache.current[key].hotel);
+      setDynamicFoodTags(tagsCache.current[key].food);
+      return;
+    }
+
+    setTagsLoading(true);
+    // Fetch both tabs in parallel
+    const [hotel, food] = await Promise.all([
+      fetchCityTags(city, 'Hotels'),
+      fetchCityTags(city, 'Food'),
+    ]);
+
+    const resolved = {
+      hotel: hotel.length >= 4 ? hotel : HOTEL_TAGS,
+      food:  food.length  >= 4 ? food  : FOOD_TAGS,
+    };
+    tagsCache.current[key] = resolved;
+    setDynamicHotelTags(resolved.hotel);
+    setDynamicFoodTags(resolved.food);
+    setTagsLoading(false);
+  }, []);
+
+  // Debounce tag fetch; clear selected tags immediately on city change
+  useEffect(() => {
+    setHotelTags([]);
+    setFoodTags([]);
+    if (tagsDebounce.current) clearTimeout(tagsDebounce.current);
+    tagsDebounce.current = setTimeout(() => loadTagsForCity(destination), 800);
+    return () => { if (tagsDebounce.current) clearTimeout(tagsDebounce.current); };
+  }, [destination, loadTagsForCity]);
 
   useEffect(() => { setActiveTab(initialTab); }, [initialTab]);
 
@@ -640,13 +684,14 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             />
           </div>
 
-          {/* Hotel preference tags — always visible */}
+          {/* Hotel preference tags — dynamic per city */}
           <div>
             <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
               Preferences
-              <Tooltip text="Each tag refines the AI ranking. 2–3 tags gives the sharpest result." />
+              <Tooltip text="Tags are drawn from real hotels in this city. 2–3 tags gives the sharpest result." />
+              {tagsLoading && <span className="ml-auto text-[9px] text-brand font-semibold animate-pulse">Updating for {destination}…</span>}
             </label>
-            <TagGrid tags={HOTEL_TAGS} selected={hotelTags} onToggle={toggleHotelTag} accent="#1C64F2" />
+            <TagGrid tags={dynamicHotelTags} selected={hotelTags} onToggle={toggleHotelTag} accent="#1C64F2" />
           </div>
         </div>
       );
@@ -693,13 +738,14 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             <ToggleGroup options={['Any', 'Veg', 'Non-Veg'] as const} value={dietType} onChange={setDietType} accent="#059669" />
           </div>
 
-          {/* Cuisine tags — always visible */}
+          {/* Cuisine tags — dynamic per city */}
           <div>
             <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
               Cuisine
-              <Tooltip text="Tag any cuisine. The AI uses these as hints when ranking results." />
+              <Tooltip text="Tags are drawn from real restaurants in this city — most popular first." />
+              {tagsLoading && <span className="ml-auto text-[9px] text-brand font-semibold animate-pulse">Updating…</span>}
             </label>
-            <TagGrid tags={FOOD_TAGS} selected={foodTags} onToggle={toggleFoodTag} accent="#D97706" />
+            <TagGrid tags={dynamicFoodTags} selected={foodTags} onToggle={toggleFoodTag} accent="#D97706" />
           </div>
         </div>
       );

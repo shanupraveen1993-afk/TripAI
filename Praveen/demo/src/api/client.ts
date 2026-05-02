@@ -103,6 +103,24 @@ export async function fetchExploreGuide(exploreTarget: string, timeSlot = 'Morni
   return data.exploreResult ?? null;
 }
 
+export async function fetchCityTags(
+  city: string,
+  tab: 'Hotels' | 'Food',
+): Promise<string[]> {
+  try {
+    const r = await fetch('/api/tags', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ city, tab }),
+    });
+    if (!r.ok) return [];
+    const data = await r.json() as { tags: Array<{ tag: string; count: number }> };
+    return (data.tags ?? []).map(t => t.tag);
+  } catch {
+    return [];
+  }
+}
+
 export async function fetchPhoto(photoRef: string): Promise<string | null> {
   try {
     const r = await fetch(`/api/photo?name=${encodeURIComponent(photoRef)}`);
