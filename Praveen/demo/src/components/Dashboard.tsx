@@ -7,6 +7,9 @@ import {
 import { fetchCityTags } from '../api/client';
 import { Tab } from './ui/Tabs';
 
+const isThanjavur = (dest: string) =>
+  /thanjavur|tanjore|tanjore/i.test(dest.trim()) || dest.trim() === '';
+
 const uImg = (id: string, w = 320, h = 200) =>
   `https://images.unsplash.com/photo-${id}?w=${w}&h=${h}&fit=crop&auto=format&q=80`;
 
@@ -862,6 +865,42 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       >
         <CategorySelector active={activeTab} onChange={t => setActiveTab(t)} />
       </div>
+
+      {/* ── City-lock notice — shown when destination ≠ Thanjavur ── */}
+      <AnimatePresence>
+        {!isThanjavur(destination) && (
+          <motion.div
+            key="city-notice"
+            initial={{ opacity: 0, y: -8, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0,  scale: 1    }}
+            exit={{    opacity: 0, y: -8, scale: 0.98 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="relative z-10 rounded-xl px-4 py-3 flex items-start gap-3 overflow-hidden"
+            style={{
+              background: 'linear-gradient(135deg, #FFF7ED 0%, #FFF3E0 100%)',
+              border: '1.5px solid #FDBA74',
+            }}
+          >
+            {/* Saffron glow blob */}
+            <div
+              className="absolute -top-6 -right-6 w-24 h-24 rounded-full opacity-20 pointer-events-none"
+              style={{ background: 'radial-gradient(circle, #F97316, transparent)' }}
+            />
+            <span className="text-xl leading-none mt-0.5 shrink-0">🛕</span>
+            <div className="min-w-0 flex-1">
+              <p className="text-[13px] font-bold text-orange-800 leading-snug">
+                Currently live in Thanjavur
+              </p>
+              <p className="text-[11px] text-orange-700 mt-0.5 leading-relaxed">
+                Results are showing for Thanjavur right now. We're rolling out to every city in India — you'll be the first to know.
+              </p>
+              <p className="text-[10px] font-bold text-orange-500 mt-1.5 tracking-wide">
+                🇮🇳 &nbsp;#MadeInIndia · All cities coming soon
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── Filter card — white below ──────────────────────────── */}
       <motion.div
