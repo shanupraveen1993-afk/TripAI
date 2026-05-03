@@ -533,28 +533,20 @@ RANKING RULES for Food:
 8. Price range match: if price tier selected, places whose review keywords match that tier rank higher` : `
 RANKING RULES: rank by criteria fit first, then rating × log(reviewCount)`;
 
-  // ── Step 4: Selection criteria for "recommended" flag ─────────────────────
+  // ── Step 4: Selection and count rules ────────────────────────────────────
   const selectionRules = `
-SELECTION RULES — set "recommended": true or false for EACH place:
+SELECTION RULES — pick the BEST 5–10 from the full list:
 
-recommended=true ONLY when ALL of these hold:
-  A. CRITERIA FIT: Place genuinely matches the visitor's stated criteria (tags, diet, meal time, price range)
-     - If tags selected: at least one tag confirmed in tagMentions
-     - If Pure Veg: servesVeg===true AND reviews show no non-veg dominance
-     - If meal time ≠ Any: place type/reviews align with that meal period
-     - If price range selected: priceLevel or keyword scores align with the selected tier
-  B. QUALITY FLOOR: rating >= 4.0 AND totalReviews >= 20
-  C. TREND: trendVerdict is "stable" or "improving" (NOT "declining")
-  D. NO HARD CONFLICTS: caveat does not directly contradict a CRITICAL visitor criterion
-
-recommended=false when: criteria fit is weak, quality is below floor, trend is declining, or conflicts exist
-
-FALLBACK: If fewer than 3 places qualify for recommended=true, relax criterion B to (rating >= 3.8, totalReviews >= 10) and remove criterion C until at least 3 places are recommended. Never leave all as recommended=false.
-
-IMPORTANT: recommended places will be shown as the primary AI result set. Non-recommended places appear as secondary "Load More" options. Your selection directly decides what the visitor sees first — make it count.`;
+1. Return ONLY places that genuinely serve the visitor's needs. Do NOT include every place just to hit 10.
+2. Minimum 5 results always — if fewer than 5 pass quality checks, include the top 5 by quality anyway.
+3. Maximum 10 results — stop when quality/relevance clearly drops.
+4. EXCLUDE places that fail CRITICAL criteria (wrong diet, clearly wrong price tier, zero tag match when tags selected).
+5. QUALITY FLOOR: prefer rating >= 4.0 AND totalReviews >= 20. Relax to 3.8 / 10 only if needed to reach 5.
+6. TREND: declining trend is a penalty — rank below stable/improving but do not auto-exclude.
+7. The returned list IS the final result — no secondary pool. Make every position count.`;
 
   // ── Step 5: Compose the prompt ────────────────────────────────────────────
-  const prompt = `You are a Thanjavur travel expert and data analyst. Rank, select, and annotate these ${places.length} ${tab.toLowerCase()} for a visitor with these needs:
+  const prompt = `You are a Thanjavur travel expert and data analyst. From the ${places.length} ${tab.toLowerCase()} below, select and rank the BEST 5–10 for a visitor with these needs:
 
 VISITOR PROFILE:
 ${criteriaStr}
@@ -566,33 +558,31 @@ TREND INTERPRETATION (use trendDelta field):
 - trendDelta < -0.3 → "declining" (recent reviewers rate lower)
 - Otherwise → "stable"
 
-PLACES DATA (${places.length} items):
+PLACES DATA (${places.length} candidates):
 ${JSON.stringify(summaries)}
 
-TASK: Return a JSON array of EXACTLY ${places.length} items in RANKED ORDER (best match = first, rank 1):
+TASK: Return a JSON array of your selected 5–10 places in RANKED ORDER (rank 1 = best match).
+Only include places that earn their place. Stop when quality/relevance drops.
 
 [{
   "originalIdx": <idx from input, integer>,
-  "rank": <1 = best match, integer>,
-  "recommended": <true | false — see SELECTION RULES above>,
+  "rank": <1 = best, integer>,
   "trendVerdict": "improving" | "declining" | "stable",
-  "trendReason": "<max 12 words — MUST quote or closely paraphrase words from the actual review text provided>",
-  "reviewSummary": "<2 sentences — synthesise what reviewers most frequently praise; use words from actual review texts; lead with strongest positive; do NOT mention ranking or visitor criteria>",
+  "trendReason": "<max 12 words — MUST quote or closely paraphrase words from the actual review text>",
+  "reviewSummary": "<2 sentences — synthesise what reviewers most frequently praise; use words from actual reviews; lead with strongest positive>",
   "aiNote": "<max 18 words — personalised to THIS visitor's criteria — must reference at least one criterion>",
-  "whyOverOthers": "<max 30 words — compare against the OTHER places in this exact list; cite specific numbers, unique features, or gaps>",
-  "bestFor": "<10 words — describe the ideal visitor type for this place>",
-  "caveat": "<one sentence specific drawback, or null — only if genuinely significant>"
+  "whyOverOthers": "<max 30 words — compare against the other candidates in this list; cite specific numbers or unique features>",
+  "bestFor": "<10 words — describe the ideal visitor type>",
+  "caveat": "<one specific drawback from reviews, or null>"
 }]
 
 QUALITY RULES:
-- trendReason must use words found in the review text, not invented
-- reviewSummary must sound like a summary of real visitor feedback, grounded in review text
-- aiNote must feel personal — "matches your Heritage + Temple Nearby request" not "popular with visitors"
-- whyOverOthers must name or describe the alternatives: "unlike the other hotels here, this one..."
-- caveat only for real drawbacks (noise, distance, service issues cited in reviews)
-- recommended must reflect genuine criteria fit — do not recommend places that miss CRITICAL criteria
+- trendReason: use words found in the actual review texts provided, not invented
+- aiNote: feel personal — "matches your Heritage + Temple Nearby request" not "popular with visitors"
+- whyOverOthers: name or contrast the alternatives: "unlike the other hotels here, this one..."
+- caveat: only for real drawbacks cited in reviews (noise, distance, service issues)
 
-Return ONLY valid JSON. No markdown fences. No explanation text.`;
+Return ONLY valid JSON array. No markdown. No explanation text.`;
 
   try {
     const resp = await fetch(
@@ -610,11 +600,19 @@ Return ONLY valid JSON. No markdown fences. No explanation text.`;
     if (Array.isArray(parsed) && parsed.length > 0) return parsed;
     throw new Error('empty');
   } catch {
-    // Fallback: compute from real data — no static strings
+    // Fallback: compute from real data — return top 5–10 by quality score
     const avgRating = summaries.length > 0
       ? summaries.reduce((a, s) => a + s.rating, 0) / summaries.length : 4.0;
 
-    return summaries.map((s, i) => {
+    // Sort by quality signal, then slice to 5–10
+    const qualitySorted = [...summaries].sort((a, b) =>
+      (b.rating * Math.log10(Math.max(b.totalReviews, 1))) -
+      (a.rating * Math.log10(Math.max(a.totalReviews, 1)))
+    );
+    const targetCount = Math.min(Math.max(qualitySorted.length, 5), 10);
+    const selected = qualitySorted.slice(0, targetCount);
+
+    return selected.map((s, i) => {
       // trendVerdict + trendReason from pre-computed trendDelta / recentAvg
       let trendVerdict = 'stable';
       let trendReason: string;
@@ -656,19 +654,9 @@ Return ONLY valid JSON. No markdown fences. No explanation text.`;
         ? `Top in this set: ${s.rating}★ × ${s.totalReviews.toLocaleString()} reviews — highest combined trust signal`
         : `${s.rating}★ with ${s.totalReviews.toLocaleString()} reviews — ${parseFloat(diff) >= 0 ? `${diff} above` : 'near'} the group average of ${avgRating.toFixed(1)}★`;
 
-      // recommended: true if quality floor + no declining trend
-      // Fallback logic mirrors the Gemini selection rules — at least top half recommended
-      const qualityOk    = s.rating >= 4.0 && s.totalReviews >= 20;
-      const trendOk      = trendVerdict !== 'declining';
-      const tagSelected  = (tab === 'Hotels' ? filters.hotelTags : filters.foodTags ?? []) ?? [];
-      const tagOk        = tagSelected.length === 0 || Object.values(s.tagMentions ?? {}).some(Boolean);
-      let recommended    = qualityOk && trendOk && tagOk;
-
-      // Ensure at least 3 recommended in fallback — relax threshold
       return {
-        originalIdx:   i,
+        originalIdx:   s.idx,
         rank:          i + 1,
-        recommended,
         trendVerdict,
         trendReason,
         reviewSummary,
@@ -677,19 +665,6 @@ Return ONLY valid JSON. No markdown fences. No explanation text.`;
         bestFor,
         caveat:        null,
       };
-    }).map((item, _, arr) => {
-      // Fallback safety: if fewer than 3 recommended, promote top-rated non-recommended until 3 exist
-      const recommendedCount = arr.filter(x => x.recommended).length;
-      if (!item.recommended && recommendedCount < 3) {
-        const promotionThreshold = arr
-          .filter(x => !x.recommended)
-          .sort((a, b) => b.rank - a.rank)
-          .slice(0, 3 - recommendedCount);
-        if (promotionThreshold.some(p => p.originalIdx === item.originalIdx)) {
-          return { ...item, recommended: true };
-        }
-      }
-      return item;
     });
   }
 }
@@ -1099,25 +1074,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       };
     };
 
-    // Split into AI-recommended (shown first) and secondary (served on Load More)
-    const recommended: any[] = [];
-    const secondary:   any[] = [];
+    // Gemini has already selected 5–10 best — build the final result list directly
+    const finalResults = reorderedPlaces.map((p: any, i: number) =>
+      buildPlaceResult(p, sorted[i] ?? {}, i)
+    );
 
-    reorderedPlaces.forEach((p: any, i: number) => {
-      const ai = sorted[i] ?? {};
-      const result = buildPlaceResult(p, ai, i);
-      if (ai.recommended === true) {
-        recommended.push(result);
-      } else {
-        secondary.push(result);
-      }
-    });
-
-    // Safety: if Gemini returned no recommended places, treat all as recommended
-    const finalResults    = recommended.length > 0 ? recommended : reorderedPlaces.map((p: any, i: number) => buildPlaceResult(p, sorted[i] ?? {}, i));
-    const finalSecondary  = recommended.length > 0 ? secondary   : [];
-
-    return res.json({ results: finalResults, secondaryResults: finalSecondary });
+    return res.json({ results: finalResults });
   } catch (err) {
     console.error('[/api/plan]', err);
     return res.status(500).json({ error: 'Failed to fetch places data' });

@@ -73,8 +73,7 @@ interface PlanFilters {
 }
 
 export interface PlanResponse {
-  results:          PlanResult[];   // AI-recommended — shown immediately
-  secondaryResults: PlanResult[];   // Lower-confidence — served 2-at-a-time on Load More
+  results: PlanResult[];   // AI-selected best 5–10, ranked by Gemini
 }
 
 export async function fetchPlan(tab: string, seed = 0, filters: PlanFilters = {}): Promise<PlanResponse> {
@@ -85,10 +84,7 @@ export async function fetchPlan(tab: string, seed = 0, filters: PlanFilters = {}
   });
   if (!r.ok) throw new Error(`API error ${r.status}`);
   const data = await r.json() as PlanResponse;
-  return {
-    results:          data.results          ?? [],
-    secondaryResults: data.secondaryResults ?? [],
-  };
+  return { results: data.results ?? [] };
 }
 
 export async function fetchItinerary(timeSlot = 'Morning', seed = 0): Promise<LiveItineraryStop[]> {

@@ -1294,24 +1294,12 @@ export function ResultsView({
             />
           </React.Fragment>
         ))}
-        {/* Inline skeleton for "loading 2 more" — no full-page reload */}
-        {(tab === 'Hotels' || tab === 'Food') && isLoadingMore && (
-          <>
-            <PlaceCardSkeleton />
-            <PlaceCardSkeleton />
-          </>
-        )}
         {tab === 'Itinerary' && itinerary && <ItineraryView stops={itinerary} onRegenerate={onRegenerate} onExploreStop={onExploreStop} showPresetImages={isFirstItinerary} />}
         {tab === 'Explore' && explore && <ExploreView place={explore} />}
       </div>
 
-      {/* Actions — hide "Try different" for Explore */}
+      {/* Actions */}
       <div className="flex gap-3">
-        {(tab === 'Hotels' || tab === 'Food') && (
-          <Button variant="outline" onClick={onRegenerate} disabled={isLoadingMore} icon={<ChevronDown className={`w-4 h-4 ${isLoadingMore ? 'animate-bounce' : ''}`} />} className="flex-1">
-            {isLoadingMore ? 'Loading 2 more…' : 'Load More'}
-          </Button>
-        )}
         {tab === 'Itinerary' && (
           <Button variant="outline" onClick={onRegenerate} disabled={isLoadingMore} icon={<RefreshCw className={`w-4 h-4 ${isLoadingMore ? 'animate-spin' : ''}`} />} className="flex-1">
             {isLoadingMore ? 'Regenerating…' : 'Try Different Set'}
