@@ -41,6 +41,7 @@ interface ResultsViewProps {
   backLabel?: string;
   onExploreStop?: (target: string) => void;
   isFirstItinerary?: boolean;
+  selectedTags?: string[];
 }
 
 /* ── Best restaurants near Thanjavur hotels ──────────────────────────── */
@@ -191,8 +192,8 @@ function ReviewCard({ review, idx }: { review: ReviewItem; idx: number }) {
   );
 }
 
-function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = false }: {
-  place: PlaceResult; tab: Tab; rank?: number; animDelay?: number; defaultCollapsed?: boolean;
+function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = false, selectedTags = [] }: {
+  place: PlaceResult; tab: Tab; rank?: number; animDelay?: number; defaultCollapsed?: boolean; selectedTags?: string[];
 }) {
   // rank-1 AI Top Pick cards start collapsed to save space; all others start expanded
   const [cardCollapsed, setCardCollapsed] = useState(defaultCollapsed);
@@ -289,12 +290,29 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           </div>
 
           {/* AI insight line */}
-          <div className="px-3 pb-3">
+          <div className="px-3 pb-2">
             <p className="text-[11px] text-body leading-relaxed line-clamp-2 flex items-start gap-1.5">
               <Sparkles className="w-3 h-3 text-brand shrink-0 mt-0.5" />
               {place.aiNote}
             </p>
           </div>
+
+          {/* Matched filter chips */}
+          {(() => {
+            const matched = selectedTags.filter(t =>
+              place.tags.some(pt => pt.toLowerCase().includes(t.toLowerCase()) || t.toLowerCase().includes(pt.toLowerCase()))
+            );
+            return matched.length > 0 ? (
+              <div className="px-3 pb-2.5 flex flex-wrap gap-1">
+                {matched.map(t => (
+                  <span key={t} className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wide border"
+                    style={{ background: '#EBF5FF', borderColor: '#1C64F220', color: '#1C64F2' }}>
+                    <Sparkles className="w-2 h-2" /> {t}
+                  </span>
+                ))}
+              </div>
+            ) : null;
+          })()}
 
           {/* Subtle expand — NOT a styled button, just a text row */}
           <button
@@ -471,6 +489,24 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             <p className="text-[10px] font-black text-brand uppercase tracking-widest flex items-center gap-1.5">
               <Sparkles className="w-3 h-3" /> Why AI recommended it
             </p>
+
+            {/* Matched filter chips — highlighted in this review */}
+            {(() => {
+              const matched = selectedTags.filter(t =>
+                place.tags.some(pt => pt.toLowerCase().includes(t.toLowerCase()) || t.toLowerCase().includes(pt.toLowerCase()))
+              );
+              return matched.length > 0 ? (
+                <div className="flex flex-wrap gap-1">
+                  <span className="text-[9px] text-muted font-semibold self-center">Highlighted for:</span>
+                  {matched.map(t => (
+                    <span key={t} className="flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wide border"
+                      style={{ background: '#EBF5FF', borderColor: '#1C64F240', color: '#1C64F2' }}>
+                      <Sparkles className="w-2 h-2" /> {t}
+                    </span>
+                  ))}
+                </div>
+              ) : null;
+            })()}
 
             {/* Trend */}
             {place.trendVerdict && (
@@ -1127,7 +1163,7 @@ export function ResultsView({
   tab, destination, hotels, food, itinerary, explore, apiError,
   isLoadingMore = false,
   onBack, onRegenerate, onSave, saved = false, onSwitchTab,
-  backLabel, onExploreStop, isFirstItinerary = false,
+  backLabel, onExploreStop, isFirstItinerary = false, selectedTags = [],
 }: ResultsViewProps) {
   const { toast } = useToast();
   const results = tab === 'Hotels' ? hotels : tab === 'Food' ? food : [];
@@ -1254,6 +1290,7 @@ export function ResultsView({
               rank={idx + 1}
               animDelay={0}
               defaultCollapsed={true}
+              selectedTags={selectedTags}
             />
           </React.Fragment>
         ))}
@@ -1277,7 +1314,7 @@ export function ResultsView({
         )}
         {tab === 'Itinerary' && (
           <Button variant="outline" onClick={onRegenerate} disabled={isLoadingMore} icon={<RefreshCw className={`w-4 h-4 ${isLoadingMore ? 'animate-spin' : ''}`} />} className="flex-1">
-            {isLoadingMore ? 'Regenerating…' : 'Try a different plan'}
+            {isLoadingMore ? 'Regenerating…' : 'Try Different Set'}
           </Button>
         )}
         <Button onClick={handleSave} icon={saved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />} className="flex-1" variant={saved ? 'success' : 'brand'}>
@@ -1292,18 +1329,18 @@ export function ResultsView({
           <div className="grid grid-cols-2 gap-2">
             {tab === 'Hotels' && <>
               <button onClick={() => onSwitchTab('Food')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors">
-                <Utensils className="w-3.5 h-3.5" /> Find food nearby
+                <Utensils className="w-3.5 h-3.5" /> Explore nearby foods
               </button>
-              <button onClick={() => onSwitchTab('Itinerary')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors">
-                <Route className="w-3.5 h-3.5" /> Build my itinerary
+              <button onClick={() => onSwitchTab('Explore')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors">
+                <Compass className="w-3.5 h-3.5" /> Explore places
               </button>
             </>}
             {tab === 'Food' && <>
               <button onClick={() => onSwitchTab('Hotels')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors">
-                <Hotel className="w-3.5 h-3.5" /> Find a hotel
+                <Hotel className="w-3.5 h-3.5" /> Explore hotels
               </button>
-              <button onClick={() => onSwitchTab('Itinerary')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors">
-                <Route className="w-3.5 h-3.5" /> Plan my day
+              <button onClick={() => onSwitchTab('Explore')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors">
+                <Compass className="w-3.5 h-3.5" /> Explore places nearby
               </button>
             </>}
             {tab === 'Itinerary' && <>

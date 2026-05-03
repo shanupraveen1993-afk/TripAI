@@ -13,7 +13,7 @@ import { AuthForm } from './components/AuthForm';
 import { Button } from './components/ui/Button';
 import { Tab } from './components/ui/Tabs';
 import {
-  MOCK_HOTELS, MOCK_FOOD, MOCK_ITINERARY, MOCK_EXPLORE,
+  MOCK_HOTELS, MOCK_FOOD, MOCK_ITINERARY, MOCK_EXPLORE, EXPLORE_PRESETS,
   PlaceResult,
 } from './mock/data';
 import {
@@ -61,6 +61,7 @@ export default function App() {
   const [itineraryGenCount, setItineraryGenCount] = useState(0);
   const [lastSearchFilters, setLastSearchFilters] = useState<DashboardFilters | null>(null);
   const [backContext, setBackContext] = useState<'dashboard' | 'itinerary-results'>('dashboard');
+  const [itinStopCount, setItinStopCount] = useState(5);
 
   // Scroll to top whenever the dashboard becomes the active screen
   useEffect(() => {
@@ -148,7 +149,9 @@ export default function App() {
         // Explore always uses preset data — no API call needed
       } else if (filters.tab === 'Itinerary') {
         if (itineraryGenCount === 0) {
-          // First visit: show Thanjavur preset instantly — no API call
+          // First visit: show Thanjavur preset sliced to the chosen time slot — no API call
+          const stops = filters.startTime === 'Afternoon' ? 3 : filters.startTime === 'Evening' ? 2 : 5;
+          setItinStopCount(stops);
           setLiveItinerary(null);
           setItineraryGenCount(1);
         } else {
@@ -247,7 +250,7 @@ export default function App() {
       startDate: '', endDate: '', numPeople: 2, budget: 0,
       hotelTags: [], hotelArea: '', priceFilter: 'Any', minRating: 'Any', openNow: false,
       foodLocation: '', foodTags: [], dietType: 'Any', dineMode: 'Any', mealTime: 'Any',
-      itinDate: '', startPoint: '', startTime: '09:00',
+      itinDate: '', startPoint: '', startTime: '',
       exploreTarget: target, visitTime: 'Morning',
     };
     await runSearch(filters, searchSeed);
@@ -286,7 +289,7 @@ export default function App() {
   );
 
   // Merge live itinerary type with ItineraryStop for ResultsView compatibility
-  const itineraryToDisplay = liveItinerary ?? MOCK_ITINERARY;
+  const itineraryToDisplay = liveItinerary ?? MOCK_ITINERARY.slice(0, itinStopCount);
 
   const renderContent = () => {
     if (mainSection === 'history') {
@@ -341,8 +344,12 @@ export default function App() {
               hotels={activeTab === 'Hotels' ? (liveResults as PlaceResult[] ?? []) : []}
               food={activeTab === 'Food'    ? (liveResults as PlaceResult[] ?? []) : []}
               itinerary={activeTab === 'Itinerary' ? itineraryToDisplay : MOCK_ITINERARY}
-              explore={MOCK_EXPLORE}
+              explore={EXPLORE_PRESETS[lastSearchFilters?.exploreTarget ?? ''] ?? MOCK_EXPLORE}
               apiError={apiError && activeTab !== 'Explore' && !(activeTab === 'Itinerary' && itineraryGenCount <= 1)}
+              selectedTags={
+                activeTab === 'Hotels' ? (lastSearchFilters?.hotelTags ?? []) :
+                activeTab === 'Food'   ? (lastSearchFilters?.foodTags  ?? []) : []
+              }
               onBack={() => {
                 if (backContext === 'itinerary-results') {
                   setBackContext('dashboard');
@@ -402,7 +409,7 @@ export default function App() {
                       startDate: '', endDate: '', numPeople: 2, budget: 0,
                       hotelTags: [], hotelArea: '', priceFilter: 'Any', minRating: 'Any', openNow: false,
                       foodLocation: '', foodTags: [], dietType: 'Any', dineMode: 'Any', mealTime: 'Any',
-                      itinDate: '', startPoint: '', startTime: '09:00',
+                      itinDate: '', startPoint: '', startTime: 'Morning',
                       exploreTarget: 'Brihadeeswarar Temple', visitTime: 'Morning',
                     },
                     newSeed,

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'motion/react';
 import {
   Compass, Search, MapPin, Star, Sparkles, ArrowRight,
-  Shield, Globe, CheckCircle, Zap, Quote,
+  Shield, Globe, CheckCircle, Zap, Quote, X,
 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Modal } from './ui/Modal';
@@ -39,7 +39,7 @@ function CityRotator({ city }: { city: string }) {
 }
 
 /* ── City poster slider ───────────────────────────────────────────────── */
-const CITY_POSTERS = [
+const CITY_POSTERS: Array<{ city: string; gradient: string; emoji: string; imgId: string }> = [
   { city: 'Bangalore', gradient: 'from-green-600 to-emerald-400',  emoji: '🏨', imgId: '1708782462555-b3af03b4b3d2' },
   { city: 'Goa',       gradient: 'from-teal-500 to-cyan-300',      emoji: '🍽️', imgId: '1512343879784-a960bf40e7f2' },
   { city: 'Jaipur',    gradient: 'from-pink-500 to-rose-300',      emoji: '🏯', imgId: '1477587458883-47145ed94245' },
@@ -54,18 +54,23 @@ const CITY_POSTERS = [
   { city: 'Rishikesh', gradient: 'from-sky-600 to-blue-300',       emoji: '🏕️', imgId: '1506905925346-21bda4d32df4' },
 ];
 
-function CityPosterSlider() {
+function CityPosterSlider({ onCityClick }: { onCityClick?: (city: string, emoji: string) => void }) {
   const doubled = [...CITY_POSTERS, ...CITY_POSTERS];
   return (
     <div className="overflow-hidden w-full">
       <div className="animate-marquee flex gap-3" style={{ width: 'max-content' }}>
         {doubled.map((p, i) => (
-          <div key={i} className={`bg-gradient-to-br ${p.gradient} rounded-2xl flex-shrink-0 w-36 h-44 relative overflow-hidden flex flex-col justify-end p-3 shadow-lg`}>
+          <button
+            key={i}
+            type="button"
+            onClick={() => onCityClick?.(p.city, p.emoji)}
+            className={`bg-gradient-to-br ${p.gradient} rounded-2xl flex-shrink-0 w-36 h-44 relative overflow-hidden flex flex-col justify-end p-3 shadow-lg cursor-pointer hover:scale-[1.05] transition-transform duration-200 focus:outline-none`}
+          >
             <img src={uImg(p.imgId, 144, 176)} alt={p.city} className="absolute inset-0 w-full h-full object-cover" loading="eager" />
             <span className="absolute top-3 right-3 text-2xl z-10">{p.emoji}</span>
             <div className="absolute inset-0 bg-gradient-to-t from-black/75 to-black/20 rounded-2xl" />
             <p className="relative z-10 text-white font-display font-black text-sm leading-tight">{p.city}</p>
-          </div>
+          </button>
         ))}
       </div>
     </div>
@@ -462,6 +467,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
   const [authOpen, setAuthOpen]     = useState(false);
   const [pendingTab, setPendingTab] = useState<Tab | null>(null);
   const [demoSearch, setDemoSearch] = useState('');
+  const [cityNotice, setCityNotice] = useState<{ city: string; emoji: string } | null>(null);
   const pendingDestRef = useRef<string>('');
 
   /* ── Single shared timer — drives both CityRotator (left) and
@@ -476,6 +482,16 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
   }, []);
 
   const handleCategoryClick = (tab: Tab) => { onTabSelect(tab, demoSearch || undefined); };
+
+  const handleTryThanjavur = () => {
+    setCityNotice(null);
+    if (isLoggedIn) {
+      onTabSelect('Hotels', 'Thanjavur');
+    } else {
+      pendingDestRef.current = 'Thanjavur';
+      setAuthOpen(true);
+    }
+  };
 
   const handleCtaClick = () => {
     if (isLoggedIn) { onTabSelect('Hotels', demoSearch || undefined); return; }
@@ -621,7 +637,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
             We've got eyes on these cities
           </p>
         </div>
-        <CityPosterSlider />
+        <CityPosterSlider onCityClick={(city, emoji) => setCityNotice({ city, emoji })} />
       </section>
 
       {/* ── 3D Category cards ──────────────────────────────────────── */}
@@ -716,6 +732,51 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
       <Modal open={authOpen} onClose={() => setAuthOpen(false)} title="Let's get you started" size="sm">
         <AuthForm onSuccess={handleAuthSuccess} asModal />
       </Modal>
+
+      {/* ── City notice modal — shown when a non-Thanjavur city is clicked ── */}
+      <AnimatePresence>
+        {cityNotice && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-5"
+            style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}
+            onClick={() => setCityNotice(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.92, y: 20 }}
+              transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+              className="rounded-2xl p-6 max-w-sm w-full relative"
+              style={{ background: 'rgba(10,14,30,0.98)', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 24px 80px rgba(0,0,0,0.7)' }}
+              onClick={e => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setCityNotice(null)}
+                className="absolute top-3 right-3 p-1 rounded-lg text-white/40 hover:text-white/80 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+              <span className="text-4xl block mb-3">{cityNotice.emoji}</span>
+              <h3 className="text-white font-display font-black text-xl mb-2">
+                {cityNotice.city} is coming soon
+              </h3>
+              <p className="text-sm leading-relaxed mb-5" style={{ color: 'rgba(255,255,255,0.55)' }}>
+                Full AI recommendations are currently live only for{' '}
+                <span className="font-bold text-amber-400">Thanjavur</span>.
+                Every hotel, restaurant, and landmark — AI-ranked in seconds.
+                Try it there while we build for {cityNotice.city}.
+              </p>
+              <Button onClick={handleTryThanjavur} className="w-full justify-center">
+                Try Thanjavur <ArrowRight className="w-4 h-4" />
+              </Button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

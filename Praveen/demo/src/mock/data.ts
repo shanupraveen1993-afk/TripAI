@@ -441,6 +441,86 @@ export const MOCK_ITINERARY: ItineraryStop[] = [
   },
 ];
 
+export const MOCK_EXPLORE_PALACE: ExploreResult = {
+  id: 'e2',
+  name: 'Thanjavur Maratha Palace Royal Museum',
+  address: 'Palace Road, Thanjavur — 5-min walk south of Brihadeeswarar Temple',
+  rating: 4.4,
+  openNow: true,
+  openingHours: '9:00 AM – 6:00 PM daily',
+  status: 'Open',
+  insight: 'The only place in Thanjavur where you can stand above the Big Temple — climb the Bell Tower (5th floor) for a panoramic view no ground-level vantage matches. The Durbar Hall ceiling art is Maratha at its most extravagant: painted panels covering every surface above you. The Saraswathi Mahal Library and Art Gallery are in the same complex — buy the combined ticket and walk between all three without leaving the grounds.',
+  flow: '1. Enter from the main Palace gate on East Main Street (south of Big Temple). Buy the combined ticket (₹50/adult — covers Palace, Art Gallery, and Bell Tower).\n2. Start at the Durbar Hall on the ground floor — the painted ceiling and Maratha royal portraits set the context for everything else.\n3. Walk upstairs to the Bell Tower and climb all 5 floors for the aerial view of the Big Temple.\n4. Cross the courtyard to the Saraswathi Mahal Library — show combined ticket at entry.\n5. Finish at the Thanjavur Art Gallery (same complex) — allow 45 minutes for the Chola bronze collection.\n6. Exit back through the main Palace gate.',
+  preparation: 'How to get there: 5-min walk south of Brihadeeswarar Temple, or ₹50 auto from bus stand. Entry fee: ₹50/adult (covers Palace + Art Gallery + Bell Tower). Must-do: Climb the Bell Tower for the only aerial view of the Big Temple — most visitors miss this. See Gallery 3 in the Art Gallery for the finest 11th-century Nataraja bronze. What NOT to do: Do not skip the Art Gallery — it holds the finest Chola bronze collection in Tamil Nadu. Do not come on Wednesday — Art Gallery is closed. Photography is allowed in the Palace but not inside the Library gallery.',
+  tags: ['Maratha Heritage', 'Bell Tower', 'Royal Museum', 'Architecture', 'Chola Bronze'],
+  reviews: [
+    { text: 'The Bell Tower is a hidden gem — nobody told me you could climb it for a full panorama of the Big Temple and the whole city. Absolutely worth the ₹50 combined ticket.', author: 'Anand M.', location: 'Bangalore', stars: 5, ago: '1 week ago' },
+    { text: 'The Durbar Hall ceiling art is extraordinary — detailed Maratha-era paintings covering every inch. The Chola bronzes in the Art Gallery are world-class, especially the Nataraja.', author: 'Kavitha R.', location: 'Chennai', stars: 5, ago: '2 weeks ago' },
+    { text: 'Spend at least 2 hours here covering all three sections. The Saraswathi Mahal palm leaf manuscripts are fascinating — ask the curator to explain the writing process.', author: 'Suresh T.', location: 'Hyderabad', stars: 4, ago: '1 month ago' },
+  ],
+  photoColor: 'bg-purple-800',
+};
+
+export const MOCK_EXPLORE_SARASWATHI: ExploreResult = {
+  id: 'e3',
+  name: 'Saraswathi Mahal Library',
+  address: 'Inside Thanjavur Palace Complex, East Main Street, Thanjavur',
+  rating: 4.5,
+  openNow: true,
+  openingHours: '10:00 AM – 1:00 PM & 1:30 PM – 5:30 PM (Closed Wednesdays)',
+  status: 'Open',
+  insight: 'Founded around 1700 AD under Maratha ruler Serfoji II — one of Asia\'s oldest continuously functioning libraries. Over 60,000 manuscripts survive here: palm leaf, paper, and cloth. The illustrated Ramayana manuscripts with Thanjavur-school miniature paintings are the crown jewels — some panels are just centimetres wide with dozens of figures painted in extraordinary detail. Unlike most museums, you can ask curators to explain specific manuscripts.',
+  flow: '1. Enter from inside the Palace complex (same ticket area as the Art Gallery — ₹20 separate entry or use combined Palace ticket).\n2. Start at the display gallery near the entrance — the showcased manuscripts give context before the deeper collection.\n3. Look for the illustrated Ramayana palm leaves — ask the curator at the front desk to point these out directly.\n4. Examine the textile manuscripts (cloth-based writing) — unique to this library among Indian collections.\n5. Check the medical and astronomy manuscripts section — some treatises date to the 17th century.\n6. Exit back through the Palace courtyard.',
+  preparation: 'How to get there: Inside Palace complex — same courtyard as Art Gallery. Walk from Big Temple (5 min) or auto from bus stand (₹50). Entry: ₹20/adult (separate from Palace ticket), or included in ₹50 combined ticket. Must-do: Ask the curator to show the illustrated Ramayana palm leaves — they are not always on primary display. What NOT to do: No photography inside the manuscript gallery — this is strictly enforced. Do not visit on Wednesday (closed). Do not rush — allow at least 45 minutes to absorb what you are seeing.',
+  tags: ['Ancient Library', 'Palm Manuscripts', 'Maratha Heritage', 'Rare Books', 'History'],
+  reviews: [
+    { text: 'Staggering to stand in a 300-year-old library and hold a conversation about palm leaf manuscripts written before modern India existed. The illustrated Ramayana panels are jaw-dropping.', author: 'Priya K.', location: 'Delhi', stars: 5, ago: '3 days ago' },
+    { text: 'The curators are incredibly knowledgeable and happy to explain. Asked about the astronomy manuscripts and got a 20-minute explanation. Hidden gem of Thanjavur.', author: 'Rajan S.', location: 'Mumbai', stars: 5, ago: '2 weeks ago' },
+    { text: 'Small but extraordinary. Do not miss the cloth manuscripts — I had never seen anything like them. Closed on Wednesdays, check before you go.', author: 'Meena V.', location: 'Coimbatore', stars: 4, ago: '3 weeks ago' },
+  ],
+  photoColor: 'bg-blue-800',
+};
+
+export const MOCK_EXPLORE_AIRAVATESVARA: ExploreResult = {
+  id: 'e4',
+  name: 'Airavatesvara Temple Darasuram',
+  address: 'Darasuram, 4 km from Thanjavur city centre (15-min auto)',
+  rating: 4.6,
+  openNow: true,
+  openingHours: '6:00 AM – 12:30 PM & 4:00 PM – 8:30 PM',
+  status: 'Open',
+  insight: 'The most intricately carved of the three Great Living Chola Temples (UNESCO). Where Brihadeeswarar impresses with scale, Airavatesvara rewards close attention — the miniature carvings are breathtaking, with entire Mahabharata scenes rendered in panels the size of your hand. The stone steps of the mandapam produce different musical notes when struck — the only musical staircase among Chola monuments. Crowd is consistently low, even on weekends.',
+  flow: '1. Take an auto from Thanjavur city centre to Darasuram (15 min, ₹80–100). Tell the driver "Airavatesvara Temple" — all local autos know it.\n2. Enter from the main gopuram on the east side. Free entry.\n3. Walk the outer circumambulation path (clockwise) and examine the detailed carvings at eye level — bring the carvings into focus before entering the inner complex.\n4. At the main mandapam steps, ask the caretaker or guard to demonstrate the musical staircase — each step produces a different tone when tapped.\n5. Enter the inner sanctum for the Shiva shrine. Dress code: covered clothing.\n6. Photograph the chariot wheel base on the south side — the most distinctive architectural element at Airavatesvara.',
+  preparation: 'How to get there: Auto from Thanjavur city centre ₹80–100 (15 min). No direct bus — auto is the practical choice. Entry fee: Free. Must-do: Ask the caretaker to demonstrate the musical steps — do not leave without experiencing this. Examine the outer wall carvings at the base level — get close for the Mahabharata scenes. What NOT to do: Do not wear shorts or sleeveless clothing. Do not rush past the outer walls — the carvings are the main event, not just the sanctum. Do not visit midday in summer — the heat is intense on the unshaded stone.',
+  tags: ['UNESCO World Heritage', 'Chola Architecture', 'Musical Steps', 'Temple Carvings', 'Less Crowded'],
+  reviews: [
+    { text: 'The musical staircase blew my mind — ancient Chola engineers carved stone steps that each produce a different musical note. No other monument in India has this. Come here before the crowds discover it.', author: 'Vikram N.', location: 'Pune', stars: 5, ago: '5 days ago' },
+    { text: 'More intimate than Brihadeeswarar but arguably more beautiful up close. I spent 90 minutes just examining the outer wall carvings. The Mahabharata battle scenes in miniature are extraordinary.', author: 'Lalitha S.', location: 'Chennai', stars: 5, ago: '10 days ago' },
+    { text: 'UNESCO listed and almost empty on a Saturday morning. The caretaker was knowledgeable and showed us the musical steps and chariot base. A must for anyone interested in Chola art.', author: 'Deepak R.', location: 'Bangalore', stars: 5, ago: '3 weeks ago' },
+  ],
+  photoColor: 'bg-amber-800',
+};
+
+export const MOCK_EXPLORE_SIVAGANGA: ExploreResult = {
+  id: 'e5',
+  name: 'Sivaganga Fort',
+  address: '15-min walk from Thanjavur Palace, or 5-min auto from city centre',
+  rating: 4.1,
+  openNow: true,
+  openingHours: 'Open all day (ruins — no ticketed entry)',
+  status: 'Open',
+  insight: 'A peaceful, crowd-free alternative to Thanjavur\'s main heritage circuit. The fort ruins sit around the Sivaganga tank — a historic water reservoir used by the Nayak and Maratha rulers. Less photographed than the Big Temple but ideal for quiet exploration, golden-hour photography, and understanding Thanjavur\'s non-Chola history. You will often have the ramparts to yourself, even on weekends.',
+  flow: '1. Walk 15 minutes from the Palace complex, or take a 5-min auto (₹40–50) from city centre.\n2. Approach from the east entrance and walk the outer ramparts clockwise for the best structural views.\n3. Descend to the Sivaganga tank edge — the water reservoir with its stepped ghats is the photographic centrepiece.\n4. Look for the cannon remnants near the main bastion on the north side — the only surviving artillery piece at the fort.\n5. Climb the eastern corner of the ramparts for a view of both the fort and the distant Big Temple vimana.\n6. Visit the small Shiva shrine inside the fort complex — still actively worshipped.',
+  preparation: 'How to get there: 15-min walk from Thanjavur Palace, or 5-min auto (₹40–50). Entry fee: Free (open ruins). Best time: 5–6 PM for golden-hour photography when the stone turns warm orange. Must-do: Photograph the Sivaganga tank reflection at golden hour. Walk the full perimeter of the ramparts. What NOT to do: Do not go alone after dark — the ruins are unlit and unguarded after sunset. Do not expect maintained facilities — this is an open ruin site, bring your own water. Do not skip the Shiva shrine inside — it gives the fort its living character.',
+  tags: ['Fort Ruins', 'Historic Tank', 'Photography', 'Peaceful', 'Off the Beaten Path'],
+  reviews: [
+    { text: 'Completely peaceful — had the whole fort to ourselves on a Sunday afternoon. The golden-hour light on the tank and ramparts is absolutely stunning. A perfect end to a Thanjavur heritage day.', author: 'Rohini T.', location: 'Trichy', stars: 5, ago: '1 week ago' },
+    { text: 'Less visited but genuinely atmospheric. The Sivaganga tank gives the fort a living quality. Cannon remnants on the north side were an unexpected find.', author: 'Arjun P.', location: 'Chennai', stars: 4, ago: '2 weeks ago' },
+    { text: 'Good contrast to the crowded Big Temple. Quiet, photogenic, historically interesting. Go in the late afternoon for the best light and temperature.', author: 'Seetha N.', location: 'Madurai', stars: 4, ago: '1 month ago' },
+  ],
+  photoColor: 'bg-stone-700',
+};
+
 export const MOCK_EXPLORE: ExploreResult = {
   id: 'e1',
   name: 'Brihadeeswarar Temple',
@@ -459,4 +539,12 @@ export const MOCK_EXPLORE: ExploreResult = {
     { text: 'One of the finest pieces of Dravidian architecture anywhere. The Chola bronzes in the adjacent gallery are world-class.', author: 'Preethi S.', location: 'Chennai', stars: 5, ago: '1 month ago' },
   ],
   photoColor: 'bg-amber-700',
+};
+
+export const EXPLORE_PRESETS: Record<string, ExploreResult> = {
+  'Brihadeeswarar Temple':                  MOCK_EXPLORE,
+  'Thanjavur Maratha Palace Royal Museum':  MOCK_EXPLORE_PALACE,
+  'Saraswathi Mahal Library':               MOCK_EXPLORE_SARASWATHI,
+  'Airavatesvara Temple Darasuram':         MOCK_EXPLORE_AIRAVATESVARA,
+  'Sivaganga Fort':                         MOCK_EXPLORE_SIVAGANGA,
 };

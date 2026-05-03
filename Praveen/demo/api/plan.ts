@@ -733,7 +733,7 @@ FOOD & MEAL TIMING:
 • Auto fares: ₹50–80 short hops, ₹100–150 medium hops, ₹200–300 cross-town
 `;
 
-async function geminiItinerary(places: any[], startTime = '09:00'): Promise<any[]> {
+async function geminiItinerary(places: any[], startTime = '07:00', stopCount = 5): Promise<any[]> {
   if (!GEMINI_KEY || places.length === 0) return [];
 
   const topPlaces = places.slice(0, 8).map(p => ({
@@ -748,8 +748,9 @@ async function geminiItinerary(places: any[], startTime = '09:00'): Promise<any[
   const period  = h >= 12 ? 'PM' : 'AM';
   const hour12  = h > 12 ? h - 12 : h === 0 ? 12 : h;
   const startStr = `${hour12}:${m.toString().padStart(2, '0')} ${period}`;
+  const sessionLabel = stopCount === 5 ? 'full day' : stopCount === 3 ? 'afternoon' : 'evening';
 
-  const prompt = `You are a Thanjavur expert trip planner. Create a 5-stop day itinerary starting at ${startStr}.
+  const prompt = `You are a Thanjavur expert trip planner. Create a ${stopCount}-stop ${sessionLabel} itinerary starting at ${startStr}.
 
 ${THANJAVUR_FACTS}
 
@@ -786,7 +787,7 @@ VALIDATION RULES (Gemini must follow):
 - Use entry fees EXACTLY from GROUND TRUTH (not guessed)
 - tip must NOT be generic ("visit early") — must name a specific section, timing, or feature
 
-Return a JSON array of EXACTLY 5 stops. Return ONLY valid JSON. No markdown. No explanation.`;
+Return a JSON array of EXACTLY ${stopCount} stops. Return ONLY valid JSON. No markdown. No explanation.`;
 
   try {
     const resp = await fetch(
@@ -963,12 +964,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // ── Itinerary: AI-generated day plan ─────────────────────────────────────
   if (tab === 'Itinerary') {
-    const startTime  = (req.body?.startTime  ?? '09:00') as string;
+    const startTime  = (req.body?.startTime  ?? '07:00') as string;
+    const stopCount  = Math.min(Math.max(parseInt(String(req.body?.stopCount ?? '5'), 10) || 5, 2), 5);
     const searchSeed = parseInt((req.body?.searchSeed ?? '0') as string, 10);
 
     try {
       const rawPlaces = await fetchPlaces(QUERIES.Itinerary, searchSeed, false, 35, false);
-      const stops     = await geminiItinerary(rawPlaces, startTime);
+      const stops     = await geminiItinerary(rawPlaces, startTime, stopCount);
 
       if (stops.length === 0) {
         return res.status(500).json({ error: 'Could not generate itinerary' });

@@ -114,25 +114,17 @@ function getSpotsForDestination(destination: string): string[] {
   return DESTINATION_SPOTS.default;
 }
 
-/* ── Hotel tags — Thanjavur-relevant only ────────────────────────────── */
+/* ── Hotel tags — top 10 most-repeated keywords from Thanjavur hotel reviews ── */
 const HOTEL_TAGS = [
-  // Location (high accuracy)
-  'Temple Nearby', 'Near Railway Station', 'Near Bus Stand', 'City Centre',
-  // Type
-  'Heritage', 'Budget Friendly', 'Family', 'Business',
-  // Amenities common in Thanjavur
-  'AC Rooms', 'WiFi', 'Parking', 'In-House Restaurant',
-  'Rooftop Restaurant', 'Veg Kitchen', 'Breakfast Included',
-  // Guest type
-  'Couple Friendly', 'Honeymoon',
+  'Temple Nearby', 'Veg Kitchen', 'Helpful Staff', 'Budget Friendly',
+  'Heritage', 'Breakfast Included', 'AC Rooms', 'Parking',
+  'In-House Restaurant', 'Family',
 ];
 
-/* ── Food tags ───────────────────────────────────────────────────────── */
+/* ── Food tags — top 10 most-repeated keywords from Thanjavur food reviews ── */
 const FOOD_TAGS = [
-  'South Indian', 'North Indian', 'Chinese', 'Biryani', 'Seafood',
-  'Street Food', 'Thali', 'Tiffin', 'Filter Coffee', 'Sweets',
-  'Banana Leaf', 'Cafe', 'Bakery', 'Fast Food',
-  'Rooftop Dining', 'Outdoor Seating', 'Buffet',
+  'Banana Leaf', 'Thali', 'Filter Coffee', 'South Indian', 'Biryani',
+  'Tiffin', 'Street Food', 'Sweets', 'Authentic', 'Affordable',
 ];
 
 /* ── Quick presets — image cards ────────────────────────────────────── */
@@ -542,8 +534,6 @@ interface DashboardProps {
 }
 
 export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loading, recentSearches = [], onDestinationSelect }: DashboardProps) {
-  const today    = new Date().toISOString().split('T')[0];
-
   const [activeTab, setActiveTab]       = useState<Tab>(initialTab);
   const [hotelTags, setHotelTags]       = useState<string[]>([]);
   const [priceFilter, setPriceFilter]   = useState('Any');
@@ -553,9 +543,10 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
   const [foodLocation, setFoodLocation] = useState('');
   const [dietType, setDietType]         = useState<DietType>('Any');
   const [mealTime, setMealTime]         = useState<MealTime>('Any');
-  const [itinDate, setItinDate]         = useState(today);
+  const [itinDate, setItinDate]         = useState<string>('today');
   const [startPoint, setStartPoint]     = useState('');
-  const [startTime, setStartTime]       = useState('09:00');
+  const [startTime, setStartTime]       = useState<string>('');
+  const [showTimeError, setShowTimeError] = useState(false);
   const [exploreTarget, setExploreTarget] = useState('');
   const [visitTime, setVisitTime]       = useState('Morning');
   const [categorySticky, setCategorySticky] = useState(true);
@@ -587,8 +578,8 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
     ]);
 
     const resolved = {
-      hotel: hotel.length >= 4 ? hotel : HOTEL_TAGS,
-      food:  food.length  >= 4 ? food  : FOOD_TAGS,
+      hotel: (hotel.length >= 4 ? hotel : HOTEL_TAGS).slice(0, 10),
+      food:  (food.length  >= 4 ? food  : FOOD_TAGS).slice(0, 10),
     };
     tagsCache.current[key] = resolved;
     setDynamicHotelTags(resolved.hotel);
@@ -632,31 +623,48 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
   const meta = TAB_META[activeTab];
 
   /* ── Core search builder ────────────────────────────────────────────── */
-  const buildFilters = (ov: QuickOverride = {}): DashboardFilters => ({
-    tab:          ov.tab          ?? activeTab,
-    destination:  ov.destination  ?? destination,
-    startDate: '', endDate: '', numPeople: 2, budget: 0,
-    hotelTags:    ov.hotelTags    ?? hotelTags,
-    hotelArea:    ov.hotelArea    ?? '',
-    priceFilter,
-    minRating,
-    openNow,
-    foodLocation,
-    foodTags:     ov.foodTags     ?? foodTags,
-    dietType:     (ov.dietType    ?? dietType) as DietType,
-    dineMode:     'Any',
-    mealTime,
-    itinDate, startPoint, startTime,
-    exploreTarget: ov.exploreTarget ?? exploreTarget,
-    visitTime,
-  });
+  const buildFilters = (ov: QuickOverride = {}): DashboardFilters => {
+    const today = new Date();
+    const dateMap: Record<string, string> = {
+      today:    today.toISOString().split('T')[0],
+      tomorrow: new Date(today.getTime() + 86400000).toISOString().split('T')[0],
+      dayafter: new Date(today.getTime() + 2 * 86400000).toISOString().split('T')[0],
+    };
+    return {
+      tab:          ov.tab          ?? activeTab,
+      destination:  ov.destination  ?? destination,
+      startDate: '', endDate: '', numPeople: 2, budget: 0,
+      hotelTags:    ov.hotelTags    ?? hotelTags,
+      hotelArea:    ov.hotelArea    ?? '',
+      priceFilter,
+      minRating,
+      openNow,
+      foodLocation,
+      foodTags:     ov.foodTags     ?? foodTags,
+      dietType:     (ov.dietType    ?? dietType) as DietType,
+      dineMode:     'Any',
+      mealTime,
+      itinDate:     dateMap[itinDate] ?? itinDate,
+      startPoint,
+      startTime,
+      exploreTarget: ov.exploreTarget ?? exploreTarget,
+      visitTime,
+    };
+  };
 
   const triggerSearch = (ov: QuickOverride = {}) => {
     if (ov.tab) setActiveTab(ov.tab);
     onSearch(buildFilters(ov));
   };
 
-  const handleSearch = () => onSearch(buildFilters());
+  const handleSearch = () => {
+    if (activeTab === 'Itinerary' && !startTime) {
+      setShowTimeError(true);
+      return;
+    }
+    setShowTimeError(false);
+    onSearch(buildFilters());
+  };
 
   const renderFilters = () => {
     switch (activeTab) {
@@ -711,6 +719,21 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       /* ── Food ───────────────────────────────────────────────── */
       case 'Food': return (
         <div className="space-y-3">
+
+          {/* Open Now chip — TOP of food filters */}
+          <div>
+            <button
+              type="button"
+              onClick={() => setOpenNow(v => !v)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold border-2 transition-all"
+              style={openNow
+                ? { borderColor: '#059669', background: '#ECFDF5', color: '#059669' }
+                : { borderColor: '#E5E7EB', background: '#fff', color: '#6B7280' }}
+            >
+              <span className={`w-2 h-2 rounded-full ${openNow ? 'bg-green-500' : 'bg-gray-300'}`} />
+              Open Now
+            </button>
+          </div>
 
           {/* Location — auto-detect demo (mocked to New Bus Stand, Thanjavur) */}
           <div>
@@ -801,21 +824,6 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             </label>
             <TagGrid tags={dynamicFoodTags} selected={foodTags} onToggle={toggleFoodTag} accent="#D97706" />
           </div>
-
-          {/* Open Now chip */}
-          <div>
-            <button
-              type="button"
-              onClick={() => setOpenNow(v => !v)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold border-2 transition-all"
-              style={openNow
-                ? { borderColor: '#059669', background: '#ECFDF5', color: '#059669' }
-                : { borderColor: '#E5E7EB', background: '#fff', color: '#6B7280' }}
-            >
-              <span className={`w-2 h-2 rounded-full ${openNow ? 'bg-green-500' : 'bg-gray-300'}`} />
-              Open Now
-            </button>
-          </div>
         </div>
       );
 
@@ -827,17 +835,71 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             <LocationBar value={startPoint} onChange={setStartPoint} placeholder="e.g. Railway Station, Hotel name…" />
           </div>
 
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1">Date</label>
-              <input type="date" value={itinDate} onChange={e => setItinDate(e.target.value)}
-                className="w-full bg-surface border border-border rounded-lg px-2 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-soft transition-colors" />
+          {/* Date — Today / Tomorrow / Day After */}
+          <div>
+            <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1">Date</label>
+            <div className="flex gap-1.5">
+              {(['today', 'tomorrow', 'dayafter'] as const).map(d => {
+                const labels: Record<string, string> = { today: 'Today', tomorrow: 'Tomorrow', dayafter: 'Day After' };
+                return (
+                  <button
+                    key={d}
+                    type="button"
+                    onClick={() => setItinDate(d)}
+                    className="flex-1 py-2 rounded-lg text-[10px] font-bold border-2 transition-all"
+                    style={itinDate === d
+                      ? { borderColor: '#7C3AED', background: '#F5F3FF', color: '#7C3AED' }
+                      : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
+                    }
+                  >
+                    {labels[d]}
+                  </button>
+                );
+              })}
             </div>
-            <div>
-              <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1">Start Time</label>
-              <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)}
-                className="w-full bg-surface border border-border rounded-lg px-2 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-soft transition-colors" />
+          </div>
+
+          {/* Time slot — Morning / Afternoon / Evening + mandatory validation */}
+          <div>
+            <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
+              Time Slot <span className="text-red-500">*</span>
+            </label>
+            <div className="flex gap-1.5">
+              {(['Morning', 'Afternoon', 'Evening'] as const).map(t => {
+                const icons: Record<string, string> = { Morning: '🌅', Afternoon: '☀️', Evening: '🌆' };
+                const stops: Record<string, number> = { Morning: 5, Afternoon: 3, Evening: 2 };
+                return (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => { setStartTime(t); setShowTimeError(false); }}
+                    className="flex-1 flex flex-col items-center gap-0.5 py-2 rounded-lg border-2 transition-all"
+                    style={startTime === t
+                      ? { borderColor: '#7C3AED', background: '#F5F3FF', color: '#7C3AED' }
+                      : showTimeError
+                        ? { borderColor: '#EF4444', background: '#FEF2F2', color: '#6B7280' }
+                        : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
+                    }
+                  >
+                    <span className="text-base">{icons[t]}</span>
+                    <span className="text-[10px] font-black uppercase tracking-wide">{t}</span>
+                    <span className="text-[9px] opacity-60">{stops[t]} stops</span>
+                  </button>
+                );
+              })}
             </div>
+            <AnimatePresence>
+              {showTimeError && (
+                <motion.p
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  className="text-[10px] text-red-500 font-bold mt-1.5 flex items-center gap-1"
+                >
+                  <span>⚠</span> Please select a time slot to continue
+                </motion.p>
+              )}
+            </AnimatePresence>
           </div>
 
           <div className="rounded-lg p-2.5 border border-border" style={{ background: '#EBF5FF' }}>
@@ -867,13 +929,8 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                 <option value="Brihadeeswarar Temple">🛕 Brihadeeswarar Temple (Big Temple)</option>
                 <option value="Thanjavur Maratha Palace Royal Museum">🏰 Thanjavur Palace &amp; Royal Museum</option>
                 <option value="Saraswathi Mahal Library">📚 Saraswathi Mahal Library</option>
-                <option value="Thanjavur Art Gallery">🖼️ Thanjavur Art Gallery</option>
-                <option value="Sivaganga Fort">🏯 Sivaganga Fort</option>
-                <option value="Rajarajan Manimandapam">🏛️ Rajarajan Manimandapam</option>
-                <option value="Schwartz Church">⛪ Schwartz Church</option>
-                <option value="River Kaveri Thanjavur">🌊 River Kaveri &amp; Grand Anicut</option>
-                <option value="Gangaikonda Cholapuram">🏛️ Gangaikonda Cholapuram (45km)</option>
                 <option value="Airavatesvara Temple Darasuram">🛕 Airavatesvara Temple, Darasuram</option>
+                <option value="Sivaganga Fort">🏯 Sivaganga Fort</option>
               </select>
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted pointer-events-none" />
             </div>
