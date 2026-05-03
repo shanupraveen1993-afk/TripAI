@@ -133,7 +133,7 @@ export default function App() {
   // ── Core search logic ───────────────────────────────────────────────────
   const runSearch = async (filters: DashboardFilters, seed: number) => {
     setActiveTab(filters.tab);
-    setSearchLocation('Thanjavur');
+    if (filters.destination) setSearchLocation(filters.destination);
     setLastSearchFilters(filters);
     setContent('loading');
     setIsSaved(false);
@@ -160,12 +160,14 @@ export default function App() {
       } else {
         // Hotels / Food — fetch 20, Gemini splits into recommended + secondary
         const { results } = await fetchPlan(filters.tab, seed, {
-          hotelTags:   filters.hotelTags,
+          city:        filters.destination,
+          hotelTag:    filters.hotelTag,
           hotelArea:   filters.hotelArea,
-          foodTags:    filters.foodTags,
+          foodTag:     filters.foodTag,
           priceFilter: filters.priceFilter,
           minRating:   filters.minRating === '4.5+' ? 4.5 : filters.minRating === '4.0+' ? 4.0 : filters.minRating === '3.5+' ? 3.5 : 0,
           openNow:     filters.openNow,
+          persona:     filters.persona,
           dietType:    filters.dietType,
           dineMode:    filters.dineMode,
           mealTime:    filters.mealTime,
@@ -242,8 +244,8 @@ export default function App() {
     const filters: DashboardFilters = {
       tab: 'Explore', destination: searchLocation,
       startDate: '', endDate: '', numPeople: 2, budget: 0,
-      hotelTags: [], hotelArea: '', priceFilter: 'Any', minRating: 'Any', openNow: false,
-      foodLocation: '', foodTags: [], dietType: 'Any', dineMode: 'Any', mealTime: 'Any',
+      hotelTag: '', hotelArea: '', priceFilter: 'Any', minRating: 'Any', openNow: false, persona: '',
+      foodTag: '', dietType: 'Any', dineMode: 'Any', mealTime: 'Any',
       itinDate: '', startPoint: '', startTime: '',
       exploreTarget: target, visitTime: 'Morning',
     };
@@ -341,8 +343,8 @@ export default function App() {
               explore={EXPLORE_PRESETS[lastSearchFilters?.exploreTarget ?? ''] ?? MOCK_EXPLORE}
               apiError={apiError && activeTab !== 'Explore' && !(activeTab === 'Itinerary' && itineraryGenCount <= 1)}
               selectedTags={
-                activeTab === 'Hotels' ? (lastSearchFilters?.hotelTags ?? []) :
-                activeTab === 'Food'   ? (lastSearchFilters?.foodTags  ?? []) : []
+                activeTab === 'Hotels' ? (lastSearchFilters?.hotelTag ? [lastSearchFilters.hotelTag] : []) :
+                activeTab === 'Food'   ? (lastSearchFilters?.foodTag  ? [lastSearchFilters.foodTag]  : []) : []
               }
               onBack={() => {
                 if (backContext === 'itinerary-results') {
@@ -364,10 +366,10 @@ export default function App() {
                 setContent('loading');
                 runSearch(
                   lastSearchFilters ?? {
-                    tab: activeTab, destination: 'Thanjavur',
+                    tab: activeTab, destination: searchLocation,
                     startDate: '', endDate: '', numPeople: 2, budget: 0,
-                    hotelTags: [], hotelArea: '', priceFilter: 'Any', minRating: 'Any', openNow: false,
-                    foodLocation: '', foodTags: [], dietType: 'Any', dineMode: 'Any', mealTime: 'Any',
+                    hotelTag: '', hotelArea: '', priceFilter: 'Any', minRating: 'Any', openNow: false, persona: '',
+                    foodTag: '', dietType: 'Any', dineMode: 'Any', mealTime: 'Any',
                     itinDate: '', startPoint: '', startTime: 'Morning',
                     exploreTarget: 'Brihadeeswarar Temple', visitTime: 'Morning',
                   },

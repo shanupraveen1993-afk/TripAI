@@ -4,6 +4,7 @@ import {
   Search, ChevronDown, ChevronRight, Sparkles, MapPin, Navigation, X,
   Hotel, Utensils, Route, Compass, Flame, Clock,
 } from 'lucide-react';
+import { fetchCityTags } from '../api/client';
 import { Tab } from './ui/Tabs';
 
 const isThanjavur = (dest: string) =>
@@ -101,33 +102,7 @@ function getSpotsForDestination(destination: string): string[] {
   return DESTINATION_SPOTS.default;
 }
 
-/* ── Hotel tags — top 10 most-repeated keywords from Thanjavur hotel reviews ── */
-const HOTEL_TAGS = [
-  'Temple Nearby', 'Veg Kitchen', 'Helpful Staff', 'Budget Friendly',
-  'Heritage', 'Breakfast Included', 'AC Rooms', 'Parking',
-  'In-House Restaurant', 'Family',
-];
-
-/* ── Food tags — top 10 most-repeated keywords from Thanjavur food reviews ── */
-const FOOD_TAGS = [
-  'Banana Leaf', 'Thali', 'Filter Coffee', 'South Indian', 'Biryani',
-  'Tiffin', 'Street Food', 'Sweets', 'Authentic', 'Affordable',
-];
-
-/* ── Thanjavur hotel area suggestions (used in free-text area input) ── */
-const HOTEL_AREA_SUGGESTIONS = [
-  'Big Temple area',
-  'Railway Station area',
-  'New Bus Stand area',
-  'City Centre',
-  'Medical College area',
-  'Gandhiji Road',
-  'Hospital Road',
-  'Poondi Road',
-  'Kumbakonam Road',
-  'Abraham Pandithar Road',
-  'East Main Street',
-];
+// Tags are loaded dynamically from /api/tags based on city — no hardcoded lists
 
 /* ── Quick presets — image cards ────────────────────────────────────── */
 const QUICK_PRESETS: Array<{ label: string; emoji: string; tab: Tab; imgId: string; grad: string }> = [
@@ -181,10 +156,10 @@ const POPULAR_DESTINATIONS: PopularCity[] = [
 /* ── Thanjavur action grid (Segment 1) ──────────────────────────────── */
 const THANJAVUR_ACTIONS: Array<{
   tab: Tab; label: string; desc: string; emoji: string; imgId: string;
-  overrides: { tab: Tab; hotelTags?: string[]; foodTags?: string[]; exploreTarget?: string };
+  overrides: { tab: Tab; hotelTag?: string; foodTag?: string; exploreTarget?: string };
 }> = [
-  { tab: 'Hotels',    label: 'Stay near Big Temple', desc: 'Top-rated · Walking distance',  emoji: '🛕', imgId: '1686310894901-d326b8722c13', overrides: { tab: 'Hotels',    hotelTags: ['Temple Nearby'] } },
-  { tab: 'Food',      label: 'Thanjavur thali',       desc: 'Authentic Chola cuisine',       emoji: '🍛', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTags: ['Thali', 'South Indian'] } },
+  { tab: 'Hotels',    label: 'Stay near Big Temple', desc: 'Top-rated · Walking distance',  emoji: '🛕', imgId: '1686310894901-d326b8722c13', overrides: { tab: 'Hotels',    hotelTag: 'Near Temple' } },
+  { tab: 'Food',      label: 'Thanjavur thali',       desc: 'Authentic Chola cuisine',       emoji: '🍛', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Thali' } },
   { tab: 'Itinerary', label: '1-day plan',            desc: 'AI routed · Full day',          emoji: '🗺️', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Itinerary' } },
   { tab: 'Explore',   label: 'Brihadeeswarar',        desc: 'UNESCO · Chola masterpiece',    emoji: '🏛️', imgId: '1701665837448-cdbb9fab5a0d', overrides: { tab: 'Explore',   exploreTarget: 'Brihadeeswarar Temple' } },
 ];
@@ -193,8 +168,8 @@ const THANJAVUR_ACTIONS: Array<{
 interface QuickOverride {
   tab?: Tab;
   destination?: string;
-  hotelTags?: string[];
-  foodTags?: string[];
+  hotelTag?: string;
+  foodTag?: string;
   hotelArea?: string;
   dietType?: DietType;
   exploreTarget?: string;
@@ -212,59 +187,59 @@ interface SmartPick {
 
 const SMART_PICKS: Record<string, SmartPick[]> = {
   thanjavur: [
-    { label: 'Near Big Temple',    sub: 'Hotels · Walking distance', emoji: '🛕', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1686310894901-d326b8722c13', overrides: { tab: 'Hotels',    hotelTags: ['Temple Nearby'] } },
-    { label: 'Thanjavur thali',    sub: 'Food · Authentic Chola',    emoji: '🍛', grad: 'linear-gradient(135deg,#D97706,#F59E0B)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTags: ['Thali', 'South Indian'] } },
+    { label: 'Near Big Temple',    sub: 'Hotels · Walking distance', emoji: '🛕', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1686310894901-d326b8722c13', overrides: { tab: 'Hotels',    hotelTag: 'Near Temple' } },
+    { label: 'Thanjavur thali',    sub: 'Food · Authentic Chola',    emoji: '🍛', grad: 'linear-gradient(135deg,#D97706,#F59E0B)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Thali' } },
     { label: 'Brihadeeswarar',     sub: 'Explore · UNESCO site',     emoji: '🏛️', grad: 'linear-gradient(135deg,#059669,#10B981)', imgId: '1701665837448-cdbb9fab5a0d', overrides: { tab: 'Explore',   exploreTarget: 'Brihadeeswarar Temple' } },
     { label: '1-day Thanjavur',    sub: 'Itinerary · AI routed',     emoji: '🗺️', grad: 'linear-gradient(135deg,#7C3AED,#6366F1)', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Itinerary' } },
-    { label: 'Filter coffee',      sub: 'Food · Local café culture', emoji: '☕', grad: 'linear-gradient(135deg,#D97706,#EF4444)', imgId: '1509042239860-f550ce710b93', overrides: { tab: 'Food',      foodTags: ['Cafe'] } },
+    { label: 'Filter coffee',      sub: 'Food · Local café culture', emoji: '☕', grad: 'linear-gradient(135deg,#D97706,#EF4444)', imgId: '1509042239860-f550ce710b93', overrides: { tab: 'Food',      foodTag: 'Cafe' } },
     { label: 'Royal Palace',       sub: 'Explore · Maratha heritage', emoji: '🏰', grad: 'linear-gradient(135deg,#6366F1,#A78BFA)', imgId: '1622018135960-249abd263aeb', overrides: { tab: 'Explore',   exploreTarget: 'Thanjavur Maratha Palace Royal Museum' } },
   ],
   bangalore: [
-    { label: 'Best coffee & cafes',  sub: 'Quick · Near you',     emoji: '☕', grad: 'linear-gradient(135deg,#6366F1,#A78BFA)', imgId: '1509042239860-f550ce710b93', overrides: { tab: 'Food',      foodTags: ['Cafe'] } },
-    { label: 'Heritage stays',        sub: 'Hotels · Curated',    emoji: '🏛️', grad: 'linear-gradient(135deg,#D97706,#F59E0B)', imgId: '1708782462555-b3af03b4b3d2', overrides: { tab: 'Hotels',    hotelTags: ['Heritage'] } },
+    { label: 'Best coffee & cafes',  sub: 'Quick · Near you',     emoji: '☕', grad: 'linear-gradient(135deg,#6366F1,#A78BFA)', imgId: '1509042239860-f550ce710b93', overrides: { tab: 'Food',      foodTag: 'Cafe' } },
+    { label: 'Heritage stays',        sub: 'Hotels · Curated',    emoji: '🏛️', grad: 'linear-gradient(135deg,#D97706,#F59E0B)', imgId: '1708782462555-b3af03b4b3d2', overrides: { tab: 'Hotels',    hotelTag: 'Heritage' } },
     { label: 'Plan my Bangalore day', sub: 'Full day · AI routed',emoji: '🗺️', grad: 'linear-gradient(135deg,#7C3AED,#6366F1)', imgId: '1708782462555-b3af03b4b3d2', overrides: { tab: 'Itinerary' } },
     { label: 'Top landmarks',         sub: 'What to see · Ranked',emoji: '🏯', grad: 'linear-gradient(135deg,#059669,#10B981)', imgId: '1708782462555-b3af03b4b3d2', overrides: { tab: 'Explore',   exploreTarget: 'Vidhana Soudha' } },
-    { label: 'Budget stays <₹3k',     sub: 'Hotels · Best value', emoji: '💰', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Hotels',    hotelTags: ['Budget Friendly'] } },
-    { label: 'Best biryani',          sub: 'Food · Non-veg',      emoji: '🍛', grad: 'linear-gradient(135deg,#EF4444,#F97316)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTags: ['Biryani'] } },
+    { label: 'City centre stays',     sub: 'Hotels · Best value', emoji: '💰', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Hotels',    hotelTag: 'City Centre' } },
+    { label: 'Best biryani',          sub: 'Food · Non-veg',      emoji: '🍛', grad: 'linear-gradient(135deg,#EF4444,#F97316)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Biryani' } },
   ],
   goa: [
-    { label: 'Beach hotels',         sub: 'Sea view · Rated',     emoji: '🌊', grad: 'linear-gradient(135deg,#0284C7,#06B6D4)', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Hotels',    hotelTags: ['Sea View'] } },
-    { label: 'Best seafood',         sub: 'Fresh · Near beach',   emoji: '🦞', grad: 'linear-gradient(135deg,#059669,#10B981)', imgId: '1624791596524-d989400f3241', overrides: { tab: 'Food',      foodTags: ['Seafood'] } },
+    { label: 'Beach hotels',         sub: 'Sea view · Rated',     emoji: '🌊', grad: 'linear-gradient(135deg,#0284C7,#06B6D4)', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Hotels',    hotelTag: 'Sea View' } },
+    { label: 'Best seafood',         sub: 'Fresh · Near beach',   emoji: '🦞', grad: 'linear-gradient(135deg,#059669,#10B981)', imgId: '1624791596524-d989400f3241', overrides: { tab: 'Food',      foodTag: 'Seafood' } },
     { label: '1-day Goa plan',       sub: 'Itinerary · Beaches',  emoji: '🛵', grad: 'linear-gradient(135deg,#D97706,#F59E0B)', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Itinerary' } },
     { label: 'Must-see beaches',     sub: 'Explore · Ranked',     emoji: '🏖️', grad: 'linear-gradient(135deg,#7C3AED,#A78BFA)', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Explore',   exploreTarget: 'Calangute Beach' } },
-    { label: 'Rooftop & night bars', sub: 'Food · Nightlife',     emoji: '🍹', grad: 'linear-gradient(135deg,#EF4444,#F97316)', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Food',      foodTags: ['Rooftop Dining', 'Craft Beer'] } },
-    { label: 'Budget beach stays',   sub: 'Hotels · Best value',  emoji: '💰', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Hotels',    hotelTags: ['Budget Friendly'] } },
+    { label: 'Cafe & street eats',   sub: 'Food · Nightlife',     emoji: '🍹', grad: 'linear-gradient(135deg,#EF4444,#F97316)', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Food',      foodTag: 'Cafe' } },
+    { label: 'City centre stays',    sub: 'Hotels · Best value',  emoji: '💰', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Hotels',    hotelTag: 'City Centre' } },
   ],
   mumbai: [
     { label: 'Bandra stays',         sub: 'Hotels · Trendy area', emoji: '🏙️', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Hotels',    hotelArea: 'Bandra' } },
-    { label: 'Street food',          sub: 'Iconic Mumbai eats',   emoji: '🌯', grad: 'linear-gradient(135deg,#D97706,#F59E0B)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTags: ['Street Food'] } },
+    { label: 'Street food',          sub: 'Iconic Mumbai eats',   emoji: '🌯', grad: 'linear-gradient(135deg,#D97706,#F59E0B)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Street Food' } },
     { label: 'Marine Drive',         sub: 'Explore · Landmark',   emoji: '🌆', grad: 'linear-gradient(135deg,#0284C7,#06B6D4)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Explore',   exploreTarget: 'Marine Drive' } },
     { label: 'Full day Mumbai',      sub: 'Itinerary · AI plan',  emoji: '🗺️', grad: 'linear-gradient(135deg,#7C3AED,#6366F1)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Itinerary' } },
-    { label: 'Rooftop dining',       sub: 'Food · Special eve',   emoji: '🍽️', grad: 'linear-gradient(135deg,#EF4444,#F97316)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Food',      foodTags: ['Rooftop Dining'] } },
-    { label: 'Business hotels',      sub: 'Hotels · Corporate',   emoji: '💼', grad: 'linear-gradient(135deg,#059669,#10B981)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Hotels',    hotelTags: ['Business'] } },
+    { label: 'Best biryani',         sub: 'Food · Special pick',  emoji: '🍽️', grad: 'linear-gradient(135deg,#EF4444,#F97316)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Food',      foodTag: 'Biryani' } },
+    { label: 'Business hotels',      sub: 'Hotels · Corporate',   emoji: '💼', grad: 'linear-gradient(135deg,#059669,#10B981)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Hotels',    hotelTag: 'Business' } },
   ],
   jaipur: [
     { label: 'Heritage palaces',     sub: 'Explore · Pink City',  emoji: '🏰', grad: 'linear-gradient(135deg,#D97706,#EF4444)', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Explore',   exploreTarget: 'Amber Fort' } },
-    { label: 'Royal palace stays',   sub: 'Hotels · Heritage',    emoji: '🏯', grad: 'linear-gradient(135deg,#7C3AED,#A78BFA)', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Hotels',    hotelTags: ['Heritage'] } },
-    { label: 'Rajasthani thali',     sub: 'Food · Authentic',     emoji: '🍛', grad: 'linear-gradient(135deg,#EF4444,#F97316)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTags: ['Thali'] } },
+    { label: 'Royal palace stays',   sub: 'Hotels · Heritage',    emoji: '🏯', grad: 'linear-gradient(135deg,#7C3AED,#A78BFA)', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Hotels',    hotelTag: 'Heritage' } },
+    { label: 'Rajasthani thali',     sub: 'Food · Authentic',     emoji: '🍛', grad: 'linear-gradient(135deg,#EF4444,#F97316)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Thali' } },
     { label: 'Pink City walk',       sub: 'Itinerary · Full day', emoji: '🛺', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Itinerary' } },
     { label: 'Bazaar & markets',     sub: 'Explore · Shopping',   emoji: '🛍️', grad: 'linear-gradient(135deg,#059669,#10B981)', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Explore',   exploreTarget: 'Johari Bazaar' } },
-    { label: 'Rooftop with views',   sub: 'Food · Fort views',    emoji: '✨', grad: 'linear-gradient(135deg,#6366F1,#A78BFA)', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Food',      foodTags: ['Rooftop Dining'] } },
+    { label: 'Street food',          sub: 'Food · Iconic eats',   emoji: '✨', grad: 'linear-gradient(135deg,#6366F1,#A78BFA)', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Food',      foodTag: 'Street Food' } },
   ],
   delhi: [
     { label: 'Old Delhi heritage',   sub: 'Itinerary · Walk',     emoji: '🕌', grad: 'linear-gradient(135deg,#EF4444,#F97316)', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Itinerary' } },
-    { label: 'Budget central stays', sub: 'Hotels · Best value',  emoji: '💰', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Hotels',    hotelTags: ['Budget Friendly'] } },
-    { label: 'Chandni Chowk food',   sub: 'Street food · Iconic', emoji: '🥙', grad: 'linear-gradient(135deg,#D97706,#F59E0B)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTags: ['Street Food'] } },
+    { label: 'City centre stays',    sub: 'Hotels · Best value',  emoji: '💰', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Hotels',    hotelTag: 'City Centre' } },
+    { label: 'Chandni Chowk food',   sub: 'Street food · Iconic', emoji: '🥙', grad: 'linear-gradient(135deg,#D97706,#F59E0B)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Street Food' } },
     { label: 'Red Fort',             sub: 'Explore · Must-see',   emoji: '🏰', grad: 'linear-gradient(135deg,#7C3AED,#6366F1)', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Explore',   exploreTarget: 'Red Fort' } },
-    { label: 'Fine dining',          sub: 'Food · Top picks',     emoji: '🍽️', grad: 'linear-gradient(135deg,#059669,#10B981)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTags: ['Buffet'] } },
-    { label: 'Heritage hotels',      sub: 'Hotels · Old Delhi',   emoji: '🏛️', grad: 'linear-gradient(135deg,#EF4444,#D97706)', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Hotels',    hotelTags: ['Heritage'] } },
+    { label: 'North Indian thali',   sub: 'Food · Top picks',     emoji: '🍽️', grad: 'linear-gradient(135deg,#059669,#10B981)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Thali' } },
+    { label: 'Heritage hotels',      sub: 'Hotels · Old Delhi',   emoji: '🏛️', grad: 'linear-gradient(135deg,#EF4444,#D97706)', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Hotels',    hotelTag: 'Heritage' } },
   ],
   default: [
     { label: 'Top rated hotels',     sub: 'Hotels · AI ranked',   emoji: '🏨', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1686310894901-d326b8722c13', overrides: { tab: 'Hotels' } },
     { label: 'Best eats nearby',     sub: 'Food · Highly rated',  emoji: '🍽️', grad: 'linear-gradient(135deg,#D97706,#F59E0B)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food' } },
     { label: 'Plan a full day',      sub: 'Itinerary · Optimised',emoji: '🗺️', grad: 'linear-gradient(135deg,#7C3AED,#6366F1)', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Itinerary' } },
     { label: 'Must-see spots',       sub: 'Explore · Don\'t miss',emoji: '🧭', grad: 'linear-gradient(135deg,#059669,#10B981)', imgId: '1708782462555-b3af03b4b3d2', overrides: { tab: 'Explore' } },
-    { label: 'Budget stays',         sub: 'Hotels · Best value',  emoji: '💰', grad: 'linear-gradient(135deg,#6366F1,#A78BFA)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Hotels',    hotelTags: ['Budget Friendly'] } },
+    { label: 'City centre stays',    sub: 'Hotels · Best value',  emoji: '💰', grad: 'linear-gradient(135deg,#6366F1,#A78BFA)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Hotels',    hotelTag: 'City Centre' } },
     { label: 'Pure veg options',     sub: 'Food · Filtered',      emoji: '🥗', grad: 'linear-gradient(135deg,#059669,#34D399)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      dietType: 'Veg' } },
   ],
 };
@@ -279,18 +254,18 @@ function getSmartPicks(destination: string): SmartPick[] {
 
 /* ── Trending → filter overrides ────────────────────────────────────── */
 const TRENDING_OVERRIDES: Record<string, QuickOverride> = {
-  'Budget stays':    { tab: 'Hotels',    hotelTags: ['Budget Friendly'] },
-  'Rooftop pool':    { tab: 'Hotels',    hotelTags: ['Rooftop', 'Pool'] },
-  'Heritage hotels': { tab: 'Hotels',    hotelTags: ['Heritage'] },
-  'Near airport':    { tab: 'Hotels',    hotelTags: ['Airport Shuttle'] },
-  'Business hotels': { tab: 'Hotels',    hotelTags: ['Business'] },
-  'Sea view rooms':  { tab: 'Hotels',    hotelTags: ['Sea View'] },
-  'Biryani spots':   { tab: 'Food',      foodTags: ['Biryani'] },
-  'Rooftop dining':  { tab: 'Food',      foodTags: ['Rooftop Dining'] },
-  'Pure veg':        { tab: 'Food',      foodTags: ['Street Food'], dietType: 'Veg' },
-  'Street food':     { tab: 'Food',      foodTags: ['Street Food'] },
-  'Seafood':         { tab: 'Food',      foodTags: ['Seafood'] },
-  'Craft beer bars': { tab: 'Food',      foodTags: ['Craft Beer'] },
+  'Budget stays':    { tab: 'Hotels',    hotelTag: 'City Centre' },
+  'Rooftop pool':    { tab: 'Hotels',    hotelTag: 'Rooftop' },
+  'Heritage hotels': { tab: 'Hotels',    hotelTag: 'Heritage' },
+  'Near airport':    { tab: 'Hotels',    hotelTag: 'City Centre' },
+  'Business hotels': { tab: 'Hotels',    hotelTag: 'Business' },
+  'Sea view rooms':  { tab: 'Hotels',    hotelTag: 'Sea View' },
+  'Biryani spots':   { tab: 'Food',      foodTag: 'Biryani' },
+  'Rooftop dining':  { tab: 'Food',      foodTag: 'Street Food' },
+  'Pure veg':        { tab: 'Food',      foodTag: 'Street Food', dietType: 'Veg' },
+  'Street food':     { tab: 'Food',      foodTag: 'Street Food' },
+  'Seafood':         { tab: 'Food',      foodTag: 'Seafood' },
+  'Craft beer bars': { tab: 'Food',      foodTag: 'Cafe' },
   'Family day out':  { tab: 'Itinerary' },
   'Couple getaway':  { tab: 'Itinerary' },
   'Solo explorer':   { tab: 'Itinerary' },
@@ -423,15 +398,14 @@ export interface DashboardFilters {
   numPeople: number;
   budget: number;
   // Hotel
-  hotelTags: string[];   // derived from persona for API compat
+  hotelTag: string;      // single tag — city-personalised from /api/tags
   hotelArea: string;
   priceFilter: string;
   minRating: string;
   openNow: boolean;
   persona: string;       // Solo | Couple | Family | Business | ''
   // Food
-  foodLocation: string;
-  foodTags: string[];    // single craving selection
+  foodTag: string;       // single cuisine/type tag — city-personalised from /api/tags
   dietType: DietType;
   dineMode: string;
   mealTime: MealTime;
@@ -457,12 +431,13 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
   const [activeTab, setActiveTab]           = useState<Tab>(initialTab);
   // Hotels
   const [priceFilter, setPriceFilter]       = useState('Any');
+  const [hotelTag, setHotelTag]             = useState('');
   const [hotelArea, setHotelArea]           = useState('');
   const [areaFocused, setAreaFocused]       = useState(false);
   const [persona, setPersona]               = useState('');
   const [openNow, setOpenNow]               = useState(false);
   // Food
-  const [craving, setCraving]               = useState('');
+  const [foodTag, setFoodTag]               = useState('');
   const [dietType, setDietType]             = useState<DietType>('Any');
   const [mealTime, setMealTime]             = useState<MealTime>('Any');
   // Itinerary
@@ -500,13 +475,29 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
     return () => observer.disconnect();
   }, []);
 
-  // Persona → derived hotel tags for API query building
-  const PERSONA_TAGS: Record<string, string[]> = {
-    Solo:     ['Budget Friendly', 'Temple Nearby'],
-    Couple:   ['Heritage', 'Quiet'],
-    Family:   ['Family', 'AC Rooms', 'Parking'],
-    Business: ['Business', 'City Centre'],
-  };
+  // Dynamic city-specific tags loaded from /api/tags
+  const [hotelTagOptions, setHotelTagOptions] = useState<string[]>([]);
+  const [foodTagOptions,  setFoodTagOptions]  = useState<string[]>([]);
+  const [tagsLoading,     setTagsLoading]     = useState(false);
+
+  useEffect(() => {
+    if (!destination) return;
+    setTagsLoading(true);
+    // Reset selections when city changes
+    setHotelTag('');
+    setFoodTag('');
+    Promise.all([
+      fetchCityTags(destination, 'Hotels'),
+      fetchCityTags(destination, 'Food'),
+    ]).then(([ht, ft]) => {
+      setHotelTagOptions(ht.slice(0, 8));
+      setFoodTagOptions(ft.slice(0, 8));
+    }).catch(() => {
+      // Fallback to universal defaults on error
+      setHotelTagOptions(['Heritage', 'Business', 'Family', 'City Centre', 'Parking', 'Near Temple', 'Luxury', 'In-House Restaurant']);
+      setFoodTagOptions(['South Indian', 'Biryani', 'Cafe', 'Thali', 'Street Food', 'Sweets', 'North Indian', 'Bakery']);
+    }).finally(() => setTagsLoading(false));
+  }, [destination]);
 
   const popularSpots = getSpotsForDestination(destination);
   const meta = TAB_META[activeTab];
@@ -520,19 +511,17 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       dayafter: new Date(today.getTime() + 2 * 86400000).toISOString().split('T')[0],
     };
     const resolvedPersona = ov.tab === 'Hotels' ? persona : (ov.tab ? '' : persona);
-    const derivedHotelTags = ov.hotelTags ?? (PERSONA_TAGS[resolvedPersona] ?? []);
     return {
       tab:          ov.tab          ?? activeTab,
       destination:  ov.destination  ?? destination,
       startDate: '', endDate: '', numPeople: 2, budget: 0,
-      hotelTags:    derivedHotelTags,
+      hotelTag:     ov.hotelTag     ?? hotelTag,
       hotelArea:    ov.hotelArea    ?? hotelArea,
       priceFilter,
       minRating:    'Any',
       openNow,
       persona:      resolvedPersona,
-      foodLocation: '',
-      foodTags:     ov.foodTags ?? (craving ? [craving] : []),
+      foodTag:      ov.foodTag ?? foodTag,
       dietType:     (ov.dietType ?? dietType) as DietType,
       dineMode:     'Any',
       mealTime,
@@ -645,29 +634,37 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                   <X className="w-3.5 h-3.5" />
                 </button>
               )}
-              {areaFocused && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-border rounded-xl shadow-lg z-50 overflow-hidden">
-                  {HOTEL_AREA_SUGGESTIONS
-                    .filter(a => !hotelArea || a.toLowerCase().includes(hotelArea.toLowerCase()))
-                    .map(area => (
-                      <button
-                        key={area}
-                        type="button"
-                        onMouseDown={() => { setHotelArea(area); setAreaFocused(false); }}
-                        className="w-full text-left flex items-center gap-2 px-3 py-2 text-[11px] text-heading hover:bg-blue-50 transition-colors border-b border-gray-50 last:border-0"
-                      >
-                        <MapPin className="w-3 h-3 text-muted shrink-0" />
-                        {area}
-                      </button>
-                    ))
-                  }
-                </div>
-              )}
             </div>
             {!hotelArea && (
-              <p className="text-[9px] text-muted mt-1">Type any area or pick from list — search radius adjusts automatically</p>
+              <p className="text-[9px] text-muted mt-1">Type any area — search radius adjusts automatically</p>
             )}
           </div>
+
+          {/* Hotel type — single-select city-personalised tags */}
+          {hotelTagOptions.length > 0 && (
+            <div>
+              <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1.5">
+                Hotel type
+                {tagsLoading && <span className="ml-1.5 inline-block w-2.5 h-2.5 border border-muted border-t-transparent rounded-full animate-spin align-middle" />}
+              </label>
+              <div className="flex flex-wrap gap-1.5">
+                {hotelTagOptions.map(tag => (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => setHotelTag(prev => prev === tag ? '' : tag)}
+                    className="px-3 py-1.5 rounded-full border-2 text-[10px] font-bold transition-all"
+                    style={hotelTag === tag
+                      ? { borderColor: '#1C64F2', background: '#EBF5FF', color: '#1C64F2' }
+                      : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
+                    }
+                  >
+                    {tag}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
         </div>
       );
@@ -704,35 +701,31 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             </div>
           </div>
 
-          {/* What I'm craving — single-select 2×3 grid */}
-          <div>
-            <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1.5">
-              What I'm craving
-            </label>
-            <div className="grid grid-cols-3 gap-1.5">
-              {([
-                'South Indian',
-                'Thali',
-                'Biryani',
-                'Filter Coffee',
-                'Street Food',
-                'Sweets',
-              ] as const).map(c => (
-                <button
-                  key={c}
-                  type="button"
-                  onClick={() => setCraving(prev => prev === c ? '' : c)}
-                  className="flex items-center justify-center py-2.5 rounded-xl border-2 transition-all"
-                  style={craving === c
-                    ? { borderColor: '#D97706', background: '#FFFBEB', color: '#D97706' }
-                    : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
-                  }
-                >
-                  <span className="text-[9px] font-bold text-center leading-tight px-1">{c}</span>
-                </button>
-              ))}
+          {/* What I'm craving — single-select city-personalised tags */}
+          {foodTagOptions.length > 0 && (
+            <div>
+              <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1.5">
+                What I'm craving
+                {tagsLoading && <span className="ml-1.5 inline-block w-2.5 h-2.5 border border-muted border-t-transparent rounded-full animate-spin align-middle" />}
+              </label>
+              <div className="grid grid-cols-3 gap-1.5">
+                {foodTagOptions.map(tag => (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => setFoodTag(prev => prev === tag ? '' : tag)}
+                    className="flex items-center justify-center py-2.5 rounded-xl border-2 transition-all"
+                    style={foodTag === tag
+                      ? { borderColor: '#D97706', background: '#FFFBEB', color: '#D97706' }
+                      : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
+                    }
+                  >
+                    <span className="text-[9px] font-bold text-center leading-tight px-1">{tag}</span>
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Diet — simplified 3-way */}
           <div>
