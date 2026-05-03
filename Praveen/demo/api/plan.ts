@@ -1184,19 +1184,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const cityCenter = getCityCenter(city);
 
-  // Diet includedType: vegetarian_restaurant for Veg/Pure Veg (Google API-level)
-  const dietIncludedType = (tab === 'Food' && (filters.dietType === 'Veg' || filters.dietType === 'Pure Veg'))
-    ? 'vegetarian_restaurant' : undefined;
-
-  // Food tag includedType: Tier-1 tags map directly to a Google Place type
-  // Only used when diet doesn't already set an includedType
-  const tagIncludedType = (tab === 'Food' && !dietIncludedType && filters.foodTag)
-    ? (FOOD_TAG_TYPES[filters.foodTag] ?? undefined) : undefined;
-
-  const apiIncludedType = dietIncludedType ?? tagIncludedType;
+  // Hotels: always restrict to lodging — prevents Tamil Nadu restaurants named "X Hotel" appearing
+  // Food: use vegetarian_restaurant for Veg/Pure Veg, or tag-specific type for Tier-1 cuisine tags
+  const apiIncludedType: string | undefined =
+    tab === 'Hotels' ? 'lodging' :
+    (filters.dietType === 'Veg' || filters.dietType === 'Pure Veg') ? 'vegetarian_restaurant' :
+    (filters.foodTag ? (FOOD_TAG_TYPES[filters.foodTag] ?? undefined) : undefined);
 
   try {
-    // Primary fetch — all API-level filters applied at source
+    // Primary fetch — Google returns ONLY the correct place type
     let rawPlaces = await fetchPlaces(query, searchSeed, 15, {
       withPhotos:   true,
       minRating:    apiMinRating,
@@ -1206,27 +1202,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       center:       cityCenter,
     });
 
-    // Fallback 1: Food includedType too restrictive for smaller cities — retry without it
-    if (apiIncludedType && rawPlaces.length < 4) {
-      const fallback = await fetchPlaces(query, searchSeed, 15, {
-        withPhotos:  true,
-        minRating:   apiMinRating,
-        priceLevels: apiPriceLevels.length ? apiPriceLevels : undefined,
-        openNow:     apiOpenNow || undefined,
-        center:      cityCenter,
-      });
-      if (fallback.length > rawPlaces.length) rawPlaces = fallback;
-    }
-
-    // Fallback 2: Hotel tag query too specific — retry broader so we always have a full pool
-    if (tab === 'Hotels' && filters.hotelTag && rawPlaces.length < 6) {
-      const broadQuery = `hotels in ${city} ${getCityState(city)}`;
+    // Fallback: if includedType + tag query returns too few, retry with includedType only
+    // (keeps type restriction, drops the tag from the query so broader results come in)
+    if (rawPlaces.length < 5) {
+      const broadQuery = tab === 'Hotels'
+        ? `hotels in ${city} ${getCityState(city)}`
+        : `restaurants in ${city} ${getCityState(city)}`;
       const fallback = await fetchPlaces(broadQuery, searchSeed, 15, {
-        withPhotos:  true,
-        minRating:   apiMinRating,
-        priceLevels: apiPriceLevels.length ? apiPriceLevels : undefined,
-        openNow:     apiOpenNow || undefined,
-        center:      cityCenter,
+        withPhotos:   true,
+        minRating:    apiMinRating,
+        priceLevels:  apiPriceLevels.length ? apiPriceLevels : undefined,
+        openNow:      apiOpenNow || undefined,
+        includedType: apiIncludedType,
+        center:       cityCenter,
       });
       if (fallback.length > rawPlaces.length) rawPlaces = fallback;
     }
