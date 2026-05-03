@@ -312,6 +312,33 @@ const FOOD_COST_KEYWORDS: Record<string, string[]> = {
   '₹600+':      ['fine dining', 'luxury', 'very expensive', 'high-end', 'splurge', 'lavish', 'top-end', 'extravagant', 'premium dining', '600 rupees', '700 rupees', '800 rupees', 'expensive restaurant'],
 };
 
+// Hotel review keywords → price tier inference (used when Places API returns no priceLevel)
+const HOTEL_PRICE_REVIEW: Record<string, string[]> = {
+  'PRICE_LEVEL_INEXPENSIVE': ['budget', 'cheap', 'affordable', 'value for money', 'economical', 'low cost', 'pocket friendly', 'inexpensive', 'pocket-friendly', 'low-budget'],
+  'PRICE_LEVEL_MODERATE':    ['mid-range', 'reasonable', 'moderate price', 'decent price', 'worth the price', 'good value', 'fair price', 'not too expensive'],
+  'PRICE_LEVEL_EXPENSIVE':   ['luxury', 'premium', 'expensive', 'high-end', 'lavish', 'splurge', 'five star', '5 star', 'pricey'],
+  // Legacy INR label aliases
+  '₹1K-5K':   ['budget', 'cheap', 'affordable', 'value for money', 'economical', 'low cost', 'pocket friendly'],
+  '₹5K-10K':  ['mid-range', 'reasonable', 'moderate price', 'decent price', 'worth the price'],
+  '₹15K+':    ['luxury', 'premium', 'expensive', 'high-end', 'lavish', 'five star'],
+};
+
+function inferHotelPriceTier(reviews: any[], selectedFilter: string): number {
+  const text = reviews.map((r: any) => (r.text?.text ?? '').toLowerCase()).join(' ');
+  const targetKws = HOTEL_PRICE_REVIEW[selectedFilter] ?? [];
+  const targetHits = targetKws.filter(k => text.includes(k)).length;
+
+  // Check if reviews suggest a DIFFERENT tier (penalise conflicting signal)
+  const otherHits = Object.entries(HOTEL_PRICE_REVIEW)
+    .filter(([tier]) => tier !== selectedFilter && !tier.startsWith('₹'))
+    .flatMap(([, kws]) => kws)
+    .filter(k => text.includes(k)).length;
+
+  if (targetHits > 0) return Math.min(0.45 + targetHits * 0.15, 0.9); // evidence for this tier
+  if (otherHits > 0)  return 0.15;  // evidence against this tier
+  return 0.3;                        // no price signal — neutral but below threshold
+}
+
 // Google Places price level → food cost tier mapping (used as fallback when keyword score is 0)
 const FOOD_PRICE_LEVEL_MAP: Record<string, string[]> = {
   'Under ₹100': ['PRICE_LEVEL_FREE', 'PRICE_LEVEL_INEXPENSIVE'],
@@ -425,7 +452,17 @@ function scorePlaceForFilters(place: any, tab: string, f: UserFilters): PlaceSco
     if (f.priceFilter && f.priceFilter !== 'Any') {
       const allowed = PRICE_BUCKETS[f.priceFilter] ?? [];
       const lvl     = place.priceLevel ?? '';
-      C.price = { score: allowed.includes(lvl) ? 1 : lvl ? 0.1 : 0.5, weight: 2 };
+      if (lvl && allowed.includes(lvl)) {
+        // Places API confirms this tier → definitive match
+        C.price = { score: 1, weight: 2 };
+      } else if (lvl && !allowed.includes(lvl)) {
+        // Places API confirms a DIFFERENT tier → hard exclude
+        C.price = { score: 0, weight: 2, hard: true };
+      } else {
+        // No priceLevel in Places API — infer from review keywords
+        const inferred = inferHotelPriceTier(place.reviews ?? [], f.priceFilter);
+        C.price = { score: inferred, weight: 2 };
+      }
     }
 
     // ── Area Proximity ────────────────────────────────────────────────────────
@@ -571,7 +608,7 @@ async function geminiRankAndAnalyse(
     if (filters.persona && PERSONA_PROFILE[filters.persona])
       criteria.push({ label: 'Visitor persona', value: PERSONA_PROFILE[filters.persona], weight: 'critical' });
     if (filters.priceFilter && filters.priceFilter !== 'Any')
-      criteria.push({ label: 'Price tier', value: filters.priceFilter, weight: 'important' });
+      criteria.push({ label: 'Price tier', value: `${filters.priceFilter} — CRITICAL: if a hotel's priceLevel field is set to a different tier, EXCLUDE it. If priceLevel is missing, only include the hotel if review keywords support this tier — exclude if review keywords suggest a different price range.`, weight: 'critical' });
     if (filters.minRating && filters.minRating > 0)
       criteria.push({ label: 'Min rating', value: `${filters.minRating}+`, weight: 'important' });
     if (filters.hotelTags?.length)

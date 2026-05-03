@@ -676,21 +676,6 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       case 'Food': return (
         <div className="space-y-4">
 
-          {/* Open Now chip */}
-          <div>
-            <button
-              type="button"
-              onClick={() => setOpenNow(v => !v)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold border-2 transition-all"
-              style={openNow
-                ? { borderColor: '#059669', background: '#ECFDF5', color: '#059669' }
-                : { borderColor: '#E5E7EB', background: '#fff', color: '#6B7280' }}
-            >
-              <span className={`w-2 h-2 rounded-full ${openNow ? 'bg-green-500' : 'bg-gray-300'}`} />
-              Open Now
-            </button>
-          </div>
-
           {/* Meal Moment — 3 pills */}
           <div>
             <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1.5">
