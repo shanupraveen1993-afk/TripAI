@@ -151,29 +151,48 @@ const SEED_PREFIX: Record<number, string> = {
   3: 'popular budget ',
 };
 
-// Hotels/Food use locationRestriction (strict — only Thanjavur city).
-// Itinerary/Explore use locationBias (prefers Thanjavur but allows nearby heritage sites).
+interface FetchOptions {
+  withPhotos?:   boolean;
+  radiusKm?:     number;
+  minRating?:    number;
+  // API-level filters — Google enforces these before returning any results
+  priceLevels?:  string[];  // e.g. ['PRICE_LEVEL_INEXPENSIVE'] — direct Places API param
+  openNow?:      boolean;   // true = only currently open places
+  includedType?: string;    // e.g. 'vegetarian_restaurant' — single place type restriction
+}
+
+// Hotels/Food use locationBias (city-centred); filterThanjavurOnly enforces strict locality.
+// Itinerary/Explore use larger radius with no locality guard.
 async function fetchPlaces(
   query: string,
   searchSeed = 0,
-  withPhotos = false,
   radiusKm = 15,
-  strictLocation = true,
-  minRating = 0,
+  opts: FetchOptions = {},
 ) {
+  const { withPhotos = false, minRating = 0, priceLevels, openNow, includedType } = opts;
   const rankPreference = SEED_RANK[searchSeed % 4] ?? 'RELEVANCE';
   const prefix         = SEED_PREFIX[searchSeed % 4] ?? '';
 
-  // Places API (New) v1: locationRestriction only accepts rectangle, not circle.
-  // Use locationBias (circle) for all searches — filterThanjavurOnly enforces strict locality.
   const locationParam = {
     locationBias: {
-      circle: {
-        center: THANJAVUR_CENTER,
-        radius: radiusKm * 1000,
-      },
+      circle: { center: THANJAVUR_CENTER, radius: radiusKm * 1000 },
     },
   };
+
+  const body: Record<string, unknown> = {
+    textQuery:      prefix + query,
+    maxResultCount: 20,
+    languageCode:   'en',
+    rankPreference,
+    ...locationParam,
+  };
+  if (minRating > 0)           body.minRating    = minRating;
+  // priceLevels: API-native filter — returns ONLY places matching these levels
+  if (priceLevels?.length)     body.priceLevels  = priceLevels;
+  // openNow: API-native filter — returns ONLY currently open places
+  if (openNow === true)        body.openNow      = true;
+  // includedType: API-native filter — returns ONLY places of this type
+  if (includedType)            body.includedType = includedType;
 
   const r = await fetch('https://places.googleapis.com/v1/places:searchText', {
     method: 'POST',
@@ -182,14 +201,7 @@ async function fetchPlaces(
       'X-Goog-Api-Key':   PLACES_KEY,
       'X-Goog-FieldMask': withPhotos ? FIELD_MASK_WITH_PHOTOS : FIELD_MASK,
     },
-    body: JSON.stringify({
-      textQuery:      prefix + query,
-      maxResultCount: 20,
-      languageCode:   'en',
-      rankPreference,
-      ...(minRating > 0 ? { minRating } : {}),
-      ...locationParam,
-    }),
+    body: JSON.stringify(body),
   });
   if (!r.ok) {
     const errBody = await r.text();
@@ -283,20 +295,22 @@ function buildFoodQuery(filters: UserFilters): string {
   return `${mealPfx}${pricePfx}${dietPfx}${baseTerm} ${locationSuffix}`.replace(/\s+/g, ' ').trim();
 }
 
-// Hotel price range buckets — keyed by Places API enum for direct field matching
+// Hotel price range buckets — NON-OVERLAPPING tiers for strict Places API priceLevels param.
+// Each tier maps to exactly the levels that hotel should be returned for.
+// Overlap was the root cause of hotels appearing across multiple budget tiers.
 const PRICE_BUCKETS: Record<string, string[]> = {
-  // Direct Places API enum keys (new UI values)
-  'PRICE_LEVEL_INEXPENSIVE': ['PRICE_LEVEL_FREE', 'PRICE_LEVEL_INEXPENSIVE'],
-  'PRICE_LEVEL_MODERATE':    ['PRICE_LEVEL_INEXPENSIVE', 'PRICE_LEVEL_MODERATE'],
+  // Direct Places API enum keys (current UI values) — strict, non-overlapping
+  'PRICE_LEVEL_INEXPENSIVE': ['PRICE_LEVEL_INEXPENSIVE'],
+  'PRICE_LEVEL_MODERATE':    ['PRICE_LEVEL_MODERATE'],
   'PRICE_LEVEL_EXPENSIVE':   ['PRICE_LEVEL_EXPENSIVE', 'PRICE_LEVEL_VERY_EXPENSIVE'],
-  // Legacy INR-range labels kept for cached/old requests
-  '₹1K-5K':   ['PRICE_LEVEL_FREE', 'PRICE_LEVEL_INEXPENSIVE'],
-  '₹5K-10K':  ['PRICE_LEVEL_INEXPENSIVE', 'PRICE_LEVEL_MODERATE'],
-  '₹15K+':    ['PRICE_LEVEL_EXPENSIVE', 'PRICE_LEVEL_VERY_EXPENSIVE'],
-  '₹':    ['PRICE_LEVEL_FREE', 'PRICE_LEVEL_INEXPENSIVE'],
-  '₹₹':   ['PRICE_LEVEL_INEXPENSIVE', 'PRICE_LEVEL_MODERATE'],
-  '₹₹₹':  ['PRICE_LEVEL_MODERATE', 'PRICE_LEVEL_EXPENSIVE'],
-  '₹₹₹₹': ['PRICE_LEVEL_EXPENSIVE', 'PRICE_LEVEL_VERY_EXPENSIVE'],
+  // Legacy INR-range labels (backward compat)
+  '₹1K-5K':  ['PRICE_LEVEL_INEXPENSIVE'],
+  '₹5K-10K': ['PRICE_LEVEL_MODERATE'],
+  '₹15K+':   ['PRICE_LEVEL_EXPENSIVE', 'PRICE_LEVEL_VERY_EXPENSIVE'],
+  '₹':    ['PRICE_LEVEL_INEXPENSIVE'],
+  '₹₹':   ['PRICE_LEVEL_MODERATE'],
+  '₹₹₹':  ['PRICE_LEVEL_EXPENSIVE'],
+  '₹₹₹₹': ['PRICE_LEVEL_VERY_EXPENSIVE'],
 };
 
 // Food cost tier — keyword frequency analysis across all reviews
@@ -311,33 +325,6 @@ const FOOD_COST_KEYWORDS: Record<string, string[]> = {
   '₹300–600':   ['pricey', 'a bit expensive', 'costly', 'slightly expensive', 'on the expensive', 'not cheap', 'expensive but', 'premium price', '300 rupees', '400 rupees', '500 rupees'],
   '₹600+':      ['fine dining', 'luxury', 'very expensive', 'high-end', 'splurge', 'lavish', 'top-end', 'extravagant', 'premium dining', '600 rupees', '700 rupees', '800 rupees', 'expensive restaurant'],
 };
-
-// Hotel review keywords → price tier inference (used when Places API returns no priceLevel)
-const HOTEL_PRICE_REVIEW: Record<string, string[]> = {
-  'PRICE_LEVEL_INEXPENSIVE': ['budget', 'cheap', 'affordable', 'value for money', 'economical', 'low cost', 'pocket friendly', 'inexpensive', 'pocket-friendly', 'low-budget'],
-  'PRICE_LEVEL_MODERATE':    ['mid-range', 'reasonable', 'moderate price', 'decent price', 'worth the price', 'good value', 'fair price', 'not too expensive'],
-  'PRICE_LEVEL_EXPENSIVE':   ['luxury', 'premium', 'expensive', 'high-end', 'lavish', 'splurge', 'five star', '5 star', 'pricey'],
-  // Legacy INR label aliases
-  '₹1K-5K':   ['budget', 'cheap', 'affordable', 'value for money', 'economical', 'low cost', 'pocket friendly'],
-  '₹5K-10K':  ['mid-range', 'reasonable', 'moderate price', 'decent price', 'worth the price'],
-  '₹15K+':    ['luxury', 'premium', 'expensive', 'high-end', 'lavish', 'five star'],
-};
-
-function inferHotelPriceTier(reviews: any[], selectedFilter: string): number {
-  const text = reviews.map((r: any) => (r.text?.text ?? '').toLowerCase()).join(' ');
-  const targetKws = HOTEL_PRICE_REVIEW[selectedFilter] ?? [];
-  const targetHits = targetKws.filter(k => text.includes(k)).length;
-
-  // Check if reviews suggest a DIFFERENT tier (penalise conflicting signal)
-  const otherHits = Object.entries(HOTEL_PRICE_REVIEW)
-    .filter(([tier]) => tier !== selectedFilter && !tier.startsWith('₹'))
-    .flatMap(([, kws]) => kws)
-    .filter(k => text.includes(k)).length;
-
-  if (targetHits > 0) return Math.min(0.45 + targetHits * 0.15, 0.9); // evidence for this tier
-  if (otherHits > 0)  return 0.15;  // evidence against this tier
-  return 0.3;                        // no price signal — neutral but below threshold
-}
 
 // Google Places price level → food cost tier mapping (used as fallback when keyword score is 0)
 const FOOD_PRICE_LEVEL_MAP: Record<string, string[]> = {
@@ -386,34 +373,22 @@ function scorePlaceForFilters(place: any, tab: string, f: UserFilters): PlaceSco
   type Crit = { score: number; weight: number; hard?: boolean };
   const C: Record<string, Crit> = {};
 
-  // ── Open Now ─────────────────────────────────────────────────────────────
-  if (f.openNow) {
-    const isOpen = place.regularOpeningHours?.openNow ?? place.currentOpeningHours?.openNow;
-    C.openNow = { score: isOpen === false ? 0 : 1, weight: 3, hard: isOpen === false };
-  }
+  // openNow and hotel price are now enforced at the Places API level —
+  // no need to score them here. Only soft ranking signals below.
 
   if (tab === 'Food') {
-    // ── Diet ─────────────────────────────────────────────────────────────────
-    if (f.dietType === 'Veg') {
-      const flagVeg   = place.servesVegetarianFood;
-      const typeVeg   = (place.types ?? []).includes('vegetarian_restaurant');
-      const vegHits   = ['vegetarian', 'pure veg', 'veg only', 'no meat'].filter(k => allText.includes(k)).length;
-      const isVeg     = flagVeg === true || typeVeg;
-      const score     = isVeg ? 1 : flagVeg === false ? 0 : Math.min(0.4 + vegHits * 0.2, 0.8);
-      C.diet = { score, weight: 3, hard: flagVeg === false && !typeVeg };
-
-    } else if (f.dietType === 'Non-Veg') {
+    // ── Diet signal (for Gemini ranking context only — strict exclusion is in applyStrictFilter)
+    if (f.dietType === 'Non-Veg') {
       const nvRev  = NON_VEG_KEYWORDS.filter(kw => revText.includes(kw)).length;
       const nvName = NON_VEG_KEYWORDS.some(kw => nameText.includes(kw)) ? 4 : 0;
       const hits   = nvRev + nvName;
-      C.diet = { score: hits > 0 ? Math.min(hits / 5, 1) : 0, weight: 3, hard: hits === 0 };
-
-    } else if (f.dietType === 'Pure Veg') {
-      const flagVeg = place.servesVegetarianFood;
+      C.diet = { score: Math.min(hits / 5, 1), weight: 3 };
+    } else if (f.dietType === 'Veg' || f.dietType === 'Pure Veg') {
+      // API already filtered via includedType; score as signal for ranking richness
       const typeVeg = (place.types ?? []).includes('vegetarian_restaurant');
+      const flagVeg = place.servesVegetarianFood;
       const nvHits  = NON_VEG_KEYWORDS.filter(kw => revText.includes(kw)).length;
-      const fail    = (flagVeg === false && !typeVeg) || nvHits >= 3;
-      C.diet = { score: fail ? 0 : 1, weight: 3, hard: fail };
+      C.diet = { score: (typeVeg || flagVeg === true) ? 1 : nvHits >= 2 ? 0.1 : 0.6, weight: 2 };
     }
 
     // ── Meal Time ─────────────────────────────────────────────────────────────
@@ -448,22 +423,7 @@ function scorePlaceForFilters(place: any, tab: string, f: UserFilters): PlaceSco
   }
 
   if (tab === 'Hotels') {
-    // ── Budget / Price ────────────────────────────────────────────────────────
-    if (f.priceFilter && f.priceFilter !== 'Any') {
-      const allowed = PRICE_BUCKETS[f.priceFilter] ?? [];
-      const lvl     = place.priceLevel ?? '';
-      if (lvl && allowed.includes(lvl)) {
-        // Places API confirms this tier → definitive match
-        C.price = { score: 1, weight: 2 };
-      } else if (lvl && !allowed.includes(lvl)) {
-        // Places API confirms a DIFFERENT tier → hard exclude
-        C.price = { score: 0, weight: 2, hard: true };
-      } else {
-        // No priceLevel in Places API — infer from review keywords
-        const inferred = inferHotelPriceTier(place.reviews ?? [], f.priceFilter);
-        C.price = { score: inferred, weight: 2 };
-      }
-    }
+    // Price is enforced at API level via priceLevels param — no scoring needed here.
 
     // ── Area Proximity ────────────────────────────────────────────────────────
     if (f.hotelArea) {
@@ -495,13 +455,45 @@ function scorePlaceForFilters(place: any, tab: string, f: UserFilters): PlaceSco
 
 function applyFilterScoring(places: any[], tab: string, f: UserFilters): Array<{ place: any; filterScore: PlaceScore }> {
   const scored = places.map(p => ({ place: p, filterScore: scorePlaceForFilters(p, tab, f) }));
-
-  // Remove hard-failures only when enough clean results exist
-  const passed = scored.filter(s => !s.filterScore.hardFail);
-  const pool   = passed.length >= 3 ? passed : scored;
-
   // Sort by filter match score: Gemini receives best-matching candidates first
-  return pool.sort((a, b) => b.filterScore.total - a.filterScore.total);
+  return scored.sort((a, b) => b.filterScore.total - a.filterScore.total);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STRICT BINARY POST-FILTER
+// Runs AFTER API-level filters. For filters not handled by Places API, apply
+// a hard binary test: if the place cannot be confirmed to match → remove it.
+// Only Non-Veg uses this path (Veg/PureVeg handled by includedType at API level;
+// price/openNow handled by priceLevels/openNow at API level).
+// ─────────────────────────────────────────────────────────────────────────────
+function applyStrictFilter(places: any[], tab: string, f: UserFilters): any[] {
+  if (tab !== 'Food') return places;
+
+  // Non-Veg strict filter: exclude any place with ZERO non-veg evidence.
+  // Evidence = non-veg keyword in name OR reviews. If doubt → out.
+  if (f.dietType === 'Non-Veg') {
+    const confirmed = places.filter(p => {
+      const name    = (p.displayName?.text ?? '').toLowerCase();
+      const reviews = (p.reviews ?? []).map((r: any) => (r.text?.text ?? '').toLowerCase()).join(' ');
+      const combined = `${name} ${reviews}`;
+      return NON_VEG_KEYWORDS.some(kw => combined.includes(kw));
+    });
+    // Only enforce if we have enough confirmed results — otherwise return all
+    return confirmed.length >= 3 ? confirmed : places;
+  }
+
+  // Pure Veg strict filter: exclude places with 2+ non-veg keyword hits in reviews.
+  // (includedType already filtered most; this catches edge cases that slipped through)
+  if (f.dietType === 'Pure Veg') {
+    const confirmed = places.filter(p => {
+      const reviews = (p.reviews ?? []).map((r: any) => (r.text?.text ?? '').toLowerCase()).join(' ');
+      const nvHits  = NON_VEG_KEYWORDS.filter(kw => reviews.includes(kw)).length;
+      return nvHits < 2;
+    });
+    return confirmed.length >= 3 ? confirmed : places;
+  }
+
+  return places;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1046,7 +1038,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const timeSlot     = (req.body?.timeSlot ?? 'Morning') as string;
 
     try {
-      const places = await fetchPlaces(`${locationName} Thanjavur Tamil Nadu`, 0, false, 50, false);
+      const places = await fetchPlaces(`${locationName} Thanjavur Tamil Nadu`, 0, 50);
       const place  = places[0] ?? {};
       const guide  = await geminiExploreGuide(place, locationName, timeSlot);
 
@@ -1089,7 +1081,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const searchSeed = parseInt((req.body?.searchSeed ?? '0') as string, 10);
 
     try {
-      const rawPlaces = await fetchPlaces(QUERIES.Itinerary, searchSeed, false, 35, false);
+      const rawPlaces = await fetchPlaces(QUERIES.Itinerary, searchSeed, 35);
       const stops     = await geminiItinerary(rawPlaces, startTime, stopCount);
 
       if (stops.length === 0) {
@@ -1122,17 +1114,56 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Build query from filters — changes the Places search so different filters → different results
   const query = tab === 'Food' ? buildFoodQuery(filters) : buildHotelQuery(filters);
 
-  // Pass minRating directly to Places API so Google pre-filters — stricter than post-filter
   const apiMinRating = (filters.minRating ?? 0) > 0 ? (filters.minRating ?? 0) : 0;
 
-  try {
-    // 15km radius around Thanjavur centre; minRating applied at Places API level
-    const rawPlaces     = await fetchPlaces(query, searchSeed, true, 15, true, apiMinRating);
-    // Secondary guard: drop any result whose address doesn't mention Thanjavur/Tanjore
-    const localPlaces   = filterThanjavurOnly(rawPlaces);
+  // ── API-level filter params — Google enforces these before returning results ──────────────
+  // Hotel price: pass priceLevels directly; Places API returns ONLY matching hotels.
+  // PRICE_LEVEL_FREE cannot be used in priceLevels param — omit it.
+  const apiPriceLevels = (tab === 'Hotels' && filters.priceFilter && filters.priceFilter !== 'Any')
+    ? (PRICE_BUCKETS[filters.priceFilter] ?? []).filter(p => p !== 'PRICE_LEVEL_FREE')
+    : [];
 
-    // Score every place against every active filter — produces ranked, hard-fail-excluded list
-    const filterScored = applyFilterScoring(localPlaces, tab, filters);
+  // Open Now: pass to API so only open places are returned.
+  const apiOpenNow = filters.openNow === true;
+
+  // Veg / Pure Veg: use includedType to restrict to vegetarian_restaurant.
+  // Fallback to broader search when this returns < 3 (Thanjavur has limited type-tagged data).
+  const apiIncludedType = (tab === 'Food' && (filters.dietType === 'Veg' || filters.dietType === 'Pure Veg'))
+    ? 'vegetarian_restaurant'
+    : undefined;
+
+  try {
+    // Primary fetch with all API-level filters active
+    let rawPlaces = await fetchPlaces(query, searchSeed, 15, {
+      withPhotos:   true,
+      minRating:    apiMinRating,
+      priceLevels:  apiPriceLevels.length ? apiPriceLevels : undefined,
+      openNow:      apiOpenNow || undefined,
+      includedType: apiIncludedType,
+    });
+
+    // Fallback: if includedType restricted the results too aggressively, retry without it
+    // and rely on post-fetch strict diet filter instead
+    if (apiIncludedType && rawPlaces.length < 4) {
+      const fallback = await fetchPlaces(query, searchSeed, 15, {
+        withPhotos:  true,
+        minRating:   apiMinRating,
+        priceLevels: apiPriceLevels.length ? apiPriceLevels : undefined,
+        openNow:     apiOpenNow || undefined,
+      });
+      if (fallback.length > rawPlaces.length) rawPlaces = fallback;
+    }
+
+    // Secondary guard: drop any result whose address doesn't mention Thanjavur/Tanjore
+    const localPlaces = filterThanjavurOnly(rawPlaces);
+
+    // ── Post-fetch strict binary filter ─────────────────────────────────────────────────────
+    // Rule: if we cannot confirm the place matches the active filter → remove it.
+    // Only applied to filters NOT already enforced at API level.
+    const hardFiltered = applyStrictFilter(localPlaces, tab, filters);
+
+    // Score remaining places for Gemini ranking priority (soft signals only — no exclusion)
+    const filterScored = applyFilterScoring(hardFiltered, tab, filters);
 
     // Quality floor — drop very-low-signal places; relax if pool would be too small
     const qualified    = filterScored.filter(({ place }) => (place.rating ?? 0) >= 3.8 && (place.userRatingCount ?? 0) >= 10);
