@@ -63,8 +63,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             radius: 15000,
           },
         },
-        // Prefer address/region types over global POIs
-        includedPrimaryTypes: ['geocode', 'street_address', 'sublocality', 'neighborhood', 'route', 'establishment'],
         languageCode: 'en',
         regionCode:   'IN',
       }),
