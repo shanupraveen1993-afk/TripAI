@@ -4,7 +4,7 @@ import {
   Search, ChevronDown, ChevronRight, Sparkles, MapPin, Navigation, X,
   Hotel, Utensils, Route, Compass, Flame, Clock,
 } from 'lucide-react';
-import { fetchCityTags } from '../api/client';
+import { fetchCityTags, fetchAutocomplete, AutocompleteSuggestion } from '../api/client';
 import { Tab } from './ui/Tabs';
 
 const isThanjavur = (dest: string) =>
@@ -434,6 +434,8 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
   const [hotelTag, setHotelTag]             = useState('');
   const [hotelArea, setHotelArea]           = useState('');
   const [areaFocused, setAreaFocused]       = useState(false);
+  const [areaSuggestions, setAreaSuggestions] = useState<AutocompleteSuggestion[]>([]);
+  const areaDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [persona, setPersona]               = useState('');
   const [openNow, setOpenNow]               = useState(false);
   // Food
@@ -621,22 +623,58 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               <input
                 type="text"
                 value={hotelArea}
-                onChange={e => setHotelArea(e.target.value)}
+                onChange={e => {
+                  const val = e.target.value;
+                  setHotelArea(val);
+                  // Debounce autocomplete — 300ms after user stops typing
+                  if (areaDebounceRef.current) clearTimeout(areaDebounceRef.current);
+                  if (val.trim().length >= 2) {
+                    areaDebounceRef.current = setTimeout(() => {
+                      fetchAutocomplete(val, destination || 'Thanjavur')
+                        .then(setAreaSuggestions);
+                    }, 300);
+                  } else {
+                    setAreaSuggestions([]);
+                  }
+                }}
                 onFocus={() => setAreaFocused(true)}
-                onBlur={() => setTimeout(() => setAreaFocused(false), 150)}
-                placeholder="e.g. Medical College, Big Temple area…"
+                onBlur={() => setTimeout(() => { setAreaFocused(false); }, 200)}
+                placeholder="e.g. Big Temple area, Medical College…"
                 className="w-full pl-9 pr-8 py-2 border border-border rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-brand-soft focus:border-brand transition-colors"
               />
               {hotelArea && (
-                <button type="button" onClick={() => setHotelArea('')}
+                <button type="button" onClick={() => { setHotelArea(''); setAreaSuggestions([]); }}
                   className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted hover:text-heading"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
               )}
+              {/* Autocomplete dropdown — city-restricted via locationRestriction */}
+              {areaFocused && areaSuggestions.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-border rounded-xl shadow-lg z-50 overflow-hidden">
+                  {areaSuggestions.map((s, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onMouseDown={() => {
+                        setHotelArea(s.main || s.full);
+                        setAreaSuggestions([]);
+                        setAreaFocused(false);
+                      }}
+                      className="w-full text-left flex items-start gap-2 px-3 py-2 hover:bg-blue-50 transition-colors border-b border-gray-50 last:border-0"
+                    >
+                      <MapPin className="w-3 h-3 text-brand shrink-0 mt-0.5" />
+                      <div className="min-w-0">
+                        <p className="text-[11px] font-semibold text-heading truncate">{s.main || s.full}</p>
+                        {s.secondary && <p className="text-[10px] text-muted truncate">{s.secondary}</p>}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
             {!hotelArea && (
-              <p className="text-[9px] text-muted mt-1">Type any area — search radius adjusts automatically</p>
+              <p className="text-[9px] text-muted mt-1">Type any local area — only {destination || 'Thanjavur'} results shown</p>
             )}
           </div>
 

@@ -61,28 +61,28 @@ export interface ExploreGuide {
 }
 
 interface PlanFilters {
-  hotelTags?:    string[];
-  hotelArea?:    string;
-  persona?:      string;   // 'Solo' | 'Couple' | 'Family' | 'Business' | ''
-  foodTags?:     string[];
-  foodLocation?: string;   // area within Thanjavur e.g. "New Bus Stand"
-  priceFilter?:  string;   // 'Any' | INR range
-  minRating?:    number;   // 0 = any
-  openNow?:      boolean;
-  dietType?:     string;   // 'Any' | 'Veg' | 'Non-Veg' | 'Pure Veg'
-  dineMode?:     string;   // 'Any' | 'Dine-in' | 'Takeout'
-  mealTime?:     string;   // 'Any' | 'Breakfast' | 'Lunch' | 'Dinner'
+  city?:        string;   // city name — used in Places API queries + locationBias
+  hotelTag?:    string;   // single hotel tag (Heritage, Business, etc.)
+  hotelArea?:   string;   // free-text area within city
+  persona?:     string;   // 'Solo' | 'Couple' | 'Family' | 'Business' | ''
+  foodTag?:     string;   // single cuisine/type tag
+  priceFilter?: string;   // 'Any' | PRICE_LEVEL_* enum
+  minRating?:   number;   // 0 = any
+  openNow?:     boolean;
+  dietType?:    string;   // 'Any' | 'Veg' | 'Non-Veg' | 'Pure Veg'
+  dineMode?:    string;   // 'Any' | 'Dine-in' | 'Takeout'
+  mealTime?:    string;   // 'Any' | 'Breakfast' | 'Lunch' | 'Dinner'
 }
 
 export interface PlanResponse {
   results: PlanResult[];   // AI-selected best 5–10, ranked by Gemini
 }
 
-export async function fetchPlan(tab: string, seed = 0, filters: PlanFilters = {}): Promise<PlanResponse> {
+export async function fetchPlan(tab: string, seed = 0, filters: PlanFilters = {}, city = 'Thanjavur'): Promise<PlanResponse> {
   const r = await fetch('/api/plan', {
     method:  'POST',
     headers: { 'Content-Type': 'application/json' },
-    body:    JSON.stringify({ tab, searchSeed: seed, ...filters }),
+    body:    JSON.stringify({ tab, searchSeed: seed, city: filters.city ?? city, ...filters }),
   });
   if (!r.ok) throw new Error(`API error ${r.status}`);
   const data = await r.json() as PlanResponse;
@@ -128,6 +128,28 @@ export async function fetchCityTags(
     if (!r.ok) return [];
     const data = await r.json() as { tags: Array<{ tag: string; count: number }> };
     return (data.tags ?? []).map(t => t.tag);
+  } catch {
+    return [];
+  }
+}
+
+export interface AutocompleteSuggestion {
+  main:      string;
+  secondary: string;
+  full:      string;
+}
+
+export async function fetchAutocomplete(input: string, city: string): Promise<AutocompleteSuggestion[]> {
+  if (!input || input.trim().length < 2) return [];
+  try {
+    const r = await fetch('/api/autocomplete', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ input: input.trim(), city }),
+    });
+    if (!r.ok) return [];
+    const data = await r.json() as { suggestions: AutocompleteSuggestion[] };
+    return data.suggestions ?? [];
   } catch {
     return [];
   }
