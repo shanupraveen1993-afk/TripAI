@@ -297,6 +297,17 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             </p>
           </div>
 
+          {/* Verified by AI badge — shown only when filterVerification is present */}
+          {place.filterVerification && (
+            <div className="px-3 pb-2.5">
+              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold"
+                style={{ background: '#F0FDF4', color: '#166534', border: '1px solid #BBF7D0' }}>
+                <CheckCircle className="w-3 h-3 shrink-0" />
+                {place.filterVerification}
+              </span>
+            </div>
+          )}
+
           {/* Matched filter chips */}
           {(() => {
             const matched = selectedTags.filter(t =>

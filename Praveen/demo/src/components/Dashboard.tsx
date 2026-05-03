@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  Search, Info, ChevronDown, ChevronRight, Sparkles, MapPin, Navigation, X,
-  Hotel, Utensils, Route, Compass, Flame, Zap, Clock, Star,
+  Search, ChevronDown, ChevronRight, Sparkles, MapPin, Navigation, X,
+  Hotel, Utensils, Route, Compass, Flame, Clock,
 } from 'lucide-react';
-import { fetchCityTags } from '../api/client';
 import { Tab } from './ui/Tabs';
 
 const isThanjavur = (dest: string) =>
@@ -13,20 +12,8 @@ const isThanjavur = (dest: string) =>
 const uImg = (id: string, w = 320, h = 200) =>
   `https://images.unsplash.com/photo-${id}?w=${w}&h=${h}&fit=crop&auto=format&q=80`;
 
-type DietType      = 'Any' | 'Veg' | 'Non-Veg' | 'Pure Veg';
-type DineMode      = 'Any' | 'Dine-in' | 'Takeout';
-type MealTime      = 'Any' | 'Breakfast' | 'Lunch' | 'Dinner';
-type MinRating     = 'Any' | '3.5+' | '4.0+' | '4.5+';
-// Hotel price ranges (actual INR per night) and food cost tiers (review-derived INR per person)
-const HOTEL_PRICE_OPTIONS = ['Any', '₹1K-5K', '₹5K-10K', '₹15K+'] as const;
-const FOOD_COST_OPTIONS   = ['Any', 'Under ₹100', '₹100–300', '₹300–600', '₹600+'] as const;
-const FOOD_COST_LABELS: Record<string, string> = {
-  'Any': 'Any', 'Under ₹100': '<₹100', '₹100–300': '₹100-300', '₹300–600': '₹300-600', '₹600+': '₹600+',
-};
-const MEAL_TIME_OPTIONS = ['Any', 'Breakfast', 'Lunch', 'Dinner'] as const;
-const MEAL_TIME_ICONS: Record<string, string> = {
-  'Any': '🍽️', 'Breakfast': '🌅', 'Lunch': '☀️', 'Dinner': '🌙',
-};
+type DietType = 'Any' | 'Veg' | 'Non-Veg' | 'Pure Veg';
+type MealTime = 'Any' | 'Breakfast' | 'Lunch' | 'Dinner';
 
 /* ── Tab metadata ─────────────────────────────────────────────────────── */
 const TAB_META: Record<Tab, {
@@ -125,6 +112,21 @@ const HOTEL_TAGS = [
 const FOOD_TAGS = [
   'Banana Leaf', 'Thali', 'Filter Coffee', 'South Indian', 'Biryani',
   'Tiffin', 'Street Food', 'Sweets', 'Authentic', 'Affordable',
+];
+
+/* ── Thanjavur hotel area suggestions (used in free-text area input) ── */
+const HOTEL_AREA_SUGGESTIONS = [
+  'Big Temple area',
+  'Railway Station area',
+  'New Bus Stand area',
+  'City Centre',
+  'Medical College area',
+  'Gandhiji Road',
+  'Hospital Road',
+  'Poondi Road',
+  'Kumbakonam Road',
+  'Abraham Pandithar Road',
+  'East Main Street',
 ];
 
 /* ── Quick presets — image cards ────────────────────────────────────── */
@@ -305,38 +307,6 @@ const TRENDING_OVERRIDES: Record<string, QuickOverride> = {
   'Full day heritage':           { tab: 'Itinerary' },
 };
 
-/* ── Tooltip ─────────────────────────────────────────────────────────── */
-function Tooltip({ text }: { text: string }) {
-  const [show, setShow] = useState(false);
-  return (
-    <span className="relative inline-flex items-center">
-      <button
-        type="button"
-        onMouseEnter={() => setShow(true)}
-        onMouseLeave={() => setShow(false)}
-        onFocus={() => setShow(true)}
-        onBlur={() => setShow(false)}
-        className="text-muted hover:text-brand transition-colors"
-      >
-        <Info className="w-3.5 h-3.5" />
-      </button>
-      <AnimatePresence>
-        {show && (
-          <motion.div
-            initial={{ opacity: 0, y: 4, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 4, scale: 0.95 }}
-            className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 bg-dark text-white text-xs rounded-xl p-3 shadow-xl z-50 leading-relaxed"
-          >
-            {text}
-            <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-dark" />
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </span>
-  );
-}
-
 /* ── Location bar ────────────────────────────────────────────────────── */
 function LocationBar({ value, onChange, placeholder, autoDetect, mockResolvedLocation = 'Thanjavur' }: {
   value: string;
@@ -406,56 +376,6 @@ function LocationBar({ value, onChange, placeholder, autoDetect, mockResolvedLoc
   );
 }
 
-/* ── Tab-style segmented selector ───────────────────────────────────── */
-function ToggleGroup<T extends string>({ options, value, onChange, accent, renderLabel }: {
-  options: readonly T[];
-  value: T;
-  onChange: (v: T) => void;
-  accent: string;
-  renderLabel?: (o: T) => React.ReactNode;
-}) {
-  return (
-    <div
-      className="flex p-0.5 rounded-xl gap-0.5"
-      style={{ background: '#F3F4F6' }}
-    >
-      {options.map(o => (
-        <button
-          key={o}
-          type="button"
-          onClick={() => onChange(o)}
-          className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-[10px] text-[10px] font-bold transition-all duration-150"
-          style={value === o
-            ? { background: '#fff', color: accent, boxShadow: '0 1px 3px rgba(0,0,0,0.12)', fontWeight: 800 }
-            : { background: 'transparent', color: '#9CA3AF' }
-          }
-        >
-          {renderLabel ? renderLabel(o) : o}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-/* ── Tag chip grid ───────────────────────────────────────────────────── */
-function TagGrid({ tags, selected, onToggle, accent }: {
-  tags: string[]; selected: string[]; onToggle: (t: string) => void; accent: string;
-}) {
-  return (
-    <div className="flex flex-wrap gap-1.5">
-      {tags.map(tag => (
-        <button key={tag} type="button" onClick={() => onToggle(tag)}
-          className="px-3 py-1.5 rounded-full text-[10px] font-semibold border transition-all"
-          style={selected.includes(tag)
-            ? { background: accent, borderColor: accent, color: '#fff' }
-            : { background: '#fff', borderColor: '#E5E7EB', color: '#6B7280' }
-          }
-        >{tag}</button>
-      ))}
-    </div>
-  );
-}
-
 /* ── Category selector — sleek horizontal pill bar ──────────────────── */
 function CategorySelector({ active, onChange }: { active: Tab; onChange: (t: Tab) => void }) {
   return (
@@ -498,20 +418,20 @@ function CategorySelector({ active, onChange }: { active: Tab; onChange: (t: Tab
 export interface DashboardFilters {
   tab: Tab;
   destination: string;
-  // Trip metadata (saved in history — not used as search constraints)
   startDate: string;
   endDate: string;
   numPeople: number;
   budget: number;
-  // Hotel filters
-  hotelTags: string[];
+  // Hotel
+  hotelTags: string[];   // derived from persona for API compat
   hotelArea: string;
-  priceFilter: string;   // 'Any' | '₹' | '₹₹' | '₹₹₹'
-  minRating: string;     // 'Any' | '4.0+' | '4.5+'
-  openNow: boolean;      // hard-filtered via openNow boolean
-  // Food filters
+  priceFilter: string;
+  minRating: string;
+  openNow: boolean;
+  persona: string;       // Solo | Couple | Family | Business | ''
+  // Food
   foodLocation: string;
-  foodTags: string[];
+  foodTags: string[];    // single craving selection
   dietType: DietType;
   dineMode: string;
   mealTime: MealTime;
@@ -534,67 +454,31 @@ interface DashboardProps {
 }
 
 export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loading, recentSearches = [], onDestinationSelect }: DashboardProps) {
-  const [activeTab, setActiveTab]       = useState<Tab>(initialTab);
-  const [hotelTags, setHotelTags]       = useState<string[]>([]);
-  const [priceFilter, setPriceFilter]   = useState('Any');
-  const [minRating, setMinRating]       = useState<MinRating>('Any');
-  const [openNow, setOpenNow]           = useState(false);
-  const [foodTags, setFoodTags]         = useState<string[]>([]);
-  const [foodLocation, setFoodLocation] = useState('');
-  const [dietType, setDietType]         = useState<DietType>('Any');
-  const [mealTime, setMealTime]         = useState<MealTime>('Any');
-  const [itinDate, setItinDate]         = useState<string>('today');
-  const [startPoint, setStartPoint]     = useState('');
-  const [startTime, setStartTime]       = useState<string>('');
-  const [showTimeError, setShowTimeError] = useState(false);
-  const [exploreTarget, setExploreTarget] = useState('');
-  const [visitTime, setVisitTime]       = useState('Morning');
+  const [activeTab, setActiveTab]           = useState<Tab>(initialTab);
+  // Hotels
+  const [priceFilter, setPriceFilter]       = useState('Any');
+  const [hotelArea, setHotelArea]           = useState('');
+  const [areaFocused, setAreaFocused]       = useState(false);
+  const [persona, setPersona]               = useState('');
+  const [openNow, setOpenNow]               = useState(false);
+  // Food
+  const [craving, setCraving]               = useState('');
+  const [dietType, setDietType]             = useState<DietType>('Any');
+  const [mealTime, setMealTime]             = useState<MealTime>('Any');
+  // Itinerary
+  const [itinDate, setItinDate]             = useState<string>('today');
+  const [startPoint, setStartPoint]         = useState('');
+  const [startTime, setStartTime]           = useState<string>('');
+  const [showTimeError, setShowTimeError]   = useState(false);
+  // Explore
+  const [exploreTarget, setExploreTarget]   = useState('');
+  const [visitTime, setVisitTime]           = useState('Morning');
+
   const [categorySticky, setCategorySticky] = useState(true);
   const ctaSentinelRef = useRef<HTMLDivElement>(null);
 
-  // Dynamic tags — updated when city changes
-  const [dynamicHotelTags, setDynamicHotelTags] = useState<string[]>(HOTEL_TAGS);
-  const [dynamicFoodTags,  setDynamicFoodTags]  = useState<string[]>(FOOD_TAGS);
-  const [tagsLoading, setTagsLoading]           = useState(false);
-  const tagsCache = useRef<Record<string, { hotel: string[]; food: string[] }>>({});
-  const tagsDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const loadTagsForCity = useCallback(async (city: string) => {
-    const key = city.trim().toLowerCase();
-    if (!key || key.length < 2) return;
-
-    // Serve from cache instantly
-    if (tagsCache.current[key]) {
-      setDynamicHotelTags(tagsCache.current[key].hotel);
-      setDynamicFoodTags(tagsCache.current[key].food);
-      return;
-    }
-
-    setTagsLoading(true);
-    // Fetch both tabs in parallel
-    const [hotel, food] = await Promise.all([
-      fetchCityTags(city, 'Hotels'),
-      fetchCityTags(city, 'Food'),
-    ]);
-
-    const resolved = {
-      hotel: (hotel.length >= 4 ? hotel : HOTEL_TAGS).slice(0, 10),
-      food:  (food.length  >= 4 ? food  : FOOD_TAGS).slice(0, 10),
-    };
-    tagsCache.current[key] = resolved;
-    setDynamicHotelTags(resolved.hotel);
-    setDynamicFoodTags(resolved.food);
-    setTagsLoading(false);
-  }, []);
-
-  // Debounce tag fetch; clear selected tags immediately on city change
-  useEffect(() => {
-    setHotelTags([]);
-    setFoodTags([]);
-    if (tagsDebounce.current) clearTimeout(tagsDebounce.current);
-    tagsDebounce.current = setTimeout(() => loadTagsForCity(destination), 800);
-    return () => { if (tagsDebounce.current) clearTimeout(tagsDebounce.current); };
-  }, [destination, loadTagsForCity]);
+  // Reset per-tab selections when switching tabs
+  useEffect(() => { setPriceFilter('Any'); }, [activeTab]);
 
   useEffect(() => { setActiveTab(initialTab); }, [initialTab]);
 
@@ -616,8 +500,13 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
     return () => observer.disconnect();
   }, []);
 
-  const toggleHotelTag = (t: string) => setHotelTags(p => p.includes(t) ? p.filter(x => x !== t) : [...p, t]);
-  const toggleFoodTag  = (t: string) => setFoodTags(p => p.includes(t) ? p.filter(x => x !== t) : [...p, t]);
+  // Persona → derived hotel tags for API query building
+  const PERSONA_TAGS: Record<string, string[]> = {
+    Solo:     ['Budget Friendly', 'Temple Nearby'],
+    Couple:   ['Heritage', 'Quiet'],
+    Family:   ['Family', 'AC Rooms', 'Parking'],
+    Business: ['Business', 'City Centre'],
+  };
 
   const popularSpots = getSpotsForDestination(destination);
   const meta = TAB_META[activeTab];
@@ -630,18 +519,21 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       tomorrow: new Date(today.getTime() + 86400000).toISOString().split('T')[0],
       dayafter: new Date(today.getTime() + 2 * 86400000).toISOString().split('T')[0],
     };
+    const resolvedPersona = ov.tab === 'Hotels' ? persona : (ov.tab ? '' : persona);
+    const derivedHotelTags = ov.hotelTags ?? (PERSONA_TAGS[resolvedPersona] ?? []);
     return {
       tab:          ov.tab          ?? activeTab,
       destination:  ov.destination  ?? destination,
       startDate: '', endDate: '', numPeople: 2, budget: 0,
-      hotelTags:    ov.hotelTags    ?? hotelTags,
-      hotelArea:    ov.hotelArea    ?? '',
+      hotelTags:    derivedHotelTags,
+      hotelArea:    ov.hotelArea    ?? hotelArea,
       priceFilter,
-      minRating,
+      minRating:    'Any',
       openNow,
-      foodLocation,
-      foodTags:     ov.foodTags     ?? foodTags,
-      dietType:     (ov.dietType    ?? dietType) as DietType,
+      persona:      resolvedPersona,
+      foodLocation: '',
+      foodTags:     ov.foodTags ?? (craving ? [craving] : []),
+      dietType:     (ov.dietType ?? dietType) as DietType,
       dineMode:     'Any',
       mealTime,
       itinDate:     dateMap[itinDate] ?? itinDate,
@@ -671,56 +563,120 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
 
       /* ── Hotels ─────────────────────────────────────────────── */
       case 'Hotels': return (
-        <div className="space-y-3">
-          {/* Price Range — per-night INR ranges */}
+        <div className="space-y-4">
+
+          {/* Who's staying — persona picker */}
           <div>
-            <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
-              Price / Night
-              <Tooltip text="₹1K-5K = budget · ₹5K-10K = mid-range · ₹15K+ = luxury — hard-filtered before AI ranking." />
+            <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1.5">
+              Who's staying?
             </label>
-            <ToggleGroup
-              options={HOTEL_PRICE_OPTIONS}
-              value={priceFilter}
-              onChange={setPriceFilter}
-              accent="#D97706"
-            />
+            <div className="grid grid-cols-2 gap-1.5">
+              {([
+                { label: 'Solo',     sub: 'Value & proximity'  },
+                { label: 'Couple',   sub: 'Ambience & comfort' },
+                { label: 'Family',   sub: 'Space & safety'     },
+                { label: 'Business', sub: 'WiFi & central'     },
+              ] as const).map(p => (
+                <button
+                  key={p.label}
+                  type="button"
+                  onClick={() => setPersona(prev => prev === p.label ? '' : p.label)}
+                  className="flex flex-col items-start px-3 py-2 rounded-xl border-2 text-left transition-all"
+                  style={persona === p.label
+                    ? { borderColor: '#1C64F2', background: '#EBF5FF', color: '#1C64F2' }
+                    : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
+                  }
+                >
+                  <p className="text-[11px] font-black leading-tight">{p.label}</p>
+                  <p className="text-[9px] opacity-60 leading-tight">{p.sub}</p>
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* Min Rating — star label, gold accent */}
+          {/* Budget per night */}
           <div>
-            <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
-              Min Rating
-              <Tooltip text="Only shows hotels at or above this Google rating." />
+            <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1.5">
+              Budget per night
             </label>
-            <ToggleGroup
-              options={['Any', '3.5+', '4.0+', '4.5+'] as const}
-              value={minRating}
-              onChange={setMinRating}
-              accent="#D97706"
-              renderLabel={o => o === 'Any'
-                ? <span>Any</span>
-                : <><Star className="w-2.5 h-2.5 fill-current" />{o}</>
-              }
-            />
+            <div className="flex gap-1.5">
+              {([
+                { label: 'Economy',  sub: 'Budget stay',  val: 'PRICE_LEVEL_INEXPENSIVE' },
+                { label: 'Standard', sub: 'Mid-range',    val: 'PRICE_LEVEL_MODERATE'    },
+                { label: 'Premium',  sub: 'Luxury / Spa', val: 'PRICE_LEVEL_EXPENSIVE'   },
+              ] as const).map(o => (
+                <button
+                  key={o.val}
+                  type="button"
+                  onClick={() => setPriceFilter(prev => prev === o.val ? 'Any' : o.val)}
+                  className="flex-1 flex flex-col items-center py-2.5 rounded-xl border-2 transition-all"
+                  style={priceFilter === o.val
+                    ? { borderColor: '#1C64F2', background: '#EBF5FF', color: '#1C64F2' }
+                    : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
+                  }
+                >
+                  <span className="text-[11px] font-black">{o.label}</span>
+                  <span className="text-[9px] opacity-60 mt-0.5">{o.sub}</span>
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* Hotel preference tags — dynamic per city */}
+          {/* Stay area — free-text with suggestions */}
           <div>
-            <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
-              Preferences
-              <Tooltip text="Tags are drawn from real hotels in this city. 2–3 tags gives the sharpest result." />
-              {tagsLoading && <span className="ml-auto text-[9px] text-brand font-semibold animate-pulse">Updating for {destination}…</span>}
+            <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1.5">
+              Area / Locality
             </label>
-            <TagGrid tags={dynamicHotelTags} selected={hotelTags} onToggle={toggleHotelTag} accent="#1C64F2" />
+            <div className="relative">
+              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted pointer-events-none" />
+              <input
+                type="text"
+                value={hotelArea}
+                onChange={e => setHotelArea(e.target.value)}
+                onFocus={() => setAreaFocused(true)}
+                onBlur={() => setTimeout(() => setAreaFocused(false), 150)}
+                placeholder="e.g. Medical College, Big Temple area…"
+                className="w-full pl-9 pr-8 py-2 border border-border rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-brand-soft focus:border-brand transition-colors"
+              />
+              {hotelArea && (
+                <button type="button" onClick={() => setHotelArea('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted hover:text-heading"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+              {areaFocused && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-border rounded-xl shadow-lg z-50 overflow-hidden">
+                  {HOTEL_AREA_SUGGESTIONS
+                    .filter(a => !hotelArea || a.toLowerCase().includes(hotelArea.toLowerCase()))
+                    .map(area => (
+                      <button
+                        key={area}
+                        type="button"
+                        onMouseDown={() => { setHotelArea(area); setAreaFocused(false); }}
+                        className="w-full text-left flex items-center gap-2 px-3 py-2 text-[11px] text-heading hover:bg-blue-50 transition-colors border-b border-gray-50 last:border-0"
+                      >
+                        <MapPin className="w-3 h-3 text-muted shrink-0" />
+                        {area}
+                      </button>
+                    ))
+                  }
+                </div>
+              )}
+            </div>
+            {!hotelArea && (
+              <p className="text-[9px] text-muted mt-1">Type any area or pick from list — search radius adjusts automatically</p>
+            )}
           </div>
+
         </div>
       );
 
       /* ── Food ───────────────────────────────────────────────── */
       case 'Food': return (
-        <div className="space-y-3">
+        <div className="space-y-4">
 
-          {/* Open Now chip — TOP of food filters */}
+          {/* Open Now chip */}
           <div>
             <button
               type="button"
@@ -735,95 +691,87 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             </button>
           </div>
 
-          {/* Location — auto-detect demo (mocked to New Bus Stand, Thanjavur) */}
+          {/* Meal Moment — 3 pills */}
           <div>
-            <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
-              <MapPin className="w-3 h-3 text-brand" />
-              Your Area
-              <span className="text-[9px] font-normal text-muted normal-case tracking-normal">(optional)</span>
-              <Tooltip text="We detect your area to find the nearest restaurants. Mock demo: resolves to 'New Bus Stand, Thanjavur'. You can also type any area manually." />
+            <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1.5">
+              Meal Moment
             </label>
-            <LocationBar
-              value={foodLocation}
-              onChange={setFoodLocation}
-              placeholder="e.g. New Bus Stand, Big Temple area…"
-              autoDetect={true}
-              mockResolvedLocation="New Bus Stand, Thanjavur"
-            />
-            {!foodLocation && (
-              <p className="text-[9px] text-muted mt-1 flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse inline-block" />
-                Demo: tap <span className="font-bold text-brand">Near me</span> to see location auto-detect
-              </p>
-            )}
+            <div className="flex gap-1.5">
+              {([
+                { label: 'Breakfast', sub: 'Tiffin / Idli'  },
+                { label: 'Lunch',     sub: 'Thali / Meals'  },
+                { label: 'Dinner',    sub: 'Biryani / Full' },
+              ] as const).map(m => (
+                <button
+                  key={m.label}
+                  type="button"
+                  onClick={() => setMealTime(prev => prev === m.label ? 'Any' : m.label)}
+                  className="flex-1 flex flex-col items-center py-2.5 rounded-xl border-2 transition-all"
+                  style={mealTime === m.label
+                    ? { borderColor: '#D97706', background: '#FFFBEB', color: '#D97706' }
+                    : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
+                  }
+                >
+                  <span className="text-[10px] font-black">{m.label}</span>
+                  <span className="text-[9px] opacity-60 mt-0.5">{m.sub}</span>
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* Diet — 4 options including Pure Veg */}
+          {/* What I'm craving — single-select 2×3 grid */}
           <div>
-            <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
+            <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1.5">
+              What I'm craving
+            </label>
+            <div className="grid grid-cols-3 gap-1.5">
+              {([
+                'South Indian',
+                'Thali',
+                'Biryani',
+                'Filter Coffee',
+                'Street Food',
+                'Sweets',
+              ] as const).map(c => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setCraving(prev => prev === c ? '' : c)}
+                  className="flex items-center justify-center py-2.5 rounded-xl border-2 transition-all"
+                  style={craving === c
+                    ? { borderColor: '#D97706', background: '#FFFBEB', color: '#D97706' }
+                    : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
+                  }
+                >
+                  <span className="text-[9px] font-bold text-center leading-tight px-1">{c}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Diet — simplified 3-way */}
+          <div>
+            <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1.5">
               Diet
-              <span className="text-[9px] font-normal text-muted normal-case tracking-normal">(optional)</span>
-              <Tooltip text="Veg = serves vegetarian options · Pure Veg = only vegetarian food, no non-veg items at all · Non-Veg = ranked by non-veg review mentions." />
             </label>
-            <ToggleGroup
-              options={['Any', 'Veg', 'Non-Veg', 'Pure Veg'] as const}
-              value={dietType}
-              onChange={setDietType}
-              accent="#059669"
-              renderLabel={o => o === 'Pure Veg'
-                ? <span className="flex items-center gap-0.5"><span>🌿</span><span>Pure Veg</span></span>
-                : <span>{o}</span>
-              }
-            />
+            <div className="flex gap-1.5">
+              {(['Any', 'Veg', 'Non-Veg'] as const).map(d => (
+                <button
+                  key={d}
+                  type="button"
+                  onClick={() => setDietType(d as DietType)}
+                  className="flex-1 flex items-center justify-center py-2 rounded-xl border-2 transition-all"
+                  style={dietType === d
+                    ? { borderColor: '#059669', background: '#ECFDF5', color: '#059669' }
+                    : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
+                  }
+                >
+                  <span className="text-[10px] font-bold">{d}</span>
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* Meal Time */}
-          <div>
-            <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
-              Meal Time
-              <span className="text-[9px] font-normal text-muted normal-case tracking-normal">(optional)</span>
-              <Tooltip text="Breakfast = tiffin / idli-dosa spots · Lunch = thali / meals · Dinner = restaurant / biryani. Changes what Google returns." />
-            </label>
-            <ToggleGroup
-              options={MEAL_TIME_OPTIONS}
-              value={mealTime}
-              onChange={setMealTime}
-              accent="#D97706"
-              renderLabel={o => (
-                <span className="flex items-center gap-1">
-                  <span>{MEAL_TIME_ICONS[o]}</span>
-                  <span>{o}</span>
-                </span>
-              )}
-            />
-          </div>
-
-          {/* Price per person — INR ranges from review analysis */}
-          <div>
-            <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
-              Price / Person
-              <span className="text-[9px] font-normal text-muted normal-case tracking-normal">(optional)</span>
-              <Tooltip text="Derived from what Google reviewers say about price. Under ₹100 = street food / mess · ₹100-300 = everyday dining · ₹300-600 = premium · ₹600+ = fine dining." />
-            </label>
-            <ToggleGroup
-              options={FOOD_COST_OPTIONS}
-              value={priceFilter}
-              onChange={setPriceFilter}
-              accent="#D97706"
-              renderLabel={o => FOOD_COST_LABELS[o] ?? o}
-            />
-          </div>
-
-          {/* Cuisine tags — optional, shown last */}
-          <div>
-            <label className="flex items-center gap-1.5 text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
-              Cuisine
-              <span className="text-[9px] font-normal text-muted normal-case tracking-normal">(optional)</span>
-              <Tooltip text="Select a cuisine type — used as a search anchor. AI prioritises results that match your selection." />
-              {tagsLoading && <span className="ml-auto text-[9px] text-brand font-semibold animate-pulse">Updating…</span>}
-            </label>
-            <TagGrid tags={dynamicFoodTags} selected={foodTags} onToggle={toggleFoodTag} accent="#D97706" />
-          </div>
         </div>
       );
 
@@ -866,7 +814,6 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             </label>
             <div className="flex gap-1.5">
               {(['Morning', 'Afternoon', 'Evening'] as const).map(t => {
-                const icons: Record<string, string> = { Morning: '🌅', Afternoon: '☀️', Evening: '🌆' };
                 const stops: Record<string, number> = { Morning: 5, Afternoon: 3, Evening: 2 };
                 return (
                   <button
@@ -881,7 +828,6 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                         : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
                     }
                   >
-                    <span className="text-base">{icons[t]}</span>
                     <span className="text-[10px] font-black uppercase tracking-wide">{t}</span>
                     <span className="text-[9px] opacity-60">{stops[t]} stops</span>
                   </button>
@@ -926,11 +872,11 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                 className="w-full pl-9 pr-8 py-2 border border-border rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-brand-soft focus:border-brand bg-surface appearance-none transition-colors"
               >
                 <option value="">Select a location…</option>
-                <option value="Brihadeeswarar Temple">🛕 Brihadeeswarar Temple (Big Temple)</option>
-                <option value="Thanjavur Maratha Palace Royal Museum">🏰 Thanjavur Palace &amp; Royal Museum</option>
-                <option value="Saraswathi Mahal Library">📚 Saraswathi Mahal Library</option>
-                <option value="Airavatesvara Temple Darasuram">🛕 Airavatesvara Temple, Darasuram</option>
-                <option value="Sivaganga Fort">🏯 Sivaganga Fort</option>
+                <option value="Brihadeeswarar Temple">Brihadeeswarar Temple (Big Temple)</option>
+                <option value="Thanjavur Maratha Palace Royal Museum">Thanjavur Palace &amp; Royal Museum</option>
+                <option value="Saraswathi Mahal Library">Saraswathi Mahal Library</option>
+                <option value="Airavatesvara Temple Darasuram">Airavatesvara Temple, Darasuram</option>
+                <option value="Sivaganga Fort">Sivaganga Fort</option>
               </select>
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted pointer-events-none" />
             </div>
@@ -943,10 +889,10 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             </label>
             <div className="grid grid-cols-3 gap-2">
               {([
-                ['Morning',   '🌅', '6am – 12pm'],
-                ['Afternoon', '☀️', '12pm – 4pm'],
-                ['Evening',   '🌆', '4pm – 8pm'],
-              ] as const).map(([slot, emoji, range]) => (
+                ['Morning',   '6am – 12pm'],
+                ['Afternoon', '12pm – 4pm'],
+                ['Evening',   '4pm – 8pm'],
+              ] as const).map(([slot, range]) => (
                 <button
                   key={slot}
                   type="button"
@@ -957,7 +903,6 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                     : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
                   }
                 >
-                  <span className="text-lg">{emoji}</span>
                   <span className="text-[10px] font-black uppercase tracking-wide">{slot}</span>
                   <span className="text-[9px] font-normal opacity-70">{range}</span>
                 </button>

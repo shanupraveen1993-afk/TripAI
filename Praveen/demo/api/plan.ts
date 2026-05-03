@@ -67,28 +67,39 @@ const HOTEL_TAG_SEARCH: Record<string, string> = {
 
 // Hotel price range → extra query keyword so Places returns price-relevant results
 const HOTEL_PRICE_QUERY: Record<string, string> = {
-  '₹1K-5K':  'budget affordable',
-  '₹5K-10K': 'mid-range',
-  '₹15K+':   'luxury premium',
+  '₹1K-5K':                 'budget affordable',
+  '₹5K-10K':                'mid-range',
+  '₹15K+':                  'luxury premium',
+  'PRICE_LEVEL_INEXPENSIVE': 'budget affordable economy',
+  'PRICE_LEVEL_MODERATE':    'mid-range standard',
+  'PRICE_LEVEL_EXPENSIVE':   'luxury premium',
+};
+
+// Persona → search keyword refinement (complements tag-derived query)
+const PERSONA_QUERY: Record<string, string> = {
+  Solo:     'budget affordable solo traveller',
+  Couple:   'couple romantic heritage ambience',
+  Family:   'family children parking spacious',
+  Business: 'business corporate wifi central',
 };
 
 function buildHotelQuery(filters: UserFilters): string {
   const tags = (filters.hotelTags ?? []).filter(t => t);
-  const priceKw = (filters.priceFilter && filters.priceFilter !== 'Any')
+  const priceKw   = (filters.priceFilter && filters.priceFilter !== 'Any')
     ? (HOTEL_PRICE_QUERY[filters.priceFilter] ?? '') : '';
+  const personaKw = (filters.persona && filters.persona !== '')
+    ? (PERSONA_QUERY[filters.persona] ?? '') : '';
 
   if (filters.hotelArea) {
-    // All tags included — first tag is primary anchor for area-specific search
     const tagTerms = tags.map(t => HOTEL_TAG_SEARCH[t] ?? t).join(' ');
-    return `${priceKw} ${tagTerms} hotel near ${filters.hotelArea} Thanjavur Tamil Nadu`.replace(/\s+/g, ' ').trim();
+    return `${personaKw} ${priceKw} ${tagTerms} hotel near ${filters.hotelArea} Thanjavur Tamil Nadu`.replace(/\s+/g, ' ').trim();
   }
   if (tags.length > 0) {
-    // First tag is the primary query anchor; remaining tags are modifiers
     const primaryTerm   = HOTEL_TAG_SEARCH[tags[0]] ?? tags[0];
     const modifierTerms = tags.slice(1).map(t => HOTEL_TAG_SEARCH[t] ?? t).join(' ');
-    return `${priceKw} ${primaryTerm} ${modifierTerms} in Thanjavur Tamil Nadu`.replace(/\s+/g, ' ').trim();
+    return `${personaKw} ${priceKw} ${primaryTerm} ${modifierTerms} in Thanjavur Tamil Nadu`.replace(/\s+/g, ' ').trim();
   }
-  return `${priceKw} hotels in Thanjavur Tamil Nadu near Brihadeeswarar Temple`.replace(/\s+/g, ' ').trim();
+  return `${personaKw} ${priceKw} hotels in Thanjavur Tamil Nadu near Brihadeeswarar Temple`.replace(/\s+/g, ' ').trim();
 }
 
 // Thanjavur city centre — used for location-restricted and location-biased searches
@@ -202,6 +213,7 @@ function filterThanjavurOnly(places: any[]): any[] {
 interface UserFilters {
   hotelTags?:    string[];
   hotelArea?:    string;
+  persona?:      string;    // 'Solo' | 'Couple' | 'Family' | 'Business' | '' — shapes hotel query + Gemini criteria
   foodTags?:     string[];  // cuisine/type tags — primary query anchor
   foodLocation?: string;    // area within Thanjavur e.g. "New Bus Stand" — narrows Places search
   priceFilter?:  string;   // 'Any' | INR range label — hard-filtered via priceLevel + review keywords
@@ -249,9 +261,10 @@ function buildFoodQuery(filters: UserFilters): string {
   const modifierTags = tags.slice(1).map(t => FOOD_TAG_SEARCH[t] ?? t.toLowerCase()).join(' ');
   const tagTerms     = [primaryTag, modifierTags].filter(Boolean).join(' ');
 
-  // Diet prefix — Pure Veg is stricter than Veg
-  const dietPfx = filters.dietType === 'Pure Veg' ? 'pure vegetarian only veg no non-veg ' :
-                  filters.dietType === 'Veg'       ? 'vegetarian veg '                      : '';
+  // Diet prefix — steers Places API toward relevant results
+  const dietPfx = filters.dietType === 'Pure Veg' ? 'pure vegetarian only veg no non-veg '        :
+                  filters.dietType === 'Veg'       ? 'vegetarian veg '                             :
+                  filters.dietType === 'Non-Veg'   ? 'non vegetarian chicken mutton fish meat egg ' : '';
 
   // Price prefix (new INR labels)
   const pricePfx = filters.priceFilter === 'Under ₹100' ? 'budget cheap street food ' :
@@ -270,13 +283,16 @@ function buildFoodQuery(filters: UserFilters): string {
   return `${mealPfx}${pricePfx}${dietPfx}${baseTerm} ${locationSuffix}`.replace(/\s+/g, ' ').trim();
 }
 
-// Hotel price range buckets — inclusive on boundaries to avoid empty results
+// Hotel price range buckets — keyed by Places API enum for direct field matching
 const PRICE_BUCKETS: Record<string, string[]> = {
-  // New hotel price-range labels
+  // Direct Places API enum keys (new UI values)
+  'PRICE_LEVEL_INEXPENSIVE': ['PRICE_LEVEL_FREE', 'PRICE_LEVEL_INEXPENSIVE'],
+  'PRICE_LEVEL_MODERATE':    ['PRICE_LEVEL_INEXPENSIVE', 'PRICE_LEVEL_MODERATE'],
+  'PRICE_LEVEL_EXPENSIVE':   ['PRICE_LEVEL_EXPENSIVE', 'PRICE_LEVEL_VERY_EXPENSIVE'],
+  // Legacy INR-range labels kept for cached/old requests
   '₹1K-5K':   ['PRICE_LEVEL_FREE', 'PRICE_LEVEL_INEXPENSIVE'],
   '₹5K-10K':  ['PRICE_LEVEL_INEXPENSIVE', 'PRICE_LEVEL_MODERATE'],
   '₹15K+':    ['PRICE_LEVEL_EXPENSIVE', 'PRICE_LEVEL_VERY_EXPENSIVE'],
-  // Legacy symbol labels kept for any cached/old requests
   '₹':    ['PRICE_LEVEL_FREE', 'PRICE_LEVEL_INEXPENSIVE'],
   '₹₹':   ['PRICE_LEVEL_INEXPENSIVE', 'PRICE_LEVEL_MODERATE'],
   '₹₹₹':  ['PRICE_LEVEL_MODERATE', 'PRICE_LEVEL_EXPENSIVE'],
@@ -310,85 +326,145 @@ function scoreFoodCost(reviews: any[], category: string): number {
   return keywords.filter(k => text.includes(k)).length;
 }
 
-// Hard filter applied BEFORE Gemini — guarantees results match user constraints.
-// Query-level filtering (buildHotelQuery / buildFoodQuery + minRating in Places API)
-// handles tags, cuisine, and rating. This function handles post-retrieval booleans.
-function applyHardFilters(places: any[], tab: string, f: UserFilters): any[] {
-  let out = places;
+// ─────────────────────────────────────────────────────────────────────────────
+// UNIVERSAL FILTER SCORING
+// Every active filter produces a score 0–1 and an optional hardFail flag.
+// All criteria are evaluated together → a single total score per place.
+// Gemini receives these scores as explicit context — no more filter silos.
+// ─────────────────────────────────────────────────────────────────────────────
 
-  // 1. Price / cost filter (secondary — query already pulls price-relevant results)
-  if (f.priceFilter && f.priceFilter !== 'Any') {
-    const isFoodCostLabel = Object.keys(FOOD_COST_KEYWORDS).includes(f.priceFilter);
+const NON_VEG_KEYWORDS = [
+  'chicken', 'mutton', 'fish', 'prawn', 'biryani', 'crab', 'meat', 'egg',
+  'seafood', 'pork', 'lamb', 'beef', 'non veg', 'nonveg', 'non-veg',
+];
 
-    if (isFoodCostLabel && tab === 'Food') {
-      // Score by keyword frequency; sort best-match first (don't hard-exclude)
-      const allowedLevels = FOOD_PRICE_LEVEL_MAP[f.priceFilter] ?? [];
-      const scored = out.map(p => ({
-        place:        p,
-        keywordScore: scoreFoodCost(p.reviews ?? [], f.priceFilter!),
-        levelMatch:   allowedLevels.includes(p.priceLevel ?? ''),
-      }));
-      // Keep all but sort by relevance — weakly matching places appear last for Gemini
-      out = scored
-        .sort((a, b) => (b.keywordScore + (b.levelMatch ? 2 : 0)) - (a.keywordScore + (a.levelMatch ? 2 : 0)))
-        .map(({ place }) => place);
-    } else if (tab === 'Hotels') {
-      // Hotels: filter by priceLevel when available; keep places with no priceLevel as fallback
-      const allowed = PRICE_BUCKETS[f.priceFilter] ?? [];
-      const matched = out.filter(p => allowed.includes(p.priceLevel ?? ''));
-      // Only enforce if we got ≥2 with known price; otherwise keep all (no priceLevel data)
-      if (matched.length >= 2) out = matched;
-    }
-  }
+const MEAL_SCORE_KEYWORDS: Record<string, string[]> = {
+  'Breakfast': ['breakfast', 'idli', 'dosa', 'tiffin', 'upma', 'pongal', 'vada', 'morning', 'puri', 'poori'],
+  'Lunch':     ['lunch', 'thali', 'meals', 'rice', 'sambar', 'rasam', 'afternoon', 'noon', 'buffet'],
+  'Dinner':    ['dinner', 'night', 'biryani', 'parotta', 'kothu', 'evening', 'supper'],
+};
 
-  // 2. Open Now — hard exclude closed places (keep undefined/null as "unknown = open")
+interface PlaceScore {
+  total:     number;
+  hardFail:  boolean;
+  breakdown: Record<string, number>;
+}
+
+function scorePlaceForFilters(place: any, tab: string, f: UserFilters): PlaceScore {
+  const nameText = (place.displayName?.text ?? '').toLowerCase();
+  const addrText = (place.formattedAddress  ?? '').toLowerCase();
+  const revText  = (place.reviews ?? []).map((r: any) => (r.text?.text ?? '').toLowerCase()).join(' ');
+  const allText  = `${nameText} ${addrText} ${revText}`;
+
+  type Crit = { score: number; weight: number; hard?: boolean };
+  const C: Record<string, Crit> = {};
+
+  // ── Open Now ─────────────────────────────────────────────────────────────
   if (f.openNow) {
-    const n = out.filter(p => {
-      const isOpen = p.regularOpeningHours?.openNow ?? p.currentOpeningHours?.openNow;
-      return isOpen !== false; // keep true and undefined, exclude only explicit false
-    });
-    if (n.length >= 1) out = n;
+    const isOpen = place.regularOpeningHours?.openNow ?? place.currentOpeningHours?.openNow;
+    C.openNow = { score: isOpen === false ? 0 : 1, weight: 3, hard: isOpen === false };
   }
 
-  // 3. Diet filter (Food only)
   if (tab === 'Food') {
+    // ── Diet ─────────────────────────────────────────────────────────────────
     if (f.dietType === 'Veg') {
-      const n = out.filter(p => p.servesVegetarianFood === true);
-      if (n.length >= 2) out = n;
-    } else if (f.dietType === 'Pure Veg') {
-      // Pure Veg: must flag vegetarian AND reviews must not be dominated by non-veg mentions
-      const NON_VEG_KW = ['chicken', 'mutton', 'beef', 'pork', 'fish', 'prawn', 'shrimp', 'crab', 'egg', 'non veg', 'nonveg', 'non-veg', 'meat'];
-      const n = out.filter(p => {
-        if (p.servesVegetarianFood === false) return false;
-        const reviewText = (p.reviews ?? []).map((r: any) => (r.text?.text ?? '').toLowerCase()).join(' ');
-        const nonVegHits = NON_VEG_KW.filter(kw => reviewText.includes(kw)).length;
-        return nonVegHits < 3; // allow up to 2 mentions (reviewer may compare); 3+ = non-veg dominant
-      });
-      if (n.length >= 1) out = n;
+      const flagVeg   = place.servesVegetarianFood;
+      const typeVeg   = (place.types ?? []).includes('vegetarian_restaurant');
+      const vegHits   = ['vegetarian', 'pure veg', 'veg only', 'no meat'].filter(k => allText.includes(k)).length;
+      const isVeg     = flagVeg === true || typeVeg;
+      const score     = isVeg ? 1 : flagVeg === false ? 0 : Math.min(0.4 + vegHits * 0.2, 0.8);
+      C.diet = { score, weight: 3, hard: flagVeg === false && !typeVeg };
+
     } else if (f.dietType === 'Non-Veg') {
-      // Non-Veg: prefer places where reviews mention non-veg items — sort by non-veg keyword hits
-      const NON_VEG_KW = ['chicken', 'mutton', 'fish', 'prawn', 'biryani', 'crab', 'meat', 'non veg'];
-      const scored = out.map(p => {
-        const text = (p.reviews ?? []).map((r: any) => (r.text?.text ?? '').toLowerCase()).join(' ');
-        return { place: p, score: NON_VEG_KW.filter(kw => text.includes(kw)).length };
-      });
-      const sorted = scored.sort((a, b) => b.score - a.score).map(({ place }) => place);
-      out = sorted;
+      const nvRev  = NON_VEG_KEYWORDS.filter(kw => revText.includes(kw)).length;
+      const nvName = NON_VEG_KEYWORDS.some(kw => nameText.includes(kw)) ? 4 : 0;
+      const hits   = nvRev + nvName;
+      C.diet = { score: hits > 0 ? Math.min(hits / 5, 1) : 0, weight: 3, hard: hits === 0 };
+
+    } else if (f.dietType === 'Pure Veg') {
+      const flagVeg = place.servesVegetarianFood;
+      const typeVeg = (place.types ?? []).includes('vegetarian_restaurant');
+      const nvHits  = NON_VEG_KEYWORDS.filter(kw => revText.includes(kw)).length;
+      const fail    = (flagVeg === false && !typeVeg) || nvHits >= 3;
+      C.diet = { score: fail ? 0 : 1, weight: 3, hard: fail };
+    }
+
+    // ── Meal Time ─────────────────────────────────────────────────────────────
+    if (f.mealTime && f.mealTime !== 'Any') {
+      const kws  = MEAL_SCORE_KEYWORDS[f.mealTime] ?? [];
+      const hits = kws.filter(kw => allText.includes(kw)).length;
+      C.mealTime = { score: Math.min(0.4 + hits * 0.15, 1), weight: 2 };
+    }
+
+    // ── Craving / Cuisine ─────────────────────────────────────────────────────
+    if (f.foodTags?.length) {
+      const tag  = f.foodTags[0];
+      const term = FOOD_TAG_SEARCH[tag] ?? tag.toLowerCase();
+      const kws  = term.split(' ').filter(k => k.length > 3);
+      const hits = kws.filter(kw => allText.includes(kw)).length;
+      C.craving = { score: kws.length > 0 ? Math.min(hits / kws.length, 1) : 0.5, weight: 2 };
+    }
+
+    // ── Food Price ────────────────────────────────────────────────────────────
+    if (f.priceFilter && f.priceFilter !== 'Any') {
+      const allowedLvl = FOOD_PRICE_LEVEL_MAP[f.priceFilter] ?? [];
+      const levelMatch = allowedLvl.includes(place.priceLevel ?? '');
+      const kwScore    = scoreFoodCost(place.reviews ?? [], f.priceFilter);
+      C.price = { score: levelMatch ? 1 : kwScore > 0 ? Math.min(kwScore / 3, 0.8) : 0.3, weight: 1 };
+    }
+
+    // ── Dine Mode ─────────────────────────────────────────────────────────────
+    if (f.dineMode && f.dineMode !== 'Any') {
+      const ok = f.dineMode === 'Dine-in' ? place.dineIn === true : place.takeout === true;
+      C.dineMode = { score: ok ? 1 : place.dineIn === null ? 0.6 : 0, weight: 1, hard: !ok && place.dineIn !== null };
     }
   }
 
-  // 4. Dining mode (Food only)
-  if (tab === 'Food') {
-    if (f.dineMode === 'Dine-in') {
-      const n = out.filter(p => p.dineIn === true);
-      if (n.length >= 1) out = n;
-    } else if (f.dineMode === 'Takeout') {
-      const n = out.filter(p => p.takeout === true);
-      if (n.length >= 1) out = n;
+  if (tab === 'Hotels') {
+    // ── Budget / Price ────────────────────────────────────────────────────────
+    if (f.priceFilter && f.priceFilter !== 'Any') {
+      const allowed = PRICE_BUCKETS[f.priceFilter] ?? [];
+      const lvl     = place.priceLevel ?? '';
+      C.price = { score: allowed.includes(lvl) ? 1 : lvl ? 0.1 : 0.5, weight: 2 };
+    }
+
+    // ── Area Proximity ────────────────────────────────────────────────────────
+    if (f.hotelArea) {
+      const areaKws = f.hotelArea.toLowerCase().replace(' area', '').split(' ').filter(k => k.length > 2);
+      const hits    = areaKws.filter(k => addrText.includes(k) || allText.includes(k)).length;
+      C.area = { score: hits > 0 ? 1 : 0.4, weight: 2 };
+    }
+
+    // ── Persona-derived Tags ──────────────────────────────────────────────────
+    if (f.hotelTags?.length) {
+      const matched = f.hotelTags.filter(tag => {
+        const kws = (HOTEL_TAG_SEARCH[tag] ?? tag).toLowerCase().split(' ').filter(k => k.length > 3);
+        return kws.some(k => allText.includes(k));
+      }).length;
+      C.tags = { score: matched / f.hotelTags.length, weight: 2 };
     }
   }
 
-  return out;
+  const keys = Object.keys(C);
+  if (keys.length === 0) return { total: 1, hardFail: false, breakdown: {} };
+
+  const hardFail    = keys.some(k => !!C[k].hard);
+  const totalWeight = keys.reduce((s, k) => s + C[k].weight, 0);
+  const total       = keys.reduce((s, k) => s + C[k].score * C[k].weight, 0) / totalWeight;
+  const breakdown   = Object.fromEntries(keys.map(k => [k, +C[k].score.toFixed(2)]));
+
+  return { total: +total.toFixed(2), hardFail, breakdown };
+}
+
+function applyFilterScoring(places: any[], tab: string, f: UserFilters): Array<{ place: any; filterScore: PlaceScore }> {
+  const scored = places.map(p => ({ place: p, filterScore: scorePlaceForFilters(p, tab, f) }));
+
+  // Remove hard-failures only when enough clean results exist
+  const passed = scored.filter(s => !s.filterScore.hardFail);
+  const pool   = passed.length >= 3 ? passed : scored;
+
+  // Sort by filter match score: Gemini receives best-matching candidates first
+  return pool.sort((a, b) => b.filterScore.total - a.filterScore.total);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -409,6 +485,7 @@ async function geminiRankAndAnalyse(
   places: any[],
   tab: string,
   filters: UserFilters = {},
+  filterScores: PlaceScore[] = [],
 ): Promise<any[]> {
   if (!GEMINI_KEY || places.length === 0) return [];
 
@@ -465,6 +542,9 @@ async function geminiRankAndAnalyse(
       })),
       // tagMentions: which selected tags are actually mentioned in name/reviews
       tagMentions,
+      // Universal filter match score (0–1 per criterion, pre-computed)
+      filterScore:     filterScores[i]?.total     ?? 1,
+      filterBreakdown: filterScores[i]?.breakdown ?? {},
       // Amenity signals from Places API
       servesVeg:   p.servesVegetarianFood ?? null,
       dineIn:      p.dineIn               ?? null,
@@ -481,7 +561,15 @@ async function geminiRankAndAnalyse(
   type Criterion = { label: string; value: string; weight: 'critical' | 'important' | 'nice-to-have' };
   const criteria: Criterion[] = [];
 
+  const PERSONA_PROFILE: Record<string, string> = {
+    Solo:     'Solo traveller — values budget, walking distance to temples, no-fuss check-in',
+    Couple:   'Couple stay — values ambience, heritage feel, quiet rooms, romantic atmosphere',
+    Family:   'Family with children — values spacious rooms, parking, safety, in-house dining',
+    Business: 'Business traveller — values reliable WiFi, central location, professional amenities',
+  };
   if (tab === 'Hotels') {
+    if (filters.persona && PERSONA_PROFILE[filters.persona])
+      criteria.push({ label: 'Visitor persona', value: PERSONA_PROFILE[filters.persona], weight: 'critical' });
     if (filters.priceFilter && filters.priceFilter !== 'Any')
       criteria.push({ label: 'Price tier', value: filters.priceFilter, weight: 'important' });
     if (filters.minRating && filters.minRating > 0)
@@ -494,6 +582,8 @@ async function geminiRankAndAnalyse(
   } else if (tab === 'Food') {
     if (filters.dietType === 'Pure Veg')
       criteria.push({ label: 'Diet', value: 'Pure Veg — must serve ONLY vegetarian food, no non-veg items at all', weight: 'critical' });
+    else if (filters.dietType === 'Non-Veg')
+      criteria.push({ label: 'Diet', value: 'Non-Veg — EXCLUDE restaurants whose reviews have ZERO mentions of chicken/mutton/fish/biryani/meat/egg/seafood. Rank places with the most non-veg review mentions highest. A place with servesVegetarianFood=true but NO non-veg review keywords must be ranked LAST or excluded.', weight: 'critical' });
     else if (filters.dietType && filters.dietType !== 'Any')
       criteria.push({ label: 'Diet', value: filters.dietType, weight: 'critical' });
     if (filters.foodTags?.length)
@@ -537,13 +627,24 @@ RANKING RULES: rank by criteria fit first, then rating × log(reviewCount)`;
   const selectionRules = `
 SELECTION RULES — pick the BEST 5–10 from the full list:
 
-1. Return ONLY places that genuinely serve the visitor's needs. Do NOT include every place just to hit 10.
-2. Minimum 5 results always — if fewer than 5 pass quality checks, include the top 5 by quality anyway.
-3. Maximum 10 results — stop when quality/relevance clearly drops.
-4. EXCLUDE places that fail CRITICAL criteria (wrong diet, clearly wrong price tier, zero tag match when tags selected).
-5. QUALITY FLOOR: prefer rating >= 4.0 AND totalReviews >= 20. Relax to 3.8 / 10 only if needed to reach 5.
-6. TREND: declining trend is a penalty — rank below stable/improving but do not auto-exclude.
-7. The returned list IS the final result — no secondary pool. Make every position count.`;
+1. FILTER SCORE IS PRIMARY. Every place has a filterScore (0–1) and filterBreakdown showing per-criterion scores.
+   - filterScore >= 0.75: strong match — include unless quality is very low
+   - filterScore 0.50–0.74: partial match — include only if no better options exist
+   - filterScore < 0.50: poor match — EXCLUDE unless fewer than 5 places pass
+   - filterScore = 1 (no active filters): rank purely by quality
+
+2. DIET IS NON-NEGOTIABLE. If filterBreakdown.diet exists:
+   - diet = 0 → EXCLUDE. Do not rank last — fully exclude.
+   - diet < 0.3 → EXCLUDE unless fewer than 5 alternatives.
+   - A place with servesVeg=true but diet='Non-Veg' filter and diet score=0 MUST be excluded.
+
+3. CRAVING MATCH. If filterBreakdown.craving exists and craving < 0.3, rank last only.
+
+4. Minimum 5 results — relax filterScore threshold to 0.3 only if needed.
+5. Maximum 10 results — stop when filterScore drops significantly.
+6. QUALITY FLOOR: prefer rating >= 4.0 AND totalReviews >= 20. Relax to 3.8 / 10 only if needed to reach 5.
+7. TREND: declining is a penalty, not an exclusion.
+8. The returned list IS the final result — every position must earn its place.`;
 
   // ── Step 5: Compose the prompt ────────────────────────────────────────────
   const prompt = `You are a Thanjavur travel expert and data analyst. From the ${places.length} ${tab.toLowerCase()} below, select and rank the BEST 5–10 for a visitor with these needs:
@@ -570,7 +671,8 @@ Only include places that earn their place. Stop when quality/relevance drops.
   "trendVerdict": "improving" | "declining" | "stable",
   "trendReason": "<max 12 words — MUST quote or closely paraphrase words from the actual review text>",
   "reviewSummary": "<2 sentences — synthesise what reviewers most frequently praise; use words from actual reviews; lead with strongest positive>",
-  "aiNote": "<max 18 words — personalised to THIS visitor's criteria — must reference at least one criterion>",
+  "aiNote": "<max 18 words — MUST start with 'Verified by AI:' — state exactly how many of the provided reviews confirm the visitor's primary filter (diet, meal time, or persona). Example: 'Verified by AI: 4 of 5 guests mention biryani — strong non-veg match'>",
+  "filterVerification": "<ONE sentence — scan the reviews array provided and count: how many reviews mention the visitor's primary filter keyword (e.g. non-veg food types, veg/pure veg, breakfast items, couple/family). State: 'X of Y recent guests confirm [what they confirm]'. Use actual counts from the reviews provided, not guesses.>",
   "whyOverOthers": "<max 30 words — compare against the other candidates in this list; cite specific numbers or unique features>",
   "bestFor": "<10 words — describe the ideal visitor type>",
   "caveat": "<one specific drawback from reviews, or null>"
@@ -578,7 +680,8 @@ Only include places that earn their place. Stop when quality/relevance drops.
 
 QUALITY RULES:
 - trendReason: use words found in the actual review texts provided, not invented
-- aiNote: feel personal — "matches your Heritage + Temple Nearby request" not "popular with visitors"
+- aiNote: MUST start with "Verified by AI:" and cite a specific review count — never generic praise
+- filterVerification: count actual review mentions of the primary filter keyword — "3 of 5 guests mention chicken/biryani" beats "guests enjoy non-veg food"
 - whyOverOthers: name or contrast the alternatives: "unlike the other hotels here, this one..."
 - caveat: only for real drawbacks cited in reviews (noise, distance, service issues)
 
@@ -600,15 +703,20 @@ Return ONLY valid JSON array. No markdown. No explanation text.`;
     if (Array.isArray(parsed) && parsed.length > 0) return parsed;
     throw new Error('empty');
   } catch {
-    // Fallback: compute from real data — return top 5–10 by quality score
+    // Fallback: sort by filterScore × quality signal — respects all active filters
     const avgRating = summaries.length > 0
       ? summaries.reduce((a, s) => a + s.rating, 0) / summaries.length : 4.0;
 
-    // Sort by quality signal, then slice to 5–10
-    const qualitySorted = [...summaries].sort((a, b) =>
-      (b.rating * Math.log10(Math.max(b.totalReviews, 1))) -
-      (a.rating * Math.log10(Math.max(a.totalReviews, 1)))
-    );
+    const qualitySorted = [...summaries].sort((a, b) => {
+      const aFilterBoost = (a.filterScore ?? 1);
+      const bFilterBoost = (b.filterScore ?? 1);
+      const aQuality = a.rating * Math.log10(Math.max(a.totalReviews, 1));
+      const bQuality = b.rating * Math.log10(Math.max(b.totalReviews, 1));
+      // Hard-fail (filterScore = 0 for a critical criterion) → push to end
+      const aFail = a.filterScore === 0 ? -1000 : 0;
+      const bFail = b.filterScore === 0 ? -1000 : 0;
+      return (bFilterBoost * bQuality + bFail) - (aFilterBoost * aQuality + aFail);
+    });
     const targetCount = Math.min(Math.max(qualitySorted.length, 5), 10);
     const selected = qualitySorted.slice(0, targetCount);
 
@@ -692,14 +800,14 @@ SITES & HOURS:
 • Saraswathi Mahal Library: ₹20/adult. Open 10 AM–1 PM & 1:30–5:30 PM. CLOSED Wednesdays. Inside Palace complex (same ticket area). Palm-leaf manuscript gallery is the highlight. LOW crowd throughout.
 • Thanjavur Art Gallery: ₹30/adult. Open 9 AM–5 PM. Inside Palace complex. Chola bronze Nataraja = centrepiece. Allow 45 min minimum. LOW crowd.
 • Sivaganga Fort: Free. Open all day (ruins). 15-min walk from Palace. Photography-friendly.
-• Airavatesvara Temple (Darasuram): Free. 4 km from Thanjavur centre. 15-min auto (₹80–100). UNESCO listed. Opens 6 AM. LOW crowd all day.
+• Airavatesvara Temple (Darasuram): Free. Located in Darasuram village near Kumbakonam — 35–38 km from Thanjavur city centre (~50–60 min by car/taxi). UNESCO listed. Opens 6 AM. LOW crowd all day. NOT reachable by short auto from Thanjavur — requires hired taxi or bus to Kumbakonam then local auto.
 
 TRAVEL TIMES (door-to-door):
 • Big Temple ↔ Palace: 5 min walk (400m south)
 • Palace ↔ Saraswathi Mahal: 2 min walk (same complex)
 • Saraswathi Mahal ↔ Art Gallery: 2 min walk (same complex)
 • Palace complex ↔ local restaurants: 10–20 min auto
-• City centre ↔ Darasuram: 15 min auto, ₹80–100
+• City centre ↔ Darasuram (Airavatesvara Temple): 50–60 min by car/taxi (35–38 km). Taxi ₹800–1,200 round trip. Or bus from Thanjavur to Kumbakonam (₹30–50), then local auto to Darasuram (₹40–60).
 • City centre ↔ Gangaikonda Cholapuram: 1 hr car, ₹800–1,200 round trip
 
 FOOD & MEAL TIMING:
@@ -963,6 +1071,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const filters: UserFilters = {
     hotelTags:    req.body?.hotelTags    ?? [],
     hotelArea:    req.body?.hotelArea    ?? '',
+    persona:      req.body?.persona      ?? '',
     foodTags:     req.body?.foodTags     ?? [],
     foodLocation: req.body?.foodLocation ?? '',
     priceFilter:  req.body?.priceFilter  ?? 'Any',
@@ -985,15 +1094,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Secondary guard: drop any result whose address doesn't mention Thanjavur/Tanjore
     const localPlaces   = filterThanjavurOnly(rawPlaces);
 
-    // Hard filter first — guarantees results match user constraints (price, veg, dine mode)
-    const hardFiltered = applyHardFilters(localPlaces, tab, filters);
+    // Score every place against every active filter — produces ranked, hard-fail-excluded list
+    const filterScored = applyFilterScoring(localPlaces, tab, filters);
 
-    // Then drop low-signal places — saves Gemini tokens, improves ranking quality
-    const qualified    = hardFiltered.filter(p => (p.rating ?? 0) >= 3.8 && (p.userRatingCount ?? 0) >= 10);
-    const placesToRank = qualified.length >= 2 ? qualified : hardFiltered;
+    // Quality floor — drop very-low-signal places; relax if pool would be too small
+    const qualified    = filterScored.filter(({ place }) => (place.rating ?? 0) >= 3.8 && (place.userRatingCount ?? 0) >= 10);
+    const scoredToRank = qualified.length >= 2 ? qualified : filterScored;
 
-    // Gemini ranks all places and flags recommended=true/false per selection rules
-    const rankedAi = await geminiRankAndAnalyse(placesToRank, tab, filters);
+    const placesToRank = scoredToRank.map(s => s.place);
+    const placeScores  = scoredToRank.map(s => s.filterScore);
+
+    // Gemini receives places sorted by filter match + filter scores as explicit context
+    const rankedAi = await geminiRankAndAnalyse(placesToRank, tab, filters, placeScores);
 
     // Sort by Gemini's rank (ascending); recommended places come first naturally
     const sorted          = [...rankedAi].sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99));
@@ -1052,8 +1164,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         tags:        (p.types ?? []).slice(0, 5).map((t: string) =>
                        t.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())
                      ),
-        reviewSummary: ai.reviewSummary || reviewSummaryFB,
-        aiNote:       ai.aiNote        || `${rating}★ across ${reviewCount.toLocaleString()} reviews — verified quality`,
+        reviewSummary:      ai.reviewSummary      || reviewSummaryFB,
+        aiNote:             ai.aiNote             || `Verified by AI: ${rating}★ across ${reviewCount.toLocaleString()} reviews — quality confirmed`,
+        filterVerification: ai.filterVerification || null,
         trendVerdict: ai.trendVerdict  ?? 'stable',
         trendReason:  ai.trendReason   || trendReasonFB,
         reviews:      uiReviews,

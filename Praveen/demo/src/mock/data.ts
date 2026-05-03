@@ -23,8 +23,9 @@ export interface PlaceResult {
   priceLevel: '₹' | '₹₹' | '₹₹₹' | '₹₹₹₹' | 'Free';
   openNow: boolean;
   tags: string[];
-  reviewSummary?: string;
-  aiNote: string;
+  reviewSummary?:      string;
+  aiNote:              string;
+  filterVerification?: string | null;
   trendVerdict?: 'improving' | 'declining' | 'stable';
   trendReason?: string;
   photoRef?: string | null;

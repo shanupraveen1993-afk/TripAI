@@ -8,8 +8,9 @@ export interface PlanResult {
   priceLevel:   '₹' | '₹₹' | '₹₹₹' | '₹₹₹₹' | 'Free';
   openNow:      boolean;
   tags:         string[];
-  reviewSummary: string;
-  aiNote:       string;
+  reviewSummary:      string;
+  aiNote:             string;
+  filterVerification: string | null;
   trendVerdict: 'improving' | 'declining' | 'stable';
   trendReason:  string;
   reviews:      Array<{ text: string; author: string; location: string; stars: number; ago: string }>;
@@ -62,6 +63,7 @@ export interface ExploreGuide {
 interface PlanFilters {
   hotelTags?:    string[];
   hotelArea?:    string;
+  persona?:      string;   // 'Solo' | 'Couple' | 'Family' | 'Business' | ''
   foodTags?:     string[];
   foodLocation?: string;   // area within Thanjavur e.g. "New Bus Stand"
   priceFilter?:  string;   // 'Any' | INR range
