@@ -27,6 +27,7 @@ import { PlaceCardSkeleton } from './ui/Skeleton';
 interface ResultsViewProps {
   tab: Tab;
   destination: string;
+  searchArea?: string;
   hotels?: PlaceResult[];
   food?: PlaceResult[];
   itinerary?: (ItineraryStop | LiveItineraryStop)[];
@@ -192,8 +193,18 @@ function ReviewCard({ review, idx }: { review: ReviewItem; idx: number }) {
   );
 }
 
-function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = false, selectedTags = [] }: {
+function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = false, selectedTags = [], refLat, refLng, refLabel }: {
   place: PlaceResult; tab: Tab; rank?: number; animDelay?: number; defaultCollapsed?: boolean; selectedTags?: string[];
+  refLat?: number; refLng?: number; refLabel?: string;
 }) {
   // rank-1 AI Top Pick cards start collapsed to save space; all others start expanded
   const [cardCollapsed, setCardCollapsed] = useState(defaultCollapsed);
@@ -203,6 +214,14 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
   const [openAiRow, setOpenAiRow]       = useState<number | null>(null);
   const [bookmarked, setBookmarked]     = useState(false);
   const { toast } = useToast();
+
+  // Distance from reference point (header-selected area or city centre)
+  const distKm = (place.lat && place.lng && refLat && refLng)
+    ? haversineKm(refLat, refLng, place.lat, place.lng)
+    : null;
+  const distLabel = distKm !== null
+    ? `${distKm < 1 ? `${Math.round(distKm * 1000)}m` : `${distKm.toFixed(1)} km`}`
+    : null;
 
   // Only surface 3★+ reviews, best first — 1-2★ signals are captured in trendVerdict/trendReason
   const displayReviews = [...place.reviews]
@@ -279,7 +298,11 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                 <span className="text-muted text-[10px]">·</span>
                 <Badge variant={place.openNow ? 'success' : 'danger'} dot pill>{place.openNow ? 'Open' : 'Closed'}</Badge>
                 <Badge variant="neutral" pill>{place.priceLevel}</Badge>
-                {place.dist > 0 && <span className="text-[10px] text-muted">· {place.dist}km</span>}
+                {distLabel && (
+                  <span className="flex items-center gap-0.5 text-[10px] text-muted">
+                    · <MapPin className="w-2.5 h-2.5 shrink-0" />{distLabel}{refLabel ? ` from ${refLabel}` : ''}
+                  </span>
+                )}
               </div>
               <p className="text-[10px] text-muted flex items-center gap-1 mt-0.5 truncate">
                 <MapPin className="w-2.5 h-2.5 shrink-0" />{place.address}
@@ -362,7 +385,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               <div className="flex items-center gap-1 mt-0.5 text-muted">
                 <MapPin className="w-3 h-3 shrink-0" />
                 <span className="text-[11px] truncate">{place.address}</span>
-                {place.dist > 0 && <span className="shrink-0 text-[11px]">· {place.dist}km</span>}
+                {distLabel && <span className="shrink-0 text-[11px] text-muted">· {distLabel}</span>}
               </div>
             </div>
             {actionButtons}
@@ -1170,14 +1193,20 @@ function ExploreView({ place }: { place: ExploreResult }) {
   );
 }
 
+// Thanjavur centre — default reference when no area is selected
+const THANJAVUR_CENTER = { lat: 10.787, lng: 79.1378 };
+
 export function ResultsView({
-  tab, destination, hotels, food, itinerary, explore, apiError,
+  tab, destination, searchArea, hotels, food, itinerary, explore, apiError,
   isLoadingMore = false,
   onBack, onRegenerate, onSave, saved = false, onSwitchTab,
   backLabel, onExploreStop, isFirstItinerary = false, selectedTags = [],
 }: ResultsViewProps) {
   const { toast } = useToast();
   const results = tab === 'Hotels' ? hotels : tab === 'Food' ? food : [];
+  const refLat   = THANJAVUR_CENTER.lat;
+  const refLng   = THANJAVUR_CENTER.lng;
+  const refLabel = searchArea || undefined;
   const count = tab === 'Itinerary' ? itinerary?.length : tab === 'Explore' ? 1 : results?.length;
 
   const handleSave = () => { onSave(); toast('Plan saved — find it under Trips.', 'success'); };
@@ -1302,6 +1331,9 @@ export function ResultsView({
               animDelay={0}
               defaultCollapsed={true}
               selectedTags={selectedTags}
+              refLat={refLat}
+              refLng={refLng}
+              refLabel={refLabel}
             />
           </React.Fragment>
         ))}

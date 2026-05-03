@@ -2,6 +2,8 @@ export interface PlanResult {
   id:           string;
   name:         string;
   address:      string;
+  lat:          number | null;
+  lng:          number | null;
   dist:         number;
   rating:       number;
   reviewCount:  number;

@@ -8,6 +8,7 @@ const FIELD_MASK = [
   'places.id',
   'places.displayName',
   'places.formattedAddress',
+  'places.location',
   'places.rating',
   'places.userRatingCount',
   'places.reviews',
@@ -68,7 +69,34 @@ function getCityState(city: string): string {
   return 'Tamil Nadu';
 }
 
-// Food tags that map to a Google Places includedType — API restricts results at source
+// Food tag → keywords to match in name / place types / reviews (post-fetch hard filter)
+// If a tag is selected, a restaurant MUST match at least one keyword — no match = excluded
+const FOOD_TAG_KEYWORDS: Record<string, string[]> = {
+  'South Indian':   ['south indian', 'idli', 'dosa', 'sambar', 'vada', 'pongal', 'idly', 'uttapam', 'appam'],
+  'North Indian':   ['north indian', 'roti', 'naan', 'paneer', 'butter chicken', 'dal makhani', 'punjabi'],
+  'Biryani':        ['biryani', 'briyani', 'dum biryani', 'biryani rice'],
+  'Thali':          ['thali', 'meals', 'full meals', 'banana leaf', 'unlimited meals'],
+  'Tiffin':         ['tiffin', 'idli', 'morning tiffin', 'light meal'],
+  'Cafe':           ['cafe', 'café', 'coffee', 'filter coffee', 'cappuccino', 'espresso', 'coffee shop'],
+  'Street Food':    ['street food', 'chaat', 'stall', 'roadside', 'snacks', 'pani puri', 'chat'],
+  'Seafood':        ['seafood', 'fish', 'prawn', 'crab', 'lobster', 'fish curry', 'fish fry'],
+  'Sweets':         ['sweets', 'mithai', 'halwa', 'laddu', 'sweet shop', 'mysore pak', 'jangiri'],
+  'Bakery':         ['bakery', 'bread', 'cake', 'pastry', 'baked goods', 'confectionery'],
+  'Chinese':        ['chinese', 'noodles', 'fried rice', 'manchurian', 'hakka', 'chow mein', 'schezwan'],
+  'Fast Food':      ['fast food', 'burger', 'pizza', 'wrap', 'sandwich', 'quick bite'],
+  'Chaat':          ['chaat', 'pani puri', 'golgappa', 'samosa', 'bhel puri', 'sev puri'],
+  'Juice & Shakes': ['juice', 'milkshake', 'smoothie', 'lassi', 'fresh juice', 'shakes'],
+};
+
+// Place types that indicate food/restaurant — used to exclude from hotel results
+const RESTAURANT_TYPES = new Set([
+  'restaurant', 'food', 'cafe', 'bakery', 'bar', 'meal_delivery',
+  'meal_takeaway', 'night_club', 'fast_food_restaurant', 'south_indian_restaurant',
+  'north_indian_restaurant', 'chinese_restaurant', 'seafood_restaurant',
+]);
+
+// Food tags that map to a Google Places includedType — kept for Veg/Pure Veg only
+// Cuisine tags use keyword post-fetch filter instead (more reliable for smaller cities)
 const FOOD_TAG_TYPES: Record<string, string> = {
   'South Indian': 'south_indian_restaurant',
   'North Indian': 'north_indian_restaurant',
@@ -523,6 +551,40 @@ function applyStrictFilter(places: any[], tab: string, f: UserFilters): any[] {
       return nvHits < 2;
     });
     return confirmed.length >= 3 ? confirmed : places;
+  }
+
+  return places;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TAG FILTER — hard post-fetch filter on type and keywords
+// Hotels: exclude places with restaurant/food types (catches South Indian restaurants
+//   named "X Hotel" that slip past the text query)
+// Food: if a cuisine tag is selected, a place MUST have the tag's keywords in
+//   name, place types, or reviews — no match = excluded
+// ─────────────────────────────────────────────────────────────────────────────
+function applyTagFilter(places: any[], tab: string, f: UserFilters): any[] {
+  if (tab === 'Hotels') {
+    const hotels = places.filter(p => {
+      const types = (p.types ?? []) as string[];
+      return !types.some(t => RESTAURANT_TYPES.has(t));
+    });
+    return hotels.length >= 2 ? hotels : places;
+  }
+
+  if (tab === 'Food' && f.foodTag) {
+    const kws = FOOD_TAG_KEYWORDS[f.foodTag];
+    if (!kws) return places;
+    const matching = places.filter(p => {
+      const name    = (p.displayName?.text ?? '').toLowerCase();
+      const types   = (p.types ?? []).join(' ').replace(/_/g, ' ').toLowerCase();
+      const reviews = (p.reviews ?? []).slice(0, 3)
+        .map((r: any) => (r.text?.text ?? '').slice(0, 300).toLowerCase()).join(' ');
+      const corpus  = `${name} ${types} ${reviews}`;
+      return kws.some(kw => corpus.includes(kw));
+    });
+    // Only enforce if we have enough matches — otherwise return all (tag unavailable in city)
+    return matching.length >= 2 ? matching : places;
   }
 
   return places;
@@ -1184,12 +1246,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const cityCenter = getCityCenter(city);
 
-  // Hotels: always restrict to lodging — prevents Tamil Nadu restaurants named "X Hotel" appearing
-  // Food: use vegetarian_restaurant for Veg/Pure Veg, or tag-specific type for Tier-1 cuisine tags
+  // includedType: only for Veg/Pure Veg diet (vegetarian_restaurant is reliable across all cities)
+  // Hotels: no includedType — post-fetch applyTagFilter excludes restaurant types instead
+  // Food cuisine tags: no includedType — post-fetch keyword filter is more reliable in smaller cities
   const apiIncludedType: string | undefined =
-    tab === 'Hotels' ? 'lodging' :
-    (filters.dietType === 'Veg' || filters.dietType === 'Pure Veg') ? 'vegetarian_restaurant' :
-    (filters.foodTag ? (FOOD_TAG_TYPES[filters.foodTag] ?? undefined) : undefined);
+    (tab === 'Food' && (filters.dietType === 'Veg' || filters.dietType === 'Pure Veg'))
+      ? 'vegetarian_restaurant' : undefined;
 
   try {
     // Primary fetch — Google returns ONLY the correct place type
@@ -1222,10 +1284,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Remove results outside the searched city
     const localPlaces = filterCityOnly(rawPlaces, city);
 
-    // ── Post-fetch strict binary filter ─────────────────────────────────────────────────────
-    // Rule: if we cannot confirm the place matches the active filter → remove it.
-    // Only applied to filters NOT already enforced at API level.
-    const hardFiltered = applyStrictFilter(localPlaces, tab, filters);
+    // Tag filter: exclude wrong-type places (restaurants in hotel results, wrong cuisine in food results)
+    const tagFiltered = applyTagFilter(localPlaces, tab, filters);
+
+    // Strict binary diet filter (Non-Veg / Pure Veg)
+    const hardFiltered = applyStrictFilter(tagFiltered, tab, filters);
 
     // Score remaining places for Gemini ranking priority (soft signals only — no exclusion)
     const filterScored = applyFilterScoring(hardFiltered, tab, filters);
@@ -1289,6 +1352,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         id:          p.id ?? `place-${globalIdx}`,
         name:        p.displayName?.text ?? 'Unknown',
         address:     p.formattedAddress  ?? 'Thanjavur, Tamil Nadu',
+        lat:         p.location?.latitude  ?? null,
+        lng:         p.location?.longitude ?? null,
         dist:        0,
         rating,
         reviewCount,

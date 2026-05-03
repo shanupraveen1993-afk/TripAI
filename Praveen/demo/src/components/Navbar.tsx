@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Search, MapPin, Home, History, User, Compass, LogOut, ChevronDown } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Search, MapPin, Home, History, User, Compass, LogOut, ChevronDown, X } from 'lucide-react';
+import { fetchAutocomplete, AutocompleteSuggestion } from '../api/client';
 
 export type MainSection = 'home' | 'history' | 'profile';
 
@@ -10,6 +11,7 @@ interface NavbarProps {
   userName: string;
   searchLocation: string;
   onSearchChange: (v: string) => void;
+  onLocationPick?: (display: string, area: string, lat?: number, lng?: number) => void;
 }
 
 const NAV_ITEMS: { id: MainSection; label: string; icon: React.ReactNode }[] = [
@@ -17,8 +19,86 @@ const NAV_ITEMS: { id: MainSection; label: string; icon: React.ReactNode }[] = [
   { id: 'history', label: 'Trips',   icon: <History className="w-5 h-5" /> },
 ];
 
-export function Navbar({ section, onSectionChange, onLogout, userName, searchLocation, onSearchChange }: NavbarProps) {
+function LocationSearch({ value, onChange, onPick }: {
+  value: string;
+  onChange: (v: string) => void;
+  onPick?: (display: string, area: string) => void;
+}) {
+  const [focused,     setFocused]     = useState(false);
+  const [suggestions, setSuggestions] = useState<AutocompleteSuggestion[]>([]);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleChange = (val: string) => {
+    onChange(val);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (val.trim().length >= 2) {
+      debounceRef.current = setTimeout(() => {
+        fetchAutocomplete(val, 'Thanjavur').then(setSuggestions);
+      }, 300);
+    } else {
+      setSuggestions([]);
+    }
+  };
+
+  const handlePick = (s: AutocompleteSuggestion) => {
+    const display = s.full || s.main;
+    const area    = s.main || s.full;
+    onChange(display);
+    setSuggestions([]);
+    setFocused(false);
+    onPick?.(display, area);
+  };
+
+  return (
+    <div className="relative w-full">
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted pointer-events-none" />
+      <input
+        type="text"
+        value={value}
+        onChange={e => handleChange(e.target.value)}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setTimeout(() => setFocused(false), 200)}
+        placeholder="Search area in Thanjavur…"
+        className="w-full pl-9 pr-8 py-2.5 bg-bg-app border border-border rounded-xl text-sm text-body focus:outline-none focus:ring-2 focus:ring-brand-soft focus:border-brand transition-colors"
+      />
+      {value && (
+        <button
+          type="button"
+          onClick={() => { onChange(''); setSuggestions([]); }}
+          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted hover:text-heading"
+        >
+          <X className="w-3.5 h-3.5" />
+        </button>
+      )}
+      {/* Autocomplete dropdown */}
+      {focused && suggestions.length > 0 && (
+        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-border rounded-xl shadow-xl z-50 overflow-hidden">
+          {suggestions.map((s, i) => (
+            <button
+              key={i}
+              type="button"
+              onMouseDown={() => handlePick(s)}
+              className="w-full text-left flex items-start gap-2.5 px-3 py-2.5 hover:bg-blue-50 transition-colors border-b border-gray-50 last:border-0"
+            >
+              <MapPin className="w-3.5 h-3.5 text-brand shrink-0 mt-0.5" />
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-heading truncate">{s.main || s.full}</p>
+                {s.secondary && <p className="text-xs text-muted truncate">{s.secondary}</p>}
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function Navbar({ section, onSectionChange, onLogout, userName, searchLocation, onSearchChange, onLocationPick }: NavbarProps) {
   const [profileOpen, setProfileOpen] = useState(false);
+
+  const handlePick = (display: string, area: string) => {
+    onLocationPick?.(display, area);
+  };
 
   return (
     <>
@@ -41,19 +121,11 @@ export function Navbar({ section, onSectionChange, onLogout, userName, searchLoc
 
           {/* Search bar — center, desktop only */}
           <div className="flex-1 max-w-sm mx-auto hidden md:block">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
-              <input
-                type="text"
-                value={searchLocation}
-                onChange={e => onSearchChange(e.target.value)}
-                placeholder="Search any destination…"
-                className="w-full pl-9 pr-10 py-2.5 bg-bg-app border border-border rounded-xl text-sm text-body focus:outline-none focus:ring-2 focus:ring-brand-soft focus:border-brand transition-colors"
-              />
-              {searchLocation && (
-                <MapPin className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-success" />
-              )}
-            </div>
+            <LocationSearch
+              value={searchLocation}
+              onChange={onSearchChange}
+              onPick={handlePick}
+            />
           </div>
 
           {/* User menu */}
@@ -99,16 +171,11 @@ export function Navbar({ section, onSectionChange, onLogout, userName, searchLoc
 
         {/* Mobile search bar */}
         <div className="md:hidden px-4 pb-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
-            <input
-              type="text"
-              value={searchLocation}
-              onChange={e => onSearchChange(e.target.value)}
-              placeholder="Search any destination…"
-              className="w-full pl-9 pr-4 py-2.5 bg-bg-app border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-soft transition-colors"
-            />
-          </div>
+          <LocationSearch
+            value={searchLocation}
+            onChange={onSearchChange}
+            onPick={handlePick}
+          />
         </div>
       </header>
 

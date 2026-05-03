@@ -46,6 +46,7 @@ export default function App() {
   const [liveItinerary, setLiveItinerary]   = useState<LiveItineraryStop[] | null>(null);
   const [apiError, setApiError]             = useState(false);
   const [searchSeed, setSearchSeed]         = useState(0);
+  const [searchArea, setSearchArea]         = useState('');
   const [activeTab, setActiveTab]     = useState<Tab>('Hotels');
   const [initialTab, setInitialTab]   = useState<Tab | undefined>(undefined);
   const [savedTrips, setSavedTrips]   = useState<SavedTrip[]>(() => {
@@ -162,7 +163,7 @@ export default function App() {
         const { results } = await fetchPlan(filters.tab, seed, {
           city:        filters.destination,
           hotelTag:    filters.hotelTag,
-          hotelArea:   filters.hotelArea,
+          hotelArea:   filters.hotelArea || searchArea,
           foodTag:     filters.foodTag,
           priceFilter: filters.priceFilter,
           minRating:   filters.minRating === '4.5+' ? 4.5 : filters.minRating === '4.0+' ? 4.0 : filters.minRating === '3.5+' ? 3.5 : 0,
@@ -335,6 +336,7 @@ export default function App() {
             <ResultsView
               tab={activeTab}
               destination="Thanjavur"
+              searchArea={searchArea}
               isFirstItinerary={itineraryGenCount === 1}
               isLoadingMore={false}
               hotels={activeTab === 'Hotels' ? (liveResults as PlaceResult[] ?? []) : []}
@@ -479,6 +481,7 @@ export default function App() {
         userName={user?.name ?? ''}
         searchLocation={searchLocation}
         onSearchChange={setSearchLocation}
+        onLocationPick={(display, area) => { setSearchLocation(display); setSearchArea(area); }}
       />
 
       <main className="pt-2">

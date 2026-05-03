@@ -9,62 +9,48 @@ const FIELD_MASK = [
   'places.formattedAddress',
 ].join(',');
 
-// Keywords per hotel tag — scanned across place name + reviews + types
+// Keywords per hotel tag — only tags with a real Places API field, type, or strong query signal
 const HOTEL_TAG_KEYWORDS: Record<string, string[]> = {
-  'Heritage':             ['heritage', 'historical', 'palace', 'traditional', 'fort', 'vintage', 'old'],
-  'Budget Friendly':      ['budget', 'affordable', 'cheap', 'economy', 'value for money', 'inexpensive'],
-  'Business':             ['business', 'corporate', 'conference', 'meeting', 'executive'],
-  'Family':               ['family', 'kids', 'children', 'spacious', 'suite'],
-  'Couple Friendly':      ['couple', 'romantic', 'cozy', 'peaceful'],
-  'Honeymoon':            ['honeymoon', 'romantic', 'anniversary', 'couple'],
-  'Temple Nearby':        ['temple', 'mandir', 'kovil', 'brihadeeswarar', 'big temple'],
+  'Heritage':             ['heritage', 'historical', 'palace', 'traditional', 'fort', 'vintage', 'colonial'],
+  'Business':             ['business', 'corporate', 'conference', 'meeting', 'executive', 'work'],
+  'Family':               ['family', 'kids', 'children', 'spacious', 'suite', 'bunk'],
+  'Near Temple':          ['temple', 'mandir', 'kovil', 'big temple', 'shiva', 'gopuram'],
   'Near Railway Station': ['railway', 'station', 'junction', 'rail'],
   'Near Bus Stand':       ['bus stand', 'bus stop', 'bus terminal'],
-  'City Centre':          ['city centre', 'main road', 'town', 'central', 'city center'],
-  'Rooftop Restaurant':   ['rooftop', 'terrace', 'top floor'],
-  'In-House Restaurant':  ['restaurant', 'dining', 'food court', 'kitchen'],
-  'Veg Kitchen':          ['vegetarian', 'veg', 'pure veg', 'satvik'],
-  'Breakfast Included':   ['breakfast', 'complimentary breakfast', 'free breakfast'],
-  'AC Rooms':             ['ac', 'air condition', 'air-condition', 'airconditioned'],
-  'WiFi':                 ['wifi', 'wi-fi', 'internet', 'wireless'],
-  'Parking':              ['parking', 'car park', 'valet'],
+  'City Centre':          ['city centre', 'main road', 'central', 'city center', 'town centre'],
+  'Rooftop':              ['rooftop', 'terrace', 'top floor', 'sky'],
+  'In-House Restaurant':  ['restaurant', 'dining', 'food court', 'kitchen', 'in-house'],
+  'Parking':              ['parking', 'car park', 'valet', 'garage'],
   'Pool':                 ['pool', 'swimming', 'swim'],
   'Spa':                  ['spa', 'wellness', 'massage', 'ayurvedic', 'ayurveda'],
-  'Gym':                  ['gym', 'fitness', 'workout'],
-  'Luxury':               ['luxury', 'premium', '5 star', 'five star', 'lavish'],
-  'Sea View':             ['sea view', 'ocean view', 'beach view', 'sea facing'],
+  'Luxury':               ['luxury', 'premium', '5 star', 'five star', 'lavish', 'resort'],
   'River View':           ['river view', 'river facing', 'waterfront', 'riverside'],
   'Mountain View':        ['mountain view', 'hill view', 'valley view'],
+  'Sea View':             ['sea view', 'ocean view', 'beach view', 'sea facing'],
 };
 
+// Food tags — only tags with a Google Place type or strong query signal
+// Pure Veg / Non-Veg excluded — handled by the dedicated Diet filter
 const FOOD_TAG_KEYWORDS: Record<string, string[]> = {
-  'South Indian':    ['south indian', 'idli', 'dosa', 'sambar', 'idly', 'vada', 'pongal', 'uttapam'],
-  'North Indian':    ['north indian', 'roti', 'naan', 'paneer', 'dal', 'sabzi', 'chapati'],
-  'Biryani':         ['biryani', 'briyani', 'dum biryani', 'biryani rice'],
-  'Thali':           ['thali', 'meals', 'unlimited', 'full meals'],
-  'Tiffin':          ['tiffin', 'breakfast', 'morning tiffin', 'light meal'],
-  'Filter Coffee':   ['filter coffee', 'filter kaapi', 'coffee', 'kaapi'],
-  'Banana Leaf':     ['banana leaf', 'vazhai ilai', 'leaf meals'],
-  'Street Food':     ['street food', 'chaat', 'stall', 'roadside'],
-  'Seafood':         ['seafood', 'fish', 'prawn', 'crab', 'lobster', 'fish curry'],
-  'Sweets':          ['sweets', 'mithai', 'halwa', 'laddu', 'mysore pak', 'sweet shop'],
-  'Cafe':            ['café', 'cafe', 'coffee shop', 'tea house'],
-  'Bakery':          ['bakery', 'bread', 'cake', 'pastry'],
-  'Chinese':         ['chinese', 'noodles', 'fried rice', 'manchurian', 'hakka'],
-  'Buffet':          ['buffet', 'unlimited', 'all you can eat'],
-  'Fast Food':       ['fast food', 'burger', 'pizza', 'quick bite'],
-  'Rooftop Dining':  ['rooftop', 'terrace', 'open top', 'sky dining'],
-  'Outdoor Seating': ['outdoor', 'open air', 'garden', 'courtyard'],
-  'Pure Veg':        ['pure veg', 'vegetarian', 'no non-veg', 'veg only', 'satvik'],
-  'Non-Veg':         ['chicken', 'mutton', 'fish', 'egg', 'non veg', 'meat'],
-  'Chaat & Snacks':  ['chaat', 'snack', 'pani puri', 'golgappa', 'samosa'],
-  'Juice & Shakes':  ['juice', 'milkshake', 'smoothie', 'fresh juice', 'lassi'],
-  'Ice Cream':       ['ice cream', 'gelato', 'kulfi'],
+  'South Indian':  ['south indian', 'idli', 'dosa', 'sambar', 'vada', 'pongal', 'uttapam', 'idly'],
+  'North Indian':  ['north indian', 'roti', 'naan', 'paneer', 'dal', 'sabzi', 'chapati', 'butter chicken'],
+  'Biryani':       ['biryani', 'briyani', 'dum biryani', 'biryani rice', 'chicken biryani'],
+  'Thali':         ['thali', 'meals', 'full meals', 'banana leaf', 'unlimited meals'],
+  'Tiffin':        ['tiffin', 'morning tiffin', 'light meal', 'idli tiffin'],
+  'Cafe':          ['café', 'cafe', 'coffee shop', 'coffee house', 'barista'],
+  'Street Food':   ['street food', 'chaat', 'stall', 'roadside', 'snacks'],
+  'Seafood':       ['seafood', 'fish curry', 'prawn', 'crab', 'lobster'],
+  'Sweets':        ['sweets', 'mithai', 'halwa', 'laddu', 'sweet shop', 'mysore pak'],
+  'Bakery':        ['bakery', 'bread', 'cake', 'pastry', 'baked'],
+  'Chinese':       ['chinese', 'noodles', 'fried rice', 'manchurian', 'hakka'],
+  'Fast Food':     ['fast food', 'burger', 'pizza', 'quick bite', 'wrap'],
+  'Chaat':         ['chaat', 'pani puri', 'golgappa', 'samosa', 'bhel'],
+  'Juice & Shakes':['juice', 'milkshake', 'smoothie', 'fresh juice', 'lassi'],
 };
 
-// Fallback tags when not enough data from a city — always relevant
-const HOTEL_FALLBACKS = ['AC Rooms', 'WiFi', 'Parking', 'Budget Friendly', 'City Centre', 'In-House Restaurant'];
-const FOOD_FALLBACKS  = ['South Indian', 'Filter Coffee', 'Thali', 'Tiffin', 'Sweets', 'Cafe'];
+// Fallback tags — reliable, universal across any Indian city
+const HOTEL_FALLBACKS = ['Heritage', 'City Centre', 'Parking', 'In-House Restaurant', 'Business', 'Family'];
+const FOOD_FALLBACKS  = ['South Indian', 'Biryani', 'Cafe', 'Thali', 'Street Food', 'Sweets'];
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin',  '*');

@@ -18,6 +18,8 @@ export interface PlaceResult {
   name: string;
   address: string;
   dist: number;
+  lat?: number | null;
+  lng?: number | null;
   rating: number;
   reviewCount: number;
   priceLevel: '₹' | '₹₹' | '₹₹₹' | '₹₹₹₹' | 'Free';
