@@ -34,35 +34,70 @@ const FIELD_MASK = [
 // Separate field mask when we need photo refs (Hotels / Food only)
 const FIELD_MASK_WITH_PHOTOS = FIELD_MASK + ',places.photos';
 
-const QUERIES: Record<string, string> = {
-  Hotels:    'hotels in Thanjavur Tamil Nadu near Brihadeeswarar Temple',
-  Food:      'restaurants in Thanjavur Tamil Nadu',
-  Itinerary: 'top tourist attractions in Thanjavur Tamil Nadu',
+// City coordinates lookup — used for Places API locationBias
+// Fallback: Thanjavur centre. Add cities here as the app expands.
+const CITY_CONFIG: Record<string, { lat: number; lng: number; state: string }> = {
+  'Thanjavur':  { lat: 10.787,  lng: 79.1378, state: 'Tamil Nadu'  },
+  'Tanjore':    { lat: 10.787,  lng: 79.1378, state: 'Tamil Nadu'  },
+  'Bangalore':  { lat: 12.9716, lng: 77.5946, state: 'Karnataka'   },
+  'Bengaluru':  { lat: 12.9716, lng: 77.5946, state: 'Karnataka'   },
+  'Chennai':    { lat: 13.0827, lng: 80.2707, state: 'Tamil Nadu'  },
+  'Coimbatore': { lat: 11.0168, lng: 76.9558, state: 'Tamil Nadu'  },
+  'Madurai':    { lat: 9.9252,  lng: 78.1198, state: 'Tamil Nadu'  },
+  'Mysore':     { lat: 12.2958, lng: 76.6394, state: 'Karnataka'   },
+  'Mysuru':     { lat: 12.2958, lng: 76.6394, state: 'Karnataka'   },
+  'Hyderabad':  { lat: 17.3850, lng: 78.4867, state: 'Telangana'   },
+  'Kochi':      { lat: 9.9312,  lng: 76.2673, state: 'Kerala'      },
+  'Trivandrum': { lat: 8.5241,  lng: 76.9366, state: 'Kerala'      },
+  'Pondicherry':{ lat: 11.9416, lng: 79.8083, state: 'Puducherry'  },
 };
 
-// Hotel tag → search query term — changes the Google Places query so results differ per selection
+function getCityCenter(city: string): { latitude: number; longitude: number } {
+  const key = city.trim().toLowerCase();
+  for (const [name, cfg] of Object.entries(CITY_CONFIG)) {
+    if (name.toLowerCase() === key) return { latitude: cfg.lat, longitude: cfg.lng };
+  }
+  return { latitude: 10.787, longitude: 79.1378 }; // default Thanjavur
+}
+
+function getCityState(city: string): string {
+  const key = city.trim().toLowerCase();
+  for (const [name, cfg] of Object.entries(CITY_CONFIG)) {
+    if (name.toLowerCase() === key) return cfg.state;
+  }
+  return 'Tamil Nadu';
+}
+
+// Food tags that map to a Google Places includedType — API restricts results at source
+const FOOD_TAG_TYPES: Record<string, string> = {
+  'South Indian': 'south_indian_restaurant',
+  'North Indian': 'north_indian_restaurant',
+  'Seafood':      'seafood_restaurant',
+  'Cafe':         'cafe',
+  'Bakery':       'bakery',
+  'Fast Food':    'fast_food_restaurant',
+  'Chinese':      'chinese_restaurant',
+};
+
+// Hotel tag → search query modifier — appended to city-level query
+// All entries are city-agnostic (no hardcoded landmark names)
 const HOTEL_TAG_SEARCH: Record<string, string> = {
-  // Location-based (highest accuracy — Places API understands proximity)
-  'Temple Nearby':        'hotel near Brihadeeswarar Temple Big Temple',
-  'Near Railway Station': 'hotel near Thanjavur railway junction station',
-  'Near Bus Stand':       'hotel near Thanjavur new bus stand',
-  'City Centre':          'hotel Thanjavur city centre main road',
-  // Type
   'Heritage':             'heritage boutique historical hotel',
-  'Budget Friendly':      'budget affordable economy hotel',
-  'Family':               'family hotel',
-  'Business':             'business corporate hotel',
-  // Amenities
-  'AC Rooms':             'air conditioned hotel AC',
-  'WiFi':                 'hotel wifi',
-  'Parking':              'hotel with parking',
+  'Business':             'business corporate executive hotel',
+  'Family':               'family hotel children spacious',
+  'Near Temple':          'hotel near temple',
+  'Near Railway Station': 'hotel near railway station junction',
+  'Near Bus Stand':       'hotel near bus stand terminal',
+  'City Centre':          'hotel city centre main road central',
+  'Rooftop':              'rooftop hotel terrace restaurant',
   'In-House Restaurant':  'hotel with restaurant dining',
-  'Rooftop Restaurant':   'rooftop restaurant hotel terrace',
-  'Veg Kitchen':          'vegetarian pure veg hotel',
-  'Breakfast Included':   'hotel breakfast included',
-  // Guest type
-  'Couple Friendly':      'couple friendly hotel',
-  'Honeymoon':            'romantic honeymoon hotel',
+  'Parking':              'hotel with parking',
+  'Pool':                 'hotel swimming pool',
+  'Spa':                  'hotel spa wellness',
+  'Luxury':               'luxury premium five star hotel',
+  'River View':           'river view hotel waterfront',
+  'Mountain View':        'mountain view hill hotel',
+  'Sea View':             'sea view beach hotel',
 };
 
 // Hotel price range → extra query keyword so Places returns price-relevant results
@@ -84,26 +119,25 @@ const PERSONA_QUERY: Record<string, string> = {
 };
 
 function buildHotelQuery(filters: UserFilters): string {
-  const tags = (filters.hotelTags ?? []).filter(t => t);
+  const city      = filters.city  ?? 'Thanjavur';
+  const state     = getCityState(city);
+  const tagTerm   = filters.hotelTag ? (HOTEL_TAG_SEARCH[filters.hotelTag] ?? filters.hotelTag.toLowerCase()) : '';
   const priceKw   = (filters.priceFilter && filters.priceFilter !== 'Any')
     ? (HOTEL_PRICE_QUERY[filters.priceFilter] ?? '') : '';
   const personaKw = (filters.persona && filters.persona !== '')
     ? (PERSONA_QUERY[filters.persona] ?? '') : '';
 
   if (filters.hotelArea) {
-    const tagTerms = tags.map(t => HOTEL_TAG_SEARCH[t] ?? t).join(' ');
-    return `${personaKw} ${priceKw} ${tagTerms} hotel near ${filters.hotelArea} Thanjavur Tamil Nadu`.replace(/\s+/g, ' ').trim();
+    return `${personaKw} ${priceKw} ${tagTerm} hotel near ${filters.hotelArea} ${city} ${state}`.replace(/\s+/g, ' ').trim();
   }
-  if (tags.length > 0) {
-    const primaryTerm   = HOTEL_TAG_SEARCH[tags[0]] ?? tags[0];
-    const modifierTerms = tags.slice(1).map(t => HOTEL_TAG_SEARCH[t] ?? t).join(' ');
-    return `${personaKw} ${priceKw} ${primaryTerm} ${modifierTerms} in Thanjavur Tamil Nadu`.replace(/\s+/g, ' ').trim();
+  if (tagTerm) {
+    return `${personaKw} ${priceKw} ${tagTerm} in ${city} ${state}`.replace(/\s+/g, ' ').trim();
   }
-  return `${personaKw} ${priceKw} hotels in Thanjavur Tamil Nadu near Brihadeeswarar Temple`.replace(/\s+/g, ' ').trim();
+  return `${personaKw} ${priceKw} hotels in ${city} ${state}`.replace(/\s+/g, ' ').trim();
 }
 
-// Thanjavur city centre — used for location-restricted and location-biased searches
-const THANJAVUR_CENTER = { latitude: 10.787, longitude: 79.1378 };
+// Default city centre — overridden per-request via FetchOptions.center
+const DEFAULT_CENTER = { latitude: 10.787, longitude: 79.1378 };
 
 function mapPriceLevel(level: string): string {
   const map: Record<string, string> = {
@@ -153,12 +187,12 @@ const SEED_PREFIX: Record<number, string> = {
 
 interface FetchOptions {
   withPhotos?:   boolean;
-  radiusKm?:     number;
   minRating?:    number;
   // API-level filters — Google enforces these before returning any results
   priceLevels?:  string[];  // e.g. ['PRICE_LEVEL_INEXPENSIVE'] — direct Places API param
   openNow?:      boolean;   // true = only currently open places
   includedType?: string;    // e.g. 'vegetarian_restaurant' — single place type restriction
+  center?:       { latitude: number; longitude: number }; // city centre for locationBias
 }
 
 // Hotels/Food use locationBias (city-centred); filterThanjavurOnly enforces strict locality.
@@ -169,13 +203,13 @@ async function fetchPlaces(
   radiusKm = 15,
   opts: FetchOptions = {},
 ) {
-  const { withPhotos = false, minRating = 0, priceLevels, openNow, includedType } = opts;
+  const { withPhotos = false, minRating = 0, priceLevels, openNow, includedType, center = DEFAULT_CENTER } = opts;
   const rankPreference = SEED_RANK[searchSeed % 4] ?? 'RELEVANCE';
   const prefix         = SEED_PREFIX[searchSeed % 4] ?? '';
 
   const locationParam = {
     locationBias: {
-      circle: { center: THANJAVUR_CENTER, radius: radiusKm * 1000 },
+      circle: { center, radius: radiusKm * 1000 },
     },
   };
 
@@ -212,28 +246,36 @@ async function fetchPlaces(
   return data.places ?? [];
 }
 
-// Ensure results are actually in Thanjavur — removes stray nearby-city results
-function filterThanjavurOnly(places: any[]): any[] {
+// Ensure results are in the searched city — removes stray nearby-city results
+function filterCityOnly(places: any[], cityName: string): any[] {
+  const cn = cityName.toLowerCase().trim();
+  // Also check common aliases (Tanjore = Thanjavur, Bengaluru = Bangalore)
+  const aliases: Record<string, string[]> = {
+    thanjavur: ['tanjore'],
+    bangalore: ['bengaluru'],
+    mysore:    ['mysuru'],
+    trivandrum:['thiruvananthapuram'],
+  };
+  const alts = aliases[cn] ?? [];
   const inCity = places.filter(p => {
     const addr = (p.formattedAddress ?? '').toLowerCase();
-    return addr.includes('thanjavur') || addr.includes('tanjore');
+    return addr.includes(cn) || alts.some(a => addr.includes(a));
   });
-  // Only enforce if we have enough results; otherwise keep all to avoid empty set
   return inCity.length >= 2 ? inCity : places;
 }
 
 interface UserFilters {
-  hotelTags?:    string[];
-  hotelArea?:    string;
-  persona?:      string;    // 'Solo' | 'Couple' | 'Family' | 'Business' | '' — shapes hotel query + Gemini criteria
-  foodTags?:     string[];  // cuisine/type tags — primary query anchor
-  foodLocation?: string;    // area within Thanjavur e.g. "New Bus Stand" — narrows Places search
-  priceFilter?:  string;   // 'Any' | INR range label — hard-filtered via priceLevel + review keywords
-  minRating?:    number;   // 0 = any; hard-filtered via rating field
-  openNow?:      boolean;  // hard-filtered via openNow boolean from Places API
-  dietType?:     string;   // 'Any' | 'Veg' | 'Non-Veg' | 'Pure Veg' — hard-filtered via servesVegetarianFood + review scan
-  dineMode?:     string;   // 'Any' | 'Dine-in' | 'Takeout' — hard-filtered via dineIn/takeout
-  mealTime?:     string;   // 'Any' | 'Breakfast' | 'Lunch' | 'Dinner' — injected into Places query
+  city?:        string;   // city name — used in queries and locationBias coords
+  hotelTag?:    string;   // single hotel tag — maps to HOTEL_TAG_SEARCH query term
+  hotelArea?:   string;   // free-text area within city — added to Places query
+  persona?:     string;   // 'Solo' | 'Couple' | 'Family' | 'Business' | ''
+  foodTag?:     string;   // single cuisine/type tag — maps to includedType or query term
+  priceFilter?: string;   // 'Any' | PRICE_LEVEL_* — passed as priceLevels to Places API
+  minRating?:   number;   // 0 = any — passed to Places API minRating
+  openNow?:     boolean;  // passed as openNow to Places API
+  dietType?:    string;   // 'Any' | 'Veg' | 'Non-Veg' | 'Pure Veg'
+  dineMode?:    string;   // 'Any' | 'Dine-in' | 'Takeout'
+  mealTime?:    string;   // 'Any' | 'Breakfast' | 'Lunch' | 'Dinner'
 }
 
 // Map UI food tags → search-friendly terms for Places API query
@@ -265,34 +307,26 @@ const MEAL_TIME_QUERY: Record<string, string> = {
 };
 
 function buildFoodQuery(filters: UserFilters): string {
-  const tags = (filters.foodTags ?? []).filter(t => t);
+  const city  = filters.city ?? 'Thanjavur';
+  const state = getCityState(city);
+  const tag   = filters.foodTag ?? '';
 
-  // First selected tag is the primary anchor; remaining tags are modifiers
-  // No slice limit — all selected tags inform the query
-  const primaryTag   = tags.length > 0 ? (FOOD_TAG_SEARCH[tags[0]] ?? tags[0].toLowerCase()) : '';
-  const modifierTags = tags.slice(1).map(t => FOOD_TAG_SEARCH[t] ?? t.toLowerCase()).join(' ');
-  const tagTerms     = [primaryTag, modifierTags].filter(Boolean).join(' ');
+  // If the tag has an includedType, the API handles type restriction — query uses name for context
+  // If no includedType, the tag text IS the primary query anchor
+  const tagTerm = tag ? (FOOD_TAG_TYPES[tag] ? tag.toLowerCase() + ' restaurant' : (FOOD_TAG_SEARCH[tag] ?? tag.toLowerCase())) : '';
 
-  // Diet prefix — steers Places API toward relevant results
+  // Diet prefix — steers Places API toward relevant results (when includedType not active)
   const dietPfx = filters.dietType === 'Pure Veg' ? 'pure vegetarian only veg no non-veg '        :
                   filters.dietType === 'Veg'       ? 'vegetarian veg '                             :
                   filters.dietType === 'Non-Veg'   ? 'non vegetarian chicken mutton fish meat egg ' : '';
 
-  // Price prefix (new INR labels)
-  const pricePfx = filters.priceFilter === 'Under ₹100' ? 'budget cheap street food ' :
-                   filters.priceFilter === '₹600+'       ? 'fine dining premium '      : '';
-
-  // Meal time prefix — injects meal-specific keywords so Places returns relevant results
+  // Meal time prefix
   const mealPfx = (filters.mealTime && filters.mealTime !== 'Any')
     ? (MEAL_TIME_QUERY[filters.mealTime] ?? '') + ' '
     : '';
 
-  const baseTerm = tagTerms || 'restaurant';
-  // If user has provided a specific area, narrow the search to that locality
-  const locationSuffix = (filters.foodLocation && filters.foodLocation.trim())
-    ? `near ${filters.foodLocation} Thanjavur`
-    : 'in Thanjavur Tamil Nadu';
-  return `${mealPfx}${pricePfx}${dietPfx}${baseTerm} ${locationSuffix}`.replace(/\s+/g, ' ').trim();
+  const baseTerm = tagTerm || 'restaurant';
+  return `${mealPfx}${dietPfx}${baseTerm} in ${city} ${state}`.replace(/\s+/g, ' ').trim();
 }
 
 // Hotel price range buckets — NON-OVERLAPPING tiers for strict Places API priceLevels param.
@@ -399,8 +433,8 @@ function scorePlaceForFilters(place: any, tab: string, f: UserFilters): PlaceSco
     }
 
     // ── Craving / Cuisine ─────────────────────────────────────────────────────
-    if (f.foodTags?.length) {
-      const tag  = f.foodTags[0];
+    if (f.foodTag) {
+      const tag  = f.foodTag;
       const term = FOOD_TAG_SEARCH[tag] ?? tag.toLowerCase();
       const kws  = term.split(' ').filter(k => k.length > 3);
       const hits = kws.filter(kw => allText.includes(kw)).length;
@@ -432,13 +466,11 @@ function scorePlaceForFilters(place: any, tab: string, f: UserFilters): PlaceSco
       C.area = { score: hits > 0 ? 1 : 0.4, weight: 2 };
     }
 
-    // ── Persona-derived Tags ──────────────────────────────────────────────────
-    if (f.hotelTags?.length) {
-      const matched = f.hotelTags.filter(tag => {
-        const kws = (HOTEL_TAG_SEARCH[tag] ?? tag).toLowerCase().split(' ').filter(k => k.length > 3);
-        return kws.some(k => allText.includes(k));
-      }).length;
-      C.tags = { score: matched / f.hotelTags.length, weight: 2 };
+    // ── Hotel Tag match (soft ranking signal) ────────────────────────────────
+    if (f.hotelTag) {
+      const kws = (HOTEL_TAG_SEARCH[f.hotelTag] ?? f.hotelTag).toLowerCase().split(' ').filter(k => k.length > 3);
+      const hit = kws.some(k => allText.includes(k));
+      C.tags = { score: hit ? 1 : 0.3, weight: 2 };
     }
   }
 
@@ -546,11 +578,13 @@ async function geminiRankAndAnalyse(
       ...allReviews.map((r: any) => (r.text?.text ?? '').toLowerCase()),
     ].join(' ');
 
-    const selectedTags = tab === 'Hotels' ? (filters.hotelTags ?? []) : (filters.foodTags ?? []);
+    // Single tag — check if the place's name/reviews mention it
+    const activeTag = tab === 'Hotels' ? (filters.hotelTag ?? '') : (filters.foodTag ?? '');
     const tagMentions: Record<string, boolean> = {};
-    for (const tag of selectedTags) {
-      const keywords = (HOTEL_TAG_SEARCH[tag] ?? tag).toLowerCase().split(' ').filter(k => k.length > 3);
-      tagMentions[tag] = keywords.some(k => allText.includes(k));
+    if (activeTag) {
+      const keywords = (HOTEL_TAG_SEARCH[activeTag] ?? FOOD_TAG_SEARCH[activeTag] ?? activeTag)
+        .toLowerCase().split(' ').filter((k: string) => k.length > 3);
+      tagMentions[activeTag] = keywords.some((k: string) => allText.includes(k));
     }
 
     return {
@@ -603,8 +637,8 @@ async function geminiRankAndAnalyse(
       criteria.push({ label: 'Price tier', value: `${filters.priceFilter} — CRITICAL: if a hotel's priceLevel field is set to a different tier, EXCLUDE it. If priceLevel is missing, only include the hotel if review keywords support this tier — exclude if review keywords suggest a different price range.`, weight: 'critical' });
     if (filters.minRating && filters.minRating > 0)
       criteria.push({ label: 'Min rating', value: `${filters.minRating}+`, weight: 'important' });
-    if (filters.hotelTags?.length)
-      criteria.push({ label: 'Required features', value: filters.hotelTags.join(', '), weight: 'critical' });
+    if (filters.hotelTag)
+      criteria.push({ label: 'Hotel type', value: filters.hotelTag, weight: 'critical' });
     if (filters.hotelArea)
       criteria.push({ label: 'Preferred area', value: `near ${filters.hotelArea}`, weight: 'important' });
     criteria.push({ label: 'Implicit need', value: 'walkable or close to Brihadeeswarar Temple', weight: 'important' });
@@ -615,8 +649,8 @@ async function geminiRankAndAnalyse(
       criteria.push({ label: 'Diet', value: 'Non-Veg — EXCLUDE restaurants whose reviews have ZERO mentions of chicken/mutton/fish/biryani/meat/egg/seafood. Rank places with the most non-veg review mentions highest. A place with servesVegetarianFood=true but NO non-veg review keywords must be ranked LAST or excluded.', weight: 'critical' });
     else if (filters.dietType && filters.dietType !== 'Any')
       criteria.push({ label: 'Diet', value: filters.dietType, weight: 'critical' });
-    if (filters.foodTags?.length)
-      criteria.push({ label: 'Cuisine / type (PRIMARY)', value: filters.foodTags.join(', '), weight: 'critical' });
+    if (filters.foodTag)
+      criteria.push({ label: 'Cuisine / type (PRIMARY)', value: filters.foodTag, weight: 'critical' });
     if (filters.mealTime && filters.mealTime !== 'Any')
       criteria.push({ label: 'Meal time', value: filters.mealTime + ' — rank places that specialise in this meal highest', weight: 'critical' });
     if (filters.priceFilter && filters.priceFilter !== 'Any')
@@ -845,7 +879,7 @@ FOOD & MEAL TIMING:
 • Auto fares: ₹50–80 short hops, ₹100–150 medium hops, ₹200–300 cross-town
 `;
 
-async function geminiItinerary(places: any[], startTime = '07:00', stopCount = 5): Promise<any[]> {
+async function geminiItinerary(places: any[], startTime = '07:00', stopCount = 5, city = 'Thanjavur'): Promise<any[]> {
   if (!GEMINI_KEY || places.length === 0) return [];
 
   const topPlaces = places.slice(0, 8).map(p => ({
@@ -862,16 +896,24 @@ async function geminiItinerary(places: any[], startTime = '07:00', stopCount = 5
   const startStr = `${hour12}:${m.toString().padStart(2, '0')} ${period}`;
   const sessionLabel = stopCount === 5 ? 'full day' : stopCount === 3 ? 'afternoon' : 'evening';
 
-  const prompt = `You are a Thanjavur expert trip planner. Create a ${stopCount}-stop ${sessionLabel} itinerary starting at ${startStr}.
+  const isThanjavur = /thanjavur|tanjore/i.test(city);
+  const cityFacts   = isThanjavur ? THANJAVUR_FACTS : '';
+  // City-specific sequencing rules injected only when we have verified ground truth
+  const citySeqRules = isThanjavur ? `
+SEQUENCING RULES (follow in order):
+1. If Brihadeeswarar Temple is in the list → it MUST be stop 1 (best visited before 9 AM when crowd is low; inner sanctum closes 12:30 PM)
+2. Thanjavur Palace, Saraswathi Mahal, Art Gallery are a walkable cluster → schedule consecutively, no auto needed between them` : `
+SEQUENCING RULES:
+1. Start with the most iconic / highest-rated attraction
+2. Group walkable/nearby attractions consecutively to minimise travel`;
 
-${THANJAVUR_FACTS}
+  const prompt = `You are a local expert trip planner for ${city}. Create a ${stopCount}-stop ${sessionLabel} itinerary starting at ${startStr}.
+
+${cityFacts}
 
 AVAILABLE ATTRACTIONS (from Google Places — use names as given):
 ${JSON.stringify(topPlaces)}
-
-SEQUENCING RULES (follow in order):
-1. If Brihadeeswarar Temple is in the list → it MUST be stop 1 (best visited before 9 AM when crowd is low; inner sanctum closes 12:30 PM)
-2. Thanjavur Palace, Saraswathi Mahal, Art Gallery are a walkable cluster → schedule consecutively, no auto needed between them
+${citySeqRules}
 3. Schedule a lunch stop around 12:00–12:30 PM (even if no restaurant is in the list — add "Thanjavur Thali Lunch" as a stop with tip to visit Sri Venkatramana Bhavan or Chola Mess)
 4. If start time is before 8 AM and Big Temple is included → visitor can do 2 full sessions before 10 AM
 5. Sequence remaining stops to minimise backtracking
@@ -953,7 +995,7 @@ Return a JSON array of EXACTLY ${stopCount} stops. Return ONLY valid JSON. No ma
 //   3. The `preparation` field is asked to be slot-specific (Morning crowd is
 //      different from Evening crowd).
 // ─────────────────────────────────────────────────────────────────────────────
-async function geminiExploreGuide(place: any, locationName: string, timeSlot: string) {
+async function geminiExploreGuide(place: any, locationName: string, timeSlot: string, city = 'Thanjavur') {
   if (!GEMINI_KEY) return null;
 
   const timeRange = timeSlot === 'Morning'   ? '6 AM–12 PM'
@@ -966,9 +1008,12 @@ async function geminiExploreGuide(place: any, locationName: string, timeSlot: st
     ago:   r.relativePublishTimeDescription ?? '',
   }));
 
-  const prompt = `You are a Thanjavur expert guide creating a personalised visit plan for ${locationName} during the ${timeSlot} (${timeRange}).
+  // Only inject Thanjavur-specific ground-truth facts for Thanjavur — other cities use live data only
+  const cityFacts = /thanjavur|tanjore/i.test(city) ? THANJAVUR_FACTS : '';
 
-${THANJAVUR_FACTS}
+  const prompt = `You are a local expert guide for ${city} creating a personalised visit plan for ${locationName} during the ${timeSlot} (${timeRange}).
+
+${cityFacts}
 
 PLACE LIVE DATA (from Google Places):
 - Name: ${place.displayName?.text ?? locationName}
@@ -1036,11 +1081,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (tab === 'Explore') {
     const locationName = (req.body?.exploreTarget ?? 'Brihadeeswarar Temple') as string;
     const timeSlot     = (req.body?.timeSlot ?? 'Morning') as string;
+    const exploreCity  = ((req.body?.city as string) ?? 'Thanjavur').trim();
+    const exploreState = getCityState(exploreCity);
+    const exploreCenter = getCityCenter(exploreCity);
 
     try {
-      const places = await fetchPlaces(`${locationName} Thanjavur Tamil Nadu`, 0, 50);
+      const places = await fetchPlaces(`${locationName} ${exploreCity} ${exploreState}`, 0, 50, { center: exploreCenter });
       const place  = places[0] ?? {};
-      const guide  = await geminiExploreGuide(place, locationName, timeSlot);
+      const guide  = await geminiExploreGuide(place, locationName, timeSlot, exploreCity);
 
       return res.json({
         exploreResult: {
@@ -1076,13 +1124,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // ── Itinerary: AI-generated day plan ─────────────────────────────────────
   if (tab === 'Itinerary') {
-    const startTime  = (req.body?.startTime  ?? '07:00') as string;
-    const stopCount  = Math.min(Math.max(parseInt(String(req.body?.stopCount ?? '5'), 10) || 5, 2), 5);
-    const searchSeed = parseInt((req.body?.searchSeed ?? '0') as string, 10);
+    const startTime    = (req.body?.startTime  ?? '07:00') as string;
+    const stopCount    = Math.min(Math.max(parseInt(String(req.body?.stopCount ?? '5'), 10) || 5, 2), 5);
+    const searchSeed   = parseInt((req.body?.searchSeed ?? '0') as string, 10);
+    const itinCity     = ((req.body?.city as string) ?? 'Thanjavur').trim();
+    const itinState    = getCityState(itinCity);
+    const itinCenter   = getCityCenter(itinCity);
 
     try {
-      const rawPlaces = await fetchPlaces(QUERIES.Itinerary, searchSeed, 35);
-      const stops     = await geminiItinerary(rawPlaces, startTime, stopCount);
+      const rawPlaces = await fetchPlaces(
+        `top tourist attractions in ${itinCity} ${itinState}`,
+        searchSeed, 35, { center: itinCenter },
+      );
+      const stops     = await geminiItinerary(rawPlaces, startTime, stopCount, itinCity);
 
       if (stops.length === 0) {
         return res.status(500).json({ error: 'Could not generate itinerary' });
@@ -1097,18 +1151,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // ── Hotels / Food: ranked list via Gemini comparative analysis ───────────
   const searchSeed = parseInt((req.body?.searchSeed ?? '0') as string, 10);
 
+  const city = ((req.body?.city as string) ?? 'Thanjavur').trim();
+
   const filters: UserFilters = {
-    hotelTags:    req.body?.hotelTags    ?? [],
-    hotelArea:    req.body?.hotelArea    ?? '',
-    persona:      req.body?.persona      ?? '',
-    foodTags:     req.body?.foodTags     ?? [],
-    foodLocation: req.body?.foodLocation ?? '',
-    priceFilter:  req.body?.priceFilter  ?? 'Any',
-    minRating:    Number(req.body?.minRating ?? 0),
-    openNow:      req.body?.openNow === true,
-    dietType:     req.body?.dietType     ?? 'Any',
-    dineMode:     req.body?.dineMode     ?? 'Any',
-    mealTime:     req.body?.mealTime     ?? 'Any',
+    city,
+    hotelTag:    req.body?.hotelTag    ?? '',
+    hotelArea:   req.body?.hotelArea   ?? '',
+    persona:     req.body?.persona     ?? '',
+    foodTag:     req.body?.foodTag     ?? '',
+    priceFilter: req.body?.priceFilter ?? 'Any',
+    minRating:   Number(req.body?.minRating ?? 0),
+    openNow:     req.body?.openNow === true,
+    dietType:    req.body?.dietType    ?? 'Any',
+    dineMode:    req.body?.dineMode    ?? 'Any',
+    mealTime:    req.body?.mealTime    ?? 'Any',
   };
 
   // Build query from filters — changes the Places search so different filters → different results
@@ -1126,36 +1182,44 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Open Now: pass to API so only open places are returned.
   const apiOpenNow = filters.openNow === true;
 
-  // Veg / Pure Veg: use includedType to restrict to vegetarian_restaurant.
-  // Fallback to broader search when this returns < 3 (Thanjavur has limited type-tagged data).
-  const apiIncludedType = (tab === 'Food' && (filters.dietType === 'Veg' || filters.dietType === 'Pure Veg'))
-    ? 'vegetarian_restaurant'
-    : undefined;
+  const cityCenter = getCityCenter(city);
+
+  // Diet includedType: vegetarian_restaurant for Veg/Pure Veg (Google API-level)
+  const dietIncludedType = (tab === 'Food' && (filters.dietType === 'Veg' || filters.dietType === 'Pure Veg'))
+    ? 'vegetarian_restaurant' : undefined;
+
+  // Food tag includedType: Tier-1 tags map directly to a Google Place type
+  // Only used when diet doesn't already set an includedType
+  const tagIncludedType = (tab === 'Food' && !dietIncludedType && filters.foodTag)
+    ? (FOOD_TAG_TYPES[filters.foodTag] ?? undefined) : undefined;
+
+  const apiIncludedType = dietIncludedType ?? tagIncludedType;
 
   try {
-    // Primary fetch with all API-level filters active
+    // Primary fetch — all API-level filters applied at source
     let rawPlaces = await fetchPlaces(query, searchSeed, 15, {
       withPhotos:   true,
       minRating:    apiMinRating,
       priceLevels:  apiPriceLevels.length ? apiPriceLevels : undefined,
       openNow:      apiOpenNow || undefined,
       includedType: apiIncludedType,
+      center:       cityCenter,
     });
 
-    // Fallback: if includedType restricted the results too aggressively, retry without it
-    // and rely on post-fetch strict diet filter instead
+    // Fallback: includedType may be too restrictive in smaller cities — retry without it
     if (apiIncludedType && rawPlaces.length < 4) {
       const fallback = await fetchPlaces(query, searchSeed, 15, {
         withPhotos:  true,
         minRating:   apiMinRating,
         priceLevels: apiPriceLevels.length ? apiPriceLevels : undefined,
         openNow:     apiOpenNow || undefined,
+        center:      cityCenter,
       });
       if (fallback.length > rawPlaces.length) rawPlaces = fallback;
     }
 
-    // Secondary guard: drop any result whose address doesn't mention Thanjavur/Tanjore
-    const localPlaces = filterThanjavurOnly(rawPlaces);
+    // Remove results outside the searched city
+    const localPlaces = filterCityOnly(rawPlaces, city);
 
     // ── Post-fetch strict binary filter ─────────────────────────────────────────────────────
     // Rule: if we cannot confirm the place matches the active filter → remove it.
