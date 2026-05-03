@@ -561,25 +561,25 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1.5">
               Who's staying?
             </label>
-            <div className="grid grid-cols-2 gap-1.5">
+            <div className="flex gap-1.5">
               {([
-                { label: 'Solo',     sub: 'Value & proximity'  },
-                { label: 'Couple',   sub: 'Ambience & comfort' },
-                { label: 'Family',   sub: 'Space & safety'     },
-                { label: 'Business', sub: 'WiFi & central'     },
+                { label: 'Solo',     emoji: '🧳' },
+                { label: 'Couple',   emoji: '💑' },
+                { label: 'Family',   emoji: '👨‍👩‍👧' },
+                { label: 'Business', emoji: '💼' },
               ] as const).map(p => (
                 <button
                   key={p.label}
                   type="button"
                   onClick={() => setPersona(prev => prev === p.label ? '' : p.label)}
-                  className="flex flex-col items-start px-3 py-2 rounded-xl border-2 text-left transition-all"
+                  className="flex-1 flex flex-col items-center gap-0.5 py-2.5 rounded-xl border-2 transition-all"
                   style={persona === p.label
                     ? { borderColor: '#1C64F2', background: '#EBF5FF', color: '#1C64F2' }
                     : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
                   }
                 >
-                  <p className="text-[11px] font-black leading-tight">{p.label}</p>
-                  <p className="text-[9px] opacity-60 leading-tight">{p.sub}</p>
+                  <span className="text-base leading-none">{p.emoji}</span>
+                  <span className="text-[10px] font-black leading-tight">{p.label}</span>
                 </button>
               ))}
             </div>

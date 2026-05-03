@@ -1206,9 +1206,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       center:       cityCenter,
     });
 
-    // Fallback: includedType may be too restrictive in smaller cities — retry without it
+    // Fallback 1: Food includedType too restrictive for smaller cities — retry without it
     if (apiIncludedType && rawPlaces.length < 4) {
       const fallback = await fetchPlaces(query, searchSeed, 15, {
+        withPhotos:  true,
+        minRating:   apiMinRating,
+        priceLevels: apiPriceLevels.length ? apiPriceLevels : undefined,
+        openNow:     apiOpenNow || undefined,
+        center:      cityCenter,
+      });
+      if (fallback.length > rawPlaces.length) rawPlaces = fallback;
+    }
+
+    // Fallback 2: Hotel tag query too specific — retry broader so we always have a full pool
+    if (tab === 'Hotels' && filters.hotelTag && rawPlaces.length < 6) {
+      const broadQuery = `hotels in ${city} ${getCityState(city)}`;
+      const fallback = await fetchPlaces(broadQuery, searchSeed, 15, {
         withPhotos:  true,
         minRating:   apiMinRating,
         priceLevels: apiPriceLevels.length ? apiPriceLevels : undefined,
@@ -1229,9 +1242,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Score remaining places for Gemini ranking priority (soft signals only — no exclusion)
     const filterScored = applyFilterScoring(hardFiltered, tab, filters);
 
-    // Quality floor — drop very-low-signal places; relax if pool would be too small
-    const qualified    = filterScored.filter(({ place }) => (place.rating ?? 0) >= 3.8 && (place.userRatingCount ?? 0) >= 10);
-    const scoredToRank = qualified.length >= 2 ? qualified : filterScored;
+    // Quality floor — 3.5★ and 5+ reviews minimum; relax if pool would be too small
+    const qualified    = filterScored.filter(({ place }) => (place.rating ?? 0) >= 3.5 && (place.userRatingCount ?? 0) >= 5);
+    const scoredToRank = qualified.length >= 3 ? qualified : filterScored;
 
     const placesToRank = scoredToRank.map(s => s.place);
     const placeScores  = scoredToRank.map(s => s.filterScore);
