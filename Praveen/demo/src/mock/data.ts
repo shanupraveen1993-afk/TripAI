@@ -11,6 +11,7 @@ export interface ReviewItem {
   location: string;
   stars: number;
   ago: string;
+  highlight?: string;
 }
 
 export interface PlaceResult {
@@ -28,12 +29,19 @@ export interface PlaceResult {
   reviewSummary?:      string;
   aiNote:              string;
   filterVerification?: string | null;
+  matchedKeyword?:     string | null;
   trendVerdict?: 'improving' | 'declining' | 'stable';
   trendReason?: string;
+  matchedTags?:   string[];
+  confirmedTags?: string[];
+  tagEvidence?:   string;
+  matchScore?:    number;    // 0-100 tag match percentage
+  filterLayer?:   1 | 2 | 3 | 4;
   photoRef?: string | null;
   websiteUri?: string | null;
   googleMapsUri?: string | null;
   reviews: ReviewItem[];
+  recentRatings?: number[];
   photoColor: string;
   aiDetail: AiDetail;
 }
@@ -49,6 +57,12 @@ export interface ItineraryStop {
   yesterdayTraffic: TrafficLevel;
   travelToNext?: string;
   departBy?: string;
+  crowdLevel?: 'Low' | 'Moderate' | 'High';
+  duration?: string;
+  entryFee?: string;
+  highlights?: string[];
+  reachNote?: string;
+  imgId?: string;
 }
 
 export interface ExploreResult {
@@ -65,6 +79,7 @@ export interface ExploreResult {
   tags: string[];
   reviews: ReviewItem[];
   photoColor: string;
+  photoRef?: string | null;
 }
 
 export const MOCK_HOTELS: PlaceResult[] = [
@@ -141,15 +156,15 @@ export const MOCK_HOTELS: PlaceResult[] = [
     reviewCount: 720,
     priceLevel: '₹',
     openNow: true,
-    tags: ['Budget Friendly', 'Temple Nearby', 'Parking', 'AC Rooms'],
+    tags: ['Temple Nearby', 'Parking', 'AC Rooms', 'Value for Money'],
     reviewSummary: 'Operated by Tamil Nadu Tourism Development Corporation, this government-run hotel sits closest to the Big Temple. Reviewers value the unbeatable price and central location, acknowledging the older but functional rooms.',
-    aiNote: 'Best budget option near the Big Temple — TTDC government pricing is fixed, no festival surge pricing.',
+    aiNote: 'Best value option near the Big Temple — TTDC government pricing is fixed, no festival surge pricing.',
     trendVerdict: 'stable',
     trendReason: 'Consistent 3.8★ government hotel standard — reliable across Tamil Nadu',
     photoColor: 'bg-green-700',
     reviews: [
       { text: 'Can\'t beat the price for this location. Basic but clean. Just a short walk to the Big Temple.', author: 'Vijay P.', location: 'Pondicherry', stars: 4, ago: '1 week ago' },
-      { text: 'Good budget option. TTDC hotels are reliable across Tamil Nadu. Food is average but location is prime.', author: 'Lakshmi D.', location: 'Salem', stars: 3, ago: '3 weeks ago' },
+      { text: 'Good value option. TTDC hotels are reliable across Tamil Nadu. Food is average but location is prime.', author: 'Lakshmi D.', location: 'Salem', stars: 3, ago: '3 weeks ago' },
       { text: 'Simple rooms, government pricing. Perfect for a quick heritage visit to Thanjavur. No surprises.', author: 'Senthil A.', location: 'Thanjavur', stars: 4, ago: '2 months ago' },
     ],
     aiDetail: {
@@ -158,9 +173,9 @@ export const MOCK_HOTELS: PlaceResult[] = [
         '3.8★ across 720 reviews — reliable TTDC quality standard',
         '0.5km from Brihadeeswarar Temple — closest in this set',
         'Government-fixed pricing — no dynamic price surges during festivals',
-        'Budget tier — lowest nightly rate among surveyed Thanjavur hotels',
+        'Economy tier — lowest nightly rate among surveyed Thanjavur hotels',
       ],
-      bestFor: 'Budget travellers, solo pilgrims, backpackers, government employees on official tour.',
+      bestFor: 'Value-seeking travellers, solo pilgrims, backpackers, government employees on official tour.',
       caveat: 'Rooms are older and basic. Not suitable for travellers expecting modern finishes. Books fast during Pongal and Tamil New Year.',
     },
   },
@@ -173,15 +188,15 @@ export const MOCK_HOTELS: PlaceResult[] = [
     reviewCount: 480,
     priceLevel: '₹',
     openNow: true,
-    tags: ['River View', 'Budget Friendly', 'Quiet', 'Parking', 'Family'],
-    reviewSummary: 'A serene budget resort on the Vennar river bank, popular with families seeking a peaceful stay away from the city centre. Guests mention the pleasant river-facing rooms and calm atmosphere as standout features.',
+    tags: ['River View', 'Quiet & Peaceful', 'Parking', 'Family'],
+    reviewSummary: 'A serene riverside resort on the Vennar river bank, popular with families seeking a peaceful stay away from the city centre. Guests mention the pleasant river-facing rooms and calm atmosphere as standout features.',
     aiNote: 'Only river-view property in this set — quiet escape while staying within Thanjavur district.',
     trendVerdict: 'improving',
     trendReason: 'Post-renovation cleanliness scores 4.1★ — above the 3.9★ historical average',
     photoColor: 'bg-teal-700',
     reviews: [
       { text: 'Peaceful property on the Vennar river. Very quiet and relaxing. Rooms are clean after recent renovation.', author: 'Rohini T.', location: 'Chennai', stars: 4, ago: '2 weeks ago' },
-      { text: 'Nice river views from the room. Budget-friendly for what you get. Good for families wanting peace and quiet.', author: 'Balamurugan P.', location: 'Coimbatore', stars: 4, ago: '1 month ago' },
+      { text: 'Nice river views from the room. Great value for what you get. Good for families wanting peace and quiet.', author: 'Balamurugan P.', location: 'Coimbatore', stars: 4, ago: '1 month ago' },
       { text: 'Quiet location far from city noise. Perfect for a relaxing temple-town visit in Thanjavur.', author: 'Anand K.', location: 'Hyderabad', stars: 4, ago: '6 weeks ago' },
     ],
     aiDetail: {
@@ -190,9 +205,9 @@ export const MOCK_HOTELS: PlaceResult[] = [
         '3.9★ across 480 reviews — solid for a smaller riverside resort',
         'Vennar river frontage — only river-view property in this Thanjavur set',
         'Recent renovation: cleanliness improving (4.1★ recent vs 3.9★ all-time)',
-        'Budget pricing — best for scenic value per rupee',
+        'Economy pricing — best for scenic value per rupee',
       ],
-      bestFor: 'Families seeking peace and quiet, couples on budget, nature-loving travellers.',
+      bestFor: 'Families seeking peace and quiet, couples seeking a quiet escape, nature-loving travellers.',
       caveat: '3.5km from the Big Temple — requires auto or cab for sightseeing. On-site dining options are limited.',
     },
   },
@@ -205,26 +220,26 @@ export const MOCK_HOTELS: PlaceResult[] = [
     reviewCount: 340,
     priceLevel: '₹',
     openNow: true,
-    tags: ['Budget Friendly', 'WiFi', 'Near Railway Station', 'AC Rooms', 'Business'],
-    reviewSummary: 'A no-frills budget hotel near the NH-67 highway, convenient for road travellers and bus arrivals. Reviews highlight fast WiFi and comfortable AC rooms at competitive Thanjavur prices, making it a practical transit stay.',
+    tags: ['Good Amenities', 'WiFi', 'Near Railway Station', 'AC Rooms', 'Business'],
+    reviewSummary: 'A no-frills hotel near the NH-67 highway, convenient for road travellers and bus arrivals. Reviews highlight fast WiFi and comfortable AC rooms at competitive Thanjavur prices, making it a practical transit stay.',
     aiNote: 'Best for transit stays — near the bus stand and highway. Fast WiFi suits remote workers passing through Thanjavur.',
     trendVerdict: 'stable',
-    trendReason: 'Consistent 3.7★ — steady value-focused budget property',
+    trendReason: 'Consistent 3.7★ — steady value-focused property',
     photoColor: 'bg-purple-700',
     reviews: [
       { text: 'Clean rooms, fast WiFi, good price for Thanjavur. No frills but everything you need for a quick stay.', author: 'Karthi S.', location: 'Trichy', stars: 4, ago: '1 week ago' },
       { text: 'Convenient location near the highway and bus stand. Easy check-in, reliable AC. Good value.', author: 'Dhruv M.', location: 'Bangalore', stars: 3, ago: '3 weeks ago' },
-      { text: 'Best budget option near the Thanjavur bus stand. AC works well, WiFi is reliable for work.', author: 'Sundar V.', location: 'Chennai', stars: 4, ago: '2 months ago' },
+      { text: 'Best affordable option near the Thanjavur bus stand. AC works well, WiFi is reliable for work.', author: 'Sundar V.', location: 'Chennai', stars: 4, ago: '2 months ago' },
     ],
     aiDetail: {
-      whyOverOthers: 'Wins for transit convenience — nearest hotel to Thanjavur Bus Stand in this set. At budget pricing with fast WiFi (mentioned by 78% of business reviewers), it edges the TTDC hotel for connectivity needs.',
+      whyOverOthers: 'Wins for transit convenience — nearest hotel to Thanjavur Bus Stand in this set. At competitive pricing with fast WiFi (mentioned by 78% of business reviewers), it edges the TTDC hotel for connectivity needs.',
       dataPoints: [
-        '3.7★ across 340 reviews — honest value-focused budget feedback',
+        '3.7★ across 340 reviews — honest value-focused feedback',
         'NH-67 location — most convenient for road travellers and bus passengers',
         'Fast WiFi mentioned positively by 78% of business reviewer comments',
         'Lowest nightly rate in the set — practical for short stays',
       ],
-      bestFor: 'Short transit stays, business travellers passing through, budget solo travellers.',
+      bestFor: 'Short transit stays, business travellers passing through, solo travellers.',
       caveat: '2.8km from the Big Temple. Highway-facing rooms can be noisy. Not a heritage or scenic stay.',
     },
   },
@@ -257,7 +272,7 @@ export const MOCK_FOOD: PlaceResult[] = [
         '4.6★ across 2,800 reviews — highest review volume for a Thanjavur restaurant',
         'Banana-leaf service — traditional method that competitors in this set don\'t match',
         'Thanjavur thali authenticity score: 9.4/10 based on review keyword analysis',
-        'Budget pricing: ₹80–150 for a full thali — exceptional value',
+        'Affordable pricing: ₹80–150 for a full thali — exceptional value',
       ],
       bestFor: 'Pilgrims and heritage food lovers, vegetarian visitors, anyone wanting the authentic Chola thali experience.',
       caveat: 'Thali sells out by 1:30 PM on most days. Cash only. No air-conditioning inside.',
@@ -321,7 +336,7 @@ export const MOCK_FOOD: PlaceResult[] = [
         '4.5★ across 1,600 reviews — excellent for a specialty heritage restaurant',
         'Paal paniyaram and koozh: unique Chola-era dishes not available at competing entries',
         'Heritage food uniqueness mentioned in 87% of 5-star reviews',
-        'Budget pricing: ₹60–120 — extraordinary value for one-of-a-kind cuisine',
+        'Affordable pricing: ₹60–120 — extraordinary value for one-of-a-kind cuisine',
       ],
       bestFor: 'Food historians, culinary tourists, heritage visitors, vegetarians seeking something beyond the usual thali.',
       caveat: 'Limited hours (lunch only) and small menu by design. Seating fills fast. Best visited before 1 PM.',
@@ -336,7 +351,7 @@ export const MOCK_FOOD: PlaceResult[] = [
     reviewCount: 920,
     priceLevel: '₹₹',
     openNow: true,
-    tags: ['Cafe', 'Filter Coffee', 'Bakery', 'South Indian', 'Snacks'],
+    tags: ['Cafe & Snacks', 'Filter Coffee', 'Bakery', 'South Indian', 'Snacks'],
     reviewSummary: 'The go-to café for Thanjavur\'s best filter coffee, freshly baked goods, and light meals. The decoction filter coffee is ranked as the finest in the city by reviewers, and the AC interior is a welcome break between temple visits.',
     aiNote: 'Best filter coffee in Thanjavur — decoction cited in nearly every review. Ideal pre-temple breakfast stop.',
     trendVerdict: 'improving',
@@ -360,6 +375,38 @@ export const MOCK_FOOD: PlaceResult[] = [
     },
   },
   {
+    id: 'f6',
+    name: 'Kannapa Restaurant',
+    address: 'Anna Salai, Near Railway Station, Thanjavur',
+    dist: 1.1,
+    rating: 4.5,
+    reviewCount: 3100,
+    priceLevel: '₹₹',
+    openNow: true,
+    tags: ['Chettinad', 'Non-Veg', 'South Indian', 'Mutton Kuzhambu', 'Pepper Chicken'],
+    reviewSummary: 'The definitive Chettinad restaurant in Thanjavur — famed for bold, aromatic curries made with freshly ground kalpasi, marathi mokku, and star anise. Reviewers single out the Chettinad mutton kuzhambu and pepper chicken as unmatched anywhere in the district.',
+    aiNote: 'Best Chettinad in Thanjavur — freshly ground spice blends used daily. Mutton kuzhambu and pepper chicken are the signature dishes.',
+    trendVerdict: 'improving',
+    trendReason: 'Recent guests rate spice authenticity 4.7★ — above the 4.5★ all-time average',
+    photoColor: 'bg-red-900',
+    reviews: [
+      { text: 'Best Chettinad mutton kuzhambu I have had outside Chettinad itself. The spice blend is completely different from regular restaurants — deep, earthy, aromatic. Absolute must-try in Thanjavur.', author: 'Murugesan K.', location: 'Thanjavur', stars: 5, ago: '3 days ago' },
+      { text: 'The pepper chicken here is legendary. You can smell the freshly ground kalpasi and marathi mokku the moment you walk in. Real Chettinad, not a diluted version.', author: 'Divya S.', location: 'Chennai', stars: 5, ago: '1 week ago' },
+      { text: 'Visited Kannapa three times on a week-long trip. Consistent quality, generous portions, great value. The Chettinad egg curry is underrated — try it.', author: 'Ravi T.', location: 'Coimbatore', stars: 4, ago: '2 weeks ago' },
+    ],
+    aiDetail: {
+      whyOverOthers: 'Ranked as the only Chettinad specialist in this set — no other restaurant offers this cuisine. With 3,100 reviews and 4.5★, it is the second-most reviewed food spot in Thanjavur, confirming that locals and travellers consistently seek it out for authentic Chettinad flavours.',
+      dataPoints: [
+        '4.5★ across 3,100 reviews — second-highest review count in this Thanjavur food set',
+        'Chettinad spice blend ground fresh daily — kalpasi, marathi mokku, star anise',
+        'Mutton kuzhambu and pepper chicken cited in 74% of all reviews as primary draw',
+        '₹₹ pricing: full Chettinad meal ₹200–350 — strong value for specialty cuisine',
+      ],
+      bestFor: 'Non-vegetarian food lovers, Chettinad cuisine seekers, travellers wanting regional Tamil Nadu cooking beyond biryani.',
+      caveat: 'Very limited vegetarian options — primarily a non-veg kitchen. Peak hours 1–3 PM draw large crowds. Spice levels are authentic and high — ask for "medium" if sensitive to heat.',
+    },
+  },
+  {
     id: 'f5',
     name: 'Hotel Ramnath',
     address: 'New Bus Stand Area, Thanjavur',
@@ -370,7 +417,7 @@ export const MOCK_FOOD: PlaceResult[] = [
     openNow: true,
     tags: ['South Indian', 'Tiffin', 'Filter Coffee', 'Non-Veg', 'Quick'],
     reviewSummary: 'A reliable local favourite near the Thanjavur bus stand serving both veg and non-veg South Indian meals. The chicken curry and parotta combination is the signature dish, and the morning tiffin attracts early risers.',
-    aiNote: 'Best all-rounder in Thanjavur — covers both veg and non-veg at budget pricing. Chicken curry + parotta is the crowd favourite.',
+    aiNote: 'Best all-rounder in Thanjavur — covers both veg and non-veg at affordable pricing. Chicken curry + parotta is the crowd favourite.',
     trendVerdict: 'stable',
     trendReason: 'Consistent 4.1★ across 1,450 reviews — dependable Thanjavur local',
     photoColor: 'bg-rose-700',
@@ -382,12 +429,12 @@ export const MOCK_FOOD: PlaceResult[] = [
     aiDetail: {
       whyOverOthers: 'Wins for versatility — the only restaurant in this set offering both quality veg and non-veg meals at ₹ pricing. While Sathars specialises in biryani, Ramnath covers the full South Indian menu at lower prices.',
       dataPoints: [
-        '4.1★ across 1,450 reviews — strong for a budget local Thanjavur restaurant',
+        '4.1★ across 1,450 reviews — strong for a local Thanjavur restaurant',
         'Chicken curry + parotta: most mentioned dish combination across all reviews',
         'Dual veg/non-veg menu — only restaurant in this set covering both equally well',
         'Bus stand proximity — convenient for transit visitors to Thanjavur',
       ],
-      bestFor: 'Budget travellers, mixed veg/non-veg groups, transit visitors near the Thanjavur bus stand.',
+      bestFor: 'Value-seeking travellers, mixed veg/non-veg groups, transit visitors near the Thanjavur bus stand.',
       caveat: 'Basic seating and ambience. Very busy at meal times — expect queues. Not a dining experience, purely functional.',
     },
   },
@@ -401,6 +448,10 @@ export const MOCK_ITINERARY: ItineraryStop[] = [
     tip: 'Enter from the East Gopuram gate. Remove footwear at the entrance. Stand inside the courtyard by 7:30 AM to see the morning puja — the granite shadow of the 66m vimana never falls outside the temple walls at any time of day. UNESCO World Heritage Site.',
     currentTraffic: 'Light',
     yesterdayTraffic: 'Light',
+    crowdLevel: 'Low',
+    duration: '2 hrs',
+    entryFee: 'Free',
+    highlights: ['Morning puja', 'Shadow phenomenon', 'East Gopuram'],
     travelToNext: '5 min · Walk (adjacent complex)',
     departBy: '9:15 AM',
   },
@@ -411,6 +462,10 @@ export const MOCK_ITINERARY: ItineraryStop[] = [
     tip: 'Start with the Durbar Hall — the Maratha-era portraits, royal weapons, and ivory throne are unmatched. Climb the 58m Bell Tower for a panoramic view of the Big Temple and the city. Museum entry covers the Royal Palace, Durbar Hall, and Bell Tower — allow 90 min minimum.',
     currentTraffic: 'Light',
     yesterdayTraffic: 'Light',
+    crowdLevel: 'Low',
+    duration: '90 min',
+    entryFee: '₹50',
+    highlights: ['Bell Tower view', 'Durbar Hall', 'Ivory throne'],
     travelToNext: '2 min · Walk (within palace complex)',
     departBy: '11:00 AM',
   },
@@ -421,6 +476,10 @@ export const MOCK_ITINERARY: ItineraryStop[] = [
     tip: 'Founded around 1700 AD — one of Asia\'s oldest libraries with over 60,000 manuscripts on palm leaf, paper, and cloth. The display gallery has rare illustrated Ramayana manuscripts and Thanjavur-school drawings. Photography not allowed inside. Takes 45–60 minutes.',
     currentTraffic: 'Light',
     yesterdayTraffic: 'Light',
+    crowdLevel: 'Low',
+    duration: '45 min',
+    entryFee: 'Free',
+    highlights: ['60,000 manuscripts', 'Palm leaf scrolls', 'No photography'],
     travelToNext: '3 min · Walk (same palace grounds)',
     departBy: '12:00 PM',
   },
@@ -431,6 +490,10 @@ export const MOCK_ITINERARY: ItineraryStop[] = [
     tip: 'Home to one of India\'s finest Chola-era bronze collections — including 11th-century Nataraja, Ardhanarishvara, and Shiva sculptures from Gallery 3. The 9th–12th century bronzes are extraordinary. Combined ticket with Palace Museum covers entry. Spend at least 60 minutes.',
     currentTraffic: 'Light',
     yesterdayTraffic: 'Light',
+    crowdLevel: 'Low',
+    duration: '60 min',
+    entryFee: '₹50 (combo)',
+    highlights: ['Nataraja bronze', '9th–12th century art', 'Chola collection'],
     travelToNext: '12 min · Auto',
     departBy: '1:45 PM',
   },
@@ -438,9 +501,13 @@ export const MOCK_ITINERARY: ItineraryStop[] = [
     stop: 'Goldsmith Street — Thanjavur Paintings & Glass Work',
     time: '2:00 PM',
     trafficNote: 'Moderate near market area',
-    tip: 'The original Thanjavur painting ateliers are on Thalavaiyal Salai (Goldsmith Street). Watch artisans apply real 22-carat gold foil and semi-precious stones to gesso panels — a tradition going back 400 years. Prices are fixed at reputed workshops; budget ₹800–2,500 for a small original piece.',
+    tip: 'The original Thanjavur painting ateliers are on Thalavaiyal Salai (Goldsmith Street). Watch artisans apply real 22-carat gold foil and semi-precious stones to gesso panels — a tradition going back 400 years. Prices are fixed at reputed workshops; expect ₹800–2,500 for a small original piece.',
     currentTraffic: 'Moderate',
     yesterdayTraffic: 'Light',
+    crowdLevel: 'Moderate',
+    duration: '60 min',
+    highlights: ['22-carat gold foil', 'Live artisans', 'Original paintings'],
+    reachNote: '12 min by auto from Art Gallery. Ask for Thalavaiyal Salai.',
   },
 ];
 

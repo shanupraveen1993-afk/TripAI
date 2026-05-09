@@ -1,6 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { Search, MapPin, Home, History, User, Compass, LogOut, ChevronDown, X } from 'lucide-react';
-import { fetchAutocomplete, AutocompleteSuggestion } from '../api/client';
+import React, { useState } from 'react';
+import { MapPin, Home, History, User, Compass, LogOut, ChevronDown, AlertCircle } from 'lucide-react';
 
 export type MainSection = 'home' | 'history' | 'profile';
 
@@ -19,74 +18,65 @@ const NAV_ITEMS: { id: MainSection; label: string; icon: React.ReactNode }[] = [
   { id: 'history', label: 'Trips',   icon: <History className="w-5 h-5" /> },
 ];
 
-function LocationSearch({ value, onChange, onPick }: {
+function CitySearch({ value, onChange, onPick }: {
   value: string;
   onChange: (v: string) => void;
   onPick?: (display: string, area: string) => void;
 }) {
-  const [focused,     setFocused]     = useState(false);
-  const [suggestions, setSuggestions] = useState<AutocompleteSuggestion[]>([]);
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [draft,   setDraft]   = useState(value);
 
-  const handleChange = (val: string) => {
-    onChange(val);
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (val.trim().length >= 2) {
-      debounceRef.current = setTimeout(() => {
-        fetchAutocomplete(val, 'Thanjavur').then(setSuggestions);
-      }, 300);
+  const handleFocus = () => {
+    setDraft(value);
+    setEditing(true);
+  };
+
+  const handleBlur = () => {
+    setEditing(false);
+    const trimmed = draft.trim();
+    if (trimmed && trimmed.toLowerCase() !== value.toLowerCase()) {
+      onChange(trimmed);
+      onPick?.(trimmed, trimmed);
     } else {
-      setSuggestions([]);
+      setDraft(value);
     }
   };
 
-  const handlePick = (s: AutocompleteSuggestion) => {
-    const display = s.full || s.main;
-    const area    = s.main || s.full;
-    onChange(display);
-    setSuggestions([]);
-    setFocused(false);
-    onPick?.(display, area);
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.currentTarget.blur();
+    } else if (e.key === 'Escape') {
+      setDraft(value);
+      setEditing(false);
+      e.currentTarget.blur();
+    }
   };
+
+  const isDirty    = editing && draft.trim().toLowerCase() !== value.toLowerCase();
+  const isThanjavur = draft.trim().toLowerCase() === 'thanjavur';
 
   return (
     <div className="relative w-full">
-      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted pointer-events-none" />
+      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-brand pointer-events-none" />
       <input
         type="text"
-        value={value}
-        onChange={e => handleChange(e.target.value)}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setTimeout(() => setFocused(false), 200)}
-        placeholder="Search area in Thanjavur…"
-        className="w-full pl-9 pr-8 py-2.5 bg-bg-app border border-border rounded-xl text-sm text-body focus:outline-none focus:ring-2 focus:ring-brand-soft focus:border-brand transition-colors"
+        value={editing ? draft : value}
+        onChange={e => setDraft(e.target.value)}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        onKeyDown={handleKeyDown}
+        placeholder="City name…"
+        className={[
+          'w-full pl-9 pr-3 py-2.5 bg-bg-app border rounded-xl text-sm font-medium focus:outline-none focus:ring-2 transition-colors',
+          isDirty && !isThanjavur
+            ? 'border-amber-400 focus:ring-amber-200 text-amber-700'
+            : 'border-border focus:ring-brand-soft focus:border-brand text-body',
+        ].join(' ')}
       />
-      {value && (
-        <button
-          type="button"
-          onClick={() => { onChange(''); setSuggestions([]); }}
-          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted hover:text-heading"
-        >
-          <X className="w-3.5 h-3.5" />
-        </button>
-      )}
-      {/* Autocomplete dropdown */}
-      {focused && suggestions.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-border rounded-xl shadow-xl z-50 overflow-hidden">
-          {suggestions.map((s, i) => (
-            <button
-              key={i}
-              type="button"
-              onMouseDown={() => handlePick(s)}
-              className="w-full text-left flex items-start gap-2.5 px-3 py-2.5 hover:bg-blue-50 transition-colors border-b border-gray-50 last:border-0"
-            >
-              <MapPin className="w-3.5 h-3.5 text-brand shrink-0 mt-0.5" />
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-heading truncate">{s.main || s.full}</p>
-                {s.secondary && <p className="text-xs text-muted truncate">{s.secondary}</p>}
-              </div>
-            </button>
-          ))}
+      {isDirty && !isThanjavur && (
+        <div className="absolute top-full left-0 right-0 mt-1 flex items-center gap-1.5 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 z-50 shadow-sm">
+          <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+          <span className="text-xs text-amber-700">TripAI currently features Thanjavur — try exploring there!</span>
         </div>
       )}
     </div>
@@ -104,7 +94,7 @@ export function Navbar({ section, onSectionChange, onLogout, userName, searchLoc
     <>
       {/* ── Top navbar ─────────────────────────────────────────────── */}
       <header className="sticky top-0 z-40 border-b" style={{ background: 'rgba(249,250,251,0.88)', backdropFilter: 'blur(20px)', borderColor: 'rgba(0,0,0,0.07)', boxShadow: '0 1px 12px rgba(28,100,242,0.06)' }}>
-        <div className="w-full px-4 sm:px-6 xl:px-[304px] h-14 flex items-center gap-4">
+        <div className="w-full max-w-[920px] mx-auto px-4 h-14 flex items-center gap-4">
 
           {/* Brand */}
           <button
@@ -121,7 +111,7 @@ export function Navbar({ section, onSectionChange, onLogout, userName, searchLoc
 
           {/* Search bar — center, desktop only */}
           <div className="flex-1 max-w-sm mx-auto hidden md:block">
-            <LocationSearch
+            <CitySearch
               value={searchLocation}
               onChange={onSearchChange}
               onPick={handlePick}
@@ -171,7 +161,7 @@ export function Navbar({ section, onSectionChange, onLogout, userName, searchLoc
 
         {/* Mobile search bar */}
         <div className="md:hidden px-4 pb-3">
-          <LocationSearch
+          <CitySearch
             value={searchLocation}
             onChange={onSearchChange}
             onPick={handlePick}

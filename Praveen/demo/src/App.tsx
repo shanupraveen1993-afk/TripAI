@@ -194,6 +194,11 @@ export default function App() {
       budget: filters.budget,
       savedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       type: 'history',
+      tags: filters.tab === 'Hotels'
+        ? (filters.hotelTags?.length ? filters.hotelTags : filters.hotelTag ? [filters.hotelTag] : [])
+        : filters.tab === 'Food'
+        ? (filters.foodTags?.length ? filters.foodTags : filters.foodTag ? [filters.foodTag] : [])
+        : [],
     };
     setSavedTrips(prev => [historyEntry, ...prev.slice(0, 49)]);
   };
@@ -260,7 +265,11 @@ export default function App() {
   const recentSearches = savedTrips
     .filter(t => t.type === 'history')
     .slice(0, 3)
-    .map(t => ({ destination: t.destination, tab: t.tab }));
+    .map(t => ({ destination: t.destination, tab: t.tab, tags: t.tags ?? [] }));
+
+  const handleClearRecent = () => {
+    setSavedTrips(prev => prev.filter(t => t.type !== 'history'));
+  };
 
   // ── Render helpers ───────────────────────────────────────────────────────
   const LOADING_LABELS: Record<string, string> = {
@@ -321,6 +330,7 @@ export default function App() {
               loading={false}
               recentSearches={recentSearches}
               onDestinationSelect={handleDestinationSelect}
+              onClearRecent={handleClearRecent}
             />
           </motion.div>
         )}
@@ -335,7 +345,7 @@ export default function App() {
           <motion.div key="results" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
             <ResultsView
               tab={activeTab}
-              destination="Thanjavur"
+              destination={lastSearchFilters?.destination ?? searchLocation}
               searchArea={searchArea}
               isFirstItinerary={itineraryGenCount === 1}
               isLoadingMore={false}
@@ -415,7 +425,7 @@ export default function App() {
               <div className="w-7 h-7 bg-brand rounded-lg flex items-center justify-center">
                 <Compass className="w-3.5 h-3.5 text-white" />
               </div>
-              <span className="font-display font-black text-lg text-heading tracking-tight hidden sm:block">
+              <span className="font-display font-black text-lg text-heading tracking-tight">
                 Trip<span className="text-brand">AI</span>
               </span>
             </button>
@@ -474,15 +484,17 @@ export default function App() {
   // Authenticated app
   return (
     <div className="min-h-screen" style={{ background: 'linear-gradient(145deg, #EFF6FF 0%, #F9FAFB 45%, #F5F3FF 100%)' }}>
-      <Navbar
-        section={mainSection}
-        onSectionChange={s => { setMainSection(s); if (s === 'home') setContent('dashboard'); }}
-        onLogout={handleLogout}
-        userName={user?.name ?? ''}
-        searchLocation={searchLocation}
-        onSearchChange={setSearchLocation}
-        onLocationPick={(display, area) => { setSearchLocation(display); setSearchArea(area); }}
-      />
+      {contentScreen !== 'results' && (
+        <Navbar
+          section={mainSection}
+          onSectionChange={s => { setMainSection(s); if (s === 'home') setContent('dashboard'); }}
+          onLogout={handleLogout}
+          userName={user?.name ?? ''}
+          searchLocation={searchLocation}
+          onSearchChange={setSearchLocation}
+          onLocationPick={(display, area) => { setSearchLocation(display); setSearchArea(area); }}
+        />
+      )}
 
       <main className="pt-2">
         {renderContent()}

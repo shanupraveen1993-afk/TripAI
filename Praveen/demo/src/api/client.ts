@@ -13,6 +13,7 @@ export interface PlanResult {
   reviewSummary:      string;
   aiNote:             string;
   filterVerification: string | null;
+  matchedKeyword:     string | null;
   trendVerdict: 'improving' | 'declining' | 'stable';
   trendReason:  string;
   reviews:      Array<{ text: string; author: string; location: string; stars: number; ago: string }>;
@@ -43,6 +44,7 @@ export interface LiveItineraryStop {
   highlights?:      string[];
   reachNote?:       string;
   imgId?:           string;
+  photoRef?:        string | null;
 }
 
 export interface ExploreGuide {
@@ -59,21 +61,24 @@ export interface ExploreGuide {
   tags:         string[];
   reviews:      Array<{ text: string; author: string; location: string; stars: number; ago: string }>;
   photoColor:   string;
+  photoRef?:    string | null;
   timeSlot:     string;
 }
 
 interface PlanFilters {
   city?:        string;   // city name — used in Places API queries + locationBias
-  hotelTag?:    string;   // single hotel tag (Heritage, Business, etc.)
+  hotelTag?:    string;   // legacy single tag — kept for quick-override paths
+  hotelTags?:   string[]; // multi-select hotel tags (max 3) — overrides hotelTag when set
   hotelArea?:   string;   // free-text area within city
-  persona?:     string;   // 'Solo' | 'Couple' | 'Family' | 'Business' | ''
-  foodTag?:     string;   // single cuisine/type tag
+  foodTag?:     string;   // single cuisine/type tag (legacy)
+  foodTags?:    string[]; // multi-select food tags (max 3) — overrides foodTag when set
   priceFilter?: string;   // 'Any' | PRICE_LEVEL_* enum
   minRating?:   number;   // 0 = any
   openNow?:     boolean;
   dietType?:    string;   // 'Any' | 'Veg' | 'Non-Veg' | 'Pure Veg'
   dineMode?:    string;   // 'Any' | 'Dine-in' | 'Takeout'
   mealTime?:    string;   // 'Any' | 'Breakfast' | 'Lunch' | 'Dinner'
+  searchQuery?: string;   // free-text override — bypasses tag-based query building
 }
 
 export interface PlanResponse {
@@ -117,21 +122,35 @@ export async function fetchExploreGuide(exploreTarget: string, timeSlot = 'Morni
   return data.exploreResult ?? null;
 }
 
+export interface CityTagsResult {
+  tags:      string[];
+  segments?: Record<string, string[]>;  // segment name → ordered tag list
+  groupA?:   string[];                  // location-anchor tags (drive targeted API call)
+}
+
 export async function fetchCityTags(
   city: string,
   tab: 'Hotels' | 'Food',
-): Promise<string[]> {
+): Promise<CityTagsResult> {
   try {
     const r = await fetch('/api/tags', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ city, tab }),
     });
-    if (!r.ok) return [];
-    const data = await r.json() as { tags: Array<{ tag: string; count: number }> };
-    return (data.tags ?? []).map(t => t.tag);
+    if (!r.ok) return { tags: [] };
+    const data = await r.json() as {
+      tags:      Array<{ tag: string; count: number }>;
+      segments?: Record<string, string[]>;
+      groupA?:   string[];
+    };
+    return {
+      tags:      (data.tags ?? []).map(t => t.tag),
+      segments:  data.segments,
+      groupA:    data.groupA,
+    };
   } catch {
-    return [];
+    return { tags: [] };
   }
 }
 

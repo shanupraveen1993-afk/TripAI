@@ -15,6 +15,7 @@ export interface SavedTrip {
   budget?: number;
   savedAt: string;
   type: 'saved' | 'history';
+  tags?: string[];
 }
 
 interface SavedTripsProps {

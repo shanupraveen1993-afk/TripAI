@@ -4,7 +4,7 @@ import {
   Search, ChevronDown, ChevronRight, Sparkles, MapPin, Navigation, X,
   Hotel, Utensils, Route, Compass, Flame, Clock,
 } from 'lucide-react';
-import { fetchCityTags, fetchAutocomplete, AutocompleteSuggestion } from '../api/client';
+import { fetchCityTags, fetchAutocomplete, AutocompleteSuggestion, CityTagsResult } from '../api/client';
 import { Tab } from './ui/Tabs';
 
 const isThanjavur = (dest: string) =>
@@ -38,8 +38,8 @@ const TAB_META: Record<Tab, {
     accentSoft:  '#1C64F215',
     label:       'Hotels',
     headline:    'Best hotel in Thanjavur for you?',
-    sub:         'AI ranks by budget, distance to the Big Temple, and what reviewers actually say.',
-    trending:    ['Near Big Temple', 'Budget stays', 'Heritage hotels', 'Temple Nearby', 'Family rooms', 'AC rooms'],
+    sub:         'AI ranks by price, distance to the Big Temple, and what reviewers actually say.',
+    trending:    ['Near Big Temple', 'Heritage hotels', 'Temple Nearby', 'Family rooms', 'AC rooms'],
   },
   Food: {
     icon:        <Utensils     className="w-4 h-4" />,
@@ -80,6 +80,16 @@ const TAB_META: Record<Tab, {
 };
 
 const TABS: Tab[] = ['Hotels', 'Food', 'Itinerary', 'Explore'];
+
+/* ── Advanced food keywords — from real 50-restaurant review analysis ─── */
+// Items ordered by restaurant coverage from food-items.ts analysis (Thanjavur top-50)
+const FOOD_ADVANCED: { group: string; items: string[] }[] = [
+  { group: 'Rice & Meals',   items: ['Thali/Meals', 'Biryani', 'Dosa', 'Tea', 'Idli'] },
+  { group: 'Non-Veg',        items: ['Mutton', 'Chicken', 'Fish Curry', 'Prawn', 'Crab'] },
+  { group: 'Tiffin',         items: ['Vada', 'Pongal', 'Parotta', 'Idiyappam', 'Sambar'] },
+  { group: 'Veg Dishes',     items: ['Paneer', 'Noodles', 'Filter Coffee', 'Soup', 'Sweets'] },
+  { group: 'Specials',       items: ['Mandi', 'Shawarma', 'BBQ & Grills', 'Alfaham', 'Buffet'] },
+];
 
 /* ── Dynamic popular spots per destination ───────────────────────────── */
 const DESTINATION_SPOTS: Record<string, string[]> = {
@@ -158,8 +168,8 @@ const THANJAVUR_ACTIONS: Array<{
   tab: Tab; label: string; desc: string; emoji: string; imgId: string;
   overrides: { tab: Tab; hotelTag?: string; foodTag?: string; exploreTarget?: string };
 }> = [
-  { tab: 'Hotels',    label: 'Stay near Big Temple', desc: 'Top-rated · Walking distance',  emoji: '🛕', imgId: '1686310894901-d326b8722c13', overrides: { tab: 'Hotels',    hotelTag: 'Near Temple' } },
-  { tab: 'Food',      label: 'Thanjavur thali',       desc: 'Authentic Chola cuisine',       emoji: '🍛', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Thali' } },
+  { tab: 'Hotels',    label: 'Stay near Big Temple', desc: 'Top-rated · Walking distance',  emoji: '🛕', imgId: '1686310894901-d326b8722c13', overrides: { tab: 'Hotels',    hotelTag: 'Near Big Temple' } },
+  { tab: 'Food',      label: 'Thanjavur thali',       desc: 'Authentic Chola cuisine',       emoji: '🍛', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Thali/Meals' } },
   { tab: 'Itinerary', label: '1-day plan',            desc: 'AI routed · Full day',          emoji: '🗺️', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Itinerary' } },
   { tab: 'Explore',   label: 'Brihadeeswarar',        desc: 'UNESCO · Chola masterpiece',    emoji: '🏛️', imgId: '1701665837448-cdbb9fab5a0d', overrides: { tab: 'Explore',   exploreTarget: 'Brihadeeswarar Temple' } },
 ];
@@ -185,10 +195,19 @@ interface SmartPick {
   overrides: QuickOverride;
 }
 
+/* ── Popular searches — shown below the filter card ─────────────────── */
+const POPULAR_QUERIES: { label: string; overrides: QuickOverride }[] = [
+  { label: 'best hotel in thanjavur',                      overrides: { tab: 'Hotels' } },
+  { label: 'best hotel near big temple in thanjavur',      overrides: { tab: 'Hotels', hotelTag: 'Near Big Temple' } },
+  { label: 'best family hotel in thanjavur',               overrides: { tab: 'Hotels', hotelTag: 'Friendly Staff' } },
+  { label: 'best highly recommended hotel in thanjavur',   overrides: { tab: 'Hotels', hotelTag: 'Highly Recommended' } },
+  { label: 'best hotel near railway station thanjavur',    overrides: { tab: 'Hotels', hotelTag: 'Near Railway Station' } },
+];
+
 const SMART_PICKS: Record<string, SmartPick[]> = {
   thanjavur: [
-    { label: 'Near Big Temple',    sub: 'Hotels · Walking distance', emoji: '🛕', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1686310894901-d326b8722c13', overrides: { tab: 'Hotels',    hotelTag: 'Near Temple' } },
-    { label: 'Thanjavur thali',    sub: 'Food · Authentic Chola',    emoji: '🍛', grad: 'linear-gradient(135deg,#D97706,#F59E0B)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Thali' } },
+    { label: 'Near Big Temple',    sub: 'Hotels · Walking distance', emoji: '🛕', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1686310894901-d326b8722c13', overrides: { tab: 'Hotels',    hotelTag: 'Near Big Temple' } },
+    { label: 'Thanjavur thali',    sub: 'Food · Authentic Chola',    emoji: '🍛', grad: 'linear-gradient(135deg,#D97706,#F59E0B)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Thali/Meals' } },
     { label: 'Brihadeeswarar',     sub: 'Explore · UNESCO site',     emoji: '🏛️', grad: 'linear-gradient(135deg,#059669,#10B981)', imgId: '1701665837448-cdbb9fab5a0d', overrides: { tab: 'Explore',   exploreTarget: 'Brihadeeswarar Temple' } },
     { label: '1-day Thanjavur',    sub: 'Itinerary · AI routed',     emoji: '🗺️', grad: 'linear-gradient(135deg,#7C3AED,#6366F1)', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Itinerary' } },
     { label: 'Filter coffee',      sub: 'Food · Local café culture', emoji: '☕', grad: 'linear-gradient(135deg,#D97706,#EF4444)', imgId: '1509042239860-f550ce710b93', overrides: { tab: 'Food',      foodTag: 'Cafe' } },
@@ -221,7 +240,7 @@ const SMART_PICKS: Record<string, SmartPick[]> = {
   jaipur: [
     { label: 'Heritage palaces',     sub: 'Explore · Pink City',  emoji: '🏰', grad: 'linear-gradient(135deg,#D97706,#EF4444)', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Explore',   exploreTarget: 'Amber Fort' } },
     { label: 'Royal palace stays',   sub: 'Hotels · Heritage',    emoji: '🏯', grad: 'linear-gradient(135deg,#7C3AED,#A78BFA)', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Hotels',    hotelTag: 'Heritage' } },
-    { label: 'Rajasthani thali',     sub: 'Food · Authentic',     emoji: '🍛', grad: 'linear-gradient(135deg,#EF4444,#F97316)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Thali' } },
+    { label: 'Rajasthani thali',     sub: 'Food · Authentic',     emoji: '🍛', grad: 'linear-gradient(135deg,#EF4444,#F97316)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Thali/Meals' } },
     { label: 'Pink City walk',       sub: 'Itinerary · Full day', emoji: '🛺', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Itinerary' } },
     { label: 'Bazaar & markets',     sub: 'Explore · Shopping',   emoji: '🛍️', grad: 'linear-gradient(135deg,#059669,#10B981)', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Explore',   exploreTarget: 'Johari Bazaar' } },
     { label: 'Street food',          sub: 'Food · Iconic eats',   emoji: '✨', grad: 'linear-gradient(135deg,#6366F1,#A78BFA)', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Food',      foodTag: 'Street Food' } },
@@ -231,7 +250,7 @@ const SMART_PICKS: Record<string, SmartPick[]> = {
     { label: 'City centre stays',    sub: 'Hotels · Best value',  emoji: '💰', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Hotels',    hotelTag: 'City Centre' } },
     { label: 'Chandni Chowk food',   sub: 'Street food · Iconic', emoji: '🥙', grad: 'linear-gradient(135deg,#D97706,#F59E0B)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Street Food' } },
     { label: 'Red Fort',             sub: 'Explore · Must-see',   emoji: '🏰', grad: 'linear-gradient(135deg,#7C3AED,#6366F1)', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Explore',   exploreTarget: 'Red Fort' } },
-    { label: 'North Indian thali',   sub: 'Food · Top picks',     emoji: '🍽️', grad: 'linear-gradient(135deg,#059669,#10B981)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Thali' } },
+    { label: 'North Indian thali',   sub: 'Food · Top picks',     emoji: '🍽️', grad: 'linear-gradient(135deg,#059669,#10B981)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Thali/Meals' } },
     { label: 'Heritage hotels',      sub: 'Hotels · Old Delhi',   emoji: '🏛️', grad: 'linear-gradient(135deg,#EF4444,#D97706)', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Hotels',    hotelTag: 'Heritage' } },
   ],
   default: [
@@ -254,7 +273,6 @@ function getSmartPicks(destination: string): SmartPick[] {
 
 /* ── Trending → filter overrides ────────────────────────────────────── */
 const TRENDING_OVERRIDES: Record<string, QuickOverride> = {
-  'Budget stays':    { tab: 'Hotels',    hotelTag: 'City Centre' },
   'Rooftop pool':    { tab: 'Hotels',    hotelTag: 'Rooftop' },
   'Heritage hotels': { tab: 'Hotels',    hotelTag: 'Heritage' },
   'Near airport':    { tab: 'Hotels',    hotelTag: 'City Centre' },
@@ -290,15 +308,20 @@ function LocationBar({ value, onChange, placeholder, autoDetect, mockResolvedLoc
   autoDetect?: boolean;
   mockResolvedLocation?: string;
 }) {
-  const [detecting, setDetecting] = useState(false);
+  const [phase, setPhase] = useState<'idle' | 'locating' | 'found'>('idle');
   const autoRan = useRef(false);
 
   const detect = () => {
-    setDetecting(true);
-    setTimeout(() => { onChange(mockResolvedLocation); setDetecting(false); }, 1800);
+    setPhase('locating');
+    setTimeout(() => {
+      setPhase('found');
+      setTimeout(() => {
+        onChange(mockResolvedLocation);
+        setPhase('idle');
+      }, 900);
+    }, 1600);
   };
 
-  // Auto-trigger on mount when autoDetect=true and no value yet
   useEffect(() => {
     if (autoDetect && !value && !autoRan.current) {
       autoRan.current = true;
@@ -307,43 +330,62 @@ function LocationBar({ value, onChange, placeholder, autoDetect, mockResolvedLoc
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoDetect]);
 
+  const detecting = phase !== 'idle';
+
   return (
     <div className="relative">
-      {/* Left icon — spinner when detecting, pin otherwise */}
-      {detecting
-        ? <span className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 border-[1.5px] border-brand border-t-transparent rounded-full animate-spin" />
-        : <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
-      }
+      {/* Left icon */}
+      {phase === 'locating' && (
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 border-[1.5px] border-brand border-t-transparent rounded-full animate-spin" />
+      )}
+      {phase === 'found' && (
+        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-success animate-pulse" />
+      )}
+      {phase === 'idle' && (
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
+      )}
 
       <input
         type="text"
         value={detecting ? '' : value}
         onChange={e => !detecting && onChange(e.target.value)}
-        placeholder={detecting ? 'Detecting current location…' : placeholder}
+        placeholder={
+          phase === 'locating' ? 'Locating…'
+          : phase === 'found'  ? `📍 ${mockResolvedLocation} — location found`
+          : placeholder
+        }
         readOnly={detecting}
-        className={`w-full pl-9 pr-20 py-2 border rounded-lg text-xs focus:outline-none transition-colors ${
-          detecting
+        className={`w-full pl-9 pr-28 py-2 border rounded-lg text-xs focus:outline-none transition-all duration-300 ${
+          phase === 'found'
+            ? 'border-success bg-success-soft text-success font-semibold'
+            : phase === 'locating'
             ? 'border-brand bg-brand-softer text-brand italic'
             : 'border-border focus:ring-2 focus:ring-brand-soft focus:border-brand'
         }`}
       />
 
-      {/* Near me button */}
+      {/* Current location button */}
       <button
         type="button"
         onClick={detect}
         disabled={detecting}
-        className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center justify-center gap-0.5 bg-brand-softer text-brand text-[10px] font-bold px-2 py-1 rounded-md hover:bg-brand hover:text-white transition-colors disabled:pointer-events-none"
-        title="Detect my location"
-      >
-        {detecting
-          ? <span className="w-3.5 h-3.5 border-[1.5px] border-current border-t-transparent rounded-full animate-spin" />
-          : <><Navigation className="w-3 h-3" /><span className="ml-0.5">Near me</span></>
+        className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center justify-center gap-1 text-[10px] font-bold px-2 py-1 rounded-md transition-all duration-200 disabled:pointer-events-none"
+        style={phase === 'found'
+          ? { background: '#DEF7EC', color: '#057A55' }
+          : { background: '#EBF5FF', color: '#1C64F2' }
         }
+        title="Use current location"
+      >
+        {phase === 'locating' && <span className="w-3.5 h-3.5 border-[1.5px] border-current border-t-transparent rounded-full animate-spin" />}
+        {phase === 'found'    && <span className="text-xs">✓</span>}
+        {phase === 'idle'     && <Navigation className="w-3 h-3" />}
+        <span className="ml-0.5 whitespace-nowrap">
+          {phase === 'locating' ? 'Locating…' : phase === 'found' ? 'Located' : 'Current location'}
+        </span>
       </button>
 
       {!detecting && value && (
-        <button type="button" onClick={() => onChange('')} className="absolute right-20 top-1/2 -translate-y-1/2 text-muted hover:text-heading">
+        <button type="button" onClick={() => onChange('')} className="absolute right-28 top-1/2 -translate-y-1/2 text-muted hover:text-heading">
           <X className="w-3.5 h-3.5" />
         </button>
       )}
@@ -398,14 +440,15 @@ export interface DashboardFilters {
   numPeople: number;
   budget: number;
   // Hotel
-  hotelTag: string;      // single tag — city-personalised from /api/tags
+  hotelTag: string;      // legacy single tag (kept for quick-override compat)
+  hotelTags: string[];   // multi-select tags (max 2) — primary filter
   hotelArea: string;
   priceFilter: string;
   minRating: string;
   openNow: boolean;
-  persona: string;       // Solo | Couple | Family | Business | ''
   // Food
-  foodTag: string;       // single cuisine/type tag — city-personalised from /api/tags
+  foodTag: string;       // legacy single tag — kept for quick-override compat
+  foodTags: string[];    // multi-select tags (max 2) — primary filter
   dietType: DietType;
   dineMode: string;
   mealTime: MealTime;
@@ -416,6 +459,8 @@ export interface DashboardFilters {
   // Explore
   exploreTarget: string;
   visitTime: string;
+  // Free-text search override
+  searchQuery: string;
 }
 
 interface DashboardProps {
@@ -431,17 +476,23 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
   const [activeTab, setActiveTab]           = useState<Tab>(initialTab);
   // Hotels
   const [priceFilter, setPriceFilter]       = useState('Any');
-  const [hotelTag, setHotelTag]             = useState('');
+  const [hotelTags, setHotelTags]           = useState<string[]>([]);
+  const [hotelTag, setHotelTag]             = useState('');  // legacy, kept for quick-override compat
   const [hotelArea, setHotelArea]           = useState('');
+  const [locationToast, setLocationToast]   = useState('');
   const [areaFocused, setAreaFocused]       = useState(false);
   const [areaSuggestions, setAreaSuggestions] = useState<AutocompleteSuggestion[]>([]);
   const areaDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [persona, setPersona]               = useState('');
   const [openNow, setOpenNow]               = useState(false);
+  // Free-text search (Hotels + Food)
+  const [searchQuery, setSearchQuery]       = useState('');
+  const [searchFocused, setSearchFocused]   = useState(false);
   // Food
   const [foodTag, setFoodTag]               = useState('');
+  const [foodTags, setFoodTags]             = useState<string[]>([]);
   const [dietType, setDietType]             = useState<DietType>('Any');
   const [mealTime, setMealTime]             = useState<MealTime>('Any');
+  const [advancedOpen, setAdvancedOpen]     = useState(false);
   // Itinerary
   const [itinDate, setItinDate]             = useState<string>('today');
   const [startPoint, setStartPoint]         = useState('');
@@ -454,13 +505,13 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
   const [categorySticky, setCategorySticky] = useState(true);
   const ctaSentinelRef = useRef<HTMLDivElement>(null);
 
-  // Reset per-tab selections when switching tabs
-  useEffect(() => { setPriceFilter('Any'); }, [activeTab]);
+  // Scroll to top and reset state on tab switch
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    setPriceFilter('Any');
+  }, [activeTab]);
 
   useEffect(() => { setActiveTab(initialTab); }, [initialTab]);
-
-  // Reset price filter when switching tabs — hotel ranges and food cost tiers are different
-  useEffect(() => { setPriceFilter('Any'); }, [activeTab]);
 
   useEffect(() => {
     const el = ctaSentinelRef.current;
@@ -478,26 +529,38 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
   }, []);
 
   // Dynamic city-specific tags loaded from /api/tags
-  const [hotelTagOptions, setHotelTagOptions] = useState<string[]>([]);
-  const [foodTagOptions,  setFoodTagOptions]  = useState<string[]>([]);
-  const [tagsLoading,     setTagsLoading]     = useState(false);
+  const [hotelTagData, setHotelTagData] = useState<CityTagsResult>({ tags: [] });
+  const [foodTagData,  setFoodTagData]  = useState<CityTagsResult>({ tags: [] });
+  const [tagsLoading,  setTagsLoading]  = useState(false);
+
+  const FOOD_TAG_FALLBACK: CityTagsResult = {
+    tags: [
+      'Biryani', 'South Indian', 'Non-Veg', 'Pure Veg', 'Tiffin & Snacks',
+      'Fresh & Hot', 'Authentic', 'Good Quantity', 'Spicy', 'Chettinad Style',
+      'Affordable', 'Value for Money', 'Family Dining', 'Quick Service', 'Highly Rated',
+    ],
+    segments: {
+      'Cuisine & Dish':     ['Biryani', 'South Indian', 'Non-Veg', 'Pure Veg', 'Tiffin & Snacks'],
+      'Taste & Quality':    ['Fresh & Hot', 'Authentic', 'Good Quantity', 'Spicy', 'Chettinad Style'],
+      'Value & Experience': ['Affordable', 'Value for Money', 'Family Dining', 'Quick Service', 'Highly Rated'],
+    },
+  };
 
   useEffect(() => {
     if (!destination) return;
     setTagsLoading(true);
-    // Reset selections when city changes
+    setHotelTags([]);
     setHotelTag('');
     setFoodTag('');
     Promise.all([
       fetchCityTags(destination, 'Hotels'),
       fetchCityTags(destination, 'Food'),
     ]).then(([ht, ft]) => {
-      setHotelTagOptions(ht.slice(0, 8));
-      setFoodTagOptions(ft.slice(0, 8));
+      setHotelTagData(ht);
+      setFoodTagData(ft.segments ? ft : FOOD_TAG_FALLBACK);
     }).catch(() => {
-      // Fallback to universal defaults on error
-      setHotelTagOptions(['Heritage', 'Business', 'Family', 'City Centre', 'Parking', 'Near Temple', 'Luxury', 'In-House Restaurant']);
-      setFoodTagOptions(['South Indian', 'Biryani', 'Cafe', 'Thali', 'Street Food', 'Sweets', 'North Indian', 'Bakery']);
+      setHotelTagData({ tags: ['Near Big Temple', 'Near Railway Station', 'City Centre', 'Easy Parking', 'Walkable Distance', 'Spacious Rooms', 'Good Amenities', 'In-House Restaurant', 'Quiet & Peaceful', 'Breakfast Included', 'Value for Money', 'Budget-Friendly', 'Prompt Service', 'Good Hospitality', 'Highly Recommended'] });
+      setFoodTagData(FOOD_TAG_FALLBACK);
     }).finally(() => setTagsLoading(false));
   }, [destination]);
 
@@ -512,18 +575,18 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       tomorrow: new Date(today.getTime() + 86400000).toISOString().split('T')[0],
       dayafter: new Date(today.getTime() + 2 * 86400000).toISOString().split('T')[0],
     };
-    const resolvedPersona = ov.tab === 'Hotels' ? persona : (ov.tab ? '' : persona);
     return {
       tab:          ov.tab          ?? activeTab,
       destination:  ov.destination  ?? destination,
       startDate: '', endDate: '', numPeople: 2, budget: 0,
-      hotelTag:     ov.hotelTag     ?? hotelTag,
-      hotelArea:    ov.hotelArea    ?? hotelArea,
+      hotelTag:     ov.hotelTag ?? hotelTag,
+      hotelTags:    ov.hotelTag ? [ov.hotelTag] : hotelTags,
+      hotelArea:    ov.hotelArea ?? hotelArea,
       priceFilter,
       minRating:    'Any',
       openNow,
-      persona:      resolvedPersona,
       foodTag:      ov.foodTag ?? foodTag,
+      foodTags:     ov.foodTag ? [ov.foodTag] : foodTags,
       dietType:     (ov.dietType ?? dietType) as DietType,
       dineMode:     'Any',
       mealTime,
@@ -532,6 +595,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       startTime,
       exploreTarget: ov.exploreTarget ?? exploreTarget,
       visitTime,
+      searchQuery:   searchQuery.trim(),
     };
   };
 
@@ -556,86 +620,126 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       case 'Hotels': return (
         <div className="space-y-4">
 
-          {/* Who's staying — persona picker */}
-          <div>
-            <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1.5">
-              Who's staying?
-            </label>
-            <div className="flex gap-1.5">
-              {([
-                { label: 'Solo',     emoji: '🧳' },
-                { label: 'Couple',   emoji: '💑' },
-                { label: 'Family',   emoji: '👨‍👩‍👧' },
-                { label: 'Business', emoji: '💼' },
-              ] as const).map(p => (
-                <button
-                  key={p.label}
-                  type="button"
-                  onClick={() => setPersona(prev => prev === p.label ? '' : p.label)}
-                  className="flex-1 flex flex-col items-center gap-0.5 py-2.5 rounded-xl border-2 transition-all"
-                  style={persona === p.label
-                    ? { borderColor: '#1C64F2', background: '#EBF5FF', color: '#1C64F2' }
-                    : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
-                  }
-                >
-                  <span className="text-base leading-none">{p.emoji}</span>
-                  <span className="text-[10px] font-black leading-tight">{p.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Budget per night */}
-          <div>
-            <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1.5">
-              Budget per night
-            </label>
-            <div className="flex gap-1.5">
-              {([
-                { label: 'Economy',  sub: 'Budget stay',  val: 'PRICE_LEVEL_INEXPENSIVE' },
-                { label: 'Standard', sub: 'Mid-range',    val: 'PRICE_LEVEL_MODERATE'    },
-                { label: 'Premium',  sub: 'Luxury / Spa', val: 'PRICE_LEVEL_EXPENSIVE'   },
-              ] as const).map(o => (
-                <button
-                  key={o.val}
-                  type="button"
-                  onClick={() => setPriceFilter(prev => prev === o.val ? 'Any' : o.val)}
-                  className="flex-1 flex flex-col items-center py-2.5 rounded-xl border-2 transition-all"
-                  style={priceFilter === o.val
-                    ? { borderColor: '#1C64F2', background: '#EBF5FF', color: '#1C64F2' }
-                    : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
-                  }
-                >
-                  <span className="text-[11px] font-black">{o.label}</span>
-                  <span className="text-[9px] opacity-60 mt-0.5">{o.sub}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Hotel type — single-select city-personalised tags */}
-          {hotelTagOptions.length > 0 && (
+          {/* Hotel keyword tags — multi-select up to 2, segmented */}
+          {hotelTagData.tags.length > 0 && (
             <div>
-              <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1.5">
-                Hotel type
-                {tagsLoading && <span className="ml-1.5 inline-block w-2.5 h-2.5 border border-muted border-t-transparent rounded-full animate-spin align-middle" />}
-              </label>
-              <div className="flex flex-wrap gap-1.5">
-                {hotelTagOptions.map(tag => (
-                  <button
-                    key={tag}
-                    type="button"
-                    onClick={() => setHotelTag(prev => prev === tag ? '' : tag)}
-                    className="px-3 py-1.5 rounded-full border-2 text-[10px] font-bold transition-all"
-                    style={hotelTag === tag
-                      ? { borderColor: '#1C64F2', background: '#EBF5FF', color: '#1C64F2' }
-                      : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
-                    }
-                  >
-                    {tag}
-                  </button>
-                ))}
+              {/* Header with counter */}
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-[13px] font-black text-heading">
+                  What matters to you?
+                  {tagsLoading && <span className="ml-1.5 inline-block w-2.5 h-2.5 border border-muted border-t-transparent rounded-full animate-spin align-middle" />}
+                </label>
+                {hotelTags.length > 0 && (
+                  <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full"
+                    style={{ background: '#EBF5FF', color: '#1C64F2' }}>
+                    {hotelTags.length}/2
+                  </span>
+                )}
               </div>
+
+              {/* Location toast */}
+              {locationToast && (
+                <div className="mb-2 px-2.5 py-1.5 rounded-lg text-[10px] font-semibold flex items-center gap-1.5"
+                  style={{ background: '#EFF6FF', color: '#1D4ED8', border: '1px solid #BFDBFE' }}>
+                  <MapPin className="w-3 h-3 shrink-0" />
+                  {locationToast}
+                </div>
+              )}
+
+              {/* Segmented tag display */}
+              {hotelTagData.segments
+                ? Object.entries(hotelTagData.segments).map(([segName, segTags]) => (
+                  <div key={segName} className="mb-3">
+                    <div className="text-[11px] font-semibold text-muted mb-1.5">
+                      {segName}
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {segTags.map(tag => {
+                        const isSelected = hotelTags.includes(tag);
+                        const isMaxed    = hotelTags.length >= 2 && !isSelected;
+                        return (
+                          <button
+                            key={tag}
+                            type="button"
+                            disabled={isMaxed}
+                            onClick={() => {
+                              setHotelTags(prev => {
+                                if (prev.includes(tag)) return prev.filter(t => t !== tag);
+                                if (prev.length >= 2)   return [...prev.slice(1), tag];
+                                return [...prev, tag];
+                              });
+                              // Toast for location tags (Group A)
+                              const groupATags = hotelTagData.groupA ?? [];
+                              if (groupATags.includes(tag) && !hotelTags.includes(tag)) {
+                                const toastMap: Record<string,string> = {
+                                  'Near Big Temple':      'Focusing within 2km of Big Temple',
+                                  'Near Railway Station': 'Focusing near Railway Station',
+                                  'City Centre':          'Focusing on central Thanjavur',
+                                  'Walkable Area':        'Showing hotels in walkable areas',
+                                  'Near Bus Stand':       'Focusing near Bus Stand',
+                                  'Near Palace':          'Focusing near Thanjavur Palace',
+                                  'Near Market':          'Focusing near city market area',
+                                };
+                                setLocationToast(toastMap[tag] ?? `Focusing near ${tag}`);
+                                setTimeout(() => setLocationToast(''), 3000);
+                              }
+                            }}
+                            className="px-2.5 py-1.5 rounded-full border-2 text-[10px] font-bold transition-all"
+                            style={
+                              isSelected
+                                ? { borderColor: '#1C64F2', background: '#EBF5FF', color: '#1C64F2' }
+                                : isMaxed
+                                  ? { borderColor: '#E5E7EB', background: '#F9FAFB', color: '#D1D5DB', cursor: 'not-allowed' }
+                                  : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
+                            }
+                          >
+                            {tag}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))
+                : (
+                  // Fallback: flat list when no segments
+                  <div className="flex flex-wrap gap-1.5">
+                    {hotelTagData.tags.map(tag => {
+                      const isSelected = hotelTags.includes(tag);
+                      const isMaxed    = hotelTags.length >= 2 && !isSelected;
+                      return (
+                        <button
+                          key={tag}
+                          type="button"
+                          disabled={isMaxed}
+                          onClick={() => setHotelTags(prev =>
+                            prev.includes(tag) ? prev.filter(t => t !== tag)
+                              : prev.length >= 2 ? [...prev.slice(1), tag]
+                              : [...prev, tag]
+                          )}
+                          className="px-2.5 py-1.5 rounded-full border-2 text-[10px] font-bold transition-all"
+                          style={
+                            isSelected
+                              ? { borderColor: '#1C64F2', background: '#EBF5FF', color: '#1C64F2' }
+                              : isMaxed
+                                ? { borderColor: '#E5E7EB', background: '#F9FAFB', color: '#D1D5DB', cursor: 'not-allowed' }
+                                : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
+                          }
+                        >
+                          {tag}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )
+              }
+
+              {/* Clear tags */}
+              {hotelTags.length > 0 && (
+                <button type="button" onClick={() => setHotelTags([])}
+                  className="mt-1.5 text-[9px] font-bold text-muted underline underline-offset-2">
+                  Clear tags
+                </button>
+              )}
             </div>
           )}
 
@@ -646,81 +750,146 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       case 'Food': return (
         <div className="space-y-4">
 
-          {/* Meal Moment — 3 pills */}
-          <div>
-            <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1.5">
-              Meal Moment
-            </label>
-            <div className="flex gap-1.5">
-              {([
-                { label: 'Breakfast', sub: 'Tiffin / Idli'  },
-                { label: 'Lunch',     sub: 'Thali / Meals'  },
-                { label: 'Dinner',    sub: 'Biryani / Full' },
-              ] as const).map(m => (
-                <button
-                  key={m.label}
-                  type="button"
-                  onClick={() => setMealTime(prev => prev === m.label ? 'Any' : m.label)}
-                  className="flex-1 flex flex-col items-center py-2.5 rounded-xl border-2 transition-all"
-                  style={mealTime === m.label
-                    ? { borderColor: '#D97706', background: '#FFFBEB', color: '#D97706' }
-                    : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
-                  }
-                >
-                  <span className="text-[10px] font-black">{m.label}</span>
-                  <span className="text-[9px] opacity-60 mt-0.5">{m.sub}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* What I'm craving — single-select city-personalised tags */}
-          {foodTagOptions.length > 0 && (
+          {/* Segmented food tags — multi-select up to 3, 5×5 from real review data */}
+          {foodTagData.tags.length > 0 && (
             <div>
-              <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1.5">
-                What I'm craving
-                {tagsLoading && <span className="ml-1.5 inline-block w-2.5 h-2.5 border border-muted border-t-transparent rounded-full animate-spin align-middle" />}
-              </label>
-              <div className="grid grid-cols-3 gap-1.5">
-                {foodTagOptions.map(tag => (
-                  <button
-                    key={tag}
-                    type="button"
-                    onClick={() => setFoodTag(prev => prev === tag ? '' : tag)}
-                    className="flex items-center justify-center py-2.5 rounded-xl border-2 transition-all"
-                    style={foodTag === tag
-                      ? { borderColor: '#D97706', background: '#FFFBEB', color: '#D97706' }
-                      : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
-                    }
-                  >
-                    <span className="text-[9px] font-bold text-center leading-tight px-1">{tag}</span>
-                  </button>
-                ))}
+              {/* Header with counter */}
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-[13px] font-black text-heading">
+                  What I'm looking for
+                  {tagsLoading && <span className="ml-1.5 inline-block w-2.5 h-2.5 border border-muted border-t-transparent rounded-full animate-spin align-middle" />}
+                </label>
+                {foodTags.length > 0 && (
+                  <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full"
+                    style={{ background: '#FFF7ED', color: '#D97706' }}>
+                    {foodTags.length}/2
+                  </span>
+                )}
               </div>
+
+              {foodTagData.segments && Object.keys(foodTagData.segments).length > 0
+                ? Object.entries(foodTagData.segments).map(([seg, tags]) => (
+                  <div key={seg} className="mb-2">
+                    <p className="text-[11px] font-semibold text-muted mb-1.5">{seg}</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {tags.map((tag: string) => {
+                        const isSelected = foodTags.includes(tag);
+                        const isMaxed    = foodTags.length >= 2 && !isSelected;
+                        return (
+                          <button
+                            key={tag}
+                            type="button"
+                            disabled={isMaxed}
+                            onClick={() => setFoodTags(prev =>
+                              prev.includes(tag) ? prev.filter(t => t !== tag)
+                                : prev.length >= 2 ? [...prev.slice(1), tag]
+                                : [...prev, tag]
+                            )}
+                            className="px-2.5 py-1.5 rounded-full border-2 text-[10px] font-bold transition-all"
+                            style={isSelected
+                              ? { borderColor: '#D97706', background: '#FFF7ED', color: '#D97706' }
+                              : isMaxed
+                                ? { borderColor: '#E5E7EB', background: '#F9FAFB', color: '#D1D5DB', cursor: 'not-allowed' }
+                                : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
+                            }
+                          >
+                            {tag}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))
+                : (
+                  <div className="flex flex-wrap gap-1.5">
+                    {foodTagData.tags.map(t => {
+                      const isSelected = foodTags.includes(t);
+                      const isMaxed    = foodTags.length >= 2 && !isSelected;
+                      return (
+                        <button
+                          key={t}
+                          type="button"
+                          disabled={isMaxed}
+                          onClick={() => setFoodTags(prev =>
+                            prev.includes(t) ? prev.filter(x => x !== t)
+                              : prev.length >= 2 ? [...prev.slice(1), t]
+                              : [...prev, t]
+                          )}
+                          className="px-2.5 py-1.5 rounded-full border-2 text-[10px] font-bold transition-all"
+                          style={isSelected
+                            ? { borderColor: '#D97706', background: '#FFF7ED', color: '#D97706' }
+                            : isMaxed
+                              ? { borderColor: '#E5E7EB', background: '#F9FAFB', color: '#D1D5DB', cursor: 'not-allowed' }
+                              : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
+                          }
+                        >
+                          {t}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )
+              }
+
+              {/* Clear tags */}
+              {foodTags.length > 0 && (
+                <button type="button" onClick={() => setFoodTags([])}
+                  className="mt-1.5 text-[9px] font-bold text-muted underline underline-offset-2">
+                  Clear tags
+                </button>
+              )}
             </div>
           )}
 
-          {/* Diet — simplified 3-way */}
-          <div>
-            <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1.5">
-              Diet
-            </label>
-            <div className="flex gap-1.5">
-              {(['Any', 'Veg', 'Non-Veg'] as const).map(d => (
-                <button
-                  key={d}
-                  type="button"
-                  onClick={() => setDietType(d as DietType)}
-                  className="flex-1 flex items-center justify-center py-2 rounded-xl border-2 transition-all"
-                  style={dietType === d
-                    ? { borderColor: '#059669', background: '#ECFDF5', color: '#059669' }
-                    : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
-                  }
-                >
-                  <span className="text-[10px] font-bold">{d}</span>
-                </button>
-              ))}
-            </div>
+          {/* Advanced — collapsible specific dish names */}
+          <div className="border border-border rounded-xl overflow-hidden">
+            <button
+              type="button"
+              onClick={() => setAdvancedOpen(prev => !prev)}
+              className="w-full flex items-center justify-between px-3 py-2.5 bg-surface hover:bg-brand-softer transition-colors"
+            >
+              <span className="text-[10px] font-bold text-muted uppercase tracking-wider">Advanced · Dish names</span>
+              <ChevronDown
+                className="w-3.5 h-3.5 text-muted transition-transform duration-200"
+                style={{ transform: advancedOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+              />
+            </button>
+            {advancedOpen && (
+              <div className="px-3 py-2.5 space-y-2.5 border-t border-border">
+                {FOOD_ADVANCED.map(({ group, items }) => (
+                  <div key={group}>
+                    <p className="text-[9px] font-bold text-muted uppercase tracking-wider mb-1">{group}</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {items.map(item => {
+                        const isSelected = foodTags.includes(item);
+                        const isMaxed    = foodTags.length >= 2 && !isSelected;
+                        return (
+                          <button
+                            key={item}
+                            type="button"
+                            disabled={isMaxed}
+                            onClick={() => setFoodTags(prev =>
+                              prev.includes(item) ? prev.filter(t => t !== item)
+                                : prev.length >= 2 ? [...prev.slice(1), item]
+                                : [...prev, item]
+                            )}
+                            className="px-2.5 py-1 rounded-full border-2 text-[10px] font-bold transition-all"
+                            style={isSelected
+                              ? { borderColor: '#D97706', background: '#FFF7ED', color: '#D97706' }
+                              : isMaxed
+                                ? { borderColor: '#E5E7EB', background: '#F9FAFB', color: '#D1D5DB', cursor: 'not-allowed' }
+                                : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
+                            }
+                          >
+                            {item}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
         </div>
@@ -1064,12 +1233,79 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         className="rounded-xl overflow-hidden relative z-10 bg-white"
         style={{ border: '1px solid #E5E7EB' }}
       >
+        {/* Search override — Hotels + Food only */}
+        {(activeTab === 'Hotels' || activeTab === 'Food') && (() => {
+          const SUGGESTIONS: Record<string, string[]> = {
+            Hotels: [
+              'hotel near new bus stand',
+              'hotel near big temple',
+              'hotel near railway station',
+              'budget hotel in Thanjavur',
+              'hotel near city centre',
+              'AC hotel near palace',
+              'family hotel Thanjavur',
+              'hotel with parking near temple',
+            ],
+            Food: [
+              'biryani near bus stand',
+              'pure veg restaurant Thanjavur',
+              'breakfast tiffin centre',
+              'mutton biryani near railway station',
+              'filter coffee cafe',
+              'south indian thali lunch',
+              'Chettinad restaurant',
+              'family restaurant with AC',
+            ],
+          };
+          const suggestions = (SUGGESTIONS[activeTab] ?? []).filter(s =>
+            !searchQuery || s.toLowerCase().includes(searchQuery.toLowerCase())
+          );
+          const showSuggestions = searchFocused && suggestions.length > 0 && !(!searchQuery && false);
+          return (
+            <div className="px-3 pt-3 pb-2 relative">
+              <div className={`flex items-center gap-2 rounded-xl px-3 py-2 transition-all ${searchQuery ? 'ring-2 ring-brand' : 'ring-1 ring-border'}`} style={{ background: '#F9FAFB' }}>
+                <Search className="w-3.5 h-3.5 shrink-0 text-muted" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  onFocus={() => setSearchFocused(true)}
+                  onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
+                  onKeyDown={e => { if (e.key === 'Enter' && searchQuery.trim()) { setSearchFocused(false); handleSearch(); } }}
+                  placeholder={activeTab === 'Hotels' ? 'Search hotels… e.g. near bus stand' : 'Search food… e.g. pure veg biryani'}
+                  className="flex-1 bg-transparent text-sm text-heading placeholder-muted outline-none min-w-0"
+                />
+                {searchQuery && (
+                  <button type="button" onClick={() => setSearchQuery('')} className="shrink-0 text-muted hover:text-heading transition-colors">
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+              {showSuggestions && (
+                <div className="absolute left-3 right-3 top-full z-50 mt-0.5 rounded-xl overflow-hidden shadow-lg" style={{ background: '#fff', border: '1px solid #E5E7EB' }}>
+                  {suggestions.slice(0, 6).map(s => (
+                    <button
+                      key={s}
+                      type="button"
+                      onMouseDown={() => { setSearchQuery(s); setSearchFocused(false); }}
+                      className="w-full flex items-center gap-2 px-3 py-2.5 text-left text-sm text-heading hover:bg-blue-50 transition-colors"
+                    >
+                      <Search className="w-3 h-3 shrink-0 text-muted" />
+                      <span>{s}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })()}
+
         {/* Header */}
         <div className="px-4 py-3 flex items-center gap-3 border-b border-border" style={{ background: '#FAFAFA' }}>
           <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: '#1C64F2' }}>
             <span style={{ color: '#fff' }}>{meta.icon}</span>
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <p className="font-display font-black text-sm text-heading leading-tight">{meta.headline}</p>
             <p className="text-xs text-muted mt-0.5 truncate">{meta.sub}</p>
           </div>
@@ -1093,6 +1329,8 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               : <Search className="w-4 h-4" />
             }
             {loading ? 'AI is on it…' : (
+              searchQuery.trim() && activeTab === 'Hotels'  ? `Search "${searchQuery.trim()}"` :
+              searchQuery.trim() && activeTab === 'Food'    ? `Search "${searchQuery.trim()}"` :
               activeTab === 'Hotels'    ? 'Find my hotel in Thanjavur' :
               activeTab === 'Food'      ? 'Find restaurants in Thanjavur' :
               activeTab === 'Itinerary' ? 'Build my Thanjavur day plan' :
@@ -1103,6 +1341,26 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         {/* sentinel — category bar unsticks once this exits top of viewport */}
         <div ref={ctaSentinelRef} className="h-px" />
       </motion.div>
+
+      {/* ── Popular searches ───────────────────────────────────── */}
+      <div className="relative z-10">
+        <p className="text-[10px] font-bold text-muted uppercase tracking-wide mb-2 flex items-center gap-1.5">
+          <Search className="w-3 h-3" /> People also search for
+        </p>
+        <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
+          {POPULAR_QUERIES.map((q, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => triggerSearch(q.overrides)}
+              className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-white text-xs font-medium text-body hover:border-brand hover:text-brand transition-colors"
+            >
+              <Search className="w-3 h-3 text-muted shrink-0" />
+              {q.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {/* ── Recent searches ────────────────────────────────────── */}
       {recentSearches.length > 0 && (
@@ -1230,7 +1488,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               key={c.city}
               whileTap={{ scale: 0.97 }}
               type="button"
-              onClick={() => { onDestinationSelect?.(c.city); triggerSearch({ tab: c.tab, destination: c.city }); }}
+              onClick={() => onDestinationSelect?.(c.city)}
               className="shrink-0 w-[220px] h-[150px] rounded-2xl overflow-hidden relative focus:outline-none focus-visible:ring-2 focus-visible:ring-brand group"
             >
               <img
@@ -1241,10 +1499,10 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               />
               <div className="absolute inset-0" style={{ background: c.grad, opacity: 0.3 }} />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
-              <div className="absolute top-3 right-3 z-10">
-                <span className="text-white text-[9px] font-black uppercase tracking-wide px-2 py-1 rounded-full"
-                  style={{ background: TAB_META[c.tab].accent }}>
-                  {c.tab}
+              {/* Coming soon badge */}
+              <div className="absolute top-3 left-3 z-10">
+                <span className="text-white text-[9px] font-black uppercase tracking-wide px-2 py-1 rounded-full bg-black/40 backdrop-blur-sm">
+                  Coming Soon
                 </span>
               </div>
               <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
