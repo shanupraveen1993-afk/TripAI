@@ -65,9 +65,9 @@ const TRAFFIC_LINE_BG: Record<TrafficLevel, string> = {
 };
 
 const TRAFFIC_BADGE: Record<TrafficLevel, { bg: string; text: string; dot: string; border: string }> = {
-  Light:    { bg: 'bg-green-50',  text: 'text-green-700',  dot: 'bg-green-500',  border: 'border-green-200' },
-  Moderate: { bg: 'bg-amber-50',  text: 'text-amber-700',  dot: 'bg-amber-500',  border: 'border-amber-200' },
-  Heavy:    { bg: 'bg-red-50',    text: 'text-red-700',    dot: 'bg-red-500',    border: 'border-red-200'   },
+  Light:    { bg: 'bg-success-soft',  text: 'text-success-strong',  dot: 'bg-success-medium',  border: 'border-success-medium/30' },
+  Moderate: { bg: 'bg-warning-soft',  text: 'text-warning-strong',  dot: 'bg-warning',         border: 'border-warning-medium/40' },
+  Heavy:    { bg: 'bg-danger-soft',   text: 'text-danger-strong',   dot: 'bg-danger-medium',   border: 'border-danger-medium/30'  },
 };
 
 const uItinImg = (id: string) =>
@@ -132,9 +132,9 @@ function getPresetImgId(stopName: string, idx: number): string {
 }
 
 const CROWD_BADGE: Record<'Low' | 'Moderate' | 'High', { bg: string; text: string; dot: string; border: string }> = {
-  Low:      { bg: 'bg-green-50',  text: 'text-green-700',  dot: 'bg-green-500',  border: 'border-green-200' },
-  Moderate: { bg: 'bg-amber-50',  text: 'text-amber-700',  dot: 'bg-amber-500',  border: 'border-amber-200' },
-  High:     { bg: 'bg-red-50',    text: 'text-red-700',    dot: 'bg-red-500',    border: 'border-red-200'   },
+  Low:      { bg: 'bg-success-soft',  text: 'text-success-strong',  dot: 'bg-success-medium',  border: 'border-success-medium/30' },
+  Moderate: { bg: 'bg-warning-soft',  text: 'text-warning-strong',  dot: 'bg-warning',         border: 'border-warning-medium/40' },
+  High:     { bg: 'bg-danger-soft',   text: 'text-danger-strong',   dot: 'bg-danger-medium',   border: 'border-danger-medium/30'  },
 };
 
 function PlacePhoto({ color, name, photoRef, autoLoad }: { color: string; name: string; photoRef?: string | null; autoLoad?: boolean }) {
@@ -198,9 +198,9 @@ const AVATAR_COLORS = [
 function ReviewCard({ review, idx, keywords = [] }: { review: ReviewItem; idx: number; keywords?: string[] }) {
   const avatarColor = AVATAR_COLORS[idx % AVATAR_COLORS.length];
   const positiveBadge = review.stars === 5
-    ? <span className="text-[11px] font-medium text-green-700 bg-green-50 px-1.5 py-0.5 rounded-full border border-green-200 shrink-0">✓ Loved it</span>
+    ? <span className="text-[11px] font-medium text-success-strong bg-success-soft px-1.5 py-0.5 rounded-full border border-success-medium/30 shrink-0">✓ Loved it</span>
     : review.stars === 4
-    ? <span className="text-[11px] font-medium text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded-full border border-amber-200 shrink-0">✓ Liked it</span>
+    ? <span className="text-[11px] font-medium text-warning-strong bg-warning-soft px-1.5 py-0.5 rounded-full border border-warning-medium/40 shrink-0">✓ Liked it</span>
     : null;
   const kws = review.highlight ? [review.highlight] : keywords;
   return (
@@ -223,7 +223,7 @@ function ReviewCard({ review, idx, keywords = [] }: { review: ReviewItem; idx: n
           <div className="flex items-center gap-1.5 mb-1.5">
             <div className="flex items-center gap-0.5">
               {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} className={`w-2.5 h-2.5 ${i < review.stars ? 'fill-yellow-400 text-yellow-400' : 'text-border'}`} />
+                <Star key={i} className={`w-2.5 h-2.5 ${i < review.stars ? 'fill-warning text-warning' : 'text-border'}`} />
               ))}
             </div>
             {positiveBadge}
@@ -243,7 +243,7 @@ function highlightKeywords(text: string, keywords: string[]): React.ReactNode {
   const parts = text.split(pattern);
   return parts.map((part, i) =>
     keywords.some(k => k.toLowerCase() === part.toLowerCase())
-      ? <mark key={i} className="bg-amber-100 text-amber-900 rounded px-0.5 not-italic font-semibold">{part}</mark>
+      ? <mark key={i} className="bg-warning-soft text-heading rounded px-0.5 not-italic font-semibold">{part}</mark>
       : part
   );
 }
@@ -314,7 +314,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
       {tab === 'Food' && (
         <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
           target="_blank" rel="noopener noreferrer"
-          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-emerald-500 text-white hover:bg-emerald-600 transition-colors active:scale-[0.97] shadow-sm">
+          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-success text-white hover:bg-success-strong transition-colors active:scale-[0.97] shadow-sm">
           <Navigation className="w-3 h-3" />Directions
         </a>
       )}
@@ -371,7 +371,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           <div className="flex items-center gap-1">
             <div className="flex gap-0.5">
               {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} className={`w-3.5 h-3.5 ${i < Math.floor(place.rating) ? 'fill-yellow-400 text-yellow-400' : i < place.rating ? 'fill-yellow-200 text-yellow-300' : 'text-border'}`} />
+                <Star key={i} className={`w-3.5 h-3.5 ${i < Math.floor(place.rating) ? 'fill-warning text-warning' : i < place.rating ? 'fill-warning-medium text-warning-medium' : 'text-border'}`} />
               ))}
             </div>
             <span className="text-xs text-muted ml-0.5">({place.reviewCount.toLocaleString()})</span>
@@ -429,7 +429,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           {tab === 'Food' && (
             <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
               target="_blank" rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-bold bg-emerald-500 text-white active:scale-[0.97] shadow-sm">
+              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-bold bg-success text-white active:scale-[0.97] shadow-sm">
               <Navigation className="w-4 h-4 shrink-0" />Directions
             </a>
           )}
@@ -477,7 +477,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           <div className="flex items-center gap-1 flex-wrap">
             <div className="flex gap-0.5">
               {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} className={`w-3 h-3 ${i < Math.floor(place.rating) ? 'fill-yellow-400 text-yellow-400' : i < place.rating ? 'fill-yellow-200 text-yellow-300' : 'text-border'}`} />
+                <Star key={i} className={`w-3 h-3 ${i < Math.floor(place.rating) ? 'fill-warning text-warning' : i < place.rating ? 'fill-warning-medium text-warning-medium' : 'text-border'}`} />
               ))}
             </div>
             <span className="text-xs text-muted">({place.reviewCount.toLocaleString()})</span>
@@ -531,7 +531,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             {tab === 'Food' && (
               <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
                 target="_blank" rel="noopener noreferrer"
-                className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold bg-emerald-500 text-white hover:bg-emerald-600 transition-colors active:scale-[0.97] shadow-sm">
+                className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold bg-success text-white hover:bg-success-strong transition-colors active:scale-[0.97] shadow-sm">
                 <Navigation className="w-3.5 h-3.5 shrink-0" />Directions
               </a>
             )}
@@ -608,13 +608,13 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                     <div className="rounded-xl p-3 flex flex-col gap-2 border"
                       style={{ background: '#F0FDF4', borderColor: '#D1FAE5' }}>
                       <div className="flex flex-col gap-1">
-                        <span className="text-[11px] font-semibold text-emerald-600 uppercase tracking-wide flex items-center gap-1">
+                        <span className="text-[11px] font-semibold text-success-strong00 uppercase tracking-wide flex items-center gap-1">
                           <Trophy className="w-2.5 h-2.5" />Why Ranked #{rank}
                         </span>
                         <p className="text-xs text-body leading-relaxed line-clamp-3">{place.aiDetail.whyOverOthers}</p>
                       </div>
                       <div className="border-t border-emerald-100 pt-2 flex flex-col gap-1">
-                        <span className="text-[11px] font-semibold text-emerald-600 uppercase tracking-wide flex items-center gap-1">
+                        <span className="text-[11px] font-semibold text-success-strong00 uppercase tracking-wide flex items-center gap-1">
                           <CheckCircle className="w-2.5 h-2.5" />Best For
                         </span>
                         <p className="text-xs text-body leading-relaxed line-clamp-2">{place.aiDetail.bestFor}</p>
@@ -678,11 +678,11 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                         <div className="ml-auto flex items-center gap-1.5 shrink-0">
                           <div className="flex gap-0.5">
                             {Array.from({ length: 5 }).map((_, j) => (
-                              <Star key={j} className={`w-2.5 h-2.5 ${j < r.stars ? 'fill-yellow-400 text-yellow-400' : 'text-border'}`} />
+                              <Star key={j} className={`w-2.5 h-2.5 ${j < r.stars ? 'fill-warning text-warning' : 'text-border'}`} />
                             ))}
                           </div>
-                          {r.stars === 5 && <span className="text-[11px] font-medium text-green-700 bg-green-50 px-1.5 py-0.5 rounded-full border border-green-200">✓ Loved it</span>}
-                          {r.stars === 4 && <span className="text-[11px] font-medium text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded-full border border-amber-200">✓ Liked it</span>}
+                          {r.stars === 5 && <span className="text-[11px] font-medium text-success-strong bg-success-soft px-1.5 py-0.5 rounded-full border border-success-medium/30">✓ Loved it</span>}
+                          {r.stars === 4 && <span className="text-[11px] font-medium text-warning-strong bg-warning-soft px-1.5 py-0.5 rounded-full border border-warning-medium/40">✓ Liked it</span>}
                         </div>
                       </div>
                       <p className="text-xs text-body leading-relaxed italic line-clamp-3">
@@ -1017,7 +1017,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop, showPresetImages }:
 
                         {/* Card 2: Smart Guide */}
                         <div className="rounded-xl p-3 flex flex-col gap-2 border" style={{ background: '#F0FDF4', borderColor: '#D1FAE5' }}>
-                          <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-wide flex items-center gap-1">
+                          <span className="text-[11px] font-bold text-success-strong00 uppercase tracking-wide flex items-center gap-1">
                             <Compass className="w-3 h-3" /> Smart Guide
                           </span>
                           <div className="flex flex-col gap-1.5">
@@ -1132,7 +1132,7 @@ function ExploreView({ place }: { place: ExploreResult }) {
           </p>
           <div className="flex items-center gap-2 flex-wrap">
             <div className="flex items-center gap-1.5 bg-black/45 backdrop-blur-sm rounded-full px-2.5 py-1">
-              <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+              <Star className="w-3 h-3 fill-warning text-warning" />
               <span className="text-[12px] font-black text-white">{place.rating}</span>
               <span className="text-[10px] text-white/70">Google</span>
             </div>
@@ -1156,13 +1156,13 @@ function ExploreView({ place }: { place: ExploreResult }) {
       {/* ── 2-card: Visit Guide + Prepare ───────────────────── */}
       <div className="grid grid-cols-2 gap-2">
         <div className="rounded-xl p-3 flex flex-col gap-2 border" style={{ background: '#F0FDF4', borderColor: '#D1FAE5' }}>
-          <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-wide flex items-center gap-1">
+          <span className="text-[11px] font-bold text-success-strong00 uppercase tracking-wide flex items-center gap-1">
             <Navigation className="w-3 h-3" /> Visit Guide
           </span>
           <p className="text-[11px] text-body leading-relaxed whitespace-pre-line">{place.flow}</p>
         </div>
-        <div className="rounded-xl p-3 flex flex-col gap-2 border" style={{ background: '#FFFBEB', borderColor: '#FEF3C7' }}>
-          <span className="text-[11px] font-bold text-amber-600 uppercase tracking-wide flex items-center gap-1">
+        <div className="rounded-xl p-3 flex flex-col gap-2 border bg-warning-soft border-warning-medium/40">
+          <span className="text-[11px] font-bold text-warning-strong uppercase tracking-wide flex items-center gap-1">
             <Info className="w-3 h-3" /> How to Prepare
           </span>
           <p className="text-[11px] text-body leading-relaxed">{place.preparation}</p>
@@ -1184,7 +1184,7 @@ function ExploreView({ place }: { place: ExploreResult }) {
       {place.reviews.length > 0 && (
         <div className="border border-border rounded-xl overflow-hidden">
           <div className="flex items-center gap-2 px-3 pt-2.5 pb-2 border-b border-border bg-bg-app">
-            <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+            <Star className="w-3 h-3 fill-warning text-warning" />
             <span className="text-[10px] font-black text-heading uppercase tracking-widest">What visitors say</span>
           </div>
           <div className="p-3">
@@ -1290,7 +1290,7 @@ export function ResultsView({
               <span>{tag}</span>
               <button
                 onClick={() => onCancelTag(tag)}
-                className="flex items-center justify-center w-4 h-4 rounded-full hover:bg-blue-200 transition-colors"
+                className="flex items-center justify-center w-4 h-4 rounded-full hover:bg-brand-medium transition-colors"
                 aria-label={`Remove ${tag}`}
               >
                 <X className="w-2.5 h-2.5" />
@@ -1379,9 +1379,9 @@ export function ResultsView({
             )}
             {idx === 1 && (
               <div className="flex items-center gap-2 -mb-2">
-                <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-                <span className="text-[10px] font-black text-amber-600 uppercase tracking-widest">Best Options</span>
-                <div className="flex-1 h-px bg-amber-200" />
+                <Star className="w-3.5 h-3.5 text-warning fill-warning" />
+                <span className="text-[10px] font-black text-warning-strong uppercase tracking-widest">Best Options</span>
+                <div className="flex-1 h-px bg-warning-medium" />
               </div>
             )}
             {idx === 3 && (results?.length ?? 0) > 3 && (

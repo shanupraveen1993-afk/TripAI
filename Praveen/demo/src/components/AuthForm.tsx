@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Compass, ArrowRight } from 'lucide-react';
 import { Input } from './ui/Input';
+import { Button } from './ui/Button';
 
 interface AuthFormProps {
   onSuccess: (user: { name: string; email: string; avatar?: string }) => void;
@@ -93,33 +94,18 @@ export function AuthForm({ onSuccess, onBack, asModal = false }: AuthFormProps) 
               />
 
               {/* Google Sign-In button */}
-              <button
+              <Button
                 type="submit"
-                disabled={loading}
-                className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white border border-border rounded-xl text-sm font-semibold text-heading hover:bg-bg-app hover:border-brand-border transition-all shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
+                variant="outline"
+                fullWidth
+                loading={loading}
+                icon={!loading ? <GoogleLogo /> : undefined}
+                iconRight={!loading ? <ArrowRight className="w-3.5 h-3.5 text-muted" /> : undefined}
+                className="justify-between hover:border-brand-border"
               >
-                {loading ? (
-                  <>
-                    <span className="w-4 h-4 border-2 border-brand/30 border-t-brand rounded-full animate-spin shrink-0" />
-                    Signing in…
-                  </>
-                ) : (
-                  <>
-                    <GoogleLogo />
-                    Continue with Google
-                    <ArrowRight className="w-3.5 h-3.5 ml-auto text-muted" />
-                  </>
-                )}
-              </button>
+                {loading ? 'Signing in…' : 'Continue with Google'}
+              </Button>
             </form>
-
-            {/* Demo notice */}
-            <div className="mt-5 px-3 py-2.5 bg-brand-softer border border-brand-soft/40 rounded-xl">
-              <p className="text-[11px] text-brand/70 leading-relaxed text-center">
-                <span className="font-bold text-brand">Demo mode</span> — Google OAuth connects in Phase 2.
-                Any name works now.
-              </p>
-            </div>
 
             <p className="mt-4 text-xs text-center text-muted">
               By continuing you agree to our Terms of Service

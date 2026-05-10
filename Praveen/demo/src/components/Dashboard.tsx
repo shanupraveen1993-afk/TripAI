@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { fetchCityTags, fetchAutocomplete, AutocompleteSuggestion, CityTagsResult } from '../api/client';
 import { Tab } from './ui/Tabs';
+import { Button } from './ui/Button';
 
 const isThanjavur = (dest: string) =>
   /thanjavur|tanjore|tanjore/i.test(dest.trim()) || dest.trim() === '';
@@ -930,7 +931,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
           {/* Time slot — Morning / Afternoon / Evening + mandatory validation */}
           <div>
             <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
-              Time Slot <span className="text-red-500">*</span>
+              Time Slot <span className="text-danger">*</span>
             </label>
             <div className="flex gap-1.5">
               {(['Morning', 'Afternoon', 'Evening'] as const).map(t => {
@@ -960,7 +961,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                   initial={{ opacity: 0, y: -4 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -4 }}
-                  className="text-[10px] text-red-500 font-bold mt-1.5 flex items-center gap-1"
+                  className="text-[10px] text-danger font-bold mt-1.5 flex items-center gap-1"
                 >
                   <span>⚠</span> Please select a time slot to continue
                 </motion.p>
@@ -1030,9 +1031,9 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             </div>
           </div>
 
-          <div className="rounded-lg p-2.5 border border-border" style={{ background: '#ECFDF5' }}>
+          <div className="rounded-lg p-2.5 border border-border bg-success-soft">
             <p className="text-[11px] text-body leading-relaxed flex items-start gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+              <Sparkles className="w-3.5 h-3.5 text-success-strong shrink-0 mt-0.5" />
               <span><span className="font-bold text-heading">AI Visit Guide</span> — Gemini reads real reviews and crowd data to build a time-specific plan for your chosen spot.</span>
             </p>
           </div>
@@ -1062,20 +1063,20 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
 
         {/* ── Dot grid ─────────────────────────────────────────────── */}
         <div className="absolute inset-0 pointer-events-none" style={{
-          backgroundImage: 'radial-gradient(circle, rgba(251,146,60,0.18) 1px, transparent 1px)',
+          backgroundImage: 'radial-gradient(circle, rgba(28,100,242,0.15) 1px, transparent 1px)',
           backgroundSize: '32px 32px',
           maskImage: 'radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 80%)',
         }} />
 
         {/* ── Scan line ────────────────────────────────────────────── */}
         <div className="absolute left-0 right-0 h-[2px] pointer-events-none z-10" style={{
-          background: 'linear-gradient(90deg, transparent, rgba(251,146,60,0.5), transparent)',
+          background: 'linear-gradient(90deg, transparent, rgba(28,100,242,0.5), transparent)',
           animation: 'cl-scan 4s ease-in-out infinite',
         }} />
 
         {/* ── Floating ambient orbs ───────────────────────────────── */}
         <div className="absolute top-1/4 left-1/4 w-72 h-72 rounded-full pointer-events-none" style={{
-          background: 'radial-gradient(circle, rgba(251,146,60,0.07), transparent 70%)', filter: 'blur(40px)',
+          background: 'radial-gradient(circle, rgba(28,100,242,0.08), transparent 70%)', filter: 'blur(40px)',
         }} />
         <div className="absolute bottom-1/4 right-1/4 w-56 h-56 rounded-full pointer-events-none" style={{
           background: 'radial-gradient(circle, rgba(99,102,241,0.08), transparent 70%)', filter: 'blur(40px)',
@@ -1084,26 +1085,26 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         {/* ── Pulsing concentric rings + temple ─────────────────── */}
         <div className="relative flex items-center justify-center mb-8" style={{ animation: 'cl-float 4s ease-in-out infinite' }}>
           {/* Ring 3 — outermost */}
-          <div className="absolute rounded-full border border-orange-400/20" style={{
-            width: 200, height: 200, animation: 'cl-ring3 3.6s ease-in-out infinite 0.8s',
+          <div className="absolute rounded-full" style={{
+            width: 200, height: 200, border: '1px solid rgba(28,100,242,0.20)', animation: 'cl-ring3 3.6s ease-in-out infinite 0.8s',
           }} />
           {/* Ring 2 */}
-          <div className="absolute rounded-full border border-orange-400/30" style={{
-            width: 148, height: 148, animation: 'cl-ring2 3.6s ease-in-out infinite 0.4s',
+          <div className="absolute rounded-full" style={{
+            width: 148, height: 148, border: '1px solid rgba(28,100,242,0.30)', animation: 'cl-ring2 3.6s ease-in-out infinite 0.4s',
           }} />
           {/* Ring 1 — inner */}
-          <div className="absolute rounded-full border-2 border-orange-400/40" style={{
-            width: 104, height: 104, animation: 'cl-ring 3.6s ease-in-out infinite',
+          <div className="absolute rounded-full" style={{
+            width: 104, height: 104, border: '2px solid rgba(28,100,242,0.40)', animation: 'cl-ring 3.6s ease-in-out infinite',
           }} />
           {/* Core glow disk */}
           <div className="absolute w-16 h-16 rounded-full" style={{
-            background: 'radial-gradient(circle, rgba(251,146,60,0.35), transparent 70%)',
+            background: 'radial-gradient(circle, rgba(28,100,242,0.35), transparent 70%)',
             filter: 'blur(12px)',
           }} />
           {/* Temple emoji */}
           <span className="relative z-10 select-none" style={{
             fontSize: '3.5rem', lineHeight: 1,
-            filter: 'drop-shadow(0 0 18px rgba(251,146,60,0.9)) drop-shadow(0 0 40px rgba(251,146,60,0.4))',
+            filter: 'drop-shadow(0 0 18px rgba(28,100,242,0.8)) drop-shadow(0 0 40px rgba(28,100,242,0.35))',
           }}>🛕</span>
         </div>
 
@@ -1113,11 +1114,11 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
           className="flex items-center gap-2 px-3 py-1.5 rounded-full mb-5 text-[11px] font-mono font-bold tracking-widest uppercase"
           style={{
             background: 'rgba(255,255,255,0.04)',
-            border: '1px solid rgba(239,68,68,0.35)',
-            color: '#F87171',
+            border: '1px solid rgba(240,82,82,0.40)',
+            color: '#F05252',
           }}
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+          <span className="w-1.5 h-1.5 rounded-full bg-danger-medium animate-pulse" />
           Signal not found · {destination}
         </motion.div>
 
@@ -1128,13 +1129,13 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         >
           <h1 className="font-display font-black tracking-tight leading-none mb-1" style={{
             fontSize: 'clamp(2rem, 7vw, 3.2rem)',
-            background: 'linear-gradient(135deg, #FB923C 0%, #FBBF24 50%, #FB923C 100%)',
+            background: 'linear-gradient(135deg, #1C64F2 0%, #9061F9 50%, #1C64F2 100%)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
             backgroundSize: '200% auto', backgroundClip: 'text',
           }}>
             LIVE IN THANJAVUR
           </h1>
-          <p className="text-[11px] font-mono tracking-[0.3em] uppercase mt-1" style={{ color: 'rgba(251,191,36,0.5)' }}>
+          <p className="text-[11px] font-mono tracking-[0.3em] uppercase mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
             AI · Travel · India
           </p>
         </motion.div>
@@ -1161,9 +1162,9 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.28 }}
           className="flex items-center gap-2 px-4 py-1.5 rounded-full mb-8 text-[10px] font-bold tracking-widest uppercase"
           style={{
-            background: 'rgba(251,146,60,0.08)',
-            border: '1px solid rgba(251,146,60,0.3)',
-            color: 'rgba(251,146,60,0.85)',
+            background: 'rgba(250,202,21,0.10)',
+            border: '1px solid rgba(250,202,21,0.30)',
+            color: 'rgba(250,202,21,0.90)',
           }}
         >
           <span>🇮🇳</span>
@@ -1171,27 +1172,26 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         </motion.div>
 
         {/* ── CTA button ───────────────────────────────────────────── */}
-        <motion.button
-          type="button"
-          onClick={() => onDestinationSelect?.('Thanjavur')}
+        <motion.div
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.33 }}
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}
-          className="flex items-center gap-3 px-8 py-3.5 rounded-2xl font-bold text-sm text-white relative overflow-hidden"
-          style={{
-            background: 'linear-gradient(135deg, #F97316, #FB923C)',
-            boxShadow: '0 0 32px rgba(249,115,22,0.45), 0 0 8px rgba(249,115,22,0.3), inset 0 1px 0 rgba(255,255,255,0.15)',
-          }}
+          style={{ boxShadow: '0 0 32px rgba(28,100,242,0.45), 0 0 8px rgba(28,100,242,0.3)' }}
+          className="rounded-2xl"
         >
-          <span className="relative z-10">Try Thanjavur</span>
-          <ChevronRight className="w-4 h-4 relative z-10" />
-          {/* Button shine */}
-          <div className="absolute inset-0 opacity-20" style={{
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 60%)',
-          }} />
-        </motion.button>
+          <Button
+            variant="brand"
+            size="lg"
+            icon={<Sparkles className="w-4 h-4" />}
+            iconRight={<ChevronRight className="w-4 h-4" />}
+            onClick={() => onDestinationSelect?.('Thanjavur')}
+            className="rounded-2xl px-8"
+          >
+            Try Thanjavur
+          </Button>
+        </motion.div>
 
         {/* ── Floating pixel dots ───────────────────────────────────── */}
         {[
@@ -1205,7 +1205,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
           <div key={i} className="absolute rounded-full pointer-events-none" style={{
             top: d.top, left: d.left,
             width: d.size, height: d.size,
-            background: '#FB923C',
+            background: '#1C64F2',
             animation: `cl-dot 2.5s ease-in-out infinite ${d.delay}`,
           }} />
         ))}
@@ -1288,7 +1288,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                       key={s}
                       type="button"
                       onMouseDown={() => { setSearchQuery(s); setSearchFocused(false); }}
-                      className="w-full flex items-center gap-2 px-3 py-2.5 text-left text-sm text-heading hover:bg-blue-50 transition-colors"
+                      className="w-full flex items-center gap-2 px-3 py-2.5 text-left text-sm text-heading hover:bg-brand-softer transition-colors"
                     >
                       <Search className="w-3 h-3 shrink-0 text-muted" />
                       <span>{s}</span>
@@ -1318,16 +1318,15 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
 
         {/* ── CTA inside card ───────────────────────────────────── */}
         <div className="px-4 pb-4 pt-3 border-t border-border">
-          <button
-            type="button"
+          <Button
+            variant="outline"
+            fullWidth
+            loading={loading}
+            icon={!loading ? <Search className="w-4 h-4" /> : undefined}
             onClick={handleSearch}
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 border-2 border-brand text-brand bg-white hover:bg-brand hover:text-white active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-soft disabled:opacity-40 disabled:cursor-not-allowed"
+            className="border-2 hover:bg-brand hover:text-white hover:border-brand"
           >
-            {loading
-              ? <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-              : <Search className="w-4 h-4" />
-            }
             {loading ? 'AI is on it…' : (
               searchQuery.trim() && activeTab === 'Hotels'  ? `Search "${searchQuery.trim()}"` :
               searchQuery.trim() && activeTab === 'Food'    ? `Search "${searchQuery.trim()}"` :
@@ -1336,7 +1335,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               activeTab === 'Itinerary' ? 'Build my Thanjavur day plan' :
               'Get my AI visit guide'
             )}
-          </button>
+          </Button>
         </div>
         {/* sentinel — category bar unsticks once this exits top of viewport */}
         <div ref={ctaSentinelRef} className="h-px" />
@@ -1529,7 +1528,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               type="button"
               whileTap={{ scale: 0.95 }}
               onClick={() => triggerSearch(TRENDING_OVERRIDES[topic] ?? { tab: activeTab })}
-              className="text-xs font-medium px-3 py-1.5 rounded-full border border-border bg-white text-body hover:border-brand hover:text-brand hover:bg-blue-50 transition-colors duration-150"
+              className="text-xs font-medium px-3 py-1.5 rounded-full border border-border bg-surface text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors duration-150"
             >
               {topic}
             </motion.button>

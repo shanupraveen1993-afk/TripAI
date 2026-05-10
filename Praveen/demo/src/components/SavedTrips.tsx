@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Hotel, Utensils, Route, LandmarkIcon, Trash2, ExternalLink, MapPin, Calendar, Users, Bookmark, History } from 'lucide-react';
+import { Hotel, Utensils, Route, Compass, Trash2, ExternalLink, MapPin, Calendar, Users, Bookmark, History } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Modal } from './ui/Modal';
 import { Tab } from './ui/Tabs';
@@ -28,7 +28,7 @@ const TAB_ICONS: Record<Tab, React.ReactNode> = {
   Hotels:    <Hotel        className="w-5 h-5" />,
   Food:      <Utensils     className="w-5 h-5" />,
   Itinerary: <Route        className="w-5 h-5" />,
-  Explore:   <LandmarkIcon className="w-5 h-5" />,
+  Explore:   <Compass className="w-5 h-5" />,
 };
 
 const TAB_COLORS: Record<Tab, string> = {
@@ -106,7 +106,7 @@ function EmptyState() {
   return (
     <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
       <div className="w-16 h-16 rounded-2xl bg-bg-app border border-border flex items-center justify-center">
-        <LandmarkIcon className="w-8 h-8 text-muted" />
+        <Compass className="w-8 h-8 text-muted" />
       </div>
       <div>
         <h3 className="font-display font-bold text-sm text-heading mb-1">No saved trips yet</h3>

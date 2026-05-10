@@ -69,14 +69,14 @@ function CitySearch({ value, onChange, onPick }: {
         className={[
           'w-full pl-9 pr-3 py-2.5 bg-bg-app border rounded-xl text-sm font-medium focus:outline-none focus:ring-2 transition-colors',
           isDirty && !isThanjavur
-            ? 'border-amber-400 focus:ring-amber-200 text-amber-700'
+            ? 'border-warning-strong focus:ring-warning-soft text-warning-strong'
             : 'border-border focus:ring-brand-soft focus:border-brand text-body',
         ].join(' ')}
       />
       {isDirty && !isThanjavur && (
-        <div className="absolute top-full left-0 right-0 mt-1 flex items-center gap-1.5 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 z-50 shadow-sm">
-          <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-          <span className="text-xs text-amber-700">TripAI currently features Thanjavur — try exploring there!</span>
+        <div className="absolute top-full left-0 right-0 mt-1 flex items-center gap-1.5 bg-warning-soft border border-warning-medium rounded-xl px-3 py-2 z-50 shadow-sm">
+          <AlertCircle className="w-3.5 h-3.5 text-warning-strong shrink-0" />
+          <span className="text-xs text-warning-strong">TripAI currently features Thanjavur — try exploring there!</span>
         </div>
       )}
     </div>

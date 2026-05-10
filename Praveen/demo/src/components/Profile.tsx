@@ -12,7 +12,7 @@ interface ProfileProps {
 }
 
 function TravelBadge({ count }: { count: number }) {
-  const badge = count >= 10 ? { label: 'Expert', color: 'text-yellow-500', bg: 'bg-yellow-50 border-yellow-200' }
+  const badge = count >= 10 ? { label: 'Expert', color: 'text-warning-strong', bg: 'bg-warning-soft border-warning-medium/40' }
     : count >= 3  ? { label: 'Explorer', color: 'text-accent', bg: 'bg-accent-soft border-accent/20' }
     :               { label: 'Newbie', color: 'text-muted', bg: 'bg-bg-app border-border' };
 

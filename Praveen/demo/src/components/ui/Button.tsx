@@ -18,8 +18,8 @@ const variantClasses: Record<Variant, string> = {
   brand: 'bg-brand hover:bg-brand-strong text-white shadow-sm focus:ring-4 focus:ring-brand-soft',
   ghost:   'bg-transparent hover:bg-bg-app text-body focus:ring-2 focus:ring-border-medium',
   outline: 'bg-transparent border border-border hover:bg-bg-app text-heading focus:ring-2 focus:ring-border-medium',
-  danger:  'bg-danger hover:bg-red-700 text-white shadow-sm focus:ring-4 focus:ring-danger-medium',
-  success: 'bg-success hover:bg-emerald-700 text-white shadow-sm focus:ring-4 focus:ring-success-medium',
+  danger:  'bg-danger hover:bg-danger-strong text-white shadow-sm focus:ring-4 focus:ring-danger-medium',
+  success: 'bg-success hover:bg-success-strong text-white shadow-sm focus:ring-4 focus:ring-success-medium',
 };
 
 const sizeClasses: Record<Size, string> = {

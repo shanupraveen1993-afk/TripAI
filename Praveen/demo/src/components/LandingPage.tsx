@@ -134,8 +134,8 @@ function HeroPhotoPanel({ active, setActive }: { active: number; setActive: (i: 
           </motion.div>
         </AnimatePresence>
         <div className="bg-white/8 backdrop-blur-xl border border-white/15 rounded-2xl p-4 flex items-start gap-3">
-          <div className="w-9 h-9 bg-blue-500 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
-            style={{ boxShadow: '0 0 16px rgba(59,130,246,0.55)' }}>
+          <div className="w-9 h-9 bg-brand rounded-xl flex items-center justify-center shrink-0 mt-0.5"
+            style={{ boxShadow: '0 0 16px rgba(28,100,242,0.55)' }}>
             <Sparkles className="w-4 h-4 text-white" />
           </div>
           <div className="min-w-0 space-y-1">
@@ -189,12 +189,12 @@ function TestimonialCarousel() {
             className="rounded-2xl p-7 border"
             style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(255,255,255,0.08)' }}
           >
-            <Quote className="w-8 h-8 mb-4 text-blue-500/55" />
+            <Quote className="w-8 h-8 mb-4 text-brand/55" />
             <p className="text-base leading-relaxed italic mb-5" style={{ color: 'rgba(255,255,255,0.7)' }}>"{t.text}"</p>
             <div className="flex items-center justify-between flex-wrap gap-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-blue-600 text-white font-black flex items-center justify-center"
-                  style={{ boxShadow: '0 0 14px rgba(59,130,246,0.35)' }}>{t.avatar}</div>
+                <div className="w-10 h-10 rounded-full bg-brand text-white font-black flex items-center justify-center"
+                  style={{ boxShadow: '0 0 14px rgba(28,100,242,0.35)' }}>{t.avatar}</div>
                 <div>
                   <p className="font-bold text-white text-sm">{t.name}</p>
                   <p className="text-xs flex items-center gap-1" style={{ color: 'rgba(255,255,255,0.38)' }}>
@@ -204,12 +204,12 @@ function TestimonialCarousel() {
               </div>
               <div className="flex items-center gap-3">
                 <div className="inline-flex items-center gap-1.5 border rounded-xl px-3 py-1.5"
-                  style={{ background: 'rgba(59,130,246,0.1)', borderColor: 'rgba(59,130,246,0.22)' }}>
-                  <CheckCircle className="w-3.5 h-3.5 text-blue-400" />
-                  <span className="text-xs font-bold text-blue-300">{t.highlight}</span>
+                  style={{ background: 'rgba(28,100,242,0.1)', borderColor: 'rgba(28,100,242,0.22)' }}>
+                  <CheckCircle className="w-3.5 h-3.5 text-brand-border" />
+                  <span className="text-xs font-bold text-brand-soft">{t.highlight}</span>
                 </div>
                 <div className="flex gap-0.5">
-                  {Array.from({ length: t.stars }).map((_, j) => <Star key={j} className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />)}
+                  {Array.from({ length: t.stars }).map((_, j) => <Star key={j} className="w-3.5 h-3.5 fill-warning text-warning" />)}
                 </div>
               </div>
             </div>
@@ -223,7 +223,7 @@ function TestimonialCarousel() {
           <button key={i} onClick={() => setActive(i)}
             aria-label={`View review from ${t.name}`}
             aria-current={i === active ? 'true' : undefined}
-            className="rounded-full transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/60"
+            className="rounded-full transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-border/60"
             style={{
               width: i === active ? '28px' : '8px',
               height: '8px',
@@ -514,12 +514,12 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
         style={{ background: 'rgba(6,8,15,0.82)', backdropFilter: 'blur(20px)', borderColor: 'rgba(255,255,255,0.08)' }}>
         <div className="max-w-screen-xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center"
-              style={{ boxShadow: '0 0 18px rgba(59,130,246,0.55)' }}>
+            <div className="w-8 h-8 bg-brand rounded-lg flex items-center justify-center"
+              style={{ boxShadow: '0 0 18px rgba(28,100,242,0.55)' }}>
               <Compass className="w-4 h-4 text-white" />
             </div>
             <span className="font-display font-black text-xl text-white tracking-tight">
-              Trip<span className="text-blue-400">AI</span>
+              Trip<span className="text-brand-border">AI</span>
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -539,7 +539,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
         {/* Mesh orbs */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-[-25%] left-[-15%] w-[680px] h-[680px] rounded-full blur-[140px] animate-aurora"
-            style={{ background: 'rgba(59,130,246,0.21)' }} />
+            style={{ background: 'rgba(28,100,242,0.21)' }} />
           <div className="absolute top-[5%] right-[-20%] w-[580px] h-[580px] rounded-full blur-[140px] animate-aurora-reverse"
             style={{ background: 'rgba(139,92,246,0.15)' }} />
           <div className="absolute bottom-[-15%] left-[28%] w-[480px] h-[480px] rounded-full blur-[120px] animate-aurora-slow"
@@ -551,8 +551,8 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
 
             {/* Left */}
             <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }} className="space-y-7">
-              <div className="inline-flex items-center gap-2 border text-blue-300 text-xs font-bold px-3.5 py-1.5 rounded-full"
-                style={{ background: 'rgba(59,130,246,0.1)', borderColor: 'rgba(59,130,246,0.28)' }}>
+              <div className="inline-flex items-center gap-2 border text-brand-soft text-xs font-bold px-3.5 py-1.5 rounded-full"
+                style={{ background: 'rgba(28,100,242,0.1)', borderColor: 'rgba(28,100,242,0.28)' }}>
                 <Sparkles className="w-3.5 h-3.5" />
                 Your AI travel co-pilot
               </div>
@@ -579,7 +579,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
                     value={demoSearch}
                     onChange={e => setDemoSearch(e.target.value)}
                     placeholder="Where are you headed? Goa, Jaipur, Bangalore…"
-                    className="w-full pl-11 pr-4 py-4 rounded-2xl text-sm text-white outline-none transition-all duration-300 focus:ring-2 focus:ring-blue-400/40"
+                    className="w-full pl-11 pr-4 py-4 rounded-2xl text-sm text-white outline-none transition-all duration-300 focus:ring-2 focus:ring-brand-border/40"
                     style={{
                       background: 'rgba(255,255,255,0.055)',
                       border: '1px solid rgba(255,255,255,0.11)',
@@ -595,9 +595,9 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
 
               {/* Trust row */}
               <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm pt-1" style={{ color: 'rgba(255,255,255,0.42)' }}>
-                <span className="flex items-center gap-1.5"><CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />No credit card needed</span>
-                <span className="flex items-center gap-1.5"><Star className="w-4 h-4 fill-yellow-400 text-yellow-400 shrink-0" />Live Google ratings</span>
-                <span className="flex items-center gap-1.5"><Zap className="w-4 h-4 text-blue-400 shrink-0" />Under 10 seconds</span>
+                <span className="flex items-center gap-1.5"><CheckCircle className="w-4 h-4 text-success-medium shrink-0" />No credit card needed</span>
+                <span className="flex items-center gap-1.5"><Star className="w-4 h-4 fill-warning text-warning shrink-0" />Live Google ratings</span>
+                <span className="flex items-center gap-1.5"><Zap className="w-4 h-4 text-brand-border shrink-0" />Under 10 seconds</span>
               </div>
             </motion.div>
 
@@ -619,9 +619,9 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
             {HOW.map((h, i) => (
               <motion.div key={h.step} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="text-center space-y-3">
-                <div className="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center mx-auto"
-                  style={{ boxShadow: '0 0 22px rgba(59,130,246,0.4)' }}>{h.icon}</div>
-                <div className="text-xs font-black text-blue-400 uppercase tracking-widest">{h.step}</div>
+                <div className="w-12 h-12 rounded-2xl bg-brand text-white flex items-center justify-center mx-auto"
+                  style={{ boxShadow: '0 0 22px rgba(28,100,242,0.4)' }}>{h.icon}</div>
+                <div className="text-xs font-black text-brand-border uppercase tracking-widest">{h.step}</div>
                 <h3 className="font-display font-bold text-sm text-white">{h.title}</h3>
                 <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.42)' }}>{h.desc}</p>
               </motion.div>
@@ -687,8 +687,8 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
               { icon: <Shield className="w-6 h-6" />,   title: 'Your shortlist, not a search', desc: 'Save what the AI found. Compare options side by side. Share with whoever\'s joining. Revisit when plans change.' },
             ].map((f, i) => (
               <motion.div key={f.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="flex gap-4">
-                <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0"
-                  style={{ boxShadow: '0 0 18px rgba(59,130,246,0.38)' }}>{f.icon}</div>
+                <div className="w-10 h-10 rounded-xl bg-brand text-white flex items-center justify-center shrink-0"
+                  style={{ boxShadow: '0 0 18px rgba(28,100,242,0.38)' }}>{f.icon}</div>
                 <div className="space-y-1">
                   <h3 className="font-display font-bold text-sm text-white">{f.title}</h3>
                   <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.42)' }}>{f.desc}</p>
@@ -703,7 +703,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
       <section className="py-16 md:py-24 relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] rounded-full blur-[110px]"
-            style={{ background: 'rgba(59,130,246,0.16)' }} />
+            style={{ background: 'rgba(28,100,242,0.16)' }} />
         </div>
         <div className="relative max-w-2xl mx-auto px-4 text-center space-y-6">
           <h2 className="text-3xl md:text-4xl font-display font-black text-white">
@@ -720,7 +720,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
       <footer className="border-t py-8" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
         <div className="max-w-screen-xl mx-auto px-4 md:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <Compass className="w-4 h-4 text-blue-400" />
+            <Compass className="w-4 h-4 text-brand-border" />
             <span className="font-display font-black text-white">TripAI</span>
           </div>
           <p className="text-xs" style={{ color: 'rgba(255,255,255,0.28)' }}>Powered by Google Places + Gemini AI</p>
@@ -766,7 +766,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
               </h3>
               <p className="text-sm leading-relaxed mb-5" style={{ color: 'rgba(255,255,255,0.55)' }}>
                 Full AI recommendations are currently live only for{' '}
-                <span className="font-bold text-amber-400">Thanjavur</span>.
+                <span className="font-bold text-warning-strong">Thanjavur</span>.
                 Every hotel, restaurant, and landmark — AI-ranked in seconds.
                 Try it there while we build for {cityNotice.city}.
               </p>
