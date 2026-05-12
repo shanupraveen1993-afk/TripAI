@@ -38,8 +38,8 @@ const TAB_META: Record<Tab, {
     accentBorder:'#1C64F2',
     accentSoft:  '#1C64F215',
     label:       'Hotels',
-    headline:    'Best hotel in Thanjavur for you?',
-    sub:         'AI ranks by price, distance to the Big Temple, and what reviewers actually say.',
+    headline:    'Your stay in Thanjavur, sorted.',
+    sub:         'Ranked by price, temple distance & real reviews.',
     trending:    ['Near Big Temple', 'Heritage hotels', 'Temple Nearby', 'Family rooms', 'AC rooms'],
   },
   Food: {
@@ -50,8 +50,8 @@ const TAB_META: Record<Tab, {
     accentBorder:'#D97706',
     accentSoft:  '#D9770615',
     label:       'Food',
-    headline:    'What\'s worth eating in Thanjavur?',
-    sub:         'Authentic Chola-era cuisine, filter coffee, and local thali — ranked before you see them.',
+    headline:    'Best food in Thanjavur — ranked.',
+    sub:         'Thali, filter coffee, biryani — AI-picked from real reviews.',
     trending:    ['Thanjavur thali/meals', 'Filter coffee', 'Pure veg', 'South Indian', 'Street food', 'Biryani spots'],
   },
   Itinerary: {
@@ -62,8 +62,8 @@ const TAB_META: Record<Tab, {
     accentBorder:'#7C3AED',
     accentSoft:  '#7C3AED15',
     label:       'Itinerary',
-    headline:    'Your perfect day in Thanjavur.',
-    sub:         'Big Temple → Palace → Art Gallery → Saraswathi Mahal — timed so you don\'t miss anything.',
+    headline:    'Your Thanjavur day, planned.',
+    sub:         'Timed stops, real traffic — nothing missed.',
     trending:    ['Big Temple morning', 'Full day heritage', 'Family outing', 'Couple getaway', '1-day plan', 'Photography walk'],
   },
   Explore: {
