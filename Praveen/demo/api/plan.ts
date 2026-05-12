@@ -663,9 +663,7 @@ const HOTEL_TAG_SEARCH: Record<string, string> = {
   'Courteous Service':   'hotel courteous polite professional staff',
   'Great Hospitality':   'hotel hospitality excellent service',
   'Comfortable Stay':    'comfortable hotel cozy rooms',
-  'Quiet & Peaceful':    'quiet peaceful hotel calm serene',
   'Fair Price':          'hotel reasonable price budget economical',
-  'Highly Recommended':  'best hotel highly recommended excellent',
   // ── Legacy — backward-compat for SMART_PICKS / TRENDING_OVERRIDES ────────
   'Near Temple':         'hotel near temple brihadeeswarar',
   'Near Bus Stand':      'hotel near bus stand terminal',
@@ -1082,25 +1080,13 @@ const FOOD_TAG_SEARCH: Record<string, string> = {
   'Prawn':          'prawn masala seafood restaurant',
   'Crab':           'crab nandu seafood restaurant',
   'Butter Masala':  'butter masala paneer restaurant',
-  'Sambar':         'sambar idli dosa south indian restaurant',
-  'Noodles':        'noodles restaurant',
-  'Soup':           'soup restaurant',
   'Sambar':          'sambar idli dosa south indian restaurant',
   'Noodles':         'noodles restaurant',
-  'Filter Coffee':   'filter coffee kaapi cafe restaurant',
-  'Sweets':          'halwa payasam sweet shop dessert restaurant',
   'Soup':            'soup restaurant',
-  'Parotta':         'parotta kothu restaurant',
   // ── Dishes · Non-Veg ─────────────────────────────────────────────────────────
   'Mutton Biryani':  'mutton biryani restaurant',
   'Chicken Biryani': 'chicken biryani restaurant',
-  'Chicken':         'chicken restaurant non veg',
-  'Mutton':          'mutton restaurant non veg',
-  'Fish':            'fish meen restaurant non veg seafood',
   'Fish Curry':      'fish curry meen kuzhambu restaurant',
-  'Prawn':           'prawn masala restaurant seafood',
-  'Crab':            'crab curry nandu restaurant seafood',
-  'Shawarma':        'shawarma chicken restaurant',
 };
 
 // Meal time → search keyword map
@@ -1355,7 +1341,7 @@ function scorePlaceForFilters(place: any, tab: string, f: UserFilters): PlaceSco
           const kws = FOOD_TAG_KEYWORDS[tag] ?? (FOOD_TAG_SEARCH[tag] ?? tag.toLowerCase()).split(' ').filter(k => k.length > 3);
           // Count how many distinct reviews mention this tag — specialization signal
           const reviewTexts = (place.reviews ?? []).map((r: any) => (r.text?.text ?? '').toLowerCase());
-          const mentionCount = kws.reduce((sum, kw) => sum + reviewTexts.filter(rt => rt.includes(kw)).length, 0);
+          const mentionCount = kws.reduce((sum: number, kw: string) => sum + reviewTexts.filter((rt: string) => rt.includes(kw)).length, 0);
           // Graded: 0=miss, 0.6=1-2 reviews, 0.8=3-4, 1.0=5+ (restaurant specializes in it)
           const tagScore = mentionCount === 0 ? 0 : mentionCount <= 2 ? 0.6 : mentionCount <= 4 ? 0.8 : 1.0;
           tagsMatched += tagScore;
@@ -2027,7 +2013,8 @@ Rank by: (1) matchedTags.length DESC, (2) confirmedTags.length DESC, (3) rating 
   "filterVerification": "<ONE sentence — ALWAYS use positiveTagMatches{} first (4-5★ reviews only). Quote the actual sentence, e.g. '\"10 minutes walk to the Big Temple\" — 5★ reviewer'. If positiveTagMatches is empty for this tag, use tagSnippets{}. If both empty, say how many total reviews mention it.>",
   "whyOverOthers": "<max 30 words — compare against the other candidates in this list; cite specific numbers or unique features>",
   "bestFor": "<10 words — describe the ideal visitor type>",
-  "caveat": "<one specific drawback from reviews, or null>"
+  "caveat": "<one specific drawback from reviews, or null>",
+  "insiderTip": "<max 20 words — one concrete actionable tip: best time to visit, what to order/request, local trick, or hidden detail from reviews>"
 }]
 
 QUALITY RULES:
@@ -2037,6 +2024,7 @@ QUALITY RULES:
 - reviewSummary: synthesise only what 4-5★ reviewers praise most. If reviews are mostly negative or mixed, lead with that reality in caveat.
 - whyOverOthers: compare specifically against others in this list — cite tag match count, rating, review volume, or unique feature
 - caveat: real drawbacks from 1-3★ reviews only — or null. Never fabricate.
+- insiderTip: derive from review text patterns — e.g. "arrive before 11am", "ask for window seat", "order the thali not the buffet". If nothing specific, return null.
 - ZERO RESULTS IS NOT ACCEPTABLE — always return at minimum the top places by rating if nothing else matches
 
 Return ONLY valid JSON array. No markdown. No explanation text.`;
@@ -2253,7 +2241,7 @@ Return a JSON array of EXACTLY ${stopCount} stops. Return ONLY valid JSON. No ma
     const validCrowd = (v: unknown) =>
       ['Low','Moderate','High'].includes(v as string) ? v as string : 'Moderate';
 
-    return stops.slice(0, 5).map((s: any) => ({
+    return stops.slice(0, stopCount).map((s: any) => ({
       stop:             s.stop              ?? 'Brihadeeswarar Temple',
       time:             s.time              ?? startStr,
       duration:         s.duration          ?? '1 hr',
@@ -2775,6 +2763,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             dataPoints,
             bestFor: ai.bestFor || `Visitors wanting ${priceStr} stay — ${reviewCount.toLocaleString()} reviews confirm ${rating}★`,
             ...(ai.caveat ? { caveat: ai.caveat } : {}),
+            ...(ai.insiderTip ? { insiderTip: ai.insiderTip } : {}),
           },
         };
       };
@@ -2969,6 +2958,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           })(),
           bestFor: ai.bestFor || bestForFB,
           ...(ai.caveat ? { caveat: ai.caveat } : {}),
+          ...(ai.insiderTip ? { insiderTip: ai.insiderTip } : {}),
         },
       };
     };

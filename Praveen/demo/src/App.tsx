@@ -62,15 +62,35 @@ export default function App() {
   const [backContext, setBackContext] = useState<'dashboard' | 'itinerary-results'>('dashboard');
   const [itinStopCount, setItinStopCount] = useState(5);
 
-  // Scroll to top whenever the dashboard becomes the active screen
+  // Scroll to top on every screen transition (dashboard, loading, results)
   useEffect(() => {
-    if (contentScreen === 'dashboard') window.scrollTo({ top: 0, behavior: 'instant' });
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }, [contentScreen]);
 
   // Also scroll to top when navigating between main sections (history, profile)
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [mainSection]);
+
+  // Push a history entry when results are shown so browser back button works
+  useEffect(() => {
+    if (contentScreen === 'results') {
+      window.history.pushState({ screen: 'results' }, '');
+    }
+  }, [contentScreen]);
+
+  // Listen for browser back button — pop back to dashboard
+  useEffect(() => {
+    const onPop = () => {
+      if (contentScreen === 'results') {
+        setBackContext('dashboard');
+        setInitialTab(activeTab);
+        setContent('dashboard');
+      }
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, [contentScreen, activeTab]);
 
   // Persist user session and saved trips across page refreshes
   useEffect(() => {
@@ -146,39 +166,93 @@ export default function App() {
       if (filters.tab === 'Explore') {
         // Explore always uses preset data — no API call needed
       } else if (filters.tab === 'Itinerary') {
-        if (itineraryGenCount === 0) {
-          // First visit: show Thanjavur preset sliced to the chosen time slot — no API call
-          const stops = filters.startTime === 'Afternoon' ? 3 : filters.startTime === 'Evening' ? 2 : 5;
-          setItinStopCount(stops);
-          setLiveItinerary(null);
-          setItineraryGenCount(1);
-        } else {
-          // "Try different plan": generate a fresh AI day plan
-          const stops = await fetchItinerary(filters.startTime, seed);
-          if (stops.length > 0) { setLiveItinerary(stops); setItineraryGenCount(c => c + 1); }
-          else setApiError(true);
-        }
+        const timeSlot = filters.startTime || 'Morning';
+        const slotStopMap: Record<string, number> = { Morning: 5, Afternoon: 3, Evening: 2 };
+        setItinStopCount(slotStopMap[timeSlot] ?? 5);
+        const stops = await fetchItinerary(timeSlot, seed);
+        if (stops.length > 0) {
+          setLiveItinerary(stops);
+          setItinStopCount(stops.length);
+          setItineraryGenCount(c => c + 1);
+        } else setApiError(true);
       } else {
         // Hotels / Food — fetch 20, Gemini splits into recommended + secondary
         const { results } = await fetchPlan(filters.tab, seed, {
           city:        filters.destination,
           hotelTag:    filters.hotelTag,
+          hotelTags:   filters.hotelTags?.length ? filters.hotelTags : undefined,
           hotelArea:   filters.hotelArea || searchArea,
           foodTag:     filters.foodTag,
+          foodTags:    filters.foodTags?.length ? filters.foodTags : undefined,
           priceFilter: filters.priceFilter,
           minRating:   filters.minRating === '4.5+' ? 4.5 : filters.minRating === '4.0+' ? 4.0 : filters.minRating === '3.5+' ? 3.5 : 0,
           openNow:     filters.openNow,
-          persona:     filters.persona,
           dietType:    filters.dietType,
           dineMode:    filters.dineMode,
           mealTime:    filters.mealTime,
+          searchQuery: filters.searchQuery || undefined,
         });
         setLiveResults(results);
       }
     } catch {
       // API completely failed — fall back to sample data so the demo still works
       if (filters.tab === 'Hotels') setLiveResults(MOCK_HOTELS.slice(0, 10) as unknown as PlanResult[]);
-      else if (filters.tab === 'Food') setLiveResults(MOCK_FOOD.slice(0, 10) as unknown as PlanResult[]);
+      else if (filters.tab === 'Food') {
+        const activeTags = [...(filters.foodTags ?? []), ...(filters.foodTag ? [filters.foodTag] : [])].filter(Boolean);
+        // Keywords grounded in real review frequency from top-50 Thanjavur restaurants
+        const KEYWORD_MAP: Record<string, string[]> = {
+          // Cuisine & Dish
+          'Biryani':         ['biryani', 'biriyani', 'dum biryani', 'mandi biryani'],
+          'South Indian':    ['dosa', 'idli', 'sambar', 'thali', 'tiffin', 'banana leaf', 'south indian', 'pongal', 'rasam', 'dosai'],
+          'Chettinad':       ['chettinad', 'kuzhambu', 'pepper chicken', 'nattu kozhi', 'chettinad cuisine'],
+          'North Indian':    ['paneer', 'north indian', 'naan', 'roti', 'butter chicken', 'tandoor'],
+          'Cafe & Snacks':   ['cafe', 'coffee', 'filter coffee', 'bakery', 'snacks', 'noodles', 'dessert', 'sweet'],
+          'Veg Biryani':     ['veg biryani', 'vegetable biryani', 'veg biriyani'],
+          'Multi Cuisine':   ['multi cuisine', 'variety', 'continental'],
+          // Meal & Timing
+          'Breakfast':       ['breakfast', 'morning', 'tiffin', 'idli', 'dosa', 'pongal'],
+          'Lunch':           ['lunch', 'lunch meals', 'lunch thali', 'afternoon meals'],
+          'Dinner':          ['dinner', 'night', 'evening'],
+          'Quick Bites':     ['quick', 'fast service', 'takeaway', 'parcel', 'street food'],
+          'All Day':         ['variety', 'all day', 'menu', 'options', 'buffet'],
+          // Taste & Quality — use specific phrases to avoid matching everything
+          'Authentic':       ['authentic', 'traditional', 'original', 'homemade'],
+          'Delicious':       ['delicious', 'tasty', 'flavorful', 'flavour', 'yummy'],
+          'Fresh':           ['fresh', 'freshly cooked', 'freshly prepared', 'hot and fresh'],
+          'Good Quantity':   ['quantity', 'generous', 'good quantity', 'generous portions', 'filling'],
+          'Spicy':           ['spicy', 'spice', 'masala', 'pepper', 'tangy'],
+          // Dining Experience
+          'Family Dining':   ['family', 'spacious', 'kids', 'comfortable seating', 'group dining'],
+          'Good Ambience':   ['ambience', 'ambiance', 'atmosphere', 'decor', 'cozy'],
+          'Clean':           ['clean', 'hygienic', 'neat', 'tidy', 'cleanliness'],
+          'Friendly Staff':  ['friendly staff', 'helpful staff', 'attentive staff', 'courteous'],
+          'AC Dine-in':      ['fully ac', 'air conditioned', 'ac restaurant', 'air conditioning'],
+          // Value & Price
+          'Affordable':      ['affordable', 'cheap', 'pocket friendly', 'budget', 'inexpensive'],
+          'Value for Money': ['value for money', 'worth it', 'good value', 'worth the price'],
+          'Good Portions':   ['quantity', 'generous portions', 'good quantity', 'filling meal'],
+          'Highly Rated':    ['highly recommended', 'must visit', 'must try', 'top rated'],
+          'Top Pick':        ['favourite', 'popular', 'local favourite', 'crowd favourite'],
+          // Legacy aliases
+          'Filter Coffee':   ['filter coffee', 'kaapi', 'coffee', 'cafe'],
+          'Thali':           ['thali', 'meals', 'banana leaf'],
+          'Thali/Meals':     ['thali', 'meals', 'banana leaf'],
+          'Tiffin':          ['tiffin', 'idli', 'dosa'],
+          'Non-Veg':         ['chicken', 'mutton', 'fish', 'non-veg', 'chettinad'],
+          'Pure Veg':        ['pure veg', 'veg only', 'vegetarian'],
+        };
+        let filtered = MOCK_FOOD;
+        if (activeTags.length > 0) {
+          filtered = MOCK_FOOD.filter(item => {
+            const corpus = [...item.tags, item.name, item.aiNote ?? ''].join(' ').toLowerCase();
+            return activeTags.some(tag => {
+              const kws = KEYWORD_MAP[tag] ?? [tag.toLowerCase()];
+              return kws.some(kw => corpus.includes(kw)) || item.tags.some(t => t.toLowerCase() === tag.toLowerCase());
+            });
+          });
+        }
+        setLiveResults((filtered.length > 0 ? filtered : MOCK_FOOD).slice(0, 10) as unknown as PlanResult[]);
+      }
       setApiError(true);
     }
     setAiCount(c => c + 1);
@@ -194,11 +268,6 @@ export default function App() {
       budget: filters.budget,
       savedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       type: 'history',
-      tags: filters.tab === 'Hotels'
-        ? (filters.hotelTags?.length ? filters.hotelTags : filters.hotelTag ? [filters.hotelTag] : [])
-        : filters.tab === 'Food'
-        ? (filters.foodTags?.length ? filters.foodTags : filters.foodTag ? [filters.foodTag] : [])
-        : [],
     };
     setSavedTrips(prev => [historyEntry, ...prev.slice(0, 49)]);
   };
@@ -244,16 +313,41 @@ export default function App() {
     setContent('results');
   };
 
+  // ── Cancel a tag from results → re-search with remaining tags ──────────
+  const handleCancelTag = async (tag: string) => {
+    if (!lastSearchFilters) return;
+    const remainingTags     = (lastSearchFilters.hotelTags ?? []).filter(t => t !== tag);
+    const remainingFoodTags = (lastSearchFilters.foodTags  ?? []).filter(t => t !== tag);
+    const remainingFood     = lastSearchFilters.foodTag === tag ? '' : lastSearchFilters.foodTag;
+    const hasFood = remainingFoodTags.length > 0 || !!remainingFood;
+    if (remainingTags.length === 0 && !hasFood) {
+      // No tags left — go back to dashboard
+      setInitialTab(activeTab);
+      setContent('dashboard');
+      return;
+    }
+    const newFilters: DashboardFilters = {
+      ...lastSearchFilters,
+      hotelTags: remainingTags,
+      hotelTag:  remainingTags[0] ?? '',
+      foodTags:  remainingFoodTags,
+      foodTag:   remainingFood,
+    };
+    const newSeed = searchSeed + 1;
+    setSearchSeed(newSeed);
+    await runSearch(newFilters, newSeed);
+  };
+
   // ── Drill-down: Itinerary stop → Explore ───────────────────────────────
   const handleExploreStop = async (target: string) => {
     setBackContext('itinerary-results');
     const filters: DashboardFilters = {
       tab: 'Explore', destination: searchLocation,
       startDate: '', endDate: '', numPeople: 2, budget: 0,
-      hotelTag: '', hotelArea: '', priceFilter: 'Any', minRating: 'Any', openNow: false, persona: '',
-      foodTag: '', dietType: 'Any', dineMode: 'Any', mealTime: 'Any',
+      hotelTag: '', hotelTags: [], hotelArea: '', priceFilter: 'Any', minRating: 'Any', openNow: false,
+      foodTag: '', foodTags: [], dietType: 'Any', dineMode: 'Any', mealTime: 'Any',
       itinDate: '', startPoint: '', startTime: '',
-      exploreTarget: target, visitTime: 'Morning',
+      exploreTarget: target, visitTime: 'Morning', searchQuery: '',
     };
     await runSearch(filters, searchSeed);
   };
@@ -265,11 +359,7 @@ export default function App() {
   const recentSearches = savedTrips
     .filter(t => t.type === 'history')
     .slice(0, 3)
-    .map(t => ({ destination: t.destination, tab: t.tab, tags: t.tags ?? [] }));
-
-  const handleClearRecent = () => {
-    setSavedTrips(prev => prev.filter(t => t.type !== 'history'));
-  };
+    .map(t => ({ destination: t.destination, tab: t.tab }));
 
   // ── Render helpers ───────────────────────────────────────────────────────
   const LOADING_LABELS: Record<string, string> = {
@@ -322,7 +412,7 @@ export default function App() {
     return (
       <AnimatePresence mode="wait">
         {contentScreen === 'dashboard' && (
-          <motion.div key="dashboard" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <motion.div key="dashboard" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>
             <Dashboard
               destination={searchLocation}
               initialTab={initialTab}
@@ -330,22 +420,22 @@ export default function App() {
               loading={false}
               recentSearches={recentSearches}
               onDestinationSelect={handleDestinationSelect}
-              onClearRecent={handleClearRecent}
+              userName={user?.name ?? ''}
             />
           </motion.div>
         )}
 
         {contentScreen === 'loading' && (
-          <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
             {renderLoading()}
           </motion.div>
         )}
 
         {contentScreen === 'results' && (
-          <motion.div key="results" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+          <motion.div key="results" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>
             <ResultsView
               tab={activeTab}
-              destination={lastSearchFilters?.destination ?? searchLocation}
+              destination="Thanjavur"
               searchArea={searchArea}
               isFirstItinerary={itineraryGenCount === 1}
               isLoadingMore={false}
@@ -353,10 +443,17 @@ export default function App() {
               food={activeTab === 'Food'    ? (liveResults as PlaceResult[] ?? []) : []}
               itinerary={activeTab === 'Itinerary' ? itineraryToDisplay : MOCK_ITINERARY}
               explore={EXPLORE_PRESETS[lastSearchFilters?.exploreTarget ?? ''] ?? MOCK_EXPLORE}
-              apiError={apiError && activeTab !== 'Explore' && !(activeTab === 'Itinerary' && itineraryGenCount <= 1)}
+              visitTime={lastSearchFilters?.visitTime ?? 'Morning'}
+              apiError={apiError && activeTab !== 'Explore'}
               selectedTags={
-                activeTab === 'Hotels' ? (lastSearchFilters?.hotelTag ? [lastSearchFilters.hotelTag] : []) :
-                activeTab === 'Food'   ? (lastSearchFilters?.foodTag  ? [lastSearchFilters.foodTag]  : []) : []
+                activeTab === 'Hotels' ? (
+                  (lastSearchFilters?.hotelTags?.length ?? 0) > 0 ? lastSearchFilters!.hotelTags :
+                  lastSearchFilters?.hotelTag ? [lastSearchFilters.hotelTag] : []
+                ) :
+                activeTab === 'Food' ? (
+                  (lastSearchFilters?.foodTags?.length ?? 0) > 0 ? lastSearchFilters!.foodTags! :
+                  lastSearchFilters?.foodTag ? [lastSearchFilters.foodTag] : []
+                ) : []
               }
               onBack={() => {
                 if (backContext === 'itinerary-results') {
@@ -370,6 +467,7 @@ export default function App() {
                 }
               }}
               backLabel={backContext === 'itinerary-results' ? 'Itinerary' : undefined}
+              onCancelTag={handleCancelTag}
               onExploreStop={handleExploreStop}
               onRegenerate={() => {
                 const newSeed = searchSeed + 1;
@@ -380,10 +478,10 @@ export default function App() {
                   lastSearchFilters ?? {
                     tab: activeTab, destination: searchLocation,
                     startDate: '', endDate: '', numPeople: 2, budget: 0,
-                    hotelTag: '', hotelArea: '', priceFilter: 'Any', minRating: 'Any', openNow: false, persona: '',
-                    foodTag: '', dietType: 'Any', dineMode: 'Any', mealTime: 'Any',
+                    hotelTag: '', hotelTags: [], hotelArea: '', priceFilter: 'Any', minRating: 'Any', openNow: false,
+                    foodTag: '', foodTags: [], dietType: 'Any', dineMode: 'Any', mealTime: 'Any',
                     itinDate: '', startPoint: '', startTime: 'Morning',
-                    exploreTarget: 'Brihadeeswarar Temple', visitTime: 'Morning',
+                    exploreTarget: 'Brihadeeswarar Temple', visitTime: 'Morning', searchQuery: '',
                   },
                   newSeed,
                 );
@@ -413,7 +511,7 @@ export default function App() {
   // Browse mode: user came from a category click without signing in
   if (appScreen === 'browse') {
     return (
-      <div className="min-h-screen" style={{ background: 'linear-gradient(145deg, #EFF6FF 0%, #F9FAFB 45%, #F5F3FF 100%)' }}>
+      <div className="min-h-screen overflow-x-hidden" style={{ background: 'linear-gradient(145deg, #EFF6FF 0%, #F9FAFB 45%, #F5F3FF 100%)' }}>
         {/* Browse header with universal location bar */}
         <header className="sticky top-0 z-40 border-b" style={{ background: 'rgba(249,250,251,0.88)', backdropFilter: 'blur(20px)', borderColor: 'rgba(0,0,0,0.07)', boxShadow: '0 1px 12px rgba(28,100,242,0.06)' }}>
           <div className="w-full max-w-[920px] mx-auto px-4 h-14 grid items-center gap-3" style={{ gridTemplateColumns: 'auto 1fr auto' }}>
@@ -425,7 +523,7 @@ export default function App() {
               <div className="w-7 h-7 bg-brand rounded-lg flex items-center justify-center">
                 <Compass className="w-3.5 h-3.5 text-white" />
               </div>
-              <span className="font-display font-black text-lg text-heading tracking-tight">
+              <span className="font-display font-black text-lg text-heading tracking-tight hidden sm:block">
                 Trip<span className="text-brand">AI</span>
               </span>
             </button>
@@ -483,18 +581,16 @@ export default function App() {
 
   // Authenticated app
   return (
-    <div className="min-h-screen" style={{ background: 'linear-gradient(145deg, #EFF6FF 0%, #F9FAFB 45%, #F5F3FF 100%)' }}>
-      {contentScreen !== 'results' && (
-        <Navbar
-          section={mainSection}
-          onSectionChange={s => { setMainSection(s); if (s === 'home') setContent('dashboard'); }}
-          onLogout={handleLogout}
-          userName={user?.name ?? ''}
-          searchLocation={searchLocation}
-          onSearchChange={setSearchLocation}
-          onLocationPick={(display, area) => { setSearchLocation(display); setSearchArea(area); }}
-        />
-      )}
+    <div className="min-h-screen overflow-x-hidden" style={{ background: 'linear-gradient(145deg, #EFF6FF 0%, #F9FAFB 45%, #F5F3FF 100%)' }}>
+      <Navbar
+        section={mainSection}
+        onSectionChange={s => { setMainSection(s); if (s === 'home') setContent('dashboard'); }}
+        onLogout={handleLogout}
+        userName={user?.name ?? ''}
+        searchLocation={searchLocation}
+        onSearchChange={setSearchLocation}
+        onLocationPick={(display, area) => { setSearchLocation(display); setSearchArea(area); }}
+      />
 
       <main className="pt-2">
         {renderContent()}

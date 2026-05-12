@@ -4,7 +4,7 @@ import {
   ArrowLeft, Star, MapPin, Clock, Navigation, Share2, Compass,
   ChevronRight, ChevronDown, Sparkles, Info, RefreshCw, Bookmark, BookmarkCheck,
   Utensils, CheckCircle, AlertTriangle, RotateCcw, Hotel, Route,
-  TrendingUp, TrendingDown, Minus, ImageIcon, ExternalLink, Map, X,
+  TrendingUp, TrendingDown, Minus, ImageIcon, ExternalLink, Map, X, Lightbulb,
 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Badge } from './ui/Badge';
@@ -45,6 +45,7 @@ interface ResultsViewProps {
   selectedTags?: string[];
   onCancelTag?: (tag: string) => void;
   pureVegFilter?: boolean;
+  visitTime?: string;
 }
 
 /* ── Best restaurants near Thanjavur hotels ──────────────────────────── */
@@ -70,14 +71,10 @@ const TRAFFIC_BADGE: Record<TrafficLevel, { bg: string; text: string; dot: strin
   Heavy:    { bg: 'bg-danger-soft',   text: 'text-danger-strong',   dot: 'bg-danger-medium',   border: 'border-danger-medium/30'  },
 };
 
-const uItinImg = (id: string) =>
-  `https://images.unsplash.com/photo-${id}?w=800&h=360&fit=crop&auto=format&q=85`;
-
 /* ── GBP photo for itinerary stops ──────────────────────────────────── */
-function ItineraryPhoto({ stopName, photoRef, fallbackImgId }: {
+function ItineraryPhoto({ stopName, photoRef }: {
   stopName: string;
   photoRef?: string | null;
-  fallbackImgId?: string;
 }) {
   const [uri, setUri] = useState<string | null>(null);
   const fetched = useRef(false);
@@ -98,37 +95,7 @@ function ItineraryPhoto({ stopName, photoRef, fallbackImgId }: {
   if (uri) {
     return <img src={uri} alt={stopName} className="absolute inset-0 w-full h-full object-cover" />;
   }
-  if (fallbackImgId) {
-    return <img src={uItinImg(fallbackImgId)} alt={stopName} className="absolute inset-0 w-full h-full object-cover" onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />;
-  }
   return <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg,#7C3AED,#6366F1)' }} />;
-}
-
-/* ── Preset images for first-generation itinerary stops ─────────────── */
-const PRESET_ITIN_IMAGES: Array<[string[], string]> = [
-  [['brihadeeswarar', 'big temple'],                    '1686310894901-d326b8722c13'],
-  [['palace', 'royal museum', 'maratha'],               '1622018135960-249abd263aeb'],
-  [['saraswathi', 'library'],                           '1568045919115-f2dacbaa1899'],
-  [['art gallery', 'chola bronze', 'nataraja'],         '1541781774459-bb2af2f05b55'],
-  [['airavatesvara', 'darasuram'],                      '1701665837448-cdbb9fab5a0d'],
-  [['gangaikonda'],                                     '1567529684892-09290a1b2d05'],
-  [['lunch', 'thali', 'mess', 'bhavan'],                '1711153419402-336ee48f2138'],
-  [['sivaganga', 'fort'],                               '1477587458883-47145ed94245'],
-  [['kaveri', 'river', 'anicut'],                       '1506905925346-21bda4d32df4'],
-];
-const FALLBACK_ITIN_IMGS = [
-  '1686310894901-d326b8722c13',
-  '1622018135960-249abd263aeb',
-  '1701665837448-cdbb9fab5a0d',
-  '1711153419402-336ee48f2138',
-  '1568045919115-f2dacbaa1899',
-];
-function getPresetImgId(stopName: string, idx: number): string {
-  const lower = stopName.toLowerCase();
-  for (const [kws, id] of PRESET_ITIN_IMAGES) {
-    if (kws.some(k => lower.includes(k))) return id;
-  }
-  return FALLBACK_ITIN_IMGS[idx % FALLBACK_ITIN_IMGS.length];
 }
 
 const CROWD_BADGE: Record<'Low' | 'Moderate' | 'High', { bg: string; text: string; dot: string; border: string }> = {
@@ -248,6 +215,71 @@ function highlightKeywords(text: string, keywords: string[]): React.ReactNode {
   );
 }
 
+const TAG_KEYWORD_MAP: Record<string, string[]> = {
+  'Biryani':            ['biryani', 'biriyani', 'dum biryani', 'mandi biryani'],
+  'South Indian':       ['dosa', 'idli', 'sambar', 'thali', 'tiffin', 'banana leaf', 'pongal', 'rasam', 'dosai', 'vada', 'vadai'],
+  'Chettinad':          ['chettinad', 'kuzhambu', 'pepper chicken', 'nattu kozhi', 'marathi mokku'],
+  'North Indian':       ['paneer', 'north indian', 'naan', 'roti', 'butter chicken', 'tandoor'],
+  'Cafe & Snacks':      ['cafe', 'coffee', 'filter coffee', 'bakery', 'snacks'],
+  'Tiffin & Snacks':    ['tiffin', 'idli', 'dosa', 'vada', 'snacks', 'bajji', 'bonda'],
+  'Veg Biryani':        ['veg biryani', 'vegetable biryani'],
+  'Multi Cuisine':      ['multi cuisine', 'variety', 'continental'],
+  'Breakfast':          ['breakfast', 'morning', 'tiffin', 'idli', 'dosa', 'pongal'],
+  'Lunch':              ['lunch', 'thali', 'meals', 'rice', 'afternoon', 'noon'],
+  'Dinner':             ['dinner', 'night', 'evening', 'parotta'],
+  'Quick Bites':        ['quick', 'fast service', 'takeaway', 'parcel', 'street food'],
+  'Authentic':          ['authentic', 'traditional', 'original', 'homemade', 'genuine'],
+  'Delicious':          ['delicious', 'tasty', 'flavorful', 'flavour', 'yummy'],
+  'Fresh':              ['fresh', 'freshly cooked', 'freshly prepared'],
+  'Good Quantity':      ['quantity', 'generous', 'good quantity', 'filling'],
+  'Spicy':              ['spicy', 'spice', 'masala', 'pepper', 'tangy', 'hot'],
+  'Affordable':         ['affordable', 'cheap', 'budget', 'pocket friendly', 'inexpensive'],
+  'Value for Money':    ['value for money', 'worth it', 'good value'],
+  'Highly Rated':       ['highly recommended', 'must visit', 'must try', 'top rated'],
+  'Family Dining':      ['family', 'spacious', 'kids', 'comfortable seating', 'group'],
+  'Good Ambience':      ['ambience', 'ambiance', 'atmosphere', 'decor', 'cozy'],
+  'Clean':              ['clean', 'hygienic', 'neat', 'tidy'],
+  'Friendly Staff':     ['friendly staff', 'helpful staff', 'attentive', 'courteous'],
+  'AC Dine-in':         ['ac', 'air conditioned', 'air conditioning'],
+  'Filter Coffee':      ['filter coffee', 'kaapi', 'coffee'],
+  'Thali':              ['thali', 'meals', 'banana leaf'],
+  'Thali/Meals':        ['thali', 'meals', 'banana leaf', 'full meals'],
+  'Non-Veg':            ['chicken', 'mutton', 'fish', 'non-veg', 'chettinad'],
+  'Pure Veg':           ['pure veg', 'veg only', 'vegetarian'],
+  'AC Rooms':           ['ac', 'air conditioned', 'cool room'],
+  'Free WiFi':          ['wifi', 'wi-fi', 'internet'],
+  'Near Big Temple':    ['big temple', 'brihadeeswarar', 'near temple', 'temple proximity', 'walking distance'],
+  'Budget':             ['budget', 'affordable', 'cheap', 'pocket friendly'],
+  'Luxury':             ['luxury', 'premium', 'deluxe', 'five star', 'comfortable'],
+  'Family Rooms':       ['family', 'spacious', 'kids', 'children'],
+  'Restaurant':         ['restaurant', 'dining', 'food'],
+  'Parking':            ['parking', 'park', 'vehicle'],
+  'Breakfast Included': ['breakfast', 'morning meal', 'complimentary'],
+  'Swimming Pool':      ['pool', 'swimming'],
+};
+
+function expandTagsToKeywords(tags: string[]): string[] {
+  const kws = new Set<string>();
+  for (const tag of tags) {
+    const mapped = TAG_KEYWORD_MAP[tag];
+    if (mapped) mapped.forEach(k => kws.add(k));
+    else kws.add(tag.toLowerCase());
+  }
+  return [...kws];
+}
+
+const TIME_REVIEW_KEYWORDS: Record<string, string[]> = {
+  Morning:   ['morning', 'sunrise', 'dawn', 'early', 'puja', 'cool', 'fresh', 'few people', 'peaceful', 'quiet', 'mist', 'less crowd'],
+  Afternoon: ['afternoon', 'midday', 'noon', 'hot', 'bright', 'sunny', 'lunch', 'busy', 'heat', 'warm', 'day'],
+  Evening:   ['evening', 'sunset', 'dusk', 'lamp', 'golden', 'dark', 'night', 'lights', 'illuminat', 'peaceful', 'atmosphere', 'crowd', 'lamps', 'lit'],
+};
+
+function scoreReviewForTime(text: string, timeSlot: string): number {
+  const kws = TIME_REVIEW_KEYWORDS[timeSlot] ?? [];
+  const lower = text.toLowerCase();
+  return kws.reduce((n, kw) => n + (lower.includes(kw) ? 1 : 0), 0);
+}
+
 function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -277,6 +309,9 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
   const distLabel = distKm !== null
     ? `${distKm < 1 ? `${Math.round(distKm * 1000)}m` : `${distKm.toFixed(1)} km`}`
     : null;
+
+  // Expand tag names → actual words that appear in review text
+  const reviewKeywords = expandTagsToKeywords(selectedTags);
 
   // Only surface 3★+ reviews, best first — 1-2★ signals are captured in trendVerdict/trendReason
   const displayReviews = [...place.reviews]
@@ -356,6 +391,24 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               <Sparkles className="w-2.5 h-2.5" />AI Top Pick
             </span>
           )}
+          {rank === 2 && (
+            <span className="absolute top-2.5 left-2.5 flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold text-white"
+              style={{ background: 'rgba(5,150,105,0.88)' }}>
+              💰 Best Value
+            </span>
+          )}
+          {rank === 3 && (
+            <span className="absolute top-2.5 left-2.5 flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold text-white"
+              style={{ background: 'rgba(217,119,6,0.88)' }}>
+              ⭐ Highly Rated
+            </span>
+          )}
+          {rank === 4 && (
+            <span className="absolute top-2.5 left-2.5 flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold text-white"
+              style={{ background: 'rgba(220,38,38,0.88)' }}>
+              🔥 Popular Pick
+            </span>
+          )}
           <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1.5">
             <span className="text-white text-sm font-black px-2 py-0.5 rounded-lg shadow" style={{ background: ratingColor }}>{place.rating}</span>
             <span className="text-white text-xs font-semibold drop-shadow">{ratingLabel}</span>
@@ -407,7 +460,13 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           {place.aiDetail?.whyOverOthers && (
             <div className="flex items-start gap-1.5">
               <Sparkles className="w-3 h-3 text-brand shrink-0 mt-0.5" />
-              <p className="text-[11px] text-brand font-medium leading-snug line-clamp-2">{place.aiDetail.whyOverOthers}</p>
+              <p className="text-[11px] text-brand font-medium leading-snug line-clamp-2">{highlightKeywords(place.aiDetail.whyOverOthers, selectedTags)}</p>
+            </div>
+          )}
+          {place.aiDetail?.insiderTip && (
+            <div className="flex items-start gap-1.5">
+              <Lightbulb className="w-3 h-3 shrink-0 mt-0.5" style={{ color: '#D97706' }} />
+              <p className="text-[11px] leading-snug line-clamp-1" style={{ color: '#92400E' }}>{place.aiDetail.insiderTip}</p>
             </div>
           )}
         </div>
@@ -460,6 +519,10 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               autoLoad={rank === 1}
             />
           </div>
+          {rank === 1 && <span className="absolute top-2 left-2 flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold text-white" style={{ background: 'rgba(99,102,241,0.88)' }}><Sparkles className="w-2.5 h-2.5" />Top Pick</span>}
+          {rank === 2 && <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded-full text-[10px] font-semibold text-white" style={{ background: 'rgba(5,150,105,0.88)' }}>💰 Best Value</span>}
+          {rank === 3 && <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded-full text-[10px] font-semibold text-white" style={{ background: 'rgba(217,119,6,0.88)' }}>⭐ Highly Rated</span>}
+          {rank === 4 && <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded-full text-[10px] font-semibold text-white" style={{ background: 'rgba(220,38,38,0.88)' }}>🔥 Popular</span>}
         </div>
 
         {/* Col 2: Info */}
@@ -611,13 +674,13 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                         <span className="text-[11px] font-semibold text-success-strong00 uppercase tracking-wide flex items-center gap-1">
                           <Trophy className="w-2.5 h-2.5" />Why Ranked #{rank}
                         </span>
-                        <p className="text-xs text-body leading-relaxed line-clamp-3">{place.aiDetail.whyOverOthers}</p>
+                        <p className="text-xs text-body leading-relaxed line-clamp-3">{highlightKeywords(place.aiDetail.whyOverOthers, selectedTags)}</p>
                       </div>
                       <div className="border-t border-emerald-100 pt-2 flex flex-col gap-1">
                         <span className="text-[11px] font-semibold text-success-strong00 uppercase tracking-wide flex items-center gap-1">
                           <CheckCircle className="w-2.5 h-2.5" />Best For
                         </span>
-                        <p className="text-xs text-body leading-relaxed line-clamp-2">{place.aiDetail.bestFor}</p>
+                        <p className="text-xs text-body leading-relaxed line-clamp-2">{highlightKeywords(place.aiDetail.bestFor, selectedTags)}</p>
                       </div>
                     </div>
 
@@ -653,6 +716,16 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                 );
               })()}
 
+              {/* Insider Tip */}
+              {place.aiDetail.insiderTip && (
+                <div className="flex items-start gap-2 rounded-xl px-2.5 py-2" style={{ background: '#FFFBEB', border: '1px solid #FDE68A' }}>
+                  <Lightbulb className="w-3 h-3 shrink-0 mt-0.5" style={{ color: '#D97706' }} />
+                  <p className="text-[11px] text-body leading-relaxed">
+                    <span className="font-semibold" style={{ color: '#D97706' }}>Insider tip: </span>{place.aiDetail.insiderTip}
+                  </p>
+                </div>
+              )}
+
               {/* Caveat */}
               {place.aiDetail.caveat && (
                 <div className="flex items-start gap-2 bg-warning-soft border border-warning-medium/30 rounded-xl px-2.5 py-2">
@@ -686,7 +759,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                         </div>
                       </div>
                       <p className="text-xs text-body leading-relaxed italic line-clamp-3">
-                        "{highlightKeywords(r.text, r.highlight ? [r.highlight] : [...selectedTags, ...(place.matchedKeyword ? [place.matchedKeyword] : [])])}"
+                        "{highlightKeywords(r.text, r.highlight ? [r.highlight] : [...reviewKeywords, ...(place.matchedKeyword ? [place.matchedKeyword] : [])])}"
                       </p>
                       <p className="text-[11px] text-muted">{r.ago} · via Google</p>
                     </div>
@@ -754,18 +827,15 @@ function getTravelMode(leg: string): { emoji: string; bg: string; color: string 
   return                          { emoji: '🚗', bg: '#EFF6FF', color: '#1C64F2' };
 }
 
-function ItineraryView({ stops, onRegenerate, onExploreStop, showPresetImages }: {
+function ItineraryView({ stops, onRegenerate, onExploreStop }: {
   stops: (ItineraryStop | LiveItineraryStop)[];
   onRegenerate: () => void;
   onExploreStop?: (target: string) => void;
-  showPresetImages?: boolean;
 }) {
   void onRegenerate;
   const [expandedStops, setExpandedStops] = useState<Set<number>>(new Set());
 
-  const displayStops = showPresetImages
-    ? stops.map((s, i) => ({ ...s, imgId: (s as any).imgId ?? getPresetImgId(s.stop, i) }))
-    : stops;
+  const displayStops = stops;
 
   const toggleStop = (idx: number) => setExpandedStops(prev => {
     const next = new Set(prev);
@@ -889,7 +959,6 @@ function ItineraryView({ stops, onRegenerate, onExploreStop, showPresetImages }:
                   <ItineraryPhoto
                     stopName={stop.stop}
                     photoRef={(stop as any).photoRef}
-                    fallbackImgId={stop.imgId}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-black/25" />
 
@@ -1093,8 +1162,13 @@ function ItineraryView({ stops, onRegenerate, onExploreStop, showPresetImages }:
   );
 }
 
-function ExploreView({ place }: { place: ExploreResult }) {
+function ExploreView({ place, visitTime = 'Morning' }: { place: ExploreResult; visitTime?: string }) {
   const [expanded, setExpanded] = useState(false);
+  // Sort reviews — most time-slot-relevant first
+  const sortedReviews = [...place.reviews].sort(
+    (a, b) => scoreReviewForTime(b.text, visitTime) - scoreReviewForTime(a.text, visitTime)
+  );
+  const timeKeywords = TIME_REVIEW_KEYWORDS[visitTime] ?? [];
   const [photoUri, setPhotoUri] = useState<string | null>(null);
   const fetchedRef = useRef(false);
 
@@ -1180,23 +1254,24 @@ function ExploreView({ place }: { place: ExploreResult }) {
         </div>
       )}
 
-      {/* ── Reviews ─────────────────────────────────────────── */}
-      {place.reviews.length > 0 && (
+      {/* ── Reviews — most time-relevant first ─────────────── */}
+      {sortedReviews.length > 0 && (
         <div className="border border-border rounded-xl overflow-hidden">
           <div className="flex items-center gap-2 px-3 pt-2.5 pb-2 border-b border-border bg-bg-app">
             <Star className="w-3 h-3 fill-warning text-warning" />
             <span className="text-[10px] font-black text-heading uppercase tracking-widest">What visitors say</span>
+            <span className="ml-auto text-[9px] font-semibold text-brand bg-brand-softer px-2 py-0.5 rounded-full">{visitTime}</span>
           </div>
           <div className="p-3">
-            <ReviewCard review={place.reviews[0]} idx={0} />
+            <ReviewCard review={sortedReviews[0]} idx={0} keywords={timeKeywords} />
           </div>
-          {place.reviews.length > 1 && (
+          {sortedReviews.length > 1 && (
             <>
               <button
                 onClick={() => setExpanded(!expanded)}
                 className="w-full flex items-center justify-between px-3 py-2 border-t border-border text-[10px] font-bold text-brand hover:bg-brand-softer transition-colors"
               >
-                <span>{expanded ? 'Hide reviews' : `See ${place.reviews.length - 1} more review${place.reviews.length > 2 ? 's' : ''}`}</span>
+                <span>{expanded ? 'Hide reviews' : `See ${sortedReviews.length - 1} more review${sortedReviews.length > 2 ? 's' : ''}`}</span>
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
               </button>
               <AnimatePresence>
@@ -1209,8 +1284,8 @@ function ExploreView({ place }: { place: ExploreResult }) {
                     className="overflow-hidden"
                   >
                     <div className="px-3 pb-3 space-y-2 pt-2">
-                      {place.reviews.slice(1).map((r, i) => (
-                        <ReviewCard key={i} review={r} idx={i + 1} />
+                      {sortedReviews.slice(1).map((r, i) => (
+                        <ReviewCard key={i} review={r} idx={i + 1} keywords={timeKeywords} />
                       ))}
                     </div>
                   </motion.div>
@@ -1240,7 +1315,7 @@ export function ResultsView({
   isLoadingMore = false,
   onBack, onRegenerate, onSave, saved = false, onSwitchTab,
   backLabel, onExploreStop, isFirstItinerary = false, selectedTags = [], onCancelTag,
-  pureVegFilter = false,
+  pureVegFilter = false, visitTime = 'Morning',
 }: ResultsViewProps) {
   const { toast } = useToast();
   const results = tab === 'Hotels' ? hotels : tab === 'Food' ? food : [];
@@ -1405,8 +1480,8 @@ export function ResultsView({
             />
           </React.Fragment>
         ))}
-        {tab === 'Itinerary' && itinerary && <ItineraryView stops={itinerary} onRegenerate={onRegenerate} onExploreStop={onExploreStop} showPresetImages={isFirstItinerary} />}
-        {tab === 'Explore' && explore && <ExploreView place={explore} />}
+        {tab === 'Itinerary' && itinerary && <ItineraryView stops={itinerary} onRegenerate={onRegenerate} onExploreStop={onExploreStop} />}
+        {tab === 'Explore' && explore && <ExploreView place={explore} visitTime={visitTime} />}
       </div>
 
       {/* Actions */}

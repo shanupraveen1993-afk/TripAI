@@ -3,6 +3,7 @@ export interface AiDetail {
   dataPoints: string[];
   bestFor: string;
   caveat?: string;
+  insiderTip?: string;
 }
 
 export interface ReviewItem {
@@ -526,6 +527,8 @@ export const MOCK_EXPLORE_PALACE: ExploreResult = {
   reviews: [
     { text: 'The Bell Tower is a hidden gem — nobody told me you could climb it for a full panorama of the Big Temple and the whole city. Absolutely worth the ₹50 combined ticket.', author: 'Anand M.', location: 'Bangalore', stars: 5, ago: '1 week ago' },
     { text: 'The Durbar Hall ceiling art is extraordinary — detailed Maratha-era paintings covering every inch. The Chola bronzes in the Art Gallery are world-class, especially the Nataraja.', author: 'Kavitha R.', location: 'Chennai', stars: 5, ago: '2 weeks ago' },
+    { text: 'Visit in the morning between 9–11 AM — the gallery is quiet, the light is soft, and the guides are available. Morning is when you can actually examine the bronzes closely without crowds.', author: 'Ravi M.', location: 'Mumbai', stars: 5, ago: '5 days ago' },
+    { text: 'Late afternoon around 4 PM is surprisingly peaceful — the afternoon crowd thins and the Bell Tower view catches beautiful golden light over the city. Try to reach before 5 PM to have the gallery to yourself.', author: 'Divya K.', location: 'Pune', stars: 4, ago: '2 weeks ago' },
     { text: 'Spend at least 2 hours here covering all three sections. The Saraswathi Mahal palm leaf manuscripts are fascinating — ask the curator to explain the writing process.', author: 'Suresh T.', location: 'Hyderabad', stars: 4, ago: '1 month ago' },
   ],
   photoColor: 'bg-purple-800',
@@ -565,6 +568,8 @@ export const MOCK_EXPLORE_AIRAVATESVARA: ExploreResult = {
   tags: ['UNESCO World Heritage', 'Chola Architecture', 'Musical Steps', 'Temple Carvings', 'Less Crowded'],
   reviews: [
     { text: 'The musical staircase blew my mind — ancient Chola engineers carved stone steps that each produce a different musical note. No other monument in India has this. Come here before the crowds discover it.', author: 'Vikram N.', location: 'Pune', stars: 5, ago: '5 days ago' },
+    { text: 'The evening puja here is quietly beautiful — oil lamps placed along the outer carvings, almost no tourists, just devotees. The atmosphere at dusk with the temple lit by lamps is completely different from the daytime experience.', author: 'Sunita P.', location: 'Hyderabad', stars: 5, ago: '1 week ago' },
+    { text: 'Morning visit around 7 AM is magical — fresh, cool, and empty. The early light falls directly on the eastern gopuram and the carved panels come alive. Arrived at sunrise and stayed two hours without seeing more than ten people.', author: 'Arjun L.', location: 'Delhi', stars: 5, ago: '2 weeks ago' },
     { text: 'More intimate than Brihadeeswarar but arguably more beautiful up close. I spent 90 minutes just examining the outer wall carvings. The Mahabharata battle scenes in miniature are extraordinary.', author: 'Lalitha S.', location: 'Chennai', stars: 5, ago: '10 days ago' },
     { text: 'UNESCO listed and almost empty on a Saturday morning. The caretaker was knowledgeable and showed us the musical steps and chariot base. A must for anyone interested in Chola art.', author: 'Deepak R.', location: 'Bangalore', stars: 5, ago: '3 weeks ago' },
   ],
@@ -606,6 +611,8 @@ export const MOCK_EXPLORE: ExploreResult = {
   reviews: [
     { text: 'The shadow of the vimana never falls outside the temple walls — ancient Chola engineering that still astonishes. Arrive at sunrise for the best experience.', author: 'Supriya V.', location: 'Hyderabad', stars: 5, ago: '1 week ago' },
     { text: "Morning puja at 6 AM is spectacular. Very few tourists that early. The scale of the 1,000-year-old temple is breathtaking up close.", author: 'Naveen K.', location: 'New Delhi', stars: 5, ago: '2 weeks ago' },
+    { text: 'The evening puja around 6:30 PM is the most atmospheric time to visit — oil lamps are lit around the vimana, the nadaswaram fills the courtyard, and the crowd is calmer than morning. The golden light on the gopuram at dusk is unforgettable.', author: 'Meera R.', location: 'Coimbatore', stars: 5, ago: '4 days ago' },
+    { text: 'Afternoon visit between 2–4 PM is peaceful — the intense midday crowd thins out and you can walk the pradakshina path without rushing. The carved panels on the outer wall are easier to examine without the morning rush.', author: 'Kiran S.', location: 'Bangalore', stars: 4, ago: '3 weeks ago' },
     { text: 'One of the finest pieces of Dravidian architecture anywhere. The Chola bronzes in the adjacent gallery are world-class.', author: 'Preethi S.', location: 'Chennai', stars: 5, ago: '1 month ago' },
   ],
   photoColor: 'bg-amber-700',

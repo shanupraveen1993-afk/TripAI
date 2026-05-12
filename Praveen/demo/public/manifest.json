@@ -1,13 +1,34 @@
 {
-  "name": "TripAI",
+  "name": "TripAI — AI Trip Planner",
   "short_name": "TripAI",
-  "description": "AI-powered trip planning with real place data",
+  "description": "AI-powered trip planning — real places, real data, smart recommendations.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "theme_color": "#1C64F2",
   "background_color": "#EBF5FF",
+  "categories": ["travel", "lifestyle"],
+  "lang": "en",
   "icons": [
     { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Find Hotels",
+      "short_name": "Hotels",
+      "description": "Search AI-ranked hotels",
+      "url": "/?tab=Hotels",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Plan My Day",
+      "short_name": "Itinerary",
+      "description": "Get an AI day plan",
+      "url": "/?tab=Itinerary",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
   ]
 }

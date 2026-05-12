@@ -70,11 +70,13 @@
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
+    overflow-x: clip;
   }
 
   body {
     @apply bg-bg-app font-sans text-body antialiased;
     min-height: 100dvh;
+    overflow-x: clip;
   }
 
   h1, h2, h3, h4, h5, h6 {

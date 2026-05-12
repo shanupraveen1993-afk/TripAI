@@ -93,8 +93,8 @@ export function Navbar({ section, onSectionChange, onLogout, userName, searchLoc
   return (
     <>
       {/* ── Top navbar ─────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-40 border-b" style={{ background: 'rgba(249,250,251,0.88)', backdropFilter: 'blur(20px)', borderColor: 'rgba(0,0,0,0.07)', boxShadow: '0 1px 12px rgba(28,100,242,0.06)' }}>
-        <div className="w-full max-w-[920px] mx-auto px-4 h-14 flex items-center gap-4">
+      <header className="sticky top-0 z-40 border-b" style={{ background: 'rgba(249,250,251,0.88)', backdropFilter: 'blur(20px)', borderColor: 'rgba(0,0,0,0.07)', boxShadow: '0 1px 12px rgba(28,100,242,0.06)', paddingTop: 'env(safe-area-inset-top)' }}>
+        <div className="w-full max-w-[920px] mx-auto px-4 h-14 flex items-center gap-3">
 
           {/* Brand */}
           <button
@@ -109,8 +109,8 @@ export function Navbar({ section, onSectionChange, onLogout, userName, searchLoc
             </span>
           </button>
 
-          {/* Search bar — center, desktop only */}
-          <div className="flex-1 max-w-sm mx-auto hidden md:block">
+          {/* City search — always visible, flex-1 */}
+          <div className="flex-1 min-w-0">
             <CitySearch
               value={searchLocation}
               onChange={onSearchChange}
@@ -119,7 +119,7 @@ export function Navbar({ section, onSectionChange, onLogout, userName, searchLoc
           </div>
 
           {/* User menu */}
-          <div className="ml-auto relative">
+          <div className="shrink-0 relative">
             <button
               onClick={() => setProfileOpen(!profileOpen)}
               className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-xl border border-border hover:bg-bg-app transition-colors"
@@ -127,10 +127,10 @@ export function Navbar({ section, onSectionChange, onLogout, userName, searchLoc
               <div className="w-7 h-7 bg-brand rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0">
                 {userName.charAt(0).toUpperCase()}
               </div>
-              <span className="text-sm font-medium text-heading hidden sm:block max-w-24 truncate">
+              <span className="text-sm font-medium text-heading hidden md:block max-w-24 truncate">
                 {userName.split(' ')[0]}
               </span>
-              <ChevronDown className={`w-3.5 h-3.5 text-muted transition-transform ${profileOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`w-3.5 h-3.5 text-muted transition-transform hidden md:block ${profileOpen ? 'rotate-180' : ''}`} />
             </button>
 
             {profileOpen && (
@@ -159,18 +159,10 @@ export function Navbar({ section, onSectionChange, onLogout, userName, searchLoc
           </div>
         </div>
 
-        {/* Mobile search bar */}
-        <div className="md:hidden px-4 pb-3">
-          <CitySearch
-            value={searchLocation}
-            onChange={onSearchChange}
-            onPick={handlePick}
-          />
-        </div>
       </header>
 
       {/* ── Bottom nav (mobile only) ─────────────────────────────────── */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface border-t border-border safe-area-bottom">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface border-t border-border" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <div className="flex items-center h-16">
           {NAV_ITEMS.map(item => (
             <button

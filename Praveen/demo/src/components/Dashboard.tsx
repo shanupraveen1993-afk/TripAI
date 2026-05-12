@@ -52,7 +52,7 @@ const TAB_META: Record<Tab, {
     label:       'Food',
     headline:    'What\'s worth eating in Thanjavur?',
     sub:         'Authentic Chola-era cuisine, filter coffee, and local thali — ranked before you see them.',
-    trending:    ['Thanjavur thali', 'Filter coffee', 'Pure veg', 'South Indian', 'Street food', 'Biryani spots'],
+    trending:    ['Thanjavur thali/meals', 'Filter coffee', 'Pure veg', 'South Indian', 'Street food', 'Biryani spots'],
   },
   Itinerary: {
     icon:        <Route        className="w-4 h-4" />,
@@ -167,11 +167,11 @@ const POPULAR_DESTINATIONS: PopularCity[] = [
 /* ── Thanjavur action grid (Segment 1) ──────────────────────────────── */
 const THANJAVUR_ACTIONS: Array<{
   tab: Tab; label: string; desc: string; emoji: string; imgId: string;
-  overrides: { tab: Tab; hotelTag?: string; foodTag?: string; exploreTarget?: string };
+  overrides: QuickOverride;
 }> = [
   { tab: 'Hotels',    label: 'Stay near Big Temple', desc: 'Top-rated · Walking distance',  emoji: '🛕', imgId: '1686310894901-d326b8722c13', overrides: { tab: 'Hotels',    hotelTag: 'Near Big Temple' } },
-  { tab: 'Food',      label: 'Thanjavur thali',       desc: 'Authentic Chola cuisine',       emoji: '🍛', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Thali/Meals' } },
-  { tab: 'Itinerary', label: '1-day plan',            desc: 'AI routed · Full day',          emoji: '🗺️', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Itinerary' } },
+  { tab: 'Food',      label: 'Thanjavur thali/meals',       desc: 'Authentic Chola cuisine',       emoji: '🍛', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Thali/Meals' } },
+  { tab: 'Itinerary', label: '1-day plan',            desc: 'AI routed · Full day',          emoji: '🗺️', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Itinerary', startTime: 'Morning' } },
   { tab: 'Explore',   label: 'Brihadeeswarar',        desc: 'UNESCO · Chola masterpiece',    emoji: '🏛️', imgId: '1701665837448-cdbb9fab5a0d', overrides: { tab: 'Explore',   exploreTarget: 'Brihadeeswarar Temple' } },
 ];
 
@@ -184,6 +184,7 @@ interface QuickOverride {
   hotelArea?: string;
   dietType?: DietType;
   exploreTarget?: string;
+  startTime?: string;
 }
 
 /* ── Smart picks per city ────────────────────────────────────────────── */
@@ -208,16 +209,16 @@ const POPULAR_QUERIES: { label: string; overrides: QuickOverride }[] = [
 const SMART_PICKS: Record<string, SmartPick[]> = {
   thanjavur: [
     { label: 'Near Big Temple',    sub: 'Hotels · Walking distance', emoji: '🛕', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1686310894901-d326b8722c13', overrides: { tab: 'Hotels',    hotelTag: 'Near Big Temple' } },
-    { label: 'Thanjavur thali',    sub: 'Food · Authentic Chola',    emoji: '🍛', grad: 'linear-gradient(135deg,#D97706,#F59E0B)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Thali/Meals' } },
+    { label: 'Thanjavur thali/meals',    sub: 'Food · Authentic Chola',    emoji: '🍛', grad: 'linear-gradient(135deg,#D97706,#F59E0B)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Thali/Meals' } },
     { label: 'Brihadeeswarar',     sub: 'Explore · UNESCO site',     emoji: '🏛️', grad: 'linear-gradient(135deg,#059669,#10B981)', imgId: '1701665837448-cdbb9fab5a0d', overrides: { tab: 'Explore',   exploreTarget: 'Brihadeeswarar Temple' } },
-    { label: '1-day Thanjavur',    sub: 'Itinerary · AI routed',     emoji: '🗺️', grad: 'linear-gradient(135deg,#7C3AED,#6366F1)', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Itinerary' } },
+    { label: '1-day Thanjavur',    sub: 'Itinerary · AI routed',     emoji: '🗺️', grad: 'linear-gradient(135deg,#7C3AED,#6366F1)', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Itinerary', startTime: 'Morning' } },
     { label: 'Filter coffee',      sub: 'Food · Local café culture', emoji: '☕', grad: 'linear-gradient(135deg,#D97706,#EF4444)', imgId: '1509042239860-f550ce710b93', overrides: { tab: 'Food',      foodTag: 'Cafe' } },
     { label: 'Royal Palace',       sub: 'Explore · Maratha heritage', emoji: '🏰', grad: 'linear-gradient(135deg,#6366F1,#A78BFA)', imgId: '1622018135960-249abd263aeb', overrides: { tab: 'Explore',   exploreTarget: 'Thanjavur Maratha Palace Royal Museum' } },
   ],
   bangalore: [
     { label: 'Best coffee & cafes',  sub: 'Quick · Near you',     emoji: '☕', grad: 'linear-gradient(135deg,#6366F1,#A78BFA)', imgId: '1509042239860-f550ce710b93', overrides: { tab: 'Food',      foodTag: 'Cafe' } },
     { label: 'Heritage stays',        sub: 'Hotels · Curated',    emoji: '🏛️', grad: 'linear-gradient(135deg,#D97706,#F59E0B)', imgId: '1708782462555-b3af03b4b3d2', overrides: { tab: 'Hotels',    hotelTag: 'Heritage' } },
-    { label: 'Plan my Bangalore day', sub: 'Full day · AI routed',emoji: '🗺️', grad: 'linear-gradient(135deg,#7C3AED,#6366F1)', imgId: '1708782462555-b3af03b4b3d2', overrides: { tab: 'Itinerary' } },
+    { label: 'Plan my Bangalore day', sub: 'Full day · AI routed',emoji: '🗺️', grad: 'linear-gradient(135deg,#7C3AED,#6366F1)', imgId: '1708782462555-b3af03b4b3d2', overrides: { tab: 'Itinerary', startTime: 'Morning' } },
     { label: 'Top landmarks',         sub: 'What to see · Ranked',emoji: '🏯', grad: 'linear-gradient(135deg,#059669,#10B981)', imgId: '1708782462555-b3af03b4b3d2', overrides: { tab: 'Explore',   exploreTarget: 'Vidhana Soudha' } },
     { label: 'City centre stays',     sub: 'Hotels · Best value', emoji: '💰', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Hotels',    hotelTag: 'City Centre' } },
     { label: 'Best biryani',          sub: 'Food · Non-veg',      emoji: '🍛', grad: 'linear-gradient(135deg,#EF4444,#F97316)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Biryani' } },
@@ -225,7 +226,7 @@ const SMART_PICKS: Record<string, SmartPick[]> = {
   goa: [
     { label: 'Beach hotels',         sub: 'Sea view · Rated',     emoji: '🌊', grad: 'linear-gradient(135deg,#0284C7,#06B6D4)', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Hotels',    hotelTag: 'Sea View' } },
     { label: 'Best seafood',         sub: 'Fresh · Near beach',   emoji: '🦞', grad: 'linear-gradient(135deg,#059669,#10B981)', imgId: '1624791596524-d989400f3241', overrides: { tab: 'Food',      foodTag: 'Seafood' } },
-    { label: '1-day Goa plan',       sub: 'Itinerary · Beaches',  emoji: '🛵', grad: 'linear-gradient(135deg,#D97706,#F59E0B)', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Itinerary' } },
+    { label: '1-day Goa plan',       sub: 'Itinerary · Beaches',  emoji: '🛵', grad: 'linear-gradient(135deg,#D97706,#F59E0B)', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Itinerary', startTime: 'Morning' } },
     { label: 'Must-see beaches',     sub: 'Explore · Ranked',     emoji: '🏖️', grad: 'linear-gradient(135deg,#7C3AED,#A78BFA)', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Explore',   exploreTarget: 'Calangute Beach' } },
     { label: 'Cafe & street eats',   sub: 'Food · Nightlife',     emoji: '🍹', grad: 'linear-gradient(135deg,#EF4444,#F97316)', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Food',      foodTag: 'Cafe' } },
     { label: 'City centre stays',    sub: 'Hotels · Best value',  emoji: '💰', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Hotels',    hotelTag: 'City Centre' } },
@@ -234,7 +235,7 @@ const SMART_PICKS: Record<string, SmartPick[]> = {
     { label: 'Bandra stays',         sub: 'Hotels · Trendy area', emoji: '🏙️', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Hotels',    hotelArea: 'Bandra' } },
     { label: 'Street food',          sub: 'Iconic Mumbai eats',   emoji: '🌯', grad: 'linear-gradient(135deg,#D97706,#F59E0B)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Street Food' } },
     { label: 'Marine Drive',         sub: 'Explore · Landmark',   emoji: '🌆', grad: 'linear-gradient(135deg,#0284C7,#06B6D4)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Explore',   exploreTarget: 'Marine Drive' } },
-    { label: 'Full day Mumbai',      sub: 'Itinerary · AI plan',  emoji: '🗺️', grad: 'linear-gradient(135deg,#7C3AED,#6366F1)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Itinerary' } },
+    { label: 'Full day Mumbai',      sub: 'Itinerary · AI plan',  emoji: '🗺️', grad: 'linear-gradient(135deg,#7C3AED,#6366F1)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Itinerary', startTime: 'Morning' } },
     { label: 'Best biryani',         sub: 'Food · Special pick',  emoji: '🍽️', grad: 'linear-gradient(135deg,#EF4444,#F97316)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Food',      foodTag: 'Biryani' } },
     { label: 'Business hotels',      sub: 'Hotels · Corporate',   emoji: '💼', grad: 'linear-gradient(135deg,#059669,#10B981)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Hotels',    hotelTag: 'Business' } },
   ],
@@ -242,12 +243,12 @@ const SMART_PICKS: Record<string, SmartPick[]> = {
     { label: 'Heritage palaces',     sub: 'Explore · Pink City',  emoji: '🏰', grad: 'linear-gradient(135deg,#D97706,#EF4444)', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Explore',   exploreTarget: 'Amber Fort' } },
     { label: 'Royal palace stays',   sub: 'Hotels · Heritage',    emoji: '🏯', grad: 'linear-gradient(135deg,#7C3AED,#A78BFA)', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Hotels',    hotelTag: 'Heritage' } },
     { label: 'Rajasthani thali',     sub: 'Food · Authentic',     emoji: '🍛', grad: 'linear-gradient(135deg,#EF4444,#F97316)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Thali/Meals' } },
-    { label: 'Pink City walk',       sub: 'Itinerary · Full day', emoji: '🛺', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Itinerary' } },
+    { label: 'Pink City walk',       sub: 'Itinerary · Full day', emoji: '🛺', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Itinerary', startTime: 'Morning' } },
     { label: 'Bazaar & markets',     sub: 'Explore · Shopping',   emoji: '🛍️', grad: 'linear-gradient(135deg,#059669,#10B981)', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Explore',   exploreTarget: 'Johari Bazaar' } },
     { label: 'Street food',          sub: 'Food · Iconic eats',   emoji: '✨', grad: 'linear-gradient(135deg,#6366F1,#A78BFA)', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Food',      foodTag: 'Street Food' } },
   ],
   delhi: [
-    { label: 'Old Delhi heritage',   sub: 'Itinerary · Walk',     emoji: '🕌', grad: 'linear-gradient(135deg,#EF4444,#F97316)', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Itinerary' } },
+    { label: 'Old Delhi heritage',   sub: 'Itinerary · Walk',     emoji: '🕌', grad: 'linear-gradient(135deg,#EF4444,#F97316)', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Itinerary', startTime: 'Morning' } },
     { label: 'City centre stays',    sub: 'Hotels · Best value',  emoji: '💰', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Hotels',    hotelTag: 'City Centre' } },
     { label: 'Chandni Chowk food',   sub: 'Street food · Iconic', emoji: '🥙', grad: 'linear-gradient(135deg,#D97706,#F59E0B)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Street Food' } },
     { label: 'Red Fort',             sub: 'Explore · Must-see',   emoji: '🏰', grad: 'linear-gradient(135deg,#7C3AED,#6366F1)', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Explore',   exploreTarget: 'Red Fort' } },
@@ -257,7 +258,7 @@ const SMART_PICKS: Record<string, SmartPick[]> = {
   default: [
     { label: 'Top rated hotels',     sub: 'Hotels · AI ranked',   emoji: '🏨', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1686310894901-d326b8722c13', overrides: { tab: 'Hotels' } },
     { label: 'Best eats nearby',     sub: 'Food · Highly rated',  emoji: '🍽️', grad: 'linear-gradient(135deg,#D97706,#F59E0B)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food' } },
-    { label: 'Plan a full day',      sub: 'Itinerary · Optimised',emoji: '🗺️', grad: 'linear-gradient(135deg,#7C3AED,#6366F1)', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Itinerary' } },
+    { label: 'Plan a full day',      sub: 'Itinerary · Optimised',emoji: '🗺️', grad: 'linear-gradient(135deg,#7C3AED,#6366F1)', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Itinerary', startTime: 'Morning' } },
     { label: 'Must-see spots',       sub: 'Explore · Don\'t miss',emoji: '🧭', grad: 'linear-gradient(135deg,#059669,#10B981)', imgId: '1708782462555-b3af03b4b3d2', overrides: { tab: 'Explore' } },
     { label: 'City centre stays',    sub: 'Hotels · Best value',  emoji: '💰', grad: 'linear-gradient(135deg,#6366F1,#A78BFA)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Hotels',    hotelTag: 'City Centre' } },
     { label: 'Pure veg options',     sub: 'Food · Filtered',      emoji: '🥗', grad: 'linear-gradient(135deg,#059669,#34D399)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      dietType: 'Veg' } },
@@ -285,20 +286,20 @@ const TRENDING_OVERRIDES: Record<string, QuickOverride> = {
   'Street food':     { tab: 'Food',      foodTag: 'Street Food' },
   'Seafood':         { tab: 'Food',      foodTag: 'Seafood' },
   'Craft beer bars': { tab: 'Food',      foodTag: 'Cafe' },
-  'Family day out':  { tab: 'Itinerary' },
-  'Couple getaway':  { tab: 'Itinerary' },
-  'Solo explorer':   { tab: 'Itinerary' },
-  'Heritage walk':   { tab: 'Itinerary' },
-  '1-day plan':      { tab: 'Itinerary' },
+  'Family day out':  { tab: 'Itinerary', startTime: 'Morning' },
+  'Couple getaway':  { tab: 'Itinerary', startTime: 'Morning' },
+  'Solo explorer':   { tab: 'Itinerary', startTime: 'Morning' },
+  'Heritage walk':   { tab: 'Itinerary', startTime: 'Morning' },
+  '1-day plan':      { tab: 'Itinerary', startTime: 'Morning' },
   'Brihadeeswarar Temple':       { tab: 'Explore', exploreTarget: 'Brihadeeswarar Temple' },
   'Thanjavur Maratha Palace Royal Museum':            { tab: 'Explore', exploreTarget: 'Thanjavur Maratha Palace Royal Museum' },
   'Saraswathi Mahal':            { tab: 'Explore', exploreTarget: 'Saraswathi Mahal Library' },
   'Gangaikonda':                 { tab: 'Explore', exploreTarget: 'Gangaikonda Cholapuram' },
   'Morning visit':               { tab: 'Explore' },
   'Evening visit':               { tab: 'Explore' },
-  'Photography walk':            { tab: 'Itinerary' },
-  'Big Temple morning':          { tab: 'Itinerary' },
-  'Full day heritage':           { tab: 'Itinerary' },
+  'Photography walk':            { tab: 'Itinerary', startTime: 'Morning' },
+  'Big Temple morning':          { tab: 'Itinerary', startTime: 'Morning' },
+  'Full day heritage':           { tab: 'Itinerary', startTime: 'Morning' },
 };
 
 /* ── Location bar ────────────────────────────────────────────────────── */
@@ -471,9 +472,10 @@ interface DashboardProps {
   loading: boolean;
   recentSearches?: Array<{ destination: string; tab: Tab }>;
   onDestinationSelect?: (destination: string) => void;
+  userName?: string;
 }
 
-export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loading, recentSearches = [], onDestinationSelect }: DashboardProps) {
+export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loading, recentSearches = [], onDestinationSelect, userName = '' }: DashboardProps) {
   const [activeTab, setActiveTab]           = useState<Tab>(initialTab);
   // Hotels
   const [priceFilter, setPriceFilter]       = useState('Any');
@@ -593,7 +595,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       mealTime,
       itinDate:     dateMap[itinDate] ?? itinDate,
       startPoint,
-      startTime,
+      startTime:    ov.startTime ?? startTime,
       exploreTarget: ov.exploreTarget ?? exploreTarget,
       visitTime,
       searchQuery:   searchQuery.trim(),
@@ -605,12 +607,19 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
     onSearch(buildFilters(ov));
   };
 
+  const [showExploreError, setShowExploreError] = useState(false);
+
   const handleSearch = () => {
     if (activeTab === 'Itinerary' && !startTime) {
       setShowTimeError(true);
       return;
     }
+    if (activeTab === 'Explore' && !exploreTarget) {
+      setShowExploreError(true);
+      return;
+    }
     setShowTimeError(false);
+    setShowExploreError(false);
     onSearch(buildFilters());
   };
 
@@ -624,18 +633,21 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
           {/* Hotel keyword tags — multi-select up to 2, segmented */}
           {hotelTagData.tags.length > 0 && (
             <div>
-              {/* Header with counter */}
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-[13px] font-black text-heading">
-                  What matters to you?
-                  {tagsLoading && <span className="ml-1.5 inline-block w-2.5 h-2.5 border border-muted border-t-transparent rounded-full animate-spin align-middle" />}
-                </label>
-                {hotelTags.length > 0 && (
-                  <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full"
-                    style={{ background: '#EBF5FF', color: '#1C64F2' }}>
-                    {hotelTags.length}/2
-                  </span>
-                )}
+              {/* Header with counter + subtitle */}
+              <div className="mb-2.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-[13px] font-black text-heading">
+                    What matters to you?
+                    {tagsLoading && <span className="ml-1.5 inline-block w-2.5 h-2.5 border border-muted border-t-transparent rounded-full animate-spin align-middle" />}
+                  </label>
+                  {hotelTags.length > 0 && (
+                    <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full"
+                      style={{ background: '#EBF5FF', color: '#1C64F2' }}>
+                      {hotelTags.length}/2
+                    </span>
+                  )}
+                </div>
+                <p className="text-[11px] text-muted mt-0.5">Select your top priorities</p>
               </div>
 
               {/* Location toast */}
@@ -989,8 +1001,8 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               <Compass className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted pointer-events-none" />
               <select
                 value={exploreTarget}
-                onChange={e => setExploreTarget(e.target.value)}
-                className="w-full pl-9 pr-8 py-2 border border-border rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-brand-soft focus:border-brand bg-surface appearance-none transition-colors"
+                onChange={e => { setExploreTarget(e.target.value); setShowExploreError(false); }}
+                className={`w-full pl-9 pr-8 py-2 border rounded-lg text-xs focus:outline-none focus:ring-2 bg-surface appearance-none transition-colors ${showExploreError ? 'border-danger focus:ring-danger/30' : 'border-border focus:ring-brand-soft focus:border-brand'}`}
               >
                 <option value="">Select a location…</option>
                 <option value="Brihadeeswarar Temple">Brihadeeswarar Temple (Big Temple)</option>
@@ -1001,6 +1013,11 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               </select>
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted pointer-events-none" />
             </div>
+            {showExploreError && (
+              <p className="text-[10px] text-danger font-bold mt-1.5 flex items-center gap-1">
+                <span>⚠</span> Please select a location to continue
+              </p>
+            )}
           </div>
 
           {/* Time slot */}
@@ -1213,13 +1230,82 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
     );
   }
 
-  return (
-    <div className="w-full max-w-[920px] mx-auto py-4 pb-24 lg:pb-4 px-4 space-y-3">
+  // Greeting based on time of day
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const firstName = userName?.split(' ')[0] || '';
 
-      {/* ── Blue category selector — sticky until CTA scrolled past ── */}
+  // Tab hero config
+  const TAB_HERO: Record<Tab, { imgId: string; headline: string; sub: string }> = {
+    Hotels:    { imgId: '1686310894901-d326b8722c13', headline: 'Find your perfect stay', sub: 'AI-ranked by price, distance & reviews' },
+    Food:      { imgId: '1711153419402-336ee48f2138', headline: 'Discover the best eats',  sub: 'Authentic Thanjavur cuisine, ranked for you' },
+    Itinerary: { imgId: '1713729991304-d0b6c328560e', headline: 'Plan your perfect day',   sub: 'AI-routed itinerary, timed to perfection' },
+    Explore:   { imgId: '1701665837448-cdbb9fab5a0d', headline: 'Explore every landmark',  sub: 'Deep-dive guides powered by real reviews' },
+  };
+  const hero = TAB_HERO[activeTab];
+
+  // Swipe gesture to switch tabs
+  const swipeTouchX = useRef<number | null>(null);
+  const handleTouchStart = (e: React.TouchEvent) => { swipeTouchX.current = e.touches[0].clientX; };
+  const handleTouchEnd   = (e: React.TouchEvent) => {
+    if (swipeTouchX.current === null) return;
+    const delta = e.changedTouches[0].clientX - swipeTouchX.current;
+    if (Math.abs(delta) < 60) return;
+    const idx  = TABS.indexOf(activeTab);
+    if (delta < 0 && idx < TABS.length - 1) setActiveTab(TABS[idx + 1]);
+    if (delta > 0 && idx > 0)               setActiveTab(TABS[idx - 1]);
+    swipeTouchX.current = null;
+  };
+
+  return (
+    <div
+      className="w-full max-w-[920px] mx-auto pb-24 lg:pb-4 px-4 space-y-3"
+      style={{ paddingTop: 0 }}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
+
+      {/* ── Hero — all tabs ───────────────────────────────────────── */}
+      <motion.div
+        key={activeTab + '-hero'}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.22 }}
+        className="relative -mx-4 overflow-hidden"
+        style={{ height: 172, borderRadius: '0 0 22px 22px' }}
+      >
+        <img
+          src={`https://images.unsplash.com/photo-${hero.imgId}?w=800&h=400&fit=crop&auto=format&q=80`}
+          alt={activeTab}
+          className="absolute inset-0 w-full h-full object-cover"
+          draggable={false}
+        />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(160deg, rgba(0,0,0,0.04) 0%, rgba(0,0,0,0.68) 100%)' }} />
+        {/* Greeting */}
+        {firstName && (
+          <div className="absolute top-4 left-5 text-white/80 text-[11px] font-semibold">
+            {greeting}, {firstName} 👋
+          </div>
+        )}
+        {/* Hero text */}
+        <div className="absolute bottom-5 left-5 right-5">
+          <p className="text-white font-display font-black text-lg leading-tight drop-shadow">{hero.headline}</p>
+          <p className="text-white/75 text-[11px] mt-0.5 leading-snug">{hero.sub}</p>
+        </div>
+        {/* Location pill */}
+        <div className="absolute top-4 right-5">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-white text-[10px] font-bold"
+            style={{ background: 'rgba(0,0,0,0.32)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.18)' }}>
+            <MapPin className="w-2.5 h-2.5 shrink-0" />
+            {destination || 'Thanjavur'}
+          </div>
+        </div>
+      </motion.div>
+
+      {/* ── Category selector — always sticky below header ── */}
       <div
-        className={`${categorySticky ? 'sticky top-[57px] z-30' : 'relative z-10'} -mx-4 px-4 pb-2 pt-1 transition-shadow`}
-        style={categorySticky ? { background: 'rgba(249,250,251,0.95)', backdropFilter: 'blur(20px)', boxShadow: '0 1px 0 rgba(0,0,0,0.06)' } : {}}
+        className="sticky z-30 -mx-4 px-4 pb-2 pt-1"
+        style={{ top: 'calc(57px + env(safe-area-inset-top))', background: 'rgba(249,250,251,0.97)', backdropFilter: 'blur(20px)', boxShadow: '0 1px 0 rgba(0,0,0,0.07)' }}
       >
         <CategorySelector active={activeTab} onChange={t => setActiveTab(t)} />
       </div>
@@ -1229,7 +1315,8 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         key={activeTab}
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.2 }}
+        exit={{ opacity: 0, y: -4 }}
+        transition={{ duration: 0.18, ease: 'easeOut' }}
         className="rounded-xl overflow-hidden relative z-10 bg-white"
         style={{ border: '1px solid #E5E7EB' }}
       >
@@ -1288,7 +1375,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                       key={s}
                       type="button"
                       onMouseDown={() => { setSearchQuery(s); setSearchFocused(false); }}
-                      className="w-full flex items-center gap-2 px-3 py-2.5 text-left text-sm text-heading hover:bg-brand-softer transition-colors"
+                      className="w-full flex items-center gap-2 px-3 py-2.5 text-left text-sm text-heading hover:bg-blue-50 transition-colors"
                     >
                       <Search className="w-3 h-3 shrink-0 text-muted" />
                       <span>{s}</span>
@@ -1300,17 +1387,19 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
           );
         })()}
 
-        {/* Header */}
-        <div className="px-4 py-3 flex items-center gap-3 border-b border-border" style={{ background: '#FAFAFA' }}>
-          <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: '#1C64F2' }}>
-            <span style={{ color: '#fff' }}>{meta.icon}</span>
+        {/* Header — hidden on Hotels tab; AI banner replaces it */}
+        {activeTab !== 'Hotels' && (
+          <div className="px-4 py-3 flex items-center gap-3 border-b border-border" style={{ background: '#FAFAFA' }}>
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: '#1C64F2' }}>
+              <span style={{ color: '#fff' }}>{meta.icon}</span>
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="font-display font-black text-sm text-heading leading-tight">{meta.headline}</p>
+              <p className="text-xs text-muted mt-0.5 truncate">{meta.sub}</p>
+            </div>
+            <Sparkles className="w-3.5 h-3.5 ml-auto shrink-0 text-brand" />
           </div>
-          <div className="min-w-0 flex-1">
-            <p className="font-display font-black text-sm text-heading leading-tight">{meta.headline}</p>
-            <p className="text-xs text-muted mt-0.5 truncate">{meta.sub}</p>
-          </div>
-          <Sparkles className="w-3.5 h-3.5 ml-auto shrink-0 text-brand" />
-        </div>
+        )}
 
         <div className="p-4">
           {renderFilters()}
@@ -1318,15 +1407,20 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
 
         {/* ── CTA inside card ───────────────────────────────────── */}
         <div className="px-4 pb-4 pt-3 border-t border-border">
-          <Button
-            variant="outline"
-            fullWidth
-            loading={loading}
-            icon={!loading ? <Search className="w-4 h-4" /> : undefined}
+          <button
+            type="button"
             onClick={handleSearch}
             disabled={loading}
-            className="border-2 hover:bg-brand hover:text-white hover:border-brand"
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-soft disabled:opacity-40 disabled:cursor-not-allowed"
+            style={activeTab === 'Hotels'
+              ? { background: '#1C64F2', color: '#fff' }
+              : { background: '#fff', color: '#1C64F2', border: '2px solid #1C64F2' }
+            }
           >
+            {loading
+              ? <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+              : <Search className="w-4 h-4" />
+            }
             {loading ? 'AI is on it…' : (
               searchQuery.trim() && activeTab === 'Hotels'  ? `Search "${searchQuery.trim()}"` :
               searchQuery.trim() && activeTab === 'Food'    ? `Search "${searchQuery.trim()}"` :
@@ -1335,7 +1429,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               activeTab === 'Itinerary' ? 'Build my Thanjavur day plan' :
               'Get my AI visit guide'
             )}
-          </Button>
+          </button>
         </div>
         {/* sentinel — category bar unsticks once this exits top of viewport */}
         <div ref={ctaSentinelRef} className="h-px" />
@@ -1384,7 +1478,21 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         </div>
       )}
 
-      {/* ══ SEGMENT 1 — Plan your visit (2×2 action grid) ══════════════════ */}
+      {/* ── Social proof ────────────────────────────────────────── */}
+      <div className="flex items-center gap-2 py-1 px-1 relative z-10">
+        <div className="flex -space-x-1.5">
+          {['#1C64F2','#7C3AED','#D97706'].map((c,i) => (
+            <div key={i} className="w-5 h-5 rounded-full border-2 border-white flex items-center justify-center text-white text-[7px] font-black" style={{ background: c }}>
+              {['K','P','R'][i]}
+            </div>
+          ))}
+        </div>
+        <p className="text-[11px] text-muted">
+          <span className="text-heading font-bold">127 AI trip plans</span> generated today in {destination || 'Thanjavur'}
+        </p>
+      </div>
+
+      {/* ══ SEGMENT 1 — Bento smart picks ══════════════════════════════════ */}
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-3">
           <div>
@@ -1392,37 +1500,63 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             <p className="text-[10px] text-muted mt-0.5">Tap a card — AI builds your shortlist</p>
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-3">
-          {THANJAVUR_ACTIONS.map(item => (
+
+        {/* Bento: 1 large hero card + 3 smaller cards */}
+        <div className="grid grid-cols-2 gap-2.5">
+          {/* Large featured card — spans 2 cols */}
+          {THANJAVUR_ACTIONS[0] && (() => {
+            const item = THANJAVUR_ACTIONS[0];
+            return (
+              <motion.button
+                key="bento-hero"
+                whileTap={{ scale: 0.98 }}
+                type="button"
+                onClick={() => triggerSearch(item.overrides)}
+                className="col-span-2 relative overflow-hidden rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand group text-left"
+                style={{ height: 180 }}
+              >
+                <img src={uImg(item.imgId, 800, 360)} alt={item.label}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
+                <div className="absolute inset-0 rounded-2xl" style={{ background: TAB_META[item.tab].accent, opacity: 0.2 }} />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent rounded-2xl" />
+                <div className="absolute top-3 left-3 z-10">
+                  <span className="text-white text-[9px] font-black uppercase tracking-wide px-2 py-1 rounded-full" style={{ background: TAB_META[item.tab].accent }}>{item.tab}</span>
+                </div>
+                <div className="absolute top-3 right-3 z-10">
+                  <span className="text-white text-[9px] font-black px-2 py-1 rounded-full" style={{ background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(6px)' }}>⭐ Featured</span>
+                </div>
+                <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
+                  <span className="text-2xl leading-none drop-shadow">{item.emoji}</span>
+                  <p className="text-white font-display font-black text-lg leading-tight mt-1.5 drop-shadow">{item.label}</p>
+                  <p className="text-white/70 text-[11px] mt-0.5">{item.desc}</p>
+                </div>
+              </motion.button>
+            );
+          })()}
+
+          {/* 3 smaller cards */}
+          {THANJAVUR_ACTIONS.slice(1).map(item => (
             <motion.button
               key={item.tab}
-              whileTap={{ scale: 0.97 }}
+              whileTap={{ scale: 0.96 }}
               type="button"
               onClick={() => triggerSearch(item.overrides)}
-              className="relative overflow-hidden rounded-2xl h-[162px] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand group text-left"
+              className="relative overflow-hidden rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand group text-left"
+              style={{ height: 138 }}
             >
-              <img
-                src={uImg(item.imgId, 440, 324)}
-                alt={item.label}
+              <img src={uImg(item.imgId, 440, 280)} alt={item.label}
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-              />
+                onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
               <div className="absolute inset-0 rounded-2xl" style={{ background: TAB_META[item.tab].accent, opacity: 0.25 }} />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent rounded-2xl" />
-              {/* Tab pill */}
-              <div className="absolute top-3 left-3 z-10">
-                <span
-                  className="text-white text-[9px] font-black uppercase tracking-wide px-2 py-1 rounded-full"
-                  style={{ background: TAB_META[item.tab].accent }}
-                >
-                  {item.tab}
-                </span>
+              <div className="absolute top-2.5 left-2.5 z-10">
+                <span className="text-white text-[8px] font-black uppercase tracking-wide px-1.5 py-0.5 rounded-full" style={{ background: TAB_META[item.tab].accent }}>{item.tab}</span>
               </div>
-              {/* Content */}
-              <div className="absolute bottom-0 left-0 right-0 p-3.5 z-10">
-                <span className="text-2xl leading-none drop-shadow">{item.emoji}</span>
-                <p className="text-white font-display font-black text-base leading-tight mt-1.5 drop-shadow">{item.label}</p>
-                <p className="text-white/70 text-[10px] mt-0.5 leading-tight">{item.desc}</p>
+              <div className="absolute bottom-0 left-0 right-0 p-3 z-10">
+                <span className="text-lg leading-none drop-shadow">{item.emoji}</span>
+                <p className="text-white font-display font-black text-sm leading-tight mt-1 drop-shadow">{item.label}</p>
+                <p className="text-white/70 text-[9px] mt-0.5 leading-tight">{item.desc}</p>
               </div>
             </motion.button>
           ))}
@@ -1528,7 +1662,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               type="button"
               whileTap={{ scale: 0.95 }}
               onClick={() => triggerSearch(TRENDING_OVERRIDES[topic] ?? { tab: activeTab })}
-              className="text-xs font-medium px-3 py-1.5 rounded-full border border-border bg-surface text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors duration-150"
+              className="text-xs font-medium px-3 py-1.5 rounded-full border border-border bg-white text-body hover:border-brand hover:text-brand hover:bg-blue-50 active:scale-95 active:bg-blue-50 transition-all duration-150 select-none"
             >
               {topic}
             </motion.button>
