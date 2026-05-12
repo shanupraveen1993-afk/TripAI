@@ -38,8 +38,8 @@ const TAB_META: Record<Tab, {
     accentBorder:'#1C64F2',
     accentSoft:  '#1C64F215',
     label:       'Hotels',
-    headline:    'Your stay in Thanjavur, sorted.',
-    sub:         'Ranked by price, temple distance & real reviews.',
+    headline:    'Best stays, ranked.',
+    sub:         'Price · distance · reviews — AI-picked.',
     trending:    ['Near Big Temple', 'Heritage hotels', 'Temple Nearby', 'Family rooms', 'AC rooms'],
   },
   Food: {
@@ -50,8 +50,8 @@ const TAB_META: Record<Tab, {
     accentBorder:'#D97706',
     accentSoft:  '#D9770615',
     label:       'Food',
-    headline:    'Best food in Thanjavur — ranked.',
-    sub:         'Thali, filter coffee, biryani — AI-picked from real reviews.',
+    headline:    'Best eats, ranked.',
+    sub:         'Thali · coffee · biryani — AI-picked.',
     trending:    ['Thanjavur thali/meals', 'Filter coffee', 'Pure veg', 'South Indian', 'Street food', 'Biryani spots'],
   },
   Itinerary: {
@@ -62,8 +62,8 @@ const TAB_META: Record<Tab, {
     accentBorder:'#7C3AED',
     accentSoft:  '#7C3AED15',
     label:       'Itinerary',
-    headline:    'Your Thanjavur day, planned.',
-    sub:         'Timed stops, real traffic — nothing missed.',
+    headline:    'Your day, planned.',
+    sub:         'Timed stops · real traffic · nothing missed.',
     trending:    ['Big Temple morning', 'Full day heritage', 'Family outing', 'Couple getaway', '1-day plan', 'Photography walk'],
   },
   Explore: {
@@ -74,8 +74,8 @@ const TAB_META: Record<Tab, {
     accentBorder:'#059669',
     accentSoft:  '#05966915',
     label:       'Explore',
-    headline:    'Explore Thanjavur — your AI guide.',
-    sub:         'Pick a spot, choose a time slot. Get a real-review visit guide instantly.',
+    headline:    'Deep-dive any landmark.',
+    sub:         'Pick a spot · choose your time · instant guide.',
     trending:    ['Brihadeeswarar Temple', 'Thanjavur Maratha Palace Royal Museum', 'Saraswathi Mahal', 'Gangaikonda', 'Morning visit', 'Evening visit'],
   },
 };
