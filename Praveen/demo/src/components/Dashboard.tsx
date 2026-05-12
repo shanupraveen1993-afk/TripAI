@@ -1293,13 +1293,13 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         animate={{ opacity: 1 }}
         transition={{ duration: 0.22 }}
         className="relative -mx-4 overflow-hidden"
-        style={{ height: 172, borderRadius: '0 0 22px 22px' }}
+        style={{ height: 220, borderRadius: '0 0 22px 22px' }}
       >
         {heroPhotoUri
-          ? <img src={heroPhotoUri} alt={activeTab} className="absolute inset-0 w-full h-full object-cover" draggable={false} />
+          ? <img src={heroPhotoUri} alt={activeTab} className="absolute inset-0 w-full h-full object-cover object-center" draggable={false} />
           : <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg,#1C3D6E 0%,#7C3AED 100%)' }} />
         }
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(160deg, rgba(0,0,0,0.04) 0%, rgba(0,0,0,0.68) 100%)' }} />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.18) 40%, rgba(0,0,0,0.62) 100%)' }} />
         {/* Greeting */}
         {firstName && (
           <div className="absolute top-4 left-5 text-white/80 text-[11px] font-semibold">
