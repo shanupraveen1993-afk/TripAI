@@ -508,19 +508,19 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
   const [categorySticky, setCategorySticky] = useState(true);
   const ctaSentinelRef = useRef<HTMLDivElement>(null);
 
-  // GBP hero photos per tab
+  // GBP hero photos per tab — iconic, photogenic Thanjavur locations per context
   const TAB_HERO_PLACE: Record<Tab, string> = {
-    Hotels:    'Hotel Parisutham Thanjavur',
-    Food:      'Saraswathi Mahal Bhavan Thanjavur',
+    Hotels:    'Hotel Sangam Thanjavur Tamil Nadu',
+    Food:      'Chola Mess Thanjavur Tamil Nadu',
     Itinerary: 'Brihadeeswarar Temple Thanjavur',
-    Explore:   'Airavatesvara Temple Darasuram Thanjavur',
+    Explore:   'Thanjavur Maratha Palace Royal Museum',
   };
   const [heroPhotos, setHeroPhotos] = useState<Partial<Record<Tab, string>>>({});
   const heroFetched = useRef<Set<Tab>>(new Set());
   useEffect(() => {
     if (heroFetched.current.has(activeTab)) return;
     heroFetched.current.add(activeTab);
-    fetch(`/api/photo?placeName=${encodeURIComponent(TAB_HERO_PLACE[activeTab])}&city=Thanjavur`)
+    fetch(`/api/photo?placeName=${encodeURIComponent(TAB_HERO_PLACE[activeTab])}&city=Thanjavur&photoIndex=1`)
       .then(r => r.json())
       .then((d: { photoUri?: string }) => {
         if (d.photoUri) setHeroPhotos(prev => ({ ...prev, [activeTab]: d.photoUri }));

@@ -15,17 +15,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Path A: direct photo resource name (used by live API results)
     if (name && typeof name === 'string') {
       const url = `https://places.googleapis.com/v1/${name}/media?maxWidthPx=800&skipHttpRedirect=true&key=${key}`;
-      const r    = await fetch(url);
+      const r   = await fetch(url);
       const data = await r.json() as { photoUri?: string };
       return res.json({ photoUri: data.photoUri ?? null });
     }
 
-    // Path B: search by place name + city (used by preset itinerary stops and explore presets)
+    // Path B: search by place name + city (preset itinerary stops, explore presets, hero banners)
     if (placeName && typeof placeName === 'string') {
       const searchCity = typeof city === 'string' ? city : 'Thanjavur';
-      const textQuery  = `${placeName} ${searchCity} Tamil Nadu India`;
+      const photoIdx   = typeof req.query.photoIndex === 'string' ? (parseInt(req.query.photoIndex, 10) || 0) : 0;
+      const textQuery  = `${placeName} Tamil Nadu India`;
 
-      // Coordinates and city-to-location map for known cities
       const CITY_COORDS: Record<string, { lat: number; lng: number }> = {
         Thanjavur: { lat: 10.787, lng: 79.1378 },
         Chennai:   { lat: 13.083, lng: 80.2705 },
@@ -37,8 +37,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const searchRes = await fetch('https://places.googleapis.com/v1/places:searchText', {
         method:  'POST',
         headers: {
-          'Content-Type':    'application/json',
-          'X-Goog-Api-Key':  key,
+          'Content-Type':     'application/json',
+          'X-Goog-Api-Key':   key,
           'X-Goog-FieldMask': 'places.photos',
         },
         body: JSON.stringify({
@@ -46,14 +46,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           maxResultCount: 1,
           locationBias: {
             circle: {
-              center:  { latitude: coord.lat, longitude: coord.lng },
-              radius:  40000,   // 40 km — covers Thanjavur district + Darasuram
+              center: { latitude: coord.lat, longitude: coord.lng },
+              radius: 40000,  // 40 km — covers Thanjavur district + Darasuram
             },
           },
         }),
       });
       const searchData = await searchRes.json() as { places?: Array<{ photos?: Array<{ name: string }> }> };
-      const photoName  = searchData?.places?.[0]?.photos?.[0]?.name;
+      const photos = searchData?.places?.[0]?.photos ?? [];
+      // Use photoIdx to allow callers to request a different photo from the place's gallery
+      const photoName = photos[photoIdx]?.name ?? photos[0]?.name;
       if (!photoName) return res.json({ photoUri: null });
 
       const mediaUrl  = `https://places.googleapis.com/v1/${photoName}/media?maxWidthPx=800&skipHttpRedirect=true&key=${key}`;
