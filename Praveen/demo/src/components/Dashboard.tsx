@@ -74,8 +74,8 @@ const TAB_META: Record<Tab, {
     accentBorder:'#059669',
     accentSoft:  '#05966915',
     label:       'Explore',
-    headline:    'Your AI guide to any Thanjavur location.',
-    sub:         'Pick a top spot, choose your time slot — Gemini reads real reviews and gives you a personalised visit guide.',
+    headline:    'Explore Thanjavur — your AI guide.',
+    sub:         'Pick a spot, choose a time slot. Get a real-review visit guide instantly.',
     trending:    ['Brihadeeswarar Temple', 'Thanjavur Maratha Palace Royal Museum', 'Saraswathi Mahal', 'Gangaikonda', 'Morning visit', 'Evening visit'],
   },
 };
