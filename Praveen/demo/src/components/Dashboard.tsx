@@ -508,6 +508,27 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
   const [categorySticky, setCategorySticky] = useState(true);
   const ctaSentinelRef = useRef<HTMLDivElement>(null);
 
+  // GBP hero photos per tab
+  const TAB_HERO_PLACE: Record<Tab, string> = {
+    Hotels:    'Hotel Parisutham Thanjavur',
+    Food:      'Saraswathi Mahal Bhavan Thanjavur',
+    Itinerary: 'Brihadeeswarar Temple Thanjavur',
+    Explore:   'Airavatesvara Temple Darasuram Thanjavur',
+  };
+  const [heroPhotos, setHeroPhotos] = useState<Partial<Record<Tab, string>>>({});
+  const heroFetched = useRef<Set<Tab>>(new Set());
+  useEffect(() => {
+    if (heroFetched.current.has(activeTab)) return;
+    heroFetched.current.add(activeTab);
+    fetch(`/api/photo?placeName=${encodeURIComponent(TAB_HERO_PLACE[activeTab])}&city=Thanjavur`)
+      .then(r => r.json())
+      .then((d: { photoUri?: string }) => {
+        if (d.photoUri) setHeroPhotos(prev => ({ ...prev, [activeTab]: d.photoUri }));
+      })
+      .catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab]);
+
   // Scroll to top and reset state on tab switch
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -1235,14 +1256,14 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
   const firstName = userName?.split(' ')[0] || '';
 
-  // Tab hero config
-  const TAB_HERO: Record<Tab, { imgId: string; headline: string; sub: string }> = {
-    Hotels:    { imgId: '1686310894901-d326b8722c13', headline: 'Find your perfect stay', sub: 'AI-ranked by price, distance & reviews' },
-    Food:      { imgId: '1711153419402-336ee48f2138', headline: 'Discover the best eats',  sub: 'Authentic Thanjavur cuisine, ranked for you' },
-    Itinerary: { imgId: '1713729991304-d0b6c328560e', headline: 'Plan your perfect day',   sub: 'AI-routed itinerary, timed to perfection' },
-    Explore:   { imgId: '1701665837448-cdbb9fab5a0d', headline: 'Explore every landmark',  sub: 'Deep-dive guides powered by real reviews' },
+  const TAB_HERO: Record<Tab, { headline: string; sub: string }> = {
+    Hotels:    { headline: 'Find your perfect stay', sub: 'AI-ranked by price, distance & reviews' },
+    Food:      { headline: 'Discover the best eats',  sub: 'Authentic Thanjavur cuisine, ranked for you' },
+    Itinerary: { headline: 'Plan your perfect day',   sub: 'AI-routed itinerary, timed to perfection' },
+    Explore:   { headline: 'Explore every landmark',  sub: 'Deep-dive guides powered by real reviews' },
   };
   const hero = TAB_HERO[activeTab];
+  const heroPhotoUri = heroPhotos[activeTab] ?? null;
 
   // Swipe gesture to switch tabs
   const swipeTouchX = useRef<number | null>(null);
@@ -1274,12 +1295,10 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         className="relative -mx-4 overflow-hidden"
         style={{ height: 172, borderRadius: '0 0 22px 22px' }}
       >
-        <img
-          src={`https://images.unsplash.com/photo-${hero.imgId}?w=800&h=400&fit=crop&auto=format&q=80`}
-          alt={activeTab}
-          className="absolute inset-0 w-full h-full object-cover"
-          draggable={false}
-        />
+        {heroPhotoUri
+          ? <img src={heroPhotoUri} alt={activeTab} className="absolute inset-0 w-full h-full object-cover" draggable={false} />
+          : <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg,#1C3D6E 0%,#7C3AED 100%)' }} />
+        }
         <div className="absolute inset-0" style={{ background: 'linear-gradient(160deg, rgba(0,0,0,0.04) 0%, rgba(0,0,0,0.68) 100%)' }} />
         {/* Greeting */}
         {firstName && (
