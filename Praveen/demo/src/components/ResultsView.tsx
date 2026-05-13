@@ -95,7 +95,7 @@ function ItineraryPhoto({ stopName, photoRef }: {
   if (uri) {
     return <img src={uri} alt={stopName} className="absolute inset-0 w-full h-full object-cover" />;
   }
-  return <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg,#7C3AED,#6366F1)' }} />;
+  return <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg,#1C64F2,#1E429F)' }} />;
 }
 
 const CROWD_BADGE: Record<'Low' | 'Moderate' | 'High', { bg: string; text: string; dot: string; border: string }> = {
@@ -435,7 +435,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             {selectedTags.length > 0 && place.matchScore !== undefined && (
               <span className="px-1.5 py-0.5 rounded-full text-[11px] font-semibold"
                 style={place.matchScore >= 80 ? { background: '#DEF7EC', color: '#057A55' }
-                  : place.matchScore >= 55 ? { background: '#FFF7ED', color: '#92400E' }
+                  : place.matchScore >= 55 ? { background: '#EBF5FF', color: '#1C64F2' }
                   : { background: '#F9FAFB', color: '#6B7280' }}>
                 {place.matchScore}% match
               </span>
@@ -465,8 +465,8 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           )}
           {place.aiDetail?.insiderTip && (
             <div className="flex items-start gap-1.5">
-              <Lightbulb className="w-3 h-3 shrink-0 mt-0.5" style={{ color: '#D97706' }} />
-              <p className="text-[11px] leading-snug line-clamp-1" style={{ color: '#92400E' }}>{place.aiDetail.insiderTip}</p>
+              <Lightbulb className="w-3 h-3 shrink-0 mt-0.5" style={{ color: '#1C64F2' }} />
+              <p className="text-[11px] leading-snug line-clamp-1" style={{ color: '#1C64F2' }}>{place.aiDetail.insiderTip}</p>
             </div>
           )}
         </div>
@@ -552,7 +552,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             {selectedTags.length > 0 && place.matchScore !== undefined && (
               <span className="px-1.5 py-0.5 rounded-full text-[11px] font-semibold"
                 style={place.matchScore >= 80 ? { background: '#DEF7EC', color: '#057A55' }
-                  : place.matchScore >= 55 ? { background: '#FFF7ED', color: '#92400E' }
+                  : place.matchScore >= 55 ? { background: '#EBF5FF', color: '#1C64F2' }
                   : { background: '#F9FAFB', color: '#6B7280' }}>
                 {place.matchScore}% match
               </span>
@@ -718,10 +718,10 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
 
               {/* Insider Tip */}
               {place.aiDetail.insiderTip && (
-                <div className="flex items-start gap-2 rounded-xl px-2.5 py-2" style={{ background: '#FFFBEB', border: '1px solid #FDE68A' }}>
-                  <Lightbulb className="w-3 h-3 shrink-0 mt-0.5" style={{ color: '#D97706' }} />
+                <div className="flex items-start gap-2 rounded-xl px-2.5 py-2" style={{ background: '#EBF5FF', border: '1px solid #FDE68A' }}>
+                  <Lightbulb className="w-3 h-3 shrink-0 mt-0.5" style={{ color: '#1C64F2' }} />
                   <p className="text-[11px] text-body leading-relaxed">
-                    <span className="font-semibold" style={{ color: '#D97706' }}>Insider tip: </span>{place.aiDetail.insiderTip}
+                    <span className="font-semibold" style={{ color: '#1C64F2' }}>Insider tip: </span>{place.aiDetail.insiderTip}
                   </p>
                 </div>
               )}
@@ -821,9 +821,9 @@ function stopShortName(name: string): string {
 function getTravelMode(leg: string): { emoji: string; bg: string; color: string } {
   const l = leg.toLowerCase();
   if (l.includes('walk'))  return { emoji: '🚶', bg: '#DEF7EC', color: '#0E9F6E' };
-  if (l.includes('metro')) return { emoji: '🚇', bg: '#F5F3FF', color: '#7C3AED' };
-  if (l.includes('bus'))   return { emoji: '🚌', bg: '#F5F3FF', color: '#7C3AED' };
-  if (l.includes('auto'))  return { emoji: '🛺', bg: '#FFF7ED', color: '#D97706' };
+  if (l.includes('metro')) return { emoji: '🚇', bg: '#EBF5FF', color: '#1C64F2' };
+  if (l.includes('bus'))   return { emoji: '🚌', bg: '#EBF5FF', color: '#1C64F2' };
+  if (l.includes('auto'))  return { emoji: '🛺', bg: '#EBF5FF', color: '#1C64F2' };
   return                          { emoji: '🚗', bg: '#EBF5FF', color: '#1C64F2' };
 }
 
@@ -852,7 +852,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
   const crowdStyle = worstCrowd === 'High'
     ? { bg: '#FDE8E8', text: '#E02424', dot: '#F05252' }
     : worstCrowd === 'Moderate'
-    ? { bg: '#FFF7ED', text: '#D97706', dot: '#E3A008' }
+    ? { bg: '#EBF5FF', text: '#1C64F2', dot: '#E3A008' }
     : { bg: '#DEF7EC', text: '#0E9F6E', dot: '#31C48D' };
 
   return (
@@ -907,7 +907,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                   >
                     <div
                       className="w-9 h-9 rounded-full flex items-center justify-center font-black text-[15px] shadow ring-2 ring-white transition-transform group-hover:scale-110"
-                      style={{ background: 'linear-gradient(135deg,#7C3AED,#6366F1)', color: '#fff' }}
+                      style={{ background: 'linear-gradient(135deg,#1C64F2,#1E429F)', color: '#fff' }}
                     >
                       {idx + 1}
                     </div>
@@ -964,7 +964,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
 
                   {/* Top: stop# + time + duration */}
                   <div className="absolute top-3 left-3 right-3 flex items-start justify-between z-10">
-                    <span className="bg-white text-[11px] font-black px-2.5 py-1 rounded-full shadow-sm leading-none" style={{ color: '#7C3AED' }}>
+                    <span className="bg-white text-[11px] font-black px-2.5 py-1 rounded-full shadow-sm leading-none" style={{ color: '#1C64F2' }}>
                       Stop {idx + 1}
                     </span>
                     <div className="flex flex-col items-end gap-1">
@@ -1036,7 +1036,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                       onClick={() => toggleStop(idx)}
                       className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-[11px] font-bold border transition-colors"
                       style={isExpanded
-                        ? { background: '#F5F3FF', borderColor: '#7C3AED40', color: '#7C3AED' }
+                        ? { background: '#EBF5FF', borderColor: '#1C64F240', color: '#1C64F2' }
                         : { background: '#F8FAFC', borderColor: '#E2E8F0', color: '#374151' }
                       }
                     >
@@ -1114,7 +1114,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                             <span className="text-[11px] font-bold text-body">Next stop: </span>
                             <span className="text-[11px] text-muted">{stop.travelToNext}</span>
                             {stop.departBy && (
-                              <span className="text-[11px] font-bold ml-1" style={{ color: '#7C3AED' }}>· leave by {stop.departBy}</span>
+                              <span className="text-[11px] font-bold ml-1" style={{ color: '#1C64F2' }}>· leave by {stop.departBy}</span>
                             )}
                           </div>
                         </div>
@@ -1326,9 +1326,9 @@ export function ResultsView({
 
   const TAB_ACCENT: Record<string, { accent: string; accentBg: string }> = {
     Hotels:    { accent: '#1C64F2', accentBg: '#EBF5FF' },
-    Food:      { accent: '#D97706', accentBg: '#FFFBEB' },
-    Itinerary: { accent: '#7C3AED', accentBg: '#F5F3FF' },
-    Explore:   { accent: '#059669', accentBg: '#ECFDF5' },
+    Food:      { accent: '#1C64F2', accentBg: '#EBF5FF' },
+    Itinerary: { accent: '#1C64F2', accentBg: '#EBF5FF' },
+    Explore:   { accent: '#1C64F2', accentBg: '#EBF5FF' },
   };
   const { accent, accentBg } = TAB_ACCENT[tab] ?? TAB_ACCENT.Hotels;
 
@@ -1357,7 +1357,7 @@ export function ResultsView({
         <div className="flex items-center gap-2 px-3 py-2 rounded-xl mb-3"
           style={{ background: '#ECFDF5', border: '1.5px solid #059669' }}>
           <span className="text-sm leading-none">🟢</span>
-          <span className="text-[11px] font-bold" style={{ color: '#059669' }}>Pure Veg — non-veg places are dimmed</span>
+          <span className="text-[11px] font-bold" style={{ color: '#1C64F2' }}>Pure Veg — non-veg places are dimmed</span>
         </div>
       )}
 

@@ -15,9 +15,9 @@ export const TABS: Tab[] = ['Hotels', 'Food', 'Itinerary', 'Explore'];
 // Per-tab active styles — uses CSS custom property tokens from index.css @theme
 const TAB_ACTIVE: Record<Tab, string> = {
   Hotels:    'bg-brand text-white shadow-sm',
-  Food:      'bg-food text-white shadow-sm',
-  Itinerary: 'bg-itinerary text-white shadow-sm',
-  Explore:   'bg-explore text-white shadow-sm',
+  Food:      'bg-brand text-white shadow-sm',
+  Itinerary: 'bg-brand text-white shadow-sm',
+  Explore:   'bg-brand text-white shadow-sm',
 };
 
 interface TabBarProps {
