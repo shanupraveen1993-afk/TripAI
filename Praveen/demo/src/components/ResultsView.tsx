@@ -1324,6 +1324,14 @@ export function ResultsView({
   const refLabel = searchArea || undefined;
   const count = tab === 'Itinerary' ? itinerary?.length : tab === 'Explore' ? 1 : results?.length;
 
+  const TAB_ACCENT: Record<string, { accent: string; accentBg: string }> = {
+    Hotels:    { accent: '#1C64F2', accentBg: '#EBF5FF' },
+    Food:      { accent: '#D97706', accentBg: '#FFFBEB' },
+    Itinerary: { accent: '#7C3AED', accentBg: '#F5F3FF' },
+    Explore:   { accent: '#059669', accentBg: '#ECFDF5' },
+  };
+  const { accent, accentBg } = TAB_ACCENT[tab] ?? TAB_ACCENT.Hotels;
+
   const handleSave = () => { onSave(); toast('Plan saved — find it under Trips.', 'success'); };
 
   return (
@@ -1360,7 +1368,7 @@ export function ResultsView({
             <div
               key={tag}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold"
-              style={{ background: '#EBF5FF', color: '#1C64F2', border: '1.5px solid #1C64F2' }}
+              style={{ background: accentBg, color: accent, border: `1.5px solid ${accent}` }}
             >
               <span>{tag}</span>
               <button

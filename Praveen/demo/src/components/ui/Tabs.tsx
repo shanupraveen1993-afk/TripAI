@@ -16,8 +16,8 @@ export const TABS: Tab[] = ['Hotels', 'Food', 'Itinerary', 'Explore'];
 const TAB_ACTIVE: Record<Tab, string> = {
   Hotels:    'bg-brand text-white shadow-sm',
   Food:      'bg-[#D97706] text-white shadow-sm',
-  Itinerary: 'bg-[#059669] text-white shadow-sm',
-  Explore:   'bg-vibe text-white shadow-sm',
+  Itinerary: 'bg-[#7C3AED] text-white shadow-sm',
+  Explore:   'bg-[#059669] text-white shadow-sm',
 };
 
 interface TabBarProps {

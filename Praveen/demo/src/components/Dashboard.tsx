@@ -38,8 +38,8 @@ const TAB_META: Record<Tab, {
     accentBorder:'#1C64F2',
     accentSoft:  '#1C64F215',
     label:       'Hotels',
-    headline:    'Best stays, ranked.',
-    sub:         'Price · distance · reviews — AI-picked.',
+    headline:    'Best stays',
+    sub:         'Price · reviews · AI-ranked',
     trending:    ['Near Big Temple', 'Heritage hotels', 'Temple Nearby', 'Family rooms', 'AC rooms'],
   },
   Food: {
@@ -50,8 +50,8 @@ const TAB_META: Record<Tab, {
     accentBorder:'#D97706',
     accentSoft:  '#D9770615',
     label:       'Food',
-    headline:    'Best eats, ranked.',
-    sub:         'Thali · coffee · biryani — AI-picked.',
+    headline:    'Best eats',
+    sub:         'Thali · coffee · AI-picked',
     trending:    ['Thanjavur thali/meals', 'Filter coffee', 'Pure veg', 'South Indian', 'Street food', 'Biryani spots'],
   },
   Itinerary: {
@@ -62,8 +62,8 @@ const TAB_META: Record<Tab, {
     accentBorder:'#7C3AED',
     accentSoft:  '#7C3AED15',
     label:       'Itinerary',
-    headline:    'Your day, planned.',
-    sub:         'Timed stops · real traffic · nothing missed.',
+    headline:    'Day planned',
+    sub:         'Stops · traffic · optimised',
     trending:    ['Big Temple morning', 'Full day heritage', 'Family outing', 'Couple getaway', '1-day plan', 'Photography walk'],
   },
   Explore: {
@@ -74,8 +74,8 @@ const TAB_META: Record<Tab, {
     accentBorder:'#059669',
     accentSoft:  '#05966915',
     label:       'Explore',
-    headline:    'Deep-dive any landmark.',
-    sub:         'Pick a spot · choose your time · instant guide.',
+    headline:    'Explore spots',
+    sub:         'Pick spot · instant guide',
     trending:    ['Brihadeeswarar Temple', 'Thanjavur Maratha Palace Royal Museum', 'Saraswathi Mahal', 'Gangaikonda', 'Morning visit', 'Evening visit'],
   },
 };
@@ -502,7 +502,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
   const [startTime, setStartTime]           = useState<string>('');
   const [showTimeError, setShowTimeError]   = useState(false);
   // Explore
-  const [exploreTarget, setExploreTarget]   = useState('');
+  const [exploreTarget, setExploreTarget]   = useState('Brihadeeswarar Temple');
   const [visitTime, setVisitTime]           = useState('Morning');
 
   const [categorySticky, setCategorySticky] = useState(true);
@@ -1293,7 +1293,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         animate={{ opacity: 1 }}
         transition={{ duration: 0.22 }}
         className="relative -mx-4 overflow-hidden"
-        style={{ height: 220, borderRadius: '0 0 22px 22px' }}
+        style={{ minHeight: 220, borderRadius: '0 0 22px 22px' }}
       >
         {heroPhotoUri
           ? <img src={heroPhotoUri} alt={activeTab} className="absolute inset-0 w-full h-full object-cover object-center" draggable={false} />
@@ -1406,19 +1406,17 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
           );
         })()}
 
-        {/* Header — hidden on Hotels tab; AI banner replaces it */}
-        {activeTab !== 'Hotels' && (
-          <div className="px-4 py-3 flex items-center gap-3 border-b border-border" style={{ background: '#FAFAFA' }}>
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: '#1C64F2' }}>
-              <span style={{ color: '#fff' }}>{meta.icon}</span>
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="font-display font-black text-sm text-heading leading-tight">{meta.headline}</p>
-              <p className="text-xs text-muted mt-0.5 truncate">{meta.sub}</p>
-            </div>
-            <Sparkles className="w-3.5 h-3.5 ml-auto shrink-0 text-brand" />
+        {/* Header — shown on all tabs */}
+        <div className="px-4 py-3 flex items-center gap-3 border-b border-border" style={{ background: '#FAFAFA' }}>
+          <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: meta.accent }}>
+            <span style={{ color: '#fff' }}>{meta.icon}</span>
           </div>
-        )}
+          <div className="min-w-0 flex-1">
+            <p className="font-display font-black text-sm text-heading leading-tight">{meta.headline}</p>
+            <p className="text-xs text-muted mt-0.5 truncate">{meta.sub}</p>
+          </div>
+          <Sparkles className="w-3.5 h-3.5 ml-auto shrink-0 text-brand" />
+        </div>
 
         <div className="p-4">
           {renderFilters()}
