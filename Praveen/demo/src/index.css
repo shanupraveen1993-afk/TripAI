@@ -15,6 +15,23 @@
   --color-brand-medium:  #C3DDFD;   /* blue-200 — hover state bg        */
   --color-brand-border:  #A4CAFE;   /* blue-300 — borders on brand      */
 
+  /* ── Tab accents (content-area only — never bottom nav) ─────────────── */
+  --color-food:              #D97706;   /* amber-600 — Food tab accent       */
+  --color-food-dark:         #92400E;   /* amber-800 — hero gradient stop    */
+  --color-food-soft:         #FFF7ED;   /* amber-50  — Food soft bg          */
+  --color-food-border:       #FDE68A;   /* amber-200 — Food border           */
+
+  --color-itinerary:         #7C3AED;   /* violet-600 — Itinerary accent     */
+  --color-itinerary-soft:    #F5F3FF;   /* violet-50  — Itinerary soft bg    */
+  --color-itinerary-medium:  #DDD6FE;   /* violet-200 — Itinerary border     */
+
+  --color-explore:           #059669;   /* emerald-600 — Explore accent      */
+  --color-explore-soft:      #ECFDF5;   /* emerald-50  — Explore soft bg     */
+  --color-explore-medium:    #A7F3D0;   /* emerald-200 — Explore border      */
+
+  /* ── Brand light (for text on dark backgrounds) ─────────────────────── */
+  --color-brand-light:       #93C5FD;   /* blue-300 — light brand text       */
+
   /* ── Accent — Purple (Flowbite purple-500) ──────────────────────────── */
   --color-accent:        #9061F9;   /* purple-500 — accent default      */
   --color-accent-strong: #7E3AF2;   /* purple-600 — accent hover        */
@@ -41,6 +58,7 @@
   /* ── Dark surfaces ───────────────────────────────────────────────────── */
   --color-dark:          #1F2937;   /* gray-800                         */
   --color-dark-surface:  #111827;   /* gray-900                         */
+  --color-darkest:       #06080F;   /* near-black — fullscreen dark bg  */
 
   /* ── Success — Green (Flowbite green-500) ───────────────────────────── */
   --color-success:       #0E9F6E;   /* green-500 — success default      */

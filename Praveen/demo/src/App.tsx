@@ -511,7 +511,7 @@ export default function App() {
   // Browse mode: user came from a category click without signing in
   if (appScreen === 'browse') {
     return (
-      <div className="min-h-screen overflow-x-hidden" style={{ background: 'linear-gradient(145deg, #EFF6FF 0%, #F9FAFB 45%, #F5F3FF 100%)' }}>
+      <div className="min-h-screen overflow-x-hidden" style={{ background: 'linear-gradient(145deg, var(--color-brand-softer) 0%, var(--color-bg-app) 45%, var(--color-itinerary-soft) 100%)' }}>
         {/* Browse header with universal location bar */}
         <header className="sticky top-0 z-40 border-b" style={{ background: 'rgba(249,250,251,0.88)', backdropFilter: 'blur(20px)', borderColor: 'rgba(0,0,0,0.07)', boxShadow: '0 1px 12px rgba(28,100,242,0.06)' }}>
           <div className="w-full max-w-[920px] mx-auto px-4 h-14 grid items-center gap-3" style={{ gridTemplateColumns: 'auto 1fr auto' }}>
@@ -581,7 +581,7 @@ export default function App() {
 
   // Authenticated app
   return (
-    <div className="min-h-screen overflow-x-hidden" style={{ background: 'linear-gradient(145deg, #EFF6FF 0%, #F9FAFB 45%, #F5F3FF 100%)' }}>
+    <div className="min-h-screen overflow-x-hidden" style={{ background: 'linear-gradient(145deg, var(--color-brand-softer) 0%, var(--color-bg-app) 45%, var(--color-itinerary-soft) 100%)' }}>
       <Navbar
         section={mainSection}
         onSectionChange={s => { setMainSection(s); if (s === 'home') setContent('dashboard'); }}

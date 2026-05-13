@@ -227,7 +227,7 @@ function TestimonialCarousel() {
             style={{
               width: i === active ? '28px' : '8px',
               height: '8px',
-              background: i === active ? '#3B82F6' : 'rgba(255,255,255,0.2)',
+              background: i === active ? '#1C64F2' : 'rgba(255,255,255,0.2)',
             }}
           />
         ))}
@@ -454,10 +454,10 @@ function TiltCard({ label, desc, glow, illustration, onClick }: {
 
 /* ── Category metadata ────────────────────────────────────────────────── */
 const CATEGORIES: { label: Tab; desc: string; glow: string; illustration: React.ReactNode }[] = [
-  { label: 'Hotels',    glow: '#3B82F6', illustration: <HotelScene />,   desc: 'Not 150 unfiltered options. AI-ranked picks by budget, area, and what you care about — applied before you see a single result.' },
-  { label: 'Food',      glow: '#F59E0B', illustration: <FoodScene />,    desc: 'Worth the queue or skip it? Diet, vibe, and distance — filtered before you open another app.' },
-  { label: 'Itinerary', glow: '#8B5CF6', illustration: <ItinScene />,    desc: 'Your whole day, no backtracking. Stops sequenced around your hotel — so you\'re not zigzagging across the city like a tourist.' },
-  { label: 'Explore',   glow: '#10B981', illustration: <ExploreScene />, desc: 'Brihadeeswarar to Airavatesvara. Entry times, dress code, crowd patterns — so you don\'t figure it out after the 2km walk.' },
+  { label: 'Hotels',    glow: '#1C64F2', illustration: <HotelScene />,   desc: 'Not 150 unfiltered options. AI-ranked picks by budget, area, and what you care about — applied before you see a single result.' },
+  { label: 'Food',      glow: '#D97706', illustration: <FoodScene />,    desc: 'Worth the queue or skip it? Diet, vibe, and distance — filtered before you open another app.' },
+  { label: 'Itinerary', glow: '#7C3AED', illustration: <ItinScene />,    desc: 'Your whole day, no backtracking. Stops sequenced around your hotel — so you\'re not zigzagging across the city like a tourist.' },
+  { label: 'Explore',   glow: '#059669', illustration: <ExploreScene />, desc: 'Brihadeeswarar to Airavatesvara. Entry times, dress code, crowd patterns — so you don\'t figure it out after the 2km walk.' },
 ];
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -507,7 +507,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
   };
 
   return (
-    <div className="min-h-screen flex flex-col overflow-x-hidden" style={{ background: '#06080F' }}>
+    <div className="min-h-screen flex flex-col overflow-x-hidden" style={{ background: 'var(--color-darkest)' }}>
 
       {/* ── Navbar ─────────────────────────────────────────────────── */}
       <header className="sticky top-0 z-40 border-b"

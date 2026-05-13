@@ -46,7 +46,7 @@ const TAB_META: Record<Tab, {
     icon:        <Utensils     className="w-4 h-4" />,
     bigIcon:     <Utensils     className="w-6 h-6" />,
     accent:      '#D97706',
-    accentBg:    '#FFFBEB',
+    accentBg:    '#FFF7ED',
     accentBorder:'#D97706',
     accentSoft:  '#D9770615',
     label:       'Food',
@@ -674,7 +674,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               {/* Location toast */}
               {locationToast && (
                 <div className="mb-2 px-2.5 py-1.5 rounded-lg text-[10px] font-semibold flex items-center gap-1.5"
-                  style={{ background: '#EFF6FF', color: '#1D4ED8', border: '1px solid #BFDBFE' }}>
+                  style={{ background: '#EBF5FF', color: '#1A56DB', border: '1px solid #C3DDFD' }}>
                   <MapPin className="w-3 h-3 shrink-0" />
                   {locationToast}
                 </div>
@@ -1407,7 +1407,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         })()}
 
         {/* Header — shown on all tabs */}
-        <div className="px-4 py-3 flex items-center gap-3 border-b border-border" style={{ background: '#FAFAFA' }}>
+        <div className="px-4 py-3 flex items-center gap-3 border-b border-border" style={{ background: '#F9FAFB' }}>
           <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: meta.accent }}>
             <span style={{ color: '#fff' }}>{meta.icon}</span>
           </div>

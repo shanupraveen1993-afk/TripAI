@@ -12,12 +12,12 @@ const TAB_ICONS: Record<Tab, React.ReactNode> = {
 
 export const TABS: Tab[] = ['Hotels', 'Food', 'Itinerary', 'Explore'];
 
-// Per-tab active styles — mirrors Dashboard TAB_META accents exactly
+// Per-tab active styles — uses CSS custom property tokens from index.css @theme
 const TAB_ACTIVE: Record<Tab, string> = {
   Hotels:    'bg-brand text-white shadow-sm',
-  Food:      'bg-[#D97706] text-white shadow-sm',
-  Itinerary: 'bg-[#7C3AED] text-white shadow-sm',
-  Explore:   'bg-[#059669] text-white shadow-sm',
+  Food:      'bg-food text-white shadow-sm',
+  Itinerary: 'bg-itinerary text-white shadow-sm',
+  Explore:   'bg-explore text-white shadow-sm',
 };
 
 interface TabBarProps {

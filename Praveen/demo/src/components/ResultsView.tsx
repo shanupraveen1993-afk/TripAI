@@ -60,9 +60,9 @@ const NEARBY_RESTAURANTS = [
 
 /* ── Traffic styling ─────────────────────────────────────────────────── */
 const TRAFFIC_LINE_BG: Record<TrafficLevel, string> = {
-  Light:    '#22C55E',
-  Moderate: '#F59E0B',
-  Heavy:    '#EF4444',
+  Light:    '#31C48D',   // success-medium
+  Moderate: '#E3A008',   // warning-strong
+  Heavy:    '#F05252',   // danger
 };
 
 const TRAFFIC_BADGE: Record<TrafficLevel, { bg: string; text: string; dot: string; border: string }> = {
@@ -434,9 +434,9 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             <Badge variant="neutral" pill>{place.priceLevel}</Badge>
             {selectedTags.length > 0 && place.matchScore !== undefined && (
               <span className="px-1.5 py-0.5 rounded-full text-[11px] font-semibold"
-                style={place.matchScore >= 80 ? { background: '#F0FDF4', color: '#166534' }
-                  : place.matchScore >= 55 ? { background: '#FFF7ED', color: '#9A3412' }
-                  : { background: '#F8FAFC', color: '#64748B' }}>
+                style={place.matchScore >= 80 ? { background: '#DEF7EC', color: '#057A55' }
+                  : place.matchScore >= 55 ? { background: '#FFF7ED', color: '#92400E' }
+                  : { background: '#F9FAFB', color: '#6B7280' }}>
                 {place.matchScore}% match
               </span>
             )}
@@ -445,13 +445,13 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             <div className="flex gap-1 flex-wrap">
               {confirmed.slice(0, 2).map(t => (
                 <span key={t} className="flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[11px] font-medium border"
-                  style={{ background: '#F0FDF4', borderColor: '#BBF7D0', color: '#166534' }}>
+                  style={{ background: '#DEF7EC', borderColor: '#A7F3D0', color: '#057A55' }}>
                   <CheckCircle className="w-2.5 h-2.5" />{t}
                 </span>
               ))}
               {unconfirmed.slice(0, 1).map(t => (
                 <span key={t} className="flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[11px] font-medium border"
-                  style={{ background: '#F8FAFC', borderColor: '#CBD5E1', color: '#64748B' }}>
+                  style={{ background: '#F9FAFB', borderColor: '#D1D5DB', color: '#6B7280' }}>
                   ~{t}
                 </span>
               ))}
@@ -551,9 +551,9 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             <Badge variant="neutral" pill>{place.priceLevel}</Badge>
             {selectedTags.length > 0 && place.matchScore !== undefined && (
               <span className="px-1.5 py-0.5 rounded-full text-[11px] font-semibold"
-                style={place.matchScore >= 80 ? { background: '#F0FDF4', color: '#166534' }
-                  : place.matchScore >= 55 ? { background: '#FFF7ED', color: '#9A3412' }
-                  : { background: '#F8FAFC', color: '#64748B' }}>
+                style={place.matchScore >= 80 ? { background: '#DEF7EC', color: '#057A55' }
+                  : place.matchScore >= 55 ? { background: '#FFF7ED', color: '#92400E' }
+                  : { background: '#F9FAFB', color: '#6B7280' }}>
                 {place.matchScore}% match
               </span>
             )}
@@ -562,13 +562,13 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             <div className="flex gap-1 flex-wrap">
               {confirmed.slice(0, 2).map(t => (
                 <span key={t} className="flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[11px] font-medium border"
-                  style={{ background: '#F0FDF4', borderColor: '#BBF7D0', color: '#166534' }}>
+                  style={{ background: '#DEF7EC', borderColor: '#A7F3D0', color: '#057A55' }}>
                   <CheckCircle className="w-2.5 h-2.5" />{t}
                 </span>
               ))}
               {unconfirmed.slice(0, 1).map(t => (
                 <span key={t} className="flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[11px] font-medium border"
-                  style={{ background: '#F8FAFC', borderColor: '#CBD5E1', color: '#64748B' }}>
+                  style={{ background: '#F9FAFB', borderColor: '#D1D5DB', color: '#6B7280' }}>
                   ~{t}
                 </span>
               ))}
@@ -630,9 +630,9 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                   ? +(ratings.reduce((s, r) => s + r, 0) / ratings.length).toFixed(1)
                   : null;
                 const trendColor =
-                  place.trendVerdict === 'improving' ? '#166534'
-                  : place.trendVerdict === 'declining' ? '#9A3412'
-                  : '#475569';
+                  place.trendVerdict === 'improving' ? '#057A55'
+                  : place.trendVerdict === 'declining' ? '#92400E'
+                  : '#6B7280';
                 const trendIcon =
                   place.trendVerdict === 'improving' ? <TrendingUp className="w-3.5 h-3.5 shrink-0" style={{ color: trendColor }} />
                   : place.trendVerdict === 'declining' ? <TrendingDown className="w-3.5 h-3.5 shrink-0" style={{ color: trendColor }} />
@@ -646,7 +646,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
 
                     {/* Card 1: Guest Trend — new info not on main card */}
                     <div className="rounded-xl p-3 flex flex-col gap-2 border"
-                      style={{ background: '#F8FAFC', borderColor: '#E2E8F0' }}>
+                      style={{ background: '#F9FAFB', borderColor: '#E5E7EB' }}>
                       <div className="flex items-center gap-1.5">
                         {trendIcon}
                         <span className="text-[11px] font-bold" style={{ color: trendColor }}>{trendLabel}</span>
@@ -669,7 +669,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
 
                     {/* Card 2: Why to Choose — AI insight */}
                     <div className="rounded-xl p-3 flex flex-col gap-2 border"
-                      style={{ background: '#F0FDF4', borderColor: '#D1FAE5' }}>
+                      style={{ background: '#DEF7EC', borderColor: '#A7F3D0' }}>
                       <div className="flex flex-col gap-1">
                         <span className="text-[11px] font-semibold text-success-strong00 uppercase tracking-wide flex items-center gap-1">
                           <Trophy className="w-2.5 h-2.5" />Why Ranked #{rank}
@@ -820,11 +820,11 @@ function stopShortName(name: string): string {
 /* ── Travel mode parser ──────────────────────────────────────────────── */
 function getTravelMode(leg: string): { emoji: string; bg: string; color: string } {
   const l = leg.toLowerCase();
-  if (l.includes('walk'))  return { emoji: '🚶', bg: '#F0FDF4', color: '#16A34A' };
-  if (l.includes('metro')) return { emoji: '🚇', bg: '#EEF2FF', color: '#4F46E5' };
+  if (l.includes('walk'))  return { emoji: '🚶', bg: '#DEF7EC', color: '#0E9F6E' };
+  if (l.includes('metro')) return { emoji: '🚇', bg: '#F5F3FF', color: '#7C3AED' };
   if (l.includes('bus'))   return { emoji: '🚌', bg: '#F5F3FF', color: '#7C3AED' };
-  if (l.includes('auto'))  return { emoji: '🛺', bg: '#FFFBEB', color: '#D97706' };
-  return                          { emoji: '🚗', bg: '#EFF6FF', color: '#1C64F2' };
+  if (l.includes('auto'))  return { emoji: '🛺', bg: '#FFF7ED', color: '#D97706' };
+  return                          { emoji: '🚗', bg: '#EBF5FF', color: '#1C64F2' };
 }
 
 function ItineraryView({ stops, onRegenerate, onExploreStop }: {
@@ -850,10 +850,10 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
     return sc && crowdOrder[sc] > crowdOrder[w] ? sc : w;
   }, 'Low');
   const crowdStyle = worstCrowd === 'High'
-    ? { bg: '#FEF2F2', text: '#DC2626', dot: '#EF4444' }
+    ? { bg: '#FDE8E8', text: '#E02424', dot: '#F05252' }
     : worstCrowd === 'Moderate'
-    ? { bg: '#FFFBEB', text: '#D97706', dot: '#F59E0B' }
-    : { bg: '#F0FDF4', text: '#16A34A', dot: '#22C55E' };
+    ? { bg: '#FFF7ED', text: '#D97706', dot: '#E3A008' }
+    : { bg: '#DEF7EC', text: '#0E9F6E', dot: '#31C48D' };
 
   return (
     <div>
@@ -1057,11 +1057,11 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                     transition={{ duration: 0.22, ease: 'easeInOut' }}
                     style={{ overflow: 'hidden' }}
                   >
-                    <div className="px-3.5 pb-3.5 border-t border-border/50 pt-3 space-y-2.5" style={{ background: '#FAFBFC' }}>
+                    <div className="px-3.5 pb-3.5 border-t border-border/50 pt-3 space-y-2.5" style={{ background: '#F9FAFB' }}>
                       {/* 2-card grid */}
                       <div className="grid grid-cols-2 gap-2">
                         {/* Card 1: Visit Info */}
-                        <div className="rounded-xl p-3 flex flex-col gap-2 border" style={{ background: '#F8FAFC', borderColor: '#E2E8F0' }}>
+                        <div className="rounded-xl p-3 flex flex-col gap-2 border" style={{ background: '#F9FAFB', borderColor: '#E5E7EB' }}>
                           <span className="text-[11px] font-bold text-muted uppercase tracking-wide flex items-center gap-1">
                             <Clock className="w-3 h-3" /> Visit Info
                           </span>
@@ -1085,7 +1085,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                         </div>
 
                         {/* Card 2: Smart Guide */}
-                        <div className="rounded-xl p-3 flex flex-col gap-2 border" style={{ background: '#F0FDF4', borderColor: '#D1FAE5' }}>
+                        <div className="rounded-xl p-3 flex flex-col gap-2 border" style={{ background: '#DEF7EC', borderColor: '#A7F3D0' }}>
                           <span className="text-[11px] font-bold text-success-strong00 uppercase tracking-wide flex items-center gap-1">
                             <Compass className="w-3 h-3" /> Smart Guide
                           </span>
@@ -1229,7 +1229,7 @@ function ExploreView({ place, visitTime = 'Morning' }: { place: ExploreResult; v
 
       {/* ── 2-card: Visit Guide + Prepare ───────────────────── */}
       <div className="grid grid-cols-2 gap-2">
-        <div className="rounded-xl p-3 flex flex-col gap-2 border" style={{ background: '#F0FDF4', borderColor: '#D1FAE5' }}>
+        <div className="rounded-xl p-3 flex flex-col gap-2 border" style={{ background: '#DEF7EC', borderColor: '#A7F3D0' }}>
           <span className="text-[11px] font-bold text-success-strong00 uppercase tracking-wide flex items-center gap-1">
             <Navigation className="w-3 h-3" /> Visit Guide
           </span>
