@@ -265,29 +265,21 @@ function HotelScene() {
         .hw5{animation:hw-blink 2.3s ease-in-out infinite 1.52s}
         .hw6{animation:hw-blink 2.3s ease-in-out infinite 1.9s}
       `}</style>
-      {/* ground glow */}
-      <ellipse cx="50" cy="94" rx="26" ry="3" fill="rgba(59,130,246,.18)"/>
-      {/* main body */}
-      <rect x="22" y="28" width="56" height="62" rx="2" fill="rgba(59,130,246,.11)" stroke="rgba(96,165,250,.55)" strokeWidth="1.5"/>
-      {/* top block */}
-      <rect x="30" y="18" width="40" height="12" rx="1" fill="rgba(59,130,246,.18)" stroke="rgba(96,165,250,.4)" strokeWidth="1"/>
-      {/* flag */}
-      <line x1="50" y1="7" x2="50" y2="18" stroke="rgba(96,165,250,.7)" strokeWidth="1.2"/>
-      <polygon points="50,7 62,11 50,15" fill="rgba(96,165,250,.9)"/>
-      {/* windows row 1 */}
+      <ellipse cx="50" cy="94" rx="26" ry="3" fill="rgba(96,165,250,.25)"/>
+      <rect x="22" y="28" width="56" height="62" rx="2" fill="rgba(28,100,242,.22)" stroke="rgba(96,165,250,.75)" strokeWidth="1.5"/>
+      <rect x="30" y="18" width="40" height="12" rx="1" fill="rgba(28,100,242,.30)" stroke="rgba(96,165,250,.60)" strokeWidth="1"/>
+      <line x1="50" y1="7" x2="50" y2="18" stroke="rgba(147,197,253,.85)" strokeWidth="1.2"/>
+      <polygon points="50,7 62,11 50,15" fill="rgba(147,197,253,.95)"/>
       <rect className="hw1" x="30" y="35" width="9" height="7" rx="1" fill="rgba(250,204,21,.95)"/>
       <rect className="hw2" x="45" y="35" width="9" height="7" rx="1" fill="rgba(250,204,21,.95)"/>
       <rect className="hw3" x="60" y="35" width="9" height="7" rx="1" fill="rgba(250,204,21,.95)"/>
-      {/* windows row 2 */}
       <rect className="hw4" x="30" y="48" width="9" height="7" rx="1" fill="rgba(250,204,21,.95)"/>
       <rect className="hw5" x="45" y="48" width="9" height="7" rx="1" fill="rgba(250,204,21,.95)"/>
       <rect className="hw6" x="60" y="48" width="9" height="7" rx="1" fill="rgba(250,204,21,.95)"/>
-      {/* windows row 3 */}
       <rect className="hw2" x="30" y="61" width="9" height="7" rx="1" fill="rgba(250,204,21,.95)"/>
       <rect className="hw3" x="45" y="61" width="9" height="7" rx="1" fill="rgba(250,204,21,.95)"/>
       <rect className="hw4" x="60" y="61" width="9" height="7" rx="1" fill="rgba(250,204,21,.95)"/>
-      {/* door */}
-      <rect x="41" y="75" width="17" height="15" rx="1" fill="rgba(59,130,246,.35)" stroke="rgba(96,165,250,.5)" strokeWidth="1"/>
+      <rect x="41" y="75" width="17" height="15" rx="1" fill="rgba(28,100,242,.50)" stroke="rgba(96,165,250,.75)" strokeWidth="1"/>
     </svg>
   );
 }
@@ -296,28 +288,21 @@ function FoodScene() {
   return (
     <svg viewBox="0 0 100 100" className="w-24 h-24" xmlns="http://www.w3.org/2000/svg">
       <style>{`
-        @keyframes fs-rise{0%{transform:translateY(0) scaleX(1);opacity:.8}100%{transform:translateY(-22px) scaleX(1.25);opacity:0}}
+        @keyframes fs-rise{0%{transform:translateY(0) scaleX(1);opacity:.9}100%{transform:translateY(-22px) scaleX(1.25);opacity:0}}
         .fs1{animation:fs-rise 2.1s ease-out infinite}
         .fs2{animation:fs-rise 2.1s ease-out infinite .68s}
         .fs3{animation:fs-rise 2.1s ease-out infinite 1.36s}
       `}</style>
-      {/* ground glow */}
-      <ellipse cx="50" cy="90" rx="20" ry="2.5" fill="rgba(28,100,242,.15)"/>
-      {/* steam */}
-      <path className="fs1" d="M37 46 Q39 39 37 32" stroke="rgba(96,165,250,.7)" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
-      <path className="fs2" d="M50 43 Q52 36 50 29" stroke="rgba(96,165,250,.7)" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
-      <path className="fs3" d="M63 46 Q65 39 63 32" stroke="rgba(96,165,250,.7)" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
-      {/* bowl body */}
-      <path d="M17 58 Q17 84 50 86 Q83 84 83 58 Z" fill="rgba(28,100,242,.12)" stroke="rgba(96,165,250,.6)" strokeWidth="1.5"/>
-      {/* rim */}
-      <ellipse cx="50" cy="58" rx="33" ry="7" fill="rgba(28,100,242,.22)" stroke="rgba(96,165,250,.65)" strokeWidth="1.5"/>
-      {/* content */}
-      <ellipse cx="50" cy="58" rx="29" ry="5.5" fill="rgba(28,100,242,.35)"/>
-      {/* noodle swirl */}
-      <path d="M33 58 Q41 51 49 58 Q57 65 65 58 Q70 52 68 59" stroke="rgba(147,197,253,.85)" strokeWidth="2.2" fill="none" strokeLinecap="round"/>
-      {/* chopsticks */}
-      <line x1="70" y1="38" x2="60" y2="65" stroke="rgba(96,165,250,.85)" strokeWidth="2" strokeLinecap="round"/>
-      <line x1="76" y1="38" x2="66" y2="65" stroke="rgba(96,165,250,.85)" strokeWidth="2" strokeLinecap="round"/>
+      <ellipse cx="50" cy="90" rx="20" ry="2.5" fill="rgba(96,165,250,.30)"/>
+      <path className="fs1" d="M37 46 Q39 39 37 32" stroke="rgba(147,197,253,.90)" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+      <path className="fs2" d="M50 43 Q52 36 50 29" stroke="rgba(147,197,253,.90)" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+      <path className="fs3" d="M63 46 Q65 39 63 32" stroke="rgba(147,197,253,.90)" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+      <path d="M17 58 Q17 84 50 86 Q83 84 83 58 Z" fill="rgba(28,100,242,.28)" stroke="rgba(96,165,250,.80)" strokeWidth="1.5"/>
+      <ellipse cx="50" cy="58" rx="33" ry="7" fill="rgba(28,100,242,.38)" stroke="rgba(96,165,250,.85)" strokeWidth="1.5"/>
+      <ellipse cx="50" cy="58" rx="29" ry="5.5" fill="rgba(59,130,246,.55)"/>
+      <path d="M33 58 Q41 51 49 58 Q57 65 65 58 Q70 52 68 59" stroke="rgba(191,219,254,.95)" strokeWidth="2.2" fill="none" strokeLinecap="round"/>
+      <line x1="70" y1="38" x2="60" y2="65" stroke="rgba(147,197,253,.95)" strokeWidth="2" strokeLinecap="round"/>
+      <line x1="76" y1="38" x2="66" y2="65" stroke="rgba(147,197,253,.95)" strokeWidth="2" strokeLinecap="round"/>
     </svg>
   );
 }
@@ -333,23 +318,19 @@ function ItinScene() {
         .ip2{animation:it-pin 3.6s ease-in-out infinite 1.1s}
         .ip3{animation:it-pin 3.6s ease-in-out infinite 2.2s}
       `}</style>
-      {/* map bg */}
-      <rect x="12" y="18" width="76" height="64" rx="4" fill="rgba(28,100,242,.08)" stroke="rgba(96,165,250,.22)" strokeWidth="1"/>
-      {/* grid */}
-      <line x1="12" y1="37" x2="88" y2="37" stroke="rgba(96,165,250,.11)" strokeWidth=".5"/>
-      <line x1="12" y1="56" x2="88" y2="56" stroke="rgba(96,165,250,.11)" strokeWidth=".5"/>
-      <line x1="36" y1="18" x2="36" y2="82" stroke="rgba(96,165,250,.11)" strokeWidth=".5"/>
-      <line x1="60" y1="18" x2="60" y2="82" stroke="rgba(96,165,250,.11)" strokeWidth=".5"/>
-      {/* animated route */}
+      <rect x="12" y="18" width="76" height="64" rx="4" fill="rgba(28,100,242,.18)" stroke="rgba(96,165,250,.45)" strokeWidth="1"/>
+      <line x1="12" y1="37" x2="88" y2="37" stroke="rgba(96,165,250,.22)" strokeWidth=".5"/>
+      <line x1="12" y1="56" x2="88" y2="56" stroke="rgba(96,165,250,.22)" strokeWidth=".5"/>
+      <line x1="36" y1="18" x2="36" y2="82" stroke="rgba(96,165,250,.22)" strokeWidth=".5"/>
+      <line x1="60" y1="18" x2="60" y2="82" stroke="rgba(96,165,250,.22)" strokeWidth=".5"/>
       <path className="ir" d="M27 73 Q27 56 42 56 Q57 56 57 37 Q57 27 73 27"
-        stroke="rgba(96,165,250,.9)" strokeWidth="2.5" fill="none"
+        stroke="rgba(147,197,253,.95)" strokeWidth="2.5" fill="none"
         strokeLinecap="round" strokeLinejoin="round"
         strokeDasharray="7 4" strokeDashoffset="230"/>
-      {/* pins */}
-      <g className="ip1"><circle cx="27" cy="73" r="5.5" fill="rgba(28,100,242,.95)"/><text x="27" y="76.5" textAnchor="middle" fill="white" fontSize="5.5" fontWeight="bold">A</text></g>
-      <g className="ip2"><circle cx="57" cy="37" r="5.5" fill="rgba(28,100,242,.85)"/><text x="57" y="40.5" textAnchor="middle" fill="white" fontSize="5.5" fontWeight="bold">B</text></g>
-      <g className="ip3"><circle cx="73" cy="27" r="5.5" fill="rgba(28,100,242,.75)"/><text x="73" y="30.5" textAnchor="middle" fill="white" fontSize="5.5" fontWeight="bold">C</text></g>
-      <ellipse cx="50" cy="84" rx="22" ry="2" fill="rgba(28,100,242,.14)"/>
+      <g className="ip1"><circle cx="27" cy="73" r="5.5" fill="#1C64F2"/><text x="27" y="76.5" textAnchor="middle" fill="white" fontSize="5.5" fontWeight="bold">A</text></g>
+      <g className="ip2"><circle cx="57" cy="37" r="5.5" fill="#1A56DB"/><text x="57" y="40.5" textAnchor="middle" fill="white" fontSize="5.5" fontWeight="bold">B</text></g>
+      <g className="ip3"><circle cx="73" cy="27" r="5.5" fill="#1E429F"/><text x="73" y="30.5" textAnchor="middle" fill="white" fontSize="5.5" fontWeight="bold">C</text></g>
+      <ellipse cx="50" cy="84" rx="22" ry="2" fill="rgba(96,165,250,.25)"/>
     </svg>
   );
 }
@@ -359,26 +340,26 @@ function ExploreScene() {
     <svg viewBox="0 0 100 100" className="w-24 h-24" xmlns="http://www.w3.org/2000/svg">
       <style>{`
         @keyframes ex-spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-        @keyframes ex-pulse{0%,100%{opacity:.4;r:36}50%{opacity:.08;r:40}}
-        @keyframes ex-pulse2{0%,100%{opacity:.5;r:27}50%{opacity:.1;r:31}}
+        @keyframes ex-pulse{0%,100%{opacity:.6;r:36}50%{opacity:.15;r:40}}
+        @keyframes ex-pulse2{0%,100%{opacity:.7;r:27}50%{opacity:.2;r:31}}
         .en{transform-origin:50px 50px;animation:ex-spin 9s linear infinite}
         .er1{animation:ex-pulse 2.6s ease-in-out infinite}
         .er2{animation:ex-pulse2 2.6s ease-in-out infinite .7s}
       `}</style>
-      <circle className="er1" cx="50" cy="50" r="36" stroke="rgba(28,100,242,.3)" strokeWidth="1" fill="none"/>
-      <circle className="er2" cx="50" cy="50" r="27" stroke="rgba(28,100,242,.4)" strokeWidth="1" fill="none"/>
-      <circle cx="50" cy="50" r="22" fill="rgba(28,100,242,.07)" stroke="rgba(96,165,250,.5)" strokeWidth="1.5"/>
-      <text x="50" y="27"  textAnchor="middle" fill="rgba(96,165,250,.95)" fontSize="7" fontWeight="bold">N</text>
-      <text x="50" y="79"  textAnchor="middle" fill="rgba(96,165,250,.4)"  fontSize="6">S</text>
-      <text x="79" y="53"  textAnchor="middle" fill="rgba(96,165,250,.4)"  fontSize="6">E</text>
-      <text x="21" y="53"  textAnchor="middle" fill="rgba(96,165,250,.4)"  fontSize="6">W</text>
+      <circle className="er1" cx="50" cy="50" r="36" stroke="rgba(96,165,250,.55)" strokeWidth="1" fill="none"/>
+      <circle className="er2" cx="50" cy="50" r="27" stroke="rgba(96,165,250,.65)" strokeWidth="1" fill="none"/>
+      <circle cx="50" cy="50" r="22" fill="rgba(28,100,242,.20)" stroke="rgba(96,165,250,.80)" strokeWidth="1.5"/>
+      <text x="50" y="27"  textAnchor="middle" fill="rgba(147,197,253,.95)" fontSize="7" fontWeight="bold">N</text>
+      <text x="50" y="79"  textAnchor="middle" fill="rgba(147,197,253,.60)"  fontSize="6">S</text>
+      <text x="79" y="53"  textAnchor="middle" fill="rgba(147,197,253,.60)"  fontSize="6">E</text>
+      <text x="21" y="53"  textAnchor="middle" fill="rgba(147,197,253,.60)"  fontSize="6">W</text>
       <g className="en">
-        <polygon points="50,30 47,50 50,54 53,50" fill="rgba(96,165,250,.95)"/>
-        <polygon points="50,70 47,50 50,46 53,50" fill="rgba(255,255,255,.2)"/>
+        <polygon points="50,30 47,50 50,54 53,50" fill="rgba(147,197,253,.98)"/>
+        <polygon points="50,70 47,50 50,46 53,50" fill="rgba(255,255,255,.35)"/>
       </g>
       <circle cx="50" cy="50" r="3.5" fill="#1C64F2"/>
       <circle cx="50" cy="50" r="1.8" fill="white"/>
-      <ellipse cx="50" cy="84" rx="14" ry="2" fill="rgba(28,100,242,.17)"/>
+      <ellipse cx="50" cy="84" rx="14" ry="2" fill="rgba(96,165,250,.30)"/>
     </svg>
   );
 }
@@ -766,13 +747,13 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
               </button>
               <span className="text-4xl block mb-3">{cityNotice.emoji}</span>
               <h3 className="text-white font-display font-semibold text-xl mb-2">
-                {cityNotice.city} is coming soon
+                {cityNotice.city} isn't live yet
               </h3>
               <p className="text-sm leading-relaxed mb-5" style={{ color: 'var(--color-on-dark-body)' }}>
-                Full AI recommendations are currently live only for{' '}
-                <span className="font-bold text-warning-strong">Thanjavur</span>.
-                Every hotel, restaurant, and landmark — AI-ranked in seconds.
-                Try it there while we build for {cityNotice.city}.
+                TripAI is fully live in{' '}
+                <span className="font-semibold" style={{ color: 'var(--color-warning)' }}>Thanjavur</span>{' '}
+                — hotels, restaurants, and landmarks AI-ranked in seconds.{' '}
+                {cityNotice.city} is next on our roadmap. Try what's live while we build for you.
               </p>
               <Button onClick={handleTryThanjavur} className="w-full justify-center">
                 Try Thanjavur <ArrowRight className="w-4 h-4" />
