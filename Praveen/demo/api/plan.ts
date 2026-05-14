@@ -462,18 +462,21 @@ function scoreAllTagsForHotel(place: any, selectedTags: string[], cityKey: strin
   if (restSnip) tagSnippets['In-House Restaurant'] = restSnip;
 
   // ── CLEANLINESS TAGS — star-weighted (positive reviews only) ─────────────
+  // 1 weighted hit = 0.45 (below 0.60 match threshold) — require 2+ mentions to qualify.
+  // Prevents a single "clean" in one review from inflating the score.
   for (const tag of ['Spotlessly Clean', 'Well Maintained', 'Fresh Rooms'] as const) {
     const kws  = TAG_TEXT_KEYWORDS[tag] ?? [];
     const hits = countWeightedHits(kws);
-    allTagScores[tag] = hits >= 3 ? 0.95 : hits >= 2 ? 0.82 : hits >= 1 ? 0.65 : hits >= 0.4 ? 0.45 : 0.10;
+    allTagScores[tag] = hits >= 3 ? 0.95 : hits >= 2 ? 0.82 : hits >= 1 ? 0.45 : hits >= 0.4 ? 0.30 : 0.10;
     if (hits > 0) { tagEvidence[tag] = `"${kws[0]}" ×${hits.toFixed(1)} in positive reviews`; const s = findSnippet(kws); if (s) tagSnippets[tag] = s; }
   }
 
   // ── STAFF & HOSPITALITY TAGS — star-weighted ──────────────────────────────
+  // 1 weighted hit = 0.45 — require 2+ reviewer mentions to confirm "friendly/warm/quick".
   for (const tag of ['Friendly & Helpful', 'Warm Hospitality', 'Quick Response'] as const) {
     const kws  = TAG_TEXT_KEYWORDS[tag] ?? [];
     const hits = countWeightedHits(kws);
-    allTagScores[tag] = hits >= 3 ? 0.95 : hits >= 2 ? 0.82 : hits >= 1 ? 0.65 : hits >= 0.4 ? 0.45 : 0.10;
+    allTagScores[tag] = hits >= 3 ? 0.95 : hits >= 2 ? 0.82 : hits >= 1 ? 0.45 : hits >= 0.4 ? 0.30 : 0.10;
     if (hits > 0) { tagEvidence[tag] = `"${kws[0]}" ×${hits.toFixed(1)} in positive reviews`; const s = findSnippet(kws); if (s) tagSnippets[tag] = s; }
   }
 
@@ -481,7 +484,7 @@ function scoreAllTagsForHotel(place: any, selectedTags: string[], cityKey: strin
   for (const tag of ['Spacious Rooms', 'Comfortable & Quiet', 'Good Amenities'] as const) {
     const kws  = TAG_TEXT_KEYWORDS[tag] ?? [];
     const hits = countWeightedHits(kws);
-    allTagScores[tag] = hits >= 3 ? 0.95 : hits >= 2 ? 0.82 : hits >= 1 ? 0.65 : hits >= 0.4 ? 0.45 : 0.10;
+    allTagScores[tag] = hits >= 3 ? 0.95 : hits >= 2 ? 0.82 : hits >= 1 ? 0.45 : hits >= 0.4 ? 0.30 : 0.10;
     if (hits > 0) { tagEvidence[tag] = `"${kws[0]}" ×${hits.toFixed(1)} in positive reviews`; const s = findSnippet(kws); if (s) tagSnippets[tag] = s; }
   }
   // Good Amenities — boolean boost on top of keyword score (each is an independent facility signal)
@@ -516,7 +519,7 @@ function scoreAllTagsForHotel(place: any, selectedTags: string[], cityKey: strin
   for (const tag of ['Good Food', 'Value for Money'] as const) {
     const kws  = TAG_TEXT_KEYWORDS[tag] ?? [];
     const hits = countWeightedHits(kws);
-    allTagScores[tag] = hits >= 3 ? 0.95 : hits >= 2 ? 0.82 : hits >= 1 ? 0.65 : hits >= 0.4 ? 0.45 : 0.10;
+    allTagScores[tag] = hits >= 3 ? 0.95 : hits >= 2 ? 0.82 : hits >= 1 ? 0.45 : hits >= 0.4 ? 0.30 : 0.10;
     if (hits > 0) { tagEvidence[tag] = `"${kws[0]}" ×${hits.toFixed(1)} in positive reviews`; const s = findSnippet(kws); if (s) tagSnippets[tag] = s; }
   }
   // servesDessert boolean boosts Good Food — confirmed food offering signal
@@ -1491,8 +1494,8 @@ function filterStalePlaces(places: any[]): any[] {
   return places.filter(place => {
     const reviews    = (place.reviews ?? []) as any[];
     const totalCount = (place.userRatingCount ?? 0) as number;
-    // New or low-volume places — no recent-activity baseline, keep them
-    if (totalCount < 20) return true;
+    // Brand-new places (<5 reviews) — no baseline, keep them; 5+ must show recent activity
+    if (totalCount < 5) return true;
     // If API returned no reviews (field not populated) — can't judge, keep
     if (reviews.length === 0) return true;
     // Most recent review is reviews[0] (API sorts newest-first)
@@ -2031,7 +2034,7 @@ SENTIMENT RULES — STRICTLY FOLLOW:
 PLACES DATA (${places.length} candidates):
 ${JSON.stringify(summaries)}
 
-TASK: Return a JSON array of ranked ${tab.toLowerCase()} (rank 1 = best match). MINIMUM 5 results — always return at least 5 even if some are weaker matches. Up to 7 if strong candidates exist. NEVER return an empty array.
+TASK: Return a JSON array of ranked ${tab.toLowerCase()} (rank 1 = best match). Return only results with strong tag evidence — prefer 3–5 high-quality matches over padding with weak ones. Up to 7 if strong candidates exist. NEVER return an empty array.
 Rank by: (1) matchedTags.length DESC, (2) confirmedTags.length DESC, (3) rating × log(totalReviews), (4) trend.
 
 [{
@@ -2579,17 +2582,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       // Fallback only if classifier left < 2 results
       const effectivePool = cleanPool.length >= 2 ? cleanPool : basePool;
 
+      // Require ≥10 reviews so tag scoring has enough signal; fall back to full pool if too few survive
+      const reviewedPool = effectivePool.filter(p => (p.userRatingCount ?? 0) >= 10);
+      const qualityPool  = reviewedPool.length >= 3 ? reviewedPool : effectivePool;
+
       // Score ALL tags for every hotel — continuous 0-1 per tag
-      const allScored: ScoredHotel[] = effectivePool.map(place => {
+      const allScored: ScoredHotel[] = qualityPool.map(place => {
         const result = scoreAllTagsForHotel(place, selectedTags, cityKey);
         return { place, ...result };
       });
 
-      // Pre-filter: when tags are selected, only send hotels that match at least 1 tag to Gemini.
+      // Pre-filter: at least one selected tag must score ≥0.60 (matchedTags non-empty).
+      // Previous formula (1/tags*0.5) let almost everything through for 2+ tags.
       let tagFiltered = allScored;
       if (selectedTags.length > 0) {
-        const minScore = 1 / selectedTags.length * 0.5;
-        const matched = allScored.filter(h => h.matchScore > minScore);
+        const matched = allScored.filter(h => h.matchedTags.length >= 1);
         if (matched.length >= 3) tagFiltered = matched;
       }
 
