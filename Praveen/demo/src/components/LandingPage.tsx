@@ -575,9 +575,6 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
                 <Button onClick={handleCtaClick} size="lg" className="w-full justify-center py-4 text-base rounded-2xl">
                   Show me the best <ArrowRight className="w-4 h-4" />
                 </Button>
-                <p className="text-center text-xs" style={{ color: 'var(--color-on-dark-muted)' }}>
-                  ✓ Free forever · No credit card needed
-                </p>
               </div>
 
               {/* Trust row */}
