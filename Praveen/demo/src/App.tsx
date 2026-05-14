@@ -563,6 +563,12 @@ export default function App() {
                 onChange={e => setSearchLocation(e.target.value)}
                 placeholder="Search city…"
                 className="w-full pl-8 pr-8 py-2 border border-border rounded-lg text-sm bg-bg-app focus:outline-none focus:ring-2 focus:ring-brand-soft focus:border-brand transition-colors"
+                onKeyDown={e => {
+                  if (e.key === 'Enter') {
+                    const v = searchLocation.trim();
+                    if (v && !isThanjavurCity(v)) { setNonThanjavurNotice(v); }
+                  }
+                }}
               />
               {searchLocation && (
                 <button
@@ -651,8 +657,14 @@ export default function App() {
         onLogout={handleLogout}
         userName={user?.name ?? ''}
         searchLocation={searchLocation}
-        onSearchChange={setSearchLocation}
-        onLocationPick={(display, area) => { setSearchLocation(display); setSearchArea(area); }}
+        onSearchChange={v => {
+          if (v && !isThanjavurCity(v)) { setNonThanjavurNotice(v); }
+          else setSearchLocation(v);
+        }}
+        onLocationPick={(display, area) => {
+          if (display && !isThanjavurCity(display)) { setNonThanjavurNotice(display); }
+          else { setSearchLocation(display); setSearchArea(area); }
+        }}
       />
 
       <main className="pt-2">
