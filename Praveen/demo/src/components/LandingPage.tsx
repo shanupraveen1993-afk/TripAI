@@ -392,8 +392,8 @@ function TiltCard({ label, desc, glow, illustration, onClick, animDelay = 0 }: {
         style={{
           rotateX, rotateY,
           transformStyle: 'preserve-3d',
-          background: '#0C1220',
-          boxShadow: '0 0 0 1px rgba(255,255,255,0.09), 0 16px 48px rgba(12,18,32,0.30)',
+          background: '#141E33',
+          boxShadow: '0 0 0 1px rgba(255,255,255,0.10), 0 16px 48px rgba(0,0,0,0.50)',
         }}
         whileHover={{ scale: 1.03 }}
         whileTap={{ scale: 0.97 }}
@@ -625,11 +625,11 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
       </section>
 
       {/* ── 3D Category cards ──────────────────────────────────────── */}
-      <section className="py-16 md:py-24 bg-bg-app border-b border-border">
+      <section className="py-16 md:py-24" style={{ background: '#0C1220' }}>
         <div className="max-w-screen-xl mx-auto px-4 md:px-8">
           <div className="text-center mb-14">
-            <h2 className="text-3xl md:text-4xl font-semibold text-heading mb-3">One search. Four answers.</h2>
-            <p className="text-body">Pick what you need — AI ranks the best options in under 10 seconds.</p>
+            <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">One search. Four answers.</h2>
+            <p style={{ color: 'var(--color-on-dark-body)' }}>Pick what you need — AI ranks the best options in under 10 seconds.</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 items-stretch">
             {CATEGORIES.map((c, i) => (
