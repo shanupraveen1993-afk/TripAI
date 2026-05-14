@@ -698,7 +698,6 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
           <Button size="xl" onClick={handleCtaClick} className="mx-auto">
             Start for free <ArrowRight className="w-5 h-5" />
           </Button>
-          <p className="text-xs" style={{ color: 'var(--color-on-dark-muted)' }}>✓ Free forever · No login wall to explore</p>
         </div>
       </section>
 
