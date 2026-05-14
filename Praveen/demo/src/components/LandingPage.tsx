@@ -507,10 +507,6 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={handleCtaClick}
-              className="px-3 py-2 text-sm font-medium rounded-lg transition-colors text-body hover:text-heading focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-soft">
-              Log in
-            </button>
             <Button size="sm" onClick={handleCtaClick}>
               Get Started <ArrowRight className="w-3.5 h-3.5" />
             </Button>
