@@ -20,7 +20,7 @@ export function Card({ children, className = '', hover = false, padding = 'md', 
     <div
       onClick={onClick}
       className={[
-        'bg-surface border border-card-border rounded-xl shadow-sm',
+        'bg-surface border border-card-border rounded-2xl shadow-sm',
         paddingClasses[padding],
         hover ? 'card-hover cursor-pointer' : '',
         onClick ? 'cursor-pointer' : '',

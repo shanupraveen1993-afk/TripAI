@@ -165,19 +165,19 @@ const AVATAR_COLORS = [
 function ReviewCard({ review, idx, keywords = [] }: { review: ReviewItem; idx: number; keywords?: string[] }) {
   const avatarColor = AVATAR_COLORS[idx % AVATAR_COLORS.length];
   const positiveBadge = review.stars === 5
-    ? <span className="text-[11px] font-medium text-success-strong bg-success-soft px-1.5 py-0.5 rounded-full border border-success-medium/30 shrink-0">✓ Loved it</span>
+    ? <span className="text-xs font-medium text-success-strong bg-success-soft px-1.5 py-0.5 rounded-full border border-success-medium/30 shrink-0">✓ Loved it</span>
     : review.stars === 4
-    ? <span className="text-[11px] font-medium text-warning-strong bg-warning-soft px-1.5 py-0.5 rounded-full border border-warning-medium/40 shrink-0">✓ Liked it</span>
+    ? <span className="text-xs font-medium text-warning-strong bg-warning-soft px-1.5 py-0.5 rounded-full border border-warning-medium/40 shrink-0">✓ Liked it</span>
     : null;
   const kws = review.highlight ? [review.highlight] : keywords;
   return (
-    <div className="bg-bg-app rounded-xl p-3 border border-border">
+    <div className="bg-bg-app rounded-lg p-3 border border-border">
       <div className="flex items-start gap-2.5">
         <div
           className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5"
           style={{ background: avatarColor }}
         >
-          <span className="text-[11px] font-black text-white">{review.author.charAt(0)}</span>
+          <span className="text-xs font-black text-white">{review.author.charAt(0)}</span>
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-1 mb-1">
@@ -185,7 +185,7 @@ function ReviewCard({ review, idx, keywords = [] }: { review: ReviewItem; idx: n
               <span className="text-xs font-semibold text-heading truncate">{review.author}</span>
               <span className="text-xs text-muted shrink-0">· {review.location}</span>
             </div>
-            <span className="text-[11px] text-muted shrink-0">{review.ago}</span>
+            <span className="text-xs text-muted shrink-0">{review.ago}</span>
           </div>
           <div className="flex items-center gap-1.5 mb-1.5">
             <div className="flex items-center gap-0.5">
@@ -196,7 +196,7 @@ function ReviewCard({ review, idx, keywords = [] }: { review: ReviewItem; idx: n
             {positiveBadge}
           </div>
           <p className="text-xs text-body leading-relaxed italic">"{highlightKeywords(review.text, kws)}"</p>
-          <p className="text-[11px] text-muted mt-1.5 font-medium">via Google Reviews</p>
+          <p className="text-xs text-muted mt-1.5 font-medium">via Google Reviews</p>
         </div>
       </div>
     </div>
@@ -337,19 +337,19 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
       {tab === 'Hotels' && (<>
         <a href={place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`}
           target="_blank" rel="noopener noreferrer"
-          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-brand text-white hover:bg-brand/90 transition-colors active:scale-[0.97] shadow-sm">
+          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-brand text-white hover:bg-brand/90 transition-colors active:scale-[0.97] shadow-sm">
           <ExternalLink className="w-3 h-3" />Book
         </a>
         <a href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
           target="_blank" rel="noopener noreferrer"
-          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-bold border border-slate-200 text-slate-600 hover:border-brand hover:text-brand transition-colors active:scale-[0.97]">
+          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold border border-slate-200 text-slate-600 hover:border-brand hover:text-brand transition-colors active:scale-[0.97]">
           <Map className="w-3 h-3" />Map
         </a>
       </>)}
       {tab === 'Food' && (
         <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
           target="_blank" rel="noopener noreferrer"
-          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-success text-white hover:bg-success-strong transition-colors active:scale-[0.97] shadow-sm">
+          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-success text-white hover:bg-success-strong transition-colors active:scale-[0.97] shadow-sm">
           <Navigation className="w-3 h-3" />Directions
         </a>
       )}
@@ -369,7 +369,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: animDelay, duration: 0.35, ease: 'easeOut', layout: { duration: 0.28, ease: 'easeInOut' } }}
-      className="bg-surface border border-card-border rounded-xl shadow-sm card-hover overflow-hidden"
+      className="bg-surface border border-card-border rounded-2xl shadow-sm card-hover overflow-hidden"
       style={dimmed ? { opacity: 0.35, filter: 'grayscale(0.7)', pointerEvents: 'none', transition: 'opacity 0.3s, filter 0.3s' } : undefined}
     >
 
@@ -386,25 +386,25 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent pointer-events-none" />
           {rank === 1 && (
-            <span className="absolute top-2.5 left-2.5 flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold text-white"
+            <span className="absolute top-2.5 left-2.5 flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold text-white"
               style={{ background: 'rgba(99,102,241,0.88)' }}>
               <Sparkles className="w-2.5 h-2.5" />AI Top Pick
             </span>
           )}
           {rank === 2 && (
-            <span className="absolute top-2.5 left-2.5 flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold text-white"
+            <span className="absolute top-2.5 left-2.5 flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold text-white"
               style={{ background: 'rgba(5,150,105,0.88)' }}>
               💰 Best Value
             </span>
           )}
           {rank === 3 && (
-            <span className="absolute top-2.5 left-2.5 flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold text-white"
+            <span className="absolute top-2.5 left-2.5 flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold text-white"
               style={{ background: 'rgba(217,119,6,0.88)' }}>
               ⭐ Highly Rated
             </span>
           )}
           {rank === 4 && (
-            <span className="absolute top-2.5 left-2.5 flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold text-white"
+            <span className="absolute top-2.5 left-2.5 flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold text-white"
               style={{ background: 'rgba(220,38,38,0.88)' }}>
               🔥 Popular Pick
             </span>
@@ -420,7 +420,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
 
         {/* Info */}
         <div className="px-3 pt-2.5 pb-1 flex flex-col gap-1.5">
-          <h3 className="font-display font-semibold text-base text-heading leading-snug">{place.name}</h3>
+          <h3 className="font-display font-semibold text-lg text-heading leading-snug">{place.name}</h3>
           <div className="flex items-center gap-1">
             <div className="flex gap-0.5">
               {Array.from({ length: 5 }).map((_, i) => (
@@ -433,10 +433,10 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             <Badge variant={place.openNow ? 'success' : 'danger'} dot pill>{place.openNow ? 'Open' : 'Closed'}</Badge>
             <Badge variant="neutral" pill>{place.priceLevel}</Badge>
             {selectedTags.length > 0 && place.matchScore !== undefined && (
-              <span className="px-1.5 py-0.5 rounded-full text-[11px] font-semibold"
-                style={place.matchScore >= 80 ? { background: '#DEF7EC', color: '#057A55' }
-                  : place.matchScore >= 55 ? { background: '#EBF5FF', color: '#1C64F2' }
-                  : { background: '#F9FAFB', color: '#6B7280' }}>
+              <span className="px-1.5 py-0.5 rounded-full text-xs font-semibold"
+                style={place.matchScore >= 80 ? { background: 'var(--color-success-soft)', color: 'var(--color-success-strong)' }
+                  : place.matchScore >= 55 ? { background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
+                  : { background: 'var(--color-bg-app)', color: 'var(--color-muted)' }}>
                 {place.matchScore}% match
               </span>
             )}
@@ -444,14 +444,14 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           {(confirmed.length > 0 || unconfirmed.length > 0) && (
             <div className="flex gap-1 flex-wrap">
               {confirmed.slice(0, 2).map(t => (
-                <span key={t} className="flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[11px] font-medium border"
-                  style={{ background: '#DEF7EC', borderColor: '#A7F3D0', color: '#057A55' }}>
+                <span key={t} className="flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs font-medium border"
+                  style={{ background: 'var(--color-success-soft)', borderColor: 'var(--color-success-medium)', color: 'var(--color-success-strong)' }}>
                   <CheckCircle className="w-2.5 h-2.5" />{t}
                 </span>
               ))}
               {unconfirmed.slice(0, 1).map(t => (
-                <span key={t} className="flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[11px] font-medium border"
-                  style={{ background: '#F9FAFB', borderColor: '#D1D5DB', color: '#6B7280' }}>
+                <span key={t} className="flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs font-medium border"
+                  style={{ background: 'var(--color-bg-app)', borderColor: 'var(--color-border-medium)', color: 'var(--color-muted)' }}>
                   ~{t}
                 </span>
               ))}
@@ -460,13 +460,13 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           {place.aiDetail?.whyOverOthers && (
             <div className="flex items-start gap-1.5">
               <Sparkles className="w-3 h-3 text-brand shrink-0 mt-0.5" />
-              <p className="text-[11px] text-brand font-medium leading-snug line-clamp-2">{highlightKeywords(place.aiDetail.whyOverOthers, selectedTags)}</p>
+              <p className="text-xs text-brand font-medium leading-snug line-clamp-2">{highlightKeywords(place.aiDetail.whyOverOthers, reviewKeywords)}</p>
             </div>
           )}
           {place.aiDetail?.insiderTip && (
             <div className="flex items-start gap-1.5">
-              <Lightbulb className="w-3 h-3 shrink-0 mt-0.5" style={{ color: '#1C64F2' }} />
-              <p className="text-[11px] leading-snug line-clamp-1" style={{ color: '#1C64F2' }}>{place.aiDetail.insiderTip}</p>
+              <Lightbulb className="w-3 h-3 shrink-0 mt-0.5 text-brand" />
+              <p className="text-xs leading-snug line-clamp-1 text-brand">{place.aiDetail.insiderTip}</p>
             </div>
           )}
         </div>
@@ -475,20 +475,20 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
         <div className="flex gap-2 px-3 py-2.5">
           <a href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
             target="_blank" rel="noopener noreferrer"
-            className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold border border-slate-200 text-slate-600 active:scale-[0.97]">
+            className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg text-xs font-bold border border-border text-body active:scale-[0.97]">
             <Map className="w-4 h-4 shrink-0" />Map
           </a>
           {tab === 'Hotels' && (
             <a href={place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`}
               target="_blank" rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-bold bg-brand text-white active:scale-[0.97] shadow-sm">
+              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-sm font-bold bg-brand text-white active:scale-[0.97] shadow-sm">
               <ExternalLink className="w-4 h-4 shrink-0" />Book Now
             </a>
           )}
           {tab === 'Food' && (
             <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
               target="_blank" rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-bold bg-success text-white active:scale-[0.97] shadow-sm">
+              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-sm font-bold bg-success text-white active:scale-[0.97] shadow-sm">
               <Navigation className="w-4 h-4 shrink-0" />Directions
             </a>
           )}
@@ -519,16 +519,16 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               autoLoad={rank === 1}
             />
           </div>
-          {rank === 1 && <span className="absolute top-2 left-2 flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold text-white" style={{ background: 'rgba(99,102,241,0.88)' }}><Sparkles className="w-2.5 h-2.5" />Top Pick</span>}
-          {rank === 2 && <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded-full text-[10px] font-semibold text-white" style={{ background: 'rgba(5,150,105,0.88)' }}>💰 Best Value</span>}
-          {rank === 3 && <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded-full text-[10px] font-semibold text-white" style={{ background: 'rgba(217,119,6,0.88)' }}>⭐ Highly Rated</span>}
-          {rank === 4 && <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded-full text-[10px] font-semibold text-white" style={{ background: 'rgba(220,38,38,0.88)' }}>🔥 Popular</span>}
+          {rank === 1 && <span className="absolute top-2 left-2 flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs font-semibold text-white" style={{ background: 'rgba(99,102,241,0.88)' }}><Sparkles className="w-2.5 h-2.5" />Top Pick</span>}
+          {rank === 2 && <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded-full text-xs font-semibold text-white" style={{ background: 'rgba(5,150,105,0.88)' }}>💰 Best Value</span>}
+          {rank === 3 && <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded-full text-xs font-semibold text-white" style={{ background: 'rgba(217,119,6,0.88)' }}>⭐ Highly Rated</span>}
+          {rank === 4 && <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded-full text-xs font-semibold text-white" style={{ background: 'rgba(220,38,38,0.88)' }}>🔥 Popular</span>}
         </div>
 
         {/* Col 2: Info */}
         <div className="flex-1 min-w-0 px-2.5 py-2.5 flex flex-col gap-1.5">
           {rank === 1 && (
-            <span className="flex items-center gap-1 text-[11px] font-semibold text-brand tracking-wide leading-none">
+            <span className="flex items-center gap-1 text-xs font-semibold text-brand tracking-wide leading-none">
               <Sparkles className="w-2.5 h-2.5" /> AI Top Pick
             </span>
           )}
@@ -550,10 +550,10 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             <Badge variant={place.openNow ? 'success' : 'danger'} dot pill>{place.openNow ? 'Open' : 'Closed'}</Badge>
             <Badge variant="neutral" pill>{place.priceLevel}</Badge>
             {selectedTags.length > 0 && place.matchScore !== undefined && (
-              <span className="px-1.5 py-0.5 rounded-full text-[11px] font-semibold"
-                style={place.matchScore >= 80 ? { background: '#DEF7EC', color: '#057A55' }
-                  : place.matchScore >= 55 ? { background: '#EBF5FF', color: '#1C64F2' }
-                  : { background: '#F9FAFB', color: '#6B7280' }}>
+              <span className="px-1.5 py-0.5 rounded-full text-xs font-semibold"
+                style={place.matchScore >= 80 ? { background: 'var(--color-success-soft)', color: 'var(--color-success-strong)' }
+                  : place.matchScore >= 55 ? { background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
+                  : { background: 'var(--color-bg-app)', color: 'var(--color-muted)' }}>
                 {place.matchScore}% match
               </span>
             )}
@@ -561,14 +561,14 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           {(confirmed.length > 0 || unconfirmed.length > 0) && (
             <div className="flex gap-1 flex-wrap">
               {confirmed.slice(0, 2).map(t => (
-                <span key={t} className="flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[11px] font-medium border"
-                  style={{ background: '#DEF7EC', borderColor: '#A7F3D0', color: '#057A55' }}>
+                <span key={t} className="flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs font-medium border"
+                  style={{ background: 'var(--color-success-soft)', borderColor: 'var(--color-success-medium)', color: 'var(--color-success-strong)' }}>
                   <CheckCircle className="w-2.5 h-2.5" />{t}
                 </span>
               ))}
               {unconfirmed.slice(0, 1).map(t => (
-                <span key={t} className="flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[11px] font-medium border"
-                  style={{ background: '#F9FAFB', borderColor: '#D1D5DB', color: '#6B7280' }}>
+                <span key={t} className="flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs font-medium border"
+                  style={{ background: 'var(--color-bg-app)', borderColor: 'var(--color-border-medium)', color: 'var(--color-muted)' }}>
                   ~{t}
                 </span>
               ))}
@@ -581,7 +581,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           <div className="flex flex-col gap-2">
             <a href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
               target="_blank" rel="noopener noreferrer"
-              className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold border border-slate-200 text-slate-600 hover:border-brand hover:text-brand transition-colors active:scale-[0.97]">
+              className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold border border-border text-body hover:border-brand hover:text-brand transition-colors active:scale-[0.97]">
               <Map className="w-3.5 h-3.5 shrink-0" />Map
             </a>
             {tab === 'Hotels' && (
@@ -601,7 +601,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           </div>
           <button
             onClick={() => setExpanded(v => !v)}
-            className="flex items-center justify-center gap-1 py-1.5 text-[11px] font-semibold text-brand hover:text-brand/70 transition-colors active:scale-[0.97]"
+            className="flex items-center justify-center gap-1 py-1.5 text-xs font-semibold text-brand hover:text-brand/70 transition-colors active:scale-[0.97]"
           >
             <Sparkles className="w-3 h-3 shrink-0" />
             Detailed Analysis
@@ -645,11 +645,11 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                   <div className="grid grid-cols-2 gap-2">
 
                     {/* Card 1: Guest Trend — new info not on main card */}
-                    <div className="rounded-xl p-3 flex flex-col gap-2 border"
-                      style={{ background: '#F9FAFB', borderColor: '#E5E7EB' }}>
+                    <div className="rounded-lg p-3 flex flex-col gap-2 border"
+                      style={{ background: 'var(--color-bg-app)', borderColor: 'var(--color-border)' }}>
                       <div className="flex items-center gap-1.5">
                         {trendIcon}
-                        <span className="text-[11px] font-bold" style={{ color: trendColor }}>{trendLabel}</span>
+                        <span className="text-xs font-bold" style={{ color: trendColor }}>{trendLabel}</span>
                       </div>
                       {recentAvg !== null && (
                         <div className="flex items-baseline gap-1.5">
@@ -668,19 +668,19 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                     </div>
 
                     {/* Card 2: Why to Choose — AI insight */}
-                    <div className="rounded-xl p-3 flex flex-col gap-2 border"
-                      style={{ background: '#DEF7EC', borderColor: '#A7F3D0' }}>
+                    <div className="rounded-lg p-3 flex flex-col gap-2 border"
+                      style={{ background: 'var(--color-success-soft)', borderColor: 'var(--color-success-medium)' }}>
                       <div className="flex flex-col gap-1">
-                        <span className="text-[11px] font-semibold text-success-strong00 uppercase tracking-wide flex items-center gap-1">
+                        <span className="text-xs font-semibold text-success-strong00 uppercase tracking-wide flex items-center gap-1">
                           <Trophy className="w-2.5 h-2.5" />Why Ranked #{rank}
                         </span>
-                        <p className="text-xs text-body leading-relaxed line-clamp-3">{highlightKeywords(place.aiDetail.whyOverOthers, selectedTags)}</p>
+                        <p className="text-xs text-body leading-relaxed line-clamp-3">{highlightKeywords(place.aiDetail.whyOverOthers, reviewKeywords)}</p>
                       </div>
                       <div className="border-t border-emerald-100 pt-2 flex flex-col gap-1">
-                        <span className="text-[11px] font-semibold text-success-strong00 uppercase tracking-wide flex items-center gap-1">
+                        <span className="text-xs font-semibold text-success-strong00 uppercase tracking-wide flex items-center gap-1">
                           <CheckCircle className="w-2.5 h-2.5" />Best For
                         </span>
-                        <p className="text-xs text-body leading-relaxed line-clamp-2">{highlightKeywords(place.aiDetail.bestFor, selectedTags)}</p>
+                        <p className="text-xs text-body leading-relaxed line-clamp-2">{highlightKeywords(place.aiDetail.bestFor, reviewKeywords)}</p>
                       </div>
                     </div>
 
@@ -699,7 +699,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                 );
                 if (unique.length === 0) return null;
                 return (
-                  <div className="rounded-xl border border-border overflow-hidden divide-y divide-border bg-bg-app">
+                  <div className="rounded-lg border border-border overflow-hidden divide-y divide-border bg-bg-app">
                     {unique.map((dp, i) => {
                       const isTag = dp.startsWith('✓') || dp.startsWith('~');
                       const icon  = isTag
@@ -718,19 +718,19 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
 
               {/* Insider Tip */}
               {place.aiDetail.insiderTip && (
-                <div className="flex items-start gap-2 rounded-xl px-2.5 py-2" style={{ background: '#EBF5FF', border: '1px solid #FDE68A' }}>
-                  <Lightbulb className="w-3 h-3 shrink-0 mt-0.5" style={{ color: '#1C64F2' }} />
-                  <p className="text-[11px] text-body leading-relaxed">
-                    <span className="font-semibold" style={{ color: '#1C64F2' }}>Insider tip: </span>{place.aiDetail.insiderTip}
+                <div className="flex items-start gap-2 rounded-lg px-2.5 py-2" style={{ background: 'var(--color-brand-softer)', border: '1px solid var(--color-food-border)' }}>
+                  <Lightbulb className="w-3 h-3 shrink-0 mt-0.5 text-brand" />
+                  <p className="text-xs text-body leading-relaxed">
+                    <span className="font-semibold text-brand">Insider tip: </span>{place.aiDetail.insiderTip}
                   </p>
                 </div>
               )}
 
               {/* Caveat */}
               {place.aiDetail.caveat && (
-                <div className="flex items-start gap-2 bg-warning-soft border border-warning-medium/30 rounded-xl px-2.5 py-2">
+                <div className="flex items-start gap-2 bg-warning-soft border border-warning-medium/30 rounded-lg px-2.5 py-2">
                   <AlertTriangle className="w-3 h-3 text-warning shrink-0 mt-0.5" />
-                  <p className="text-[11px] text-body leading-relaxed">
+                  <p className="text-xs text-body leading-relaxed">
                     <span className="font-semibold text-warning">Watch out: </span>{place.aiDetail.caveat}
                   </p>
                 </div>
@@ -738,11 +738,11 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
 
               {/* Reviews */}
               {displayReviews.length > 0 && (
-                <div className="bg-bg-app border border-border rounded-xl overflow-hidden divide-y divide-border">
+                <div className="bg-bg-app border border-border rounded-lg overflow-hidden divide-y divide-border">
                   {displayReviews.slice(0, 2).map((r, i) => (
                     <div key={i} className="px-3 py-2.5 space-y-1">
                       <div className="flex items-center gap-2">
-                        <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-[9px] font-black text-white"
+                        <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-xs font-black text-white"
                           style={{ background: AVATAR_COLORS[i % AVATAR_COLORS.length] }}>
                           {r.author.charAt(0)}
                         </div>
@@ -754,14 +754,14 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                               <Star key={j} className={`w-2.5 h-2.5 ${j < r.stars ? 'fill-warning text-warning' : 'text-border'}`} />
                             ))}
                           </div>
-                          {r.stars === 5 && <span className="text-[11px] font-medium text-success-strong bg-success-soft px-1.5 py-0.5 rounded-full border border-success-medium/30">✓ Loved it</span>}
-                          {r.stars === 4 && <span className="text-[11px] font-medium text-warning-strong bg-warning-soft px-1.5 py-0.5 rounded-full border border-warning-medium/40">✓ Liked it</span>}
+                          {r.stars === 5 && <span className="text-xs font-medium text-success-strong bg-success-soft px-1.5 py-0.5 rounded-full border border-success-medium/30">✓ Loved it</span>}
+                          {r.stars === 4 && <span className="text-xs font-medium text-warning-strong bg-warning-soft px-1.5 py-0.5 rounded-full border border-warning-medium/40">✓ Liked it</span>}
                         </div>
                       </div>
                       <p className="text-xs text-body leading-relaxed italic line-clamp-3">
                         "{highlightKeywords(r.text, r.highlight ? [r.highlight] : [...reviewKeywords, ...(place.matchedKeyword ? [place.matchedKeyword] : [])])}"
                       </p>
-                      <p className="text-[11px] text-muted">{r.ago} · via Google</p>
+                      <p className="text-xs text-muted">{r.ago} · via Google</p>
                     </div>
                   ))}
                 </div>
@@ -865,10 +865,10 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <Route className="w-3.5 h-3.5 text-brand" />
-              <span className="text-[13px] font-black text-heading">Day Plan</span>
-              <span className="text-[11px] text-muted font-medium">· {stops.length} stops</span>
+              <span className="text-sm font-semibold text-heading">Day Plan</span>
+              <span className="text-xs text-muted font-medium">· {stops.length} stops</span>
             </div>
-            <div className="flex items-center gap-1 text-[11px] font-bold text-body">
+            <div className="flex items-center gap-1 text-xs font-bold text-body">
               <Clock className="w-3 h-3 text-muted" />
               <span>{stops[0]?.time}</span>
               <span className="text-muted">–</span>
@@ -879,13 +879,13 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-border bg-bg-app">
               <span className="text-sm leading-none">{wx.emoji}</span>
-              <span className="text-[11px] font-semibold text-body">{wx.temp}</span>
-              <span className="text-[11px] text-muted">{wx.label}</span>
+              <span className="text-xs font-semibold text-body">{wx.temp}</span>
+              <span className="text-xs text-muted">{wx.label}</span>
             </div>
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border"
               style={{ background: crowdStyle.bg, borderColor: crowdStyle.dot + '40' }}>
               <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: crowdStyle.dot }} />
-              <span className="text-[11px] font-semibold" style={{ color: crowdStyle.text }}>{worstCrowd} crowd</span>
+              <span className="text-xs font-semibold" style={{ color: crowdStyle.text }}>{worstCrowd} crowd</span>
             </div>
           </div>
         </div>
@@ -911,18 +911,18 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                     >
                       {idx + 1}
                     </div>
-                    <span className="text-[10px] font-bold text-heading text-center leading-tight w-full px-1"
+                    <span className="text-xs font-bold text-heading text-center leading-tight w-full px-1"
                       style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', minHeight: 26 }}>
                       {stopShortName(stop.stop)}
                     </span>
-                    <span className="text-[9px] font-medium text-muted whitespace-nowrap">{stop.time}</span>
+                    <span className="text-xs font-medium text-muted whitespace-nowrap">{stop.time}</span>
                   </button>
 
                   {/* Connector */}
                   {!isLast && (
                     <div className="flex-1 flex flex-col items-center justify-center gap-1 mx-1" style={{ paddingTop: 10 }}>
                       {travelMin && (
-                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap"
+                        <span className="text-xs font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap"
                           style={{ background: TRAFFIC_LINE_BG[stop.currentTraffic] + '22', color: TRAFFIC_LINE_BG[stop.currentTraffic] }}>
                           {travelMin}
                         </span>
@@ -964,15 +964,15 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
 
                   {/* Top: stop# + time + duration */}
                   <div className="absolute top-3 left-3 right-3 flex items-start justify-between z-10">
-                    <span className="bg-white text-[11px] font-black px-2.5 py-1 rounded-full shadow-sm leading-none" style={{ color: '#1C64F2' }}>
+                    <span className="bg-white text-xs font-black px-2.5 py-1 rounded-full shadow-sm leading-none" style={{ color: '#1C64F2' }}>
                       Stop {idx + 1}
                     </span>
                     <div className="flex flex-col items-end gap-1">
-                      <span className="bg-black/55 backdrop-blur-sm text-white text-[11px] font-bold px-2 py-0.5 rounded-full leading-none">
+                      <span className="bg-black/55 backdrop-blur-sm text-white text-xs font-bold px-2 py-0.5 rounded-full leading-none">
                         {stop.time}
                       </span>
                       {stop.duration && (
-                        <span className="bg-black/55 backdrop-blur-sm text-white/80 text-[11px] font-semibold px-2 py-0.5 rounded-full leading-none">
+                        <span className="bg-black/55 backdrop-blur-sm text-white/80 text-xs font-semibold px-2 py-0.5 rounded-full leading-none">
                           ⏱ {stop.duration}
                         </span>
                       )}
@@ -981,16 +981,16 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
 
                   {/* Bottom: name + traffic/crowd badges */}
                   <div className="absolute bottom-0 left-0 right-0 p-3.5 z-10">
-                    <h3 className="text-white font-display font-black text-[17px] leading-tight drop-shadow mb-2">
+                    <h3 className="text-white font-display font-black text-lg leading-tight drop-shadow mb-2">
                       {stop.stop}
                     </h3>
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className={`inline-flex items-center gap-1 text-[11px] font-black px-2 py-0.5 rounded-full border ${traffic.bg} ${traffic.border} ${traffic.text}`}>
+                      <span className={`inline-flex items-center gap-1 text-xs font-black px-2 py-0.5 rounded-full border ${traffic.bg} ${traffic.border} ${traffic.text}`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${traffic.dot}`} />
                         {stop.currentTraffic} traffic
                       </span>
                       {crowd && stop.crowdLevel && (
-                        <span className={`inline-flex items-center gap-1 text-[11px] font-black px-2 py-0.5 rounded-full border ${crowd.bg} ${crowd.border} ${crowd.text}`}>
+                        <span className={`inline-flex items-center gap-1 text-xs font-black px-2 py-0.5 rounded-full border ${crowd.bg} ${crowd.border} ${crowd.text}`}>
                           <span className={`w-1.5 h-1.5 rounded-full ${crowd.dot}`} />
                           {stop.crowdLevel} crowd
                         </span>
@@ -1010,12 +1010,12 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                   {(stop.entryFee || (stop.highlights && stop.highlights.length > 0)) && (
                     <div className="flex flex-wrap gap-1.5">
                       {stop.entryFee && (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-success-soft text-success border border-success-medium/30">
+                        <span className="inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full bg-success-soft text-success border border-success-medium/30">
                           🎟 {stop.entryFee}
                         </span>
                       )}
                       {stop.highlights?.map(h => (
-                        <span key={h} className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-bg-app text-muted border border-border">
+                        <span key={h} className="text-xs font-semibold px-2 py-0.5 rounded-full bg-bg-app text-muted border border-border">
                           {h}
                         </span>
                       ))}
@@ -1027,14 +1027,14 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                     <button
                       type="button"
                       onClick={() => onExploreStop?.(stop.stop)}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-[11px] font-bold text-brand border border-brand/30 bg-brand-softer hover:bg-brand-soft transition-colors"
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold text-brand border border-brand/30 bg-brand-softer hover:bg-brand-soft transition-colors"
                     >
                       <Compass className="w-3.5 h-3.5" /> Explore Place
                     </button>
                     <button
                       type="button"
                       onClick={() => toggleStop(idx)}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-[11px] font-bold border transition-colors"
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold border transition-colors"
                       style={isExpanded
                         ? { background: '#EBF5FF', borderColor: '#1C64F240', color: '#1C64F2' }
                         : { background: '#F8FAFC', borderColor: '#E2E8F0', color: '#374151' }
@@ -1061,8 +1061,8 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                       {/* 2-card grid */}
                       <div className="grid grid-cols-2 gap-2">
                         {/* Card 1: Visit Info */}
-                        <div className="rounded-xl p-3 flex flex-col gap-2 border" style={{ background: '#F9FAFB', borderColor: '#E5E7EB' }}>
-                          <span className="text-[11px] font-bold text-muted uppercase tracking-wide flex items-center gap-1">
+                        <div className="rounded-lg p-3 flex flex-col gap-2 border" style={{ background: '#F9FAFB', borderColor: '#E5E7EB' }}>
+                          <span className="text-xs font-semibold text-muted flex items-center gap-1">
                             <Clock className="w-3 h-3" /> Visit Info
                           </span>
                           <div className="flex flex-col gap-1.5 text-xs text-body">
@@ -1079,28 +1079,28 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                             <div className="flex items-center gap-1.5 flex-wrap">
                               <span className="text-muted">🕐</span>
                               <span className="font-semibold">{stop.time}</span>
-                              {stop.departBy && <span className="text-muted text-[11px]">→ leave {stop.departBy}</span>}
+                              {stop.departBy && <span className="text-muted text-xs">→ leave {stop.departBy}</span>}
                             </div>
                           </div>
                         </div>
 
                         {/* Card 2: Smart Guide */}
-                        <div className="rounded-xl p-3 flex flex-col gap-2 border" style={{ background: '#DEF7EC', borderColor: '#A7F3D0' }}>
-                          <span className="text-[11px] font-bold text-success-strong00 uppercase tracking-wide flex items-center gap-1">
+                        <div className="rounded-lg p-3 flex flex-col gap-2 border" style={{ background: '#DEF7EC', borderColor: '#A7F3D0' }}>
+                          <span className="text-xs font-semibold text-success-strong flex items-center gap-1">
                             <Compass className="w-3 h-3" /> Smart Guide
                           </span>
                           <div className="flex flex-col gap-1.5">
                             {crowd && stop.crowdLevel && (
-                              <div className={`flex items-center gap-1.5 text-[11px] font-semibold px-2 py-1 rounded-lg ${crowd.bg} ${crowd.text}`}>
+                              <div className={`flex items-center gap-1.5 text-xs font-semibold px-2 py-1 rounded-lg ${crowd.bg} ${crowd.text}`}>
                                 <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${crowd.dot}`} />
                                 {stop.crowdLevel} crowd now
                               </div>
                             )}
                             {stop.reachNote && (
-                              <p className="text-[11px] text-body leading-snug">{stop.reachNote}</p>
+                              <p className="text-xs text-body leading-snug">{stop.reachNote}</p>
                             )}
                             {!stop.reachNote && !crowd && (
-                              <p className="text-[11px] text-muted leading-snug italic">Visit during early morning for best experience.</p>
+                              <p className="text-xs text-muted leading-snug italic">Visit during early morning for best experience.</p>
                             )}
                           </div>
                         </div>
@@ -1108,13 +1108,13 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
 
                       {/* Travel note to next stop */}
                       {stop.travelToNext && (
-                        <div className="flex items-start gap-2 p-2.5 rounded-xl border border-border bg-surface">
+                        <div className="flex items-start gap-2 p-2.5 rounded-lg border border-border bg-surface">
                           <Navigation className="w-3.5 h-3.5 text-muted shrink-0 mt-0.5" />
                           <div className="flex-1 min-w-0">
-                            <span className="text-[11px] font-bold text-body">Next stop: </span>
-                            <span className="text-[11px] text-muted">{stop.travelToNext}</span>
+                            <span className="text-xs font-bold text-body">Next stop: </span>
+                            <span className="text-xs text-muted">{stop.travelToNext}</span>
                             {stop.departBy && (
-                              <span className="text-[11px] font-bold ml-1" style={{ color: '#1C64F2' }}>· leave by {stop.departBy}</span>
+                              <span className="text-xs font-bold ml-1" style={{ color: '#1C64F2' }}>· leave by {stop.departBy}</span>
                             )}
                           </div>
                         </div>
@@ -1135,9 +1135,9 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                     </div>
                     <div className="w-px h-3 bg-border" />
                   </div>
-                  <div className="flex-1 flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-xs font-semibold" style={{ background: mode.bg, color: mode.color }}>
+                  <div className="flex-1 flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-xs font-semibold" style={{ background: mode.bg, color: mode.color }}>
                     <span>{stop.travelToNext}</span>
-                    <span className="text-[11px] font-black px-1.5 py-0.5 rounded-full" style={{ background: TRAFFIC_LINE_BG[stop.currentTraffic] + '25', color: TRAFFIC_LINE_BG[stop.currentTraffic] }}>
+                    <span className="text-xs font-black px-1.5 py-0.5 rounded-full" style={{ background: TRAFFIC_LINE_BG[stop.currentTraffic] + '25', color: TRAFFIC_LINE_BG[stop.currentTraffic] }}>
                       {stop.currentTraffic}
                     </span>
                   </div>
@@ -1208,38 +1208,38 @@ function ExploreView({ place, visitTime = 'Morning' }: { place: ExploreResult; v
             <div className="flex items-center gap-1.5 bg-black/45 backdrop-blur-sm rounded-full px-2.5 py-1">
               <Star className="w-3 h-3 fill-warning text-warning" />
               <span className="text-[12px] font-black text-white">{place.rating}</span>
-              <span className="text-[10px] text-white/70">Google</span>
+              <span className="text-xs text-white/70">Google</span>
             </div>
             <div className="flex items-center gap-1.5 bg-black/45 backdrop-blur-sm rounded-full px-2.5 py-1">
               <Clock className="w-3 h-3 text-white/70" />
-              <span className="text-[11px] font-semibold text-white/90">{place.openingHours}</span>
+              <span className="text-xs font-semibold text-white/90">{place.openingHours}</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* ── AI Insight (full width) ──────────────────────────── */}
-      <div className="rounded-xl p-3.5 border" style={{ background: '#EBF5FF', borderColor: '#C3DDFD' }}>
+      <div className="rounded-lg p-3.5 border" style={{ background: '#EBF5FF', borderColor: '#C3DDFD' }}>
         <div className="flex items-center gap-1.5 mb-2">
           <Sparkles className="w-3.5 h-3.5 text-brand" />
-          <span className="text-[11px] font-black text-brand uppercase tracking-widest">AI Insight</span>
+          <span className="text-xs font-semibold text-brand">AI Insight</span>
         </div>
         <p className="text-xs text-body leading-relaxed">"{place.insight}"</p>
       </div>
 
       {/* ── 2-card: Visit Guide + Prepare ───────────────────── */}
       <div className="grid grid-cols-2 gap-2">
-        <div className="rounded-xl p-3 flex flex-col gap-2 border" style={{ background: '#DEF7EC', borderColor: '#A7F3D0' }}>
-          <span className="text-[11px] font-bold text-success-strong00 uppercase tracking-wide flex items-center gap-1">
+        <div className="rounded-lg p-3 flex flex-col gap-2 border" style={{ background: '#DEF7EC', borderColor: '#A7F3D0' }}>
+          <span className="text-xs font-semibold text-success-strong flex items-center gap-1">
             <Navigation className="w-3 h-3" /> Visit Guide
           </span>
-          <p className="text-[11px] text-body leading-relaxed whitespace-pre-line">{place.flow}</p>
+          <p className="text-xs text-body leading-relaxed whitespace-pre-line">{place.flow}</p>
         </div>
-        <div className="rounded-xl p-3 flex flex-col gap-2 border bg-warning-soft border-warning-medium/40">
-          <span className="text-[11px] font-bold text-warning-strong uppercase tracking-wide flex items-center gap-1">
+        <div className="rounded-lg p-3 flex flex-col gap-2 border bg-warning-soft border-warning-medium/40">
+          <span className="text-xs font-semibold text-warning-strong flex items-center gap-1">
             <Info className="w-3 h-3" /> How to Prepare
           </span>
-          <p className="text-[11px] text-body leading-relaxed">{place.preparation}</p>
+          <p className="text-xs text-body leading-relaxed">{place.preparation}</p>
         </div>
       </div>
 
@@ -1247,7 +1247,7 @@ function ExploreView({ place, visitTime = 'Morning' }: { place: ExploreResult; v
       {place.tags.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
           {place.tags.map(t => (
-            <span key={t} className="text-[10px] font-semibold bg-bg-app text-muted px-2.5 py-1 rounded-full border border-border">
+            <span key={t} className="text-xs font-semibold bg-bg-app text-muted px-2.5 py-1 rounded-full border border-border">
               {t}
             </span>
           ))}
@@ -1256,11 +1256,11 @@ function ExploreView({ place, visitTime = 'Morning' }: { place: ExploreResult; v
 
       {/* ── Reviews — most time-relevant first ─────────────── */}
       {sortedReviews.length > 0 && (
-        <div className="border border-border rounded-xl overflow-hidden">
+        <div className="border border-border rounded-lg overflow-hidden">
           <div className="flex items-center gap-2 px-3 pt-2.5 pb-2 border-b border-border bg-bg-app">
             <Star className="w-3 h-3 fill-warning text-warning" />
-            <span className="text-[10px] font-black text-heading uppercase tracking-widest">What visitors say</span>
-            <span className="ml-auto text-[9px] font-semibold text-brand bg-brand-softer px-2 py-0.5 rounded-full">{visitTime}</span>
+            <span className="text-xs font-semibold text-heading">What visitors say</span>
+            <span className="ml-auto text-xs font-semibold text-brand bg-brand-softer px-2 py-0.5 rounded-full">{visitTime}</span>
           </div>
           <div className="p-3">
             <ReviewCard review={sortedReviews[0]} idx={0} keywords={timeKeywords} />
@@ -1269,7 +1269,7 @@ function ExploreView({ place, visitTime = 'Morning' }: { place: ExploreResult; v
             <>
               <button
                 onClick={() => setExpanded(!expanded)}
-                className="w-full flex items-center justify-between px-3 py-2 border-t border-border text-[10px] font-bold text-brand hover:bg-brand-softer transition-colors"
+                className="w-full flex items-center justify-between px-3 py-2 border-t border-border text-xs font-bold text-brand hover:bg-brand-softer transition-colors"
               >
                 <span>{expanded ? 'Hide reviews' : `See ${sortedReviews.length - 1} more review${sortedReviews.length > 2 ? 's' : ''}`}</span>
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
@@ -1354,10 +1354,10 @@ export function ResultsView({
 
       {/* Pure Veg active indicator — shown when filter is on */}
       {tab === 'Food' && pureVegFilter && (
-        <div className="flex items-center gap-2 px-3 py-2 rounded-xl mb-3"
+        <div className="flex items-center gap-2 px-3 py-2 rounded-lg mb-3"
           style={{ background: '#ECFDF5', border: '1.5px solid #059669' }}>
           <span className="text-sm leading-none">🟢</span>
-          <span className="text-[11px] font-bold" style={{ color: '#1C64F2' }}>Pure Veg — non-veg places are dimmed</span>
+          <span className="text-xs font-bold" style={{ color: '#1C64F2' }}>Pure Veg — non-veg places are dimmed</span>
         </div>
       )}
 
@@ -1388,12 +1388,12 @@ export function ResultsView({
         <motion.div
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center gap-3 px-4 py-3 rounded-xl bg-warning-soft border border-warning-medium/40 mb-4"
+          className="flex items-center gap-3 px-4 py-3 rounded-lg bg-warning-soft border border-warning-medium/40 mb-4"
         >
           <AlertTriangle className="w-4 h-4 text-warning shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-xs font-bold text-warning">Demo mode — live search unavailable</p>
-            <p className="text-[11px] text-muted mt-0.5 leading-relaxed">Showing sample Thanjavur data. Add a valid Google Places API key in Vercel to get live results.</p>
+            <p className="text-xs text-muted mt-0.5 leading-relaxed">Showing sample Thanjavur data. Add a valid Google Places API key in Vercel to get live results.</p>
           </div>
         </motion.div>
       )}
@@ -1409,14 +1409,14 @@ export function ResultsView({
             <Info className="w-6 h-6 text-muted" />
           </div>
           <div className="space-y-1.5 max-w-xs">
-            <p className="font-display font-bold text-sm text-heading">No results match your filters</p>
+            <p className="font-display font-semibold text-sm text-heading">No results match your filters</p>
             <p className="text-xs text-muted leading-relaxed">
               No places in Thanjavur matched all your selected filters. Try removing the price range, rating, or diet restriction.
             </p>
           </div>
           <button
             onClick={onBack}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-brand text-brand text-sm font-bold hover:bg-brand hover:text-white transition-all"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg border-2 border-brand text-brand text-sm font-bold hover:bg-brand hover:text-white transition-all"
           >
             <ArrowLeft className="w-4 h-4" /> Adjust filters
           </button>
@@ -1434,14 +1434,14 @@ export function ResultsView({
             <AlertTriangle className="w-6 h-6 text-warning" />
           </div>
           <div className="space-y-1.5 max-w-xs">
-            <p className="font-display font-bold text-sm text-heading">Search unavailable</p>
+            <p className="font-display font-semibold text-sm text-heading">Search unavailable</p>
             <p className="text-xs text-muted leading-relaxed">
               Could not connect to the search service. Check your API key configuration or try again.
             </p>
           </div>
           <button
             onClick={onBack}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-brand text-brand text-sm font-bold hover:bg-brand hover:text-white transition-all"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg border-2 border-brand text-brand text-sm font-bold hover:bg-brand hover:text-white transition-all"
           >
             <ArrowLeft className="w-4 h-4" /> Adjust filters
           </button>
@@ -1456,21 +1456,21 @@ export function ResultsView({
             {idx === 0 && (
               <div className="flex items-center gap-2 -mb-2">
                 <Sparkles className="w-3.5 h-3.5 text-brand" />
-                <span className="text-[10px] font-black text-brand uppercase tracking-widest">AI Recommended</span>
+                <span className="text-xs font-semibold text-brand">AI Recommended</span>
                 <div className="flex-1 h-px bg-brand/20" />
               </div>
             )}
             {idx === 1 && (
               <div className="flex items-center gap-2 -mb-2">
                 <Star className="w-3.5 h-3.5 text-warning fill-warning" />
-                <span className="text-[10px] font-black text-warning-strong uppercase tracking-widest">Best Options</span>
+                <span className="text-xs font-semibold text-warning-strong">Best Options</span>
                 <div className="flex-1 h-px bg-warning-medium" />
               </div>
             )}
             {idx === 3 && (results?.length ?? 0) > 3 && (
               <div className="flex items-center gap-2 -mb-2">
                 <Info className="w-3.5 h-3.5 text-muted" />
-                <span className="text-[10px] font-black text-muted uppercase tracking-widest">Also Consider</span>
+                <span className="text-xs font-semibold text-muted">Also Consider</span>
                 <div className="flex-1 h-px bg-border" />
               </div>
             )}
@@ -1507,37 +1507,37 @@ export function ResultsView({
       {/* Cross-tab nudge */}
       {onSwitchTab && (
         <div className="pt-4 mt-2 border-t border-border">
-          <p className="text-[10px] font-bold text-muted uppercase tracking-widest mb-2.5 text-center">Complete your plan</p>
+          <p className="text-xs font-normal text-muted mb-2.5 text-center">Complete your plan</p>
           <div className="grid grid-cols-2 gap-2">
             {tab === 'Hotels' && <>
-              <button onClick={() => onSwitchTab('Food')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors">
+              <button onClick={() => onSwitchTab('Food')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-lg border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors">
                 <Utensils className="w-3.5 h-3.5" /> Explore nearby foods
               </button>
-              <button onClick={() => onSwitchTab('Explore')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors">
+              <button onClick={() => onSwitchTab('Explore')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-lg border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors">
                 <Compass className="w-3.5 h-3.5" /> Explore places
               </button>
             </>}
             {tab === 'Food' && <>
-              <button onClick={() => onSwitchTab('Hotels')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors">
+              <button onClick={() => onSwitchTab('Hotels')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-lg border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors">
                 <Hotel className="w-3.5 h-3.5" /> Explore hotels
               </button>
-              <button onClick={() => onSwitchTab('Explore')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors">
+              <button onClick={() => onSwitchTab('Explore')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-lg border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors">
                 <Compass className="w-3.5 h-3.5" /> Explore places nearby
               </button>
             </>}
             {tab === 'Itinerary' && <>
-              <button onClick={() => onSwitchTab('Hotels')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors">
+              <button onClick={() => onSwitchTab('Hotels')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-lg border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors">
                 <Hotel className="w-3.5 h-3.5" /> Find hotels
               </button>
-              <button onClick={() => onSwitchTab('Food')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors">
+              <button onClick={() => onSwitchTab('Food')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-lg border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors">
                 <Utensils className="w-3.5 h-3.5" /> Find food
               </button>
             </>}
             {tab === 'Explore' && <>
-              <button onClick={() => onSwitchTab('Itinerary')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors">
+              <button onClick={() => onSwitchTab('Itinerary')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-lg border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors">
                 <Route className="w-3.5 h-3.5" /> Plan a full day
               </button>
-              <button onClick={() => onSwitchTab('Hotels')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors">
+              <button onClick={() => onSwitchTab('Hotels')} className="flex items-center justify-center gap-1.5 py-2.5 rounded-lg border border-border text-xs font-semibold text-body hover:border-brand hover:text-brand hover:bg-brand-softer transition-colors">
                 <Hotel className="w-3.5 h-3.5" /> Find hotels nearby
               </button>
             </>}

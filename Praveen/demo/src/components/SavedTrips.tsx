@@ -45,10 +45,10 @@ function TripCard({ trip, onDelete, onView }: { trip: SavedTrip; onDelete: () =>
       initial={{ opacity: 0, scale: 0.97 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95, height: 0 }}
-      className="bg-surface border border-card-border rounded-xl p-4 shadow-sm flex gap-4 items-start hover:border-brand transition-colors group"
+      className="bg-surface border border-card-border rounded-2xl p-4 flex gap-4 items-start hover:border-brand transition-colors group"
     >
       {/* Icon */}
-      <div className={`w-11 h-11 rounded-xl flex items-center justify-center border shrink-0 ${TAB_COLORS[trip.tab]}`}>
+      <div className={`w-11 h-11 rounded-lg flex items-center justify-center border shrink-0 ${TAB_COLORS[trip.tab]}`}>
         {TAB_ICONS[trip.tab]}
       </div>
 
@@ -77,7 +77,7 @@ function TripCard({ trip, onDelete, onView }: { trip: SavedTrip; onDelete: () =>
                 </span>
               )}
             </div>
-            <p className="text-[10px] text-muted/60 mt-1">Saved {trip.savedAt}</p>
+            <p className="text-xs text-muted/60 mt-1">Saved {trip.savedAt}</p>
           </div>
 
           <div className="flex gap-1 shrink-0">
@@ -137,11 +137,11 @@ export function SavedTrips({ trips, onDelete, onView }: SavedTripsProps) {
 
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
-        <h2 className="font-display font-black text-xl text-heading">Trips</h2>
+        <h2 className="font-display font-semibold text-xl text-heading">Trips</h2>
       </div>
 
       {/* Inner tabs */}
-      <div className="flex gap-1 bg-bg-app border border-border rounded-xl p-1 mb-5">
+      <div className="flex gap-1 bg-bg-app border border-border rounded-lg p-1 mb-5">
         {([
           { id: 'saved'   as InnerTab, label: 'Saved Plans', icon: <Bookmark className="w-3.5 h-3.5" />,  count: savedCount   },
           { id: 'history' as InnerTab, label: 'History',     icon: <History  className="w-3.5 h-3.5" />,  count: historyCount },
@@ -159,7 +159,7 @@ export function SavedTrips({ trips, onDelete, onView }: SavedTripsProps) {
             {tab.icon}
             {tab.label}
             {tab.count > 0 && (
-              <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${innerTab === tab.id ? 'bg-brand-softer text-brand' : 'bg-border text-muted'}`}>
+              <span className={`text-xs font-semibold px-1.5 py-0.5 rounded ${innerTab === tab.id ? 'bg-brand-softer text-brand' : 'bg-border text-muted'}`}>
                 {tab.count}
               </span>
             )}

@@ -66,9 +66,9 @@ export function Profile({ user, tripCount, aiCount, onLogout, onSavedPlaces }: P
             { label: 'Trips Saved', value: tripCount, color: 'text-brand' },
             { label: 'AI Queries', value: aiCount, color: 'text-accent' },
           ].map(stat => (
-            <div key={stat.label} className="bg-white/5 border border-white/10 rounded-xl p-3">
-              <div className={`text-2xl font-display font-black ${stat.color}`}>{stat.value}</div>
-              <div className="text-[10px] font-black text-white/40 uppercase tracking-widest mt-0.5">{stat.label}</div>
+            <div key={stat.label} className="bg-white/5 border border-white/10 rounded-lg p-3">
+              <div className={`text-2xl font-display font-semibold ${stat.color}`}>{stat.value}</div>
+              <div className="text-xs font-normal text-white/40 mt-0.5">{stat.label}</div>
             </div>
           ))}
         </div>
@@ -76,7 +76,7 @@ export function Profile({ user, tripCount, aiCount, onLogout, onSavedPlaces }: P
 
       {/* Progress to next badge */}
       {tripCount < 10 && (
-        <div className="bg-surface border border-card-border rounded-xl p-4">
+        <div className="bg-surface border border-card-border rounded-2xl p-4">
           <div className="flex justify-between text-xs font-bold text-muted mb-2">
             <span>Progress to {tripCount >= 3 ? 'Expert' : 'Explorer'}</span>
             <span className="text-brand">{tripCount}/{tripCount >= 3 ? 10 : 3} trips</span>
@@ -93,7 +93,7 @@ export function Profile({ user, tripCount, aiCount, onLogout, onSavedPlaces }: P
       )}
 
       {/* Menu */}
-      <div className="bg-surface border border-card-border rounded-xl overflow-hidden">
+      <div className="bg-surface border border-card-border rounded-2xl overflow-hidden">
         {MENU_ITEMS.map((item, i) => (
           <button
             key={item.label}

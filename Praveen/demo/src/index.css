@@ -58,7 +58,11 @@
   /* ── Dark surfaces ───────────────────────────────────────────────────── */
   --color-dark:          #1F2937;   /* gray-800                         */
   --color-dark-surface:  #111827;   /* gray-900                         */
-  --color-darkest:       #06080F;   /* near-black — fullscreen dark bg  */
+  --color-darkest:       #0C1220;   /* deep navy — visible dark bg      */
+
+  /* ── On-dark text — for dark bg sections (landing page etc.) ─────────── */
+  --color-on-dark-body:  rgba(255,255,255,0.82);  /* body / descriptions  */
+  --color-on-dark-muted: rgba(255,255,255,0.55);  /* captions / footer    */
 
   /* ── Success — Green (Flowbite green-500) ───────────────────────────── */
   --color-success:       #0E9F6E;   /* green-500 — success default      */
@@ -77,6 +81,14 @@
   --color-warning-strong:#E3A008;   /* yellow-400 — warning hover       */
   --color-warning-soft:  #FDF6B2;   /* yellow-100 — warning badge bg    */
   --color-warning-medium:#FCE96A;   /* yellow-200 — warning border      */
+}
+
+/* ─── Elevation / Shadow tokens ─────────────────────────────────────────── */
+:root {
+  --shadow-xs: 0 1px 3px 1px rgba(0,0,0,0.15);
+  --shadow-s:  0 1px 3px 0px rgba(0,0,0,0.30);
+  --shadow-m:  0 4px 8px 3px rgba(0,0,0,0.15);
+  --shadow-l:  0 8px 10px 4px rgba(0,0,0,0.15);
 }
 
 /* ─── Base ──────────────────────────────────────────────────────────────── */
@@ -201,7 +213,7 @@ input[type="range"] {
 
 /* ─── Futuristic — gradient hero text ───────────────────────────────────── */
 .gradient-text-hero {
-  background: linear-gradient(135deg, #60A5FA 0%, #A78BFA 55%, #34D399 100%);
+  background: linear-gradient(135deg, #93C5FD 0%, #FFFF6B 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

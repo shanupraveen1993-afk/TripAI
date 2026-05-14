@@ -67,17 +67,17 @@ function CitySearch({ value, onChange, onPick }: {
         onKeyDown={handleKeyDown}
         placeholder="City name…"
         className={[
-          'w-full pl-9 pr-3 py-2.5 bg-bg-app border rounded-xl text-sm font-medium focus:outline-none focus:ring-2 transition-colors',
+          'w-full pl-9 py-2.5 bg-bg-app border rounded-lg text-sm font-medium focus:outline-none focus:ring-2 transition-colors',
+          isDirty && !isThanjavur ? 'pr-28' : 'pr-3',
           isDirty && !isThanjavur
-            ? 'border-warning-strong focus:ring-warning-soft text-warning-strong'
+            ? 'border-warning focus:ring-warning-soft text-body'
             : 'border-border focus:ring-brand-soft focus:border-brand text-body',
         ].join(' ')}
       />
       {isDirty && !isThanjavur && (
-        <div className="absolute top-full left-0 right-0 mt-1 flex items-center gap-1.5 bg-warning-soft border border-warning-medium rounded-xl px-3 py-2 z-50 shadow-sm">
-          <AlertCircle className="w-3.5 h-3.5 text-warning-strong shrink-0" />
-          <span className="text-xs text-warning-strong">TripAI currently features Thanjavur — try exploring there!</span>
-        </div>
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium pointer-events-none" style={{ color: 'var(--color-warning-strong)' }}>
+          Thanjavur only
+        </span>
       )}
     </div>
   );
@@ -104,7 +104,7 @@ export function Navbar({ section, onSectionChange, onLogout, userName, searchLoc
             <div className="w-8 h-8 bg-brand rounded-lg flex items-center justify-center">
               <Compass className="w-4 h-4 text-white" />
             </div>
-            <span className="font-display font-black text-xl text-heading tracking-tight hidden sm:block">
+            <span className="font-display font-bold text-xl text-heading tracking-tight hidden sm:block">
               Trip<span className="text-brand">AI</span>
             </span>
           </button>
@@ -122,7 +122,7 @@ export function Navbar({ section, onSectionChange, onLogout, userName, searchLoc
           <div className="shrink-0 relative">
             <button
               onClick={() => setProfileOpen(!profileOpen)}
-              className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-xl border border-border hover:bg-bg-app transition-colors"
+              className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-lg border border-border hover:bg-bg-app transition-colors"
             >
               <div className="w-7 h-7 bg-brand rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0">
                 {userName.charAt(0).toUpperCase()}
@@ -134,7 +134,7 @@ export function Navbar({ section, onSectionChange, onLogout, userName, searchLoc
             </button>
 
             {profileOpen && (
-              <div className="absolute right-0 top-full mt-2 w-44 bg-surface border border-border rounded-xl shadow-lg overflow-hidden z-50">
+              <div className="absolute right-0 top-full mt-2 w-44 bg-surface border border-border rounded-2xl overflow-hidden z-50" style={{ boxShadow: 'var(--shadow-m)' }}>
                 <button
                   onClick={() => { onSectionChange('history'); setProfileOpen(false); }}
                   className="flex items-center gap-2.5 w-full px-4 py-3 text-sm text-body hover:bg-bg-app transition-colors"
@@ -176,7 +176,7 @@ export function Navbar({ section, onSectionChange, onLogout, userName, searchLoc
               <span className={section === item.id ? '[&>svg]:stroke-[2.5]' : ''}>
                 {item.icon}
               </span>
-              <span className="text-[9px] font-bold uppercase tracking-widest">{item.label}</span>
+              <span className="text-xs font-medium">{item.label}</span>
             </button>
           ))}
         </div>

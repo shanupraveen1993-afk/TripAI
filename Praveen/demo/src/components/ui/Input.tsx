@@ -14,7 +14,7 @@ export function Input({ label, helper, error, icon, iconRight, className = '', i
   return (
     <div className="w-full">
       {label && (
-        <label htmlFor={inputId} className="block text-xs font-semibold text-heading uppercase tracking-wide mb-1.5">
+        <label htmlFor={inputId} className="block text-xs font-semibold text-heading mb-1.5">
           {label}
         </label>
       )}

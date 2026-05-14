@@ -56,10 +56,10 @@ export function AuthForm({ onSuccess, onBack, asModal = false }: AuthFormProps) 
         {/* Brand — standalone page only */}
         {!asModal && (
           <div className="flex items-center gap-2 mb-8">
-            <div className="w-9 h-9 bg-brand rounded-xl flex items-center justify-center">
+            <div className="w-9 h-9 bg-brand rounded-lg flex items-center justify-center">
               <Compass className="w-5 h-5 text-white" />
             </div>
-            <span className="font-display font-black text-2xl text-heading tracking-tight">
+            <span className="font-display font-semibold text-2xl text-heading tracking-tight">
               Trip<span className="text-brand">AI</span>
             </span>
           </div>
@@ -73,7 +73,7 @@ export function AuthForm({ onSuccess, onBack, asModal = false }: AuthFormProps) 
             exit={{ opacity: 0 }}
           >
             <div className="mb-6">
-              <h1 className="text-2xl font-display font-black text-heading mb-1">
+              <h1 className="text-2xl font-display font-medium text-heading mb-1">
                 Welcome to TripAI
               </h1>
               <p className="text-sm text-muted">

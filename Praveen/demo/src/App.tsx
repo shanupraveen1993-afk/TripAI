@@ -5,6 +5,7 @@ import { PlaceCardSkeleton, ItineraryItemSkeleton } from './components/ui/Skelet
 import { LandingPage } from './components/LandingPage';
 import { Navbar, MainSection } from './components/Navbar';
 import { Dashboard, DashboardFilters } from './components/Dashboard';
+import { CityLockScreen } from './components/CityLockScreen';
 import { ResultsView } from './components/ResultsView';
 import { SavedTrips, SavedTrip } from './components/SavedTrips';
 import { Profile } from './components/Profile';
@@ -22,7 +23,7 @@ import {
 } from './api/client';
 
 type AppScreen = 'landing' | 'browse' | 'app';
-type ContentScreen = 'dashboard' | 'loading' | 'results';
+type ContentScreen = 'dashboard' | 'citylock' | 'loading' | 'results';
 
 interface User { name: string; email: string; avatar?: string; }
 
@@ -152,7 +153,17 @@ export default function App() {
   };
 
   // ── Core search logic ───────────────────────────────────────────────────
+  const isThanjavurCity = (dest: string) =>
+    /thanjavur|tanjore/i.test(dest.trim()) || dest.trim() === '';
+
   const runSearch = async (filters: DashboardFilters, seed: number) => {
+    // Non-Thanjavur city → show city-lock screen instead of running search
+    if (filters.destination && !isThanjavurCity(filters.destination)) {
+      setSearchLocation(filters.destination);
+      setContent('citylock');
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      return;
+    }
     setActiveTab(filters.tab);
     if (filters.destination) setSearchLocation(filters.destination);
     setLastSearchFilters(filters);
@@ -354,6 +365,12 @@ export default function App() {
 
   const handleDestinationSelect = (dest: string) => {
     setSearchLocation(dest);
+    if (dest && !isThanjavurCity(dest)) {
+      setContent('citylock');
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    } else {
+      setContent('dashboard');
+    }
   };
 
   const recentSearches = savedTrips
@@ -411,6 +428,16 @@ export default function App() {
 
     return (
       <AnimatePresence mode="wait">
+        {contentScreen === 'citylock' && (
+          <motion.div key="citylock" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>
+            <CityLockScreen
+              destination={searchLocation}
+              onBack={() => { setSearchLocation('Thanjavur'); setContent('dashboard'); }}
+              onTryThanjavur={() => { setSearchLocation('Thanjavur'); setContent('dashboard'); }}
+            />
+          </motion.div>
+        )}
+
         {contentScreen === 'dashboard' && (
           <motion.div key="dashboard" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>
             <Dashboard

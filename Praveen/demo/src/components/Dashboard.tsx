@@ -371,10 +371,10 @@ function LocationBar({ value, onChange, placeholder, autoDetect, mockResolvedLoc
         type="button"
         onClick={detect}
         disabled={detecting}
-        className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center justify-center gap-1 text-[10px] font-bold px-2 py-1 rounded-md transition-all duration-200 disabled:pointer-events-none"
+        className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center justify-center gap-1 text-xs font-bold px-2 py-1 rounded-md transition-all duration-200 disabled:pointer-events-none"
         style={phase === 'found'
-          ? { background: '#DEF7EC', color: '#057A55' }
-          : { background: '#EBF5FF', color: '#1C64F2' }
+          ? { background: 'var(--color-success-soft)', color: 'var(--color-success-strong)' }
+          : { background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
         }
         title="Use current location"
       >
@@ -399,8 +399,8 @@ function LocationBar({ value, onChange, placeholder, autoDetect, mockResolvedLoc
 function CategorySelector({ active, onChange }: { active: Tab; onChange: (t: Tab) => void }) {
   return (
     <div
-      className="rounded-xl p-1 flex gap-1"
-      style={{ background: '#1C64F2', boxShadow: '0 4px 16px rgba(28,100,242,0.30)' }}
+      className="rounded-lg p-1 flex gap-1"
+      style={{ background: 'var(--color-brand)', boxShadow: '0 4px 16px rgba(28,100,242,0.30)' }}
     >
       {TABS.map(tab => {
         const meta = TAB_META[tab];
@@ -412,17 +412,17 @@ function CategorySelector({ active, onChange }: { active: Tab; onChange: (t: Tab
             onClick={() => onChange(tab)}
             className="flex-1 flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg transition-all duration-200"
             style={isActive
-              ? { background: '#fff', boxShadow: '0 1px 6px rgba(0,0,0,0.12)' }
+              ? { background: '#fff', boxShadow: 'var(--shadow-xs)' }
               : { background: 'transparent' }
             }
             whileTap={{ scale: 0.96 }}
           >
-            <span className="flex items-center" style={{ color: isActive ? '#1C64F2' : 'rgba(255,255,255,0.9)' }}>
+            <span className="flex items-center" style={{ color: isActive ? 'var(--color-brand)' : 'rgba(255,255,255,0.9)' }}>
               {meta.icon}
             </span>
             <span
-              className="text-[11px] font-bold tracking-wide transition-colors duration-200"
-              style={{ color: isActive ? '#1C64F2' : 'rgba(255,255,255,0.9)' }}
+              className="text-xs font-semibold transition-colors duration-200"
+              style={{ color: isActive ? 'var(--color-brand)' : 'rgba(255,255,255,0.9)' }}
             >
               {meta.label}
             </span>
@@ -657,24 +657,23 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               {/* Header with counter + subtitle */}
               <div className="mb-2.5">
                 <div className="flex items-center justify-between">
-                  <label className="text-[13px] font-black text-heading">
+                  <label className="text-sm font-semibold text-heading">
                     What matters to you?
                     {tagsLoading && <span className="ml-1.5 inline-block w-2.5 h-2.5 border border-muted border-t-transparent rounded-full animate-spin align-middle" />}
                   </label>
                   {hotelTags.length > 0 && (
-                    <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full"
-                      style={{ background: '#EBF5FF', color: '#1C64F2' }}>
+                    <span className="text-xs font-semibold px-1.5 py-0.5 rounded"
+                      style={{ background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }}>
                       {hotelTags.length}/2
                     </span>
                   )}
                 </div>
-                <p className="text-[11px] text-muted mt-0.5">Select your top priorities</p>
               </div>
 
               {/* Location toast */}
               {locationToast && (
-                <div className="mb-2 px-2.5 py-1.5 rounded-lg text-[10px] font-semibold flex items-center gap-1.5"
-                  style={{ background: '#EBF5FF', color: '#1A56DB', border: '1px solid #C3DDFD' }}>
+                <div className="mb-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5"
+                  style={{ background: 'var(--color-brand-softer)', color: 'var(--color-brand)', border: '1px solid var(--color-brand-soft)' }}>
                   <MapPin className="w-3 h-3 shrink-0" />
                   {locationToast}
                 </div>
@@ -684,7 +683,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               {hotelTagData.segments
                 ? Object.entries(hotelTagData.segments).map(([segName, segTags]) => (
                   <div key={segName} className="mb-3">
-                    <div className="text-[11px] font-semibold text-muted mb-1.5">
+                    <div className="text-xs font-normal text-muted mb-1.5">
                       {segName}
                     </div>
                     <div className="flex flex-wrap gap-1.5">
@@ -718,13 +717,13 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                                 setTimeout(() => setLocationToast(''), 3000);
                               }
                             }}
-                            className="px-2.5 py-1.5 rounded-full border-2 text-[10px] font-bold transition-all"
+                            className="px-3 py-2 rounded-lg border-2 text-xs font-medium transition-all"
                             style={
                               isSelected
-                                ? { borderColor: '#1C64F2', background: '#EBF5FF', color: '#1C64F2' }
+                                ? { borderColor: 'var(--color-brand)', background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
                                 : isMaxed
-                                  ? { borderColor: '#E5E7EB', background: '#F9FAFB', color: '#D1D5DB', cursor: 'not-allowed' }
-                                  : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
+                                  ? { borderColor: 'var(--color-border)', background: 'var(--color-bg-app)', color: 'var(--color-border-medium)', cursor: 'not-allowed' }
+                                  : { borderColor: 'var(--color-border)', background: '#fff', color: 'var(--color-muted)' }
                             }
                           >
                             {tag}
@@ -750,13 +749,13 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                               : prev.length >= 2 ? [...prev.slice(1), tag]
                               : [...prev, tag]
                           )}
-                          className="px-2.5 py-1.5 rounded-full border-2 text-[10px] font-bold transition-all"
+                          className="px-3 py-2 rounded-lg border-2 text-xs font-medium transition-all"
                           style={
                             isSelected
-                              ? { borderColor: '#1C64F2', background: '#EBF5FF', color: '#1C64F2' }
+                              ? { borderColor: 'var(--color-brand)', background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
                               : isMaxed
-                                ? { borderColor: '#E5E7EB', background: '#F9FAFB', color: '#D1D5DB', cursor: 'not-allowed' }
-                                : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
+                                ? { borderColor: 'var(--color-border)', background: 'var(--color-bg-app)', color: 'var(--color-border-medium)', cursor: 'not-allowed' }
+                                : { borderColor: 'var(--color-border)', background: '#fff', color: 'var(--color-muted)' }
                           }
                         >
                           {tag}
@@ -770,7 +769,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               {/* Clear tags */}
               {hotelTags.length > 0 && (
                 <button type="button" onClick={() => setHotelTags([])}
-                  className="mt-1.5 text-[9px] font-bold text-muted underline underline-offset-2">
+                  className="mt-1.5 text-xs font-medium text-muted underline underline-offset-2">
                   Clear tags
                 </button>
               )}
@@ -789,13 +788,13 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             <div>
               {/* Header with counter */}
               <div className="flex items-center justify-between mb-1.5">
-                <label className="text-[13px] font-black text-heading">
+                <label className="text-sm font-semibold text-heading">
                   What I'm looking for
                   {tagsLoading && <span className="ml-1.5 inline-block w-2.5 h-2.5 border border-muted border-t-transparent rounded-full animate-spin align-middle" />}
                 </label>
                 {foodTags.length > 0 && (
-                  <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full"
-                    style={{ background: '#EBF5FF', color: '#1C64F2' }}>
+                  <span className="text-xs font-semibold px-1.5 py-0.5 rounded"
+                    style={{ background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }}>
                     {foodTags.length}/2
                   </span>
                 )}
@@ -804,7 +803,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               {foodTagData.segments && Object.keys(foodTagData.segments).length > 0
                 ? Object.entries(foodTagData.segments).map(([seg, tags]) => (
                   <div key={seg} className="mb-2">
-                    <p className="text-[11px] font-semibold text-muted mb-1.5">{seg}</p>
+                    <p className="text-xs font-normal text-muted mb-1.5">{seg}</p>
                     <div className="flex flex-wrap gap-1.5">
                       {tags.map((tag: string) => {
                         const isSelected = foodTags.includes(tag);
@@ -819,12 +818,12 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                                 : prev.length >= 2 ? [...prev.slice(1), tag]
                                 : [...prev, tag]
                             )}
-                            className="px-2.5 py-1.5 rounded-full border-2 text-[10px] font-bold transition-all"
+                            className="px-3 py-2 rounded-lg border-2 text-xs font-medium transition-all"
                             style={isSelected
-                              ? { borderColor: '#1C64F2', background: '#EBF5FF', color: '#1C64F2' }
+                              ? { borderColor: 'var(--color-brand)', background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
                               : isMaxed
-                                ? { borderColor: '#E5E7EB', background: '#F9FAFB', color: '#D1D5DB', cursor: 'not-allowed' }
-                                : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
+                                ? { borderColor: 'var(--color-border)', background: 'var(--color-bg-app)', color: 'var(--color-border-medium)', cursor: 'not-allowed' }
+                                : { borderColor: 'var(--color-border)', background: '#fff', color: 'var(--color-muted)' }
                             }
                           >
                             {tag}
@@ -849,7 +848,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                               : prev.length >= 2 ? [...prev.slice(1), t]
                               : [...prev, t]
                           )}
-                          className="px-2.5 py-1.5 rounded-full border-2 text-[10px] font-bold transition-all"
+                          className="px-3 py-2 rounded-lg border-2 text-xs font-medium transition-all"
                           style={isSelected
                             ? { borderColor: '#1C64F2', background: '#EBF5FF', color: '#1C64F2' }
                             : isMaxed
@@ -868,7 +867,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               {/* Clear tags */}
               {foodTags.length > 0 && (
                 <button type="button" onClick={() => setFoodTags([])}
-                  className="mt-1.5 text-[9px] font-bold text-muted underline underline-offset-2">
+                  className="mt-1.5 text-xs font-medium text-muted underline underline-offset-2">
                   Clear tags
                 </button>
               )}
@@ -876,13 +875,13 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
           )}
 
           {/* Advanced — collapsible specific dish names */}
-          <div className="border border-border rounded-xl overflow-hidden">
+          <div className="border border-border rounded-lg overflow-hidden">
             <button
               type="button"
               onClick={() => setAdvancedOpen(prev => !prev)}
               className="w-full flex items-center justify-between px-3 py-2.5 bg-surface hover:bg-brand-softer transition-colors"
             >
-              <span className="text-[10px] font-bold text-muted uppercase tracking-wider">Advanced · Dish names</span>
+              <span className="text-xs font-normal text-muted">Advanced · Dish names</span>
               <ChevronDown
                 className="w-3.5 h-3.5 text-muted transition-transform duration-200"
                 style={{ transform: advancedOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
@@ -892,7 +891,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               <div className="px-3 py-2.5 space-y-2.5 border-t border-border">
                 {FOOD_ADVANCED.map(({ group, items }) => (
                   <div key={group}>
-                    <p className="text-[9px] font-bold text-muted uppercase tracking-wider mb-1">{group}</p>
+                    <p className="text-xs font-normal text-muted mb-1">{group}</p>
                     <div className="flex flex-wrap gap-1.5">
                       {items.map(item => {
                         const isSelected = foodTags.includes(item);
@@ -907,12 +906,12 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                                 : prev.length >= 2 ? [...prev.slice(1), item]
                                 : [...prev, item]
                             )}
-                            className="px-2.5 py-1 rounded-full border-2 text-[10px] font-bold transition-all"
+                            className="px-3 py-1.5 rounded-lg border-2 text-xs font-medium transition-all"
                             style={isSelected
-                              ? { borderColor: '#1C64F2', background: '#EBF5FF', color: '#1C64F2' }
+                              ? { borderColor: 'var(--color-brand)', background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
                               : isMaxed
-                                ? { borderColor: '#E5E7EB', background: '#F9FAFB', color: '#D1D5DB', cursor: 'not-allowed' }
-                                : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
+                                ? { borderColor: 'var(--color-border)', background: 'var(--color-bg-app)', color: 'var(--color-border-medium)', cursor: 'not-allowed' }
+                                : { borderColor: 'var(--color-border)', background: '#fff', color: 'var(--color-muted)' }
                             }
                           >
                             {item}
@@ -933,13 +932,13 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       case 'Itinerary': return (
         <div className="space-y-3">
           <div>
-            <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1">Starting Location</label>
+            <label className="block text-xs font-semibold text-heading uppercase tracking-wide mb-1">Starting Location</label>
             <LocationBar value={startPoint} onChange={setStartPoint} placeholder="e.g. Railway Station, Hotel name…" />
           </div>
 
           {/* Date — Today / Tomorrow / Day After */}
           <div>
-            <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1">Date</label>
+            <label className="block text-xs font-semibold text-heading uppercase tracking-wide mb-1">Date</label>
             <div className="flex gap-1.5">
               {(['today', 'tomorrow', 'dayafter'] as const).map(d => {
                 const labels: Record<string, string> = { today: 'Today', tomorrow: 'Tomorrow', dayafter: 'Day After' };
@@ -948,7 +947,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                     key={d}
                     type="button"
                     onClick={() => setItinDate(d)}
-                    className="flex-1 py-2 rounded-lg text-[10px] font-bold border-2 transition-all"
+                    className="flex-1 py-2 rounded-lg text-xs font-bold border-2 transition-all"
                     style={itinDate === d
                       ? { borderColor: '#1C64F2', background: '#EBF5FF', color: '#1C64F2' }
                       : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
@@ -963,7 +962,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
 
           {/* Time slot — Morning / Afternoon / Evening + mandatory validation */}
           <div>
-            <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
+            <label className="block text-xs font-semibold text-heading uppercase tracking-wide mb-1">
               Time Slot <span className="text-danger">*</span>
             </label>
             <div className="flex gap-1.5">
@@ -982,8 +981,8 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                         : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
                     }
                   >
-                    <span className="text-[10px] font-black uppercase tracking-wide">{t}</span>
-                    <span className="text-[9px] opacity-60">{stops[t]} stops</span>
+                    <span className="text-xs font-semibold uppercase tracking-wide">{t}</span>
+                    <span className="text-xs opacity-60">{stops[t]} stops</span>
                   </button>
                 );
               })}
@@ -994,7 +993,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                   initial={{ opacity: 0, y: -4 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -4 }}
-                  className="text-[10px] text-danger font-bold mt-1.5 flex items-center gap-1"
+                  className="text-xs text-danger font-bold mt-1.5 flex items-center gap-1"
                 >
                   <span>⚠</span> Please select a time slot to continue
                 </motion.p>
@@ -1003,7 +1002,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
           </div>
 
           <div className="rounded-lg p-2.5 border border-border" style={{ background: '#EBF5FF' }}>
-            <p className="text-[11px] text-muted leading-relaxed">
+            <p className="text-xs text-muted leading-relaxed">
               <span className="font-bold text-heading">Visual day planner</span> — AI sequences stops by proximity, avoids peak traffic hours, and shows entry tips per location.
             </p>
           </div>
@@ -1015,7 +1014,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         <div className="space-y-3">
           {/* Location dropdown */}
           <div>
-            <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-1">
+            <label className="block text-xs font-semibold text-heading uppercase tracking-wide mb-1">
               Top Location in Thanjavur
             </label>
             <div className="relative">
@@ -1035,7 +1034,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted pointer-events-none" />
             </div>
             {showExploreError && (
-              <p className="text-[10px] text-danger font-bold mt-1.5 flex items-center gap-1">
+              <p className="text-xs text-danger font-bold mt-1.5 flex items-center gap-1">
                 <span>⚠</span> Please select a location to continue
               </p>
             )}
@@ -1043,7 +1042,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
 
           {/* Time slot */}
           <div>
-            <label className="block text-[10px] font-bold text-heading uppercase tracking-wide mb-2">
+            <label className="block text-xs font-semibold text-heading uppercase tracking-wide mb-2">
               When are you visiting?
             </label>
             <div className="grid grid-cols-3 gap-2">
@@ -1056,21 +1055,21 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                   key={slot}
                   type="button"
                   onClick={() => setVisitTime(slot)}
-                  className="flex flex-col items-center gap-0.5 py-2.5 rounded-xl border-2 transition-all"
+                  className="flex flex-col items-center gap-0.5 py-2.5 rounded-lg border-2 transition-all"
                   style={visitTime === slot
-                    ? { borderColor: '#1C64F2', background: '#EBF5FF', color: '#1C64F2' }
-                    : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
+                    ? { borderColor: 'var(--color-brand)', background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
+                    : { borderColor: 'var(--color-border)', background: '#fff', color: 'var(--color-muted)' }
                   }
                 >
-                  <span className="text-[10px] font-black uppercase tracking-wide">{slot}</span>
-                  <span className="text-[9px] font-normal opacity-70">{range}</span>
+                  <span className="text-xs font-semibold uppercase tracking-wide">{slot}</span>
+                  <span className="text-xs font-normal opacity-70">{range}</span>
                 </button>
               ))}
             </div>
           </div>
 
           <div className="rounded-lg p-2.5 border border-border bg-success-soft">
-            <p className="text-[11px] text-body leading-relaxed flex items-start gap-1.5">
+            <p className="text-xs text-body leading-relaxed flex items-start gap-1.5">
               <Sparkles className="w-3.5 h-3.5 text-success-strong shrink-0 mt-0.5" />
               <span><span className="font-bold text-heading">AI Visit Guide</span> — Gemini reads real reviews and crowd data to build a time-specific plan for your chosen spot.</span>
             </p>
@@ -1081,175 +1080,6 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
   };
 
   const smartPicks = getSmartPicks(destination);
-
-  /* ── City-lock full screen — shown when destination ≠ Thanjavur ─── */
-  if (!isThanjavur(destination) && destination.trim() !== '') {
-    return (
-      <div
-        className="w-full relative overflow-hidden flex flex-col items-center justify-center min-h-[92vh] px-5 py-12"
-        style={{ background: 'linear-gradient(160deg,#06080F 0%,#0B0F1E 50%,#100816 100%)' }}
-      >
-        {/* ── Keyframe injection ─────────────────────────────────────── */}
-        <style>{`
-          @keyframes cl-ring { 0%,100%{transform:scale(1);opacity:.18} 50%{transform:scale(1.08);opacity:.32} }
-          @keyframes cl-ring2 { 0%,100%{transform:scale(1);opacity:.10} 50%{transform:scale(1.12);opacity:.22} }
-          @keyframes cl-ring3 { 0%,100%{transform:scale(1);opacity:.06} 50%{transform:scale(1.18);opacity:.14} }
-          @keyframes cl-scan { 0%{top:-4px;opacity:0} 10%{opacity:.6} 90%{opacity:.2} 100%{top:100%;opacity:0} }
-          @keyframes cl-float { 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-8px)} }
-          @keyframes cl-dot { 0%,100%{opacity:.15} 50%{opacity:.55} }
-        `}</style>
-
-        {/* ── Dot grid ─────────────────────────────────────────────── */}
-        <div className="absolute inset-0 pointer-events-none" style={{
-          backgroundImage: 'radial-gradient(circle, rgba(28,100,242,0.15) 1px, transparent 1px)',
-          backgroundSize: '32px 32px',
-          maskImage: 'radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 80%)',
-        }} />
-
-        {/* ── Scan line ────────────────────────────────────────────── */}
-        <div className="absolute left-0 right-0 h-[2px] pointer-events-none z-10" style={{
-          background: 'linear-gradient(90deg, transparent, rgba(28,100,242,0.5), transparent)',
-          animation: 'cl-scan 4s ease-in-out infinite',
-        }} />
-
-        {/* ── Floating ambient orbs ───────────────────────────────── */}
-        <div className="absolute top-1/4 left-1/4 w-72 h-72 rounded-full pointer-events-none" style={{
-          background: 'radial-gradient(circle, rgba(28,100,242,0.08), transparent 70%)', filter: 'blur(40px)',
-        }} />
-        <div className="absolute bottom-1/4 right-1/4 w-56 h-56 rounded-full pointer-events-none" style={{
-          background: 'radial-gradient(circle, rgba(99,102,241,0.08), transparent 70%)', filter: 'blur(40px)',
-        }} />
-
-        {/* ── Pulsing concentric rings + temple ─────────────────── */}
-        <div className="relative flex items-center justify-center mb-8" style={{ animation: 'cl-float 4s ease-in-out infinite' }}>
-          {/* Ring 3 — outermost */}
-          <div className="absolute rounded-full" style={{
-            width: 200, height: 200, border: '1px solid rgba(28,100,242,0.20)', animation: 'cl-ring3 3.6s ease-in-out infinite 0.8s',
-          }} />
-          {/* Ring 2 */}
-          <div className="absolute rounded-full" style={{
-            width: 148, height: 148, border: '1px solid rgba(28,100,242,0.30)', animation: 'cl-ring2 3.6s ease-in-out infinite 0.4s',
-          }} />
-          {/* Ring 1 — inner */}
-          <div className="absolute rounded-full" style={{
-            width: 104, height: 104, border: '2px solid rgba(28,100,242,0.40)', animation: 'cl-ring 3.6s ease-in-out infinite',
-          }} />
-          {/* Core glow disk */}
-          <div className="absolute w-16 h-16 rounded-full" style={{
-            background: 'radial-gradient(circle, rgba(28,100,242,0.35), transparent 70%)',
-            filter: 'blur(12px)',
-          }} />
-          {/* Temple emoji */}
-          <span className="relative z-10 select-none" style={{
-            fontSize: '3.5rem', lineHeight: 1,
-            filter: 'drop-shadow(0 0 18px rgba(28,100,242,0.8)) drop-shadow(0 0 40px rgba(28,100,242,0.35))',
-          }}>🛕</span>
-        </div>
-
-        {/* ── City signal badge ────────────────────────────────────── */}
-        <motion.div
-          initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-full mb-5 text-[11px] font-mono font-bold tracking-widest uppercase"
-          style={{
-            background: 'rgba(255,255,255,0.04)',
-            border: '1px solid rgba(240,82,82,0.40)',
-            color: '#F05252',
-          }}
-        >
-          <span className="w-1.5 h-1.5 rounded-full bg-danger-medium animate-pulse" />
-          Signal not found · {destination}
-        </motion.div>
-
-        {/* ── Headline ─────────────────────────────────────────────── */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
-          className="text-center mb-4"
-        >
-          <h1 className="font-display font-black tracking-tight leading-none mb-1" style={{
-            fontSize: 'clamp(2rem, 7vw, 3.2rem)',
-            background: 'linear-gradient(135deg, #1C64F2 0%, #9061F9 50%, #1C64F2 100%)',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-            backgroundSize: '200% auto', backgroundClip: 'text',
-          }}>
-            LIVE IN THANJAVUR
-          </h1>
-          <p className="text-[11px] font-mono tracking-[0.3em] uppercase mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
-            AI · Travel · India
-          </p>
-        </motion.div>
-
-        {/* ── Glass info card ───────────────────────────────────────── */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }}
-          className="w-full max-w-xs text-center px-5 py-4 rounded-2xl mb-6"
-          style={{
-            background: 'rgba(255,255,255,0.04)',
-            border: '1px solid rgba(255,255,255,0.09)',
-            backdropFilter: 'blur(12px)',
-          }}
-        >
-          <p className="text-[13px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.65)' }}>
-            Every city in India is on its way.
-            <span className="font-bold" style={{ color: 'rgba(255,255,255,0.9)' }}> {destination}</span> will be live soon —
-            you'll be the first to explore it.
-          </p>
-        </motion.div>
-
-        {/* ── Made in India badge ───────────────────────────────────── */}
-        <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.28 }}
-          className="flex items-center gap-2 px-4 py-1.5 rounded-full mb-8 text-[10px] font-bold tracking-widest uppercase"
-          style={{
-            background: 'rgba(250,202,21,0.10)',
-            border: '1px solid rgba(250,202,21,0.30)',
-            color: 'rgba(250,202,21,0.90)',
-          }}
-        >
-          <span>🇮🇳</span>
-          <span>#MadeInIndia · All Cities Coming Soon</span>
-        </motion.div>
-
-        {/* ── CTA button ───────────────────────────────────────────── */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.33 }}
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-          style={{ boxShadow: '0 0 32px rgba(28,100,242,0.45), 0 0 8px rgba(28,100,242,0.3)' }}
-          className="rounded-2xl"
-        >
-          <Button
-            variant="brand"
-            size="lg"
-            icon={<Sparkles className="w-4 h-4" />}
-            iconRight={<ChevronRight className="w-4 h-4" />}
-            onClick={() => onDestinationSelect?.('Thanjavur')}
-            className="rounded-2xl px-8"
-          >
-            Try Thanjavur
-          </Button>
-        </motion.div>
-
-        {/* ── Floating pixel dots ───────────────────────────────────── */}
-        {[
-          { top: '12%', left: '8%',  delay: '0s',    size: 3 },
-          { top: '22%', left: '88%', delay: '0.8s',  size: 2 },
-          { top: '72%', left: '6%',  delay: '1.4s',  size: 2 },
-          { top: '80%', left: '90%', delay: '0.4s',  size: 3 },
-          { top: '45%', left: '4%',  delay: '2s',    size: 2 },
-          { top: '55%', left: '94%', delay: '1.2s',  size: 2 },
-        ].map((d, i) => (
-          <div key={i} className="absolute rounded-full pointer-events-none" style={{
-            top: d.top, left: d.left,
-            width: d.size, height: d.size,
-            background: '#1C64F2',
-            animation: `cl-dot 2.5s ease-in-out infinite ${d.delay}`,
-          }} />
-        ))}
-      </div>
-    );
-  }
 
   // Greeting based on time of day
   const hour = new Date().getHours();
@@ -1292,8 +1122,8 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.22 }}
-        className="relative -mx-4 overflow-hidden"
-        style={{ minHeight: 220, borderRadius: '0 0 22px 22px' }}
+        className="relative overflow-hidden rounded-2xl"
+        style={{ minHeight: 220 }}
       >
         {heroPhotoUri
           ? <img src={heroPhotoUri} alt={activeTab} className="absolute inset-0 w-full h-full object-cover object-center" draggable={false} />
@@ -1302,18 +1132,18 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.18) 40%, rgba(0,0,0,0.62) 100%)' }} />
         {/* Greeting */}
         {firstName && (
-          <div className="absolute top-4 left-5 text-white/80 text-[11px] font-semibold">
+          <div className="absolute top-4 left-5 text-white/80 text-xs font-semibold">
             {greeting}, {firstName} 👋
           </div>
         )}
         {/* Hero text */}
         <div className="absolute bottom-5 left-5 right-5">
           <p className="text-white font-display font-black text-lg leading-tight drop-shadow">{hero.headline}</p>
-          <p className="text-white/75 text-[11px] mt-0.5 leading-snug">{hero.sub}</p>
+          <p className="text-white/75 text-xs mt-0.5 leading-snug">{hero.sub}</p>
         </div>
         {/* Location pill */}
         <div className="absolute top-4 right-5">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-white text-[10px] font-bold"
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-white text-xs font-bold"
             style={{ background: 'rgba(0,0,0,0.32)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.18)' }}>
             <MapPin className="w-2.5 h-2.5 shrink-0" />
             {destination || 'Thanjavur'}
@@ -1323,8 +1153,8 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
 
       {/* ── Category selector — always sticky below header ── */}
       <div
-        className="sticky z-30 -mx-4 px-4 pb-2 pt-1"
-        style={{ top: 'calc(57px + env(safe-area-inset-top))', background: 'rgba(249,250,251,0.97)', backdropFilter: 'blur(20px)', boxShadow: '0 1px 0 rgba(0,0,0,0.07)' }}
+        className="sticky z-30 pb-2 pt-1"
+        style={{ top: 'calc(57px + env(safe-area-inset-top))' }}
       >
         <CategorySelector active={activeTab} onChange={t => setActiveTab(t)} />
       </div>
@@ -1336,8 +1166,8 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -4 }}
         transition={{ duration: 0.18, ease: 'easeOut' }}
-        className="rounded-xl overflow-hidden relative z-10 bg-white"
-        style={{ border: '1px solid #E5E7EB' }}
+        className="rounded-2xl overflow-hidden relative z-10 bg-white"
+        style={{ border: '1px solid var(--color-border)' }}
       >
         {/* Search override — Hotels + Food only */}
         {(activeTab === 'Hotels' || activeTab === 'Food') && (() => {
@@ -1368,8 +1198,8 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
           );
           const showSuggestions = searchFocused && suggestions.length > 0 && !(!searchQuery && false);
           return (
-            <div className="px-3 pt-3 pb-2 relative">
-              <div className={`flex items-center gap-2 rounded-xl px-3 py-2 transition-all ${searchQuery ? 'ring-2 ring-brand' : 'ring-1 ring-border'}`} style={{ background: '#F9FAFB' }}>
+            <div className="px-4 pt-3 pb-2 relative">
+              <div className={`flex items-center gap-2 rounded-lg px-3 py-2 transition-all ${searchQuery ? 'ring-2 ring-brand' : 'ring-1 ring-border'}`} style={{ background: 'var(--color-bg-app)' }}>
                 <Search className="w-3.5 h-3.5 shrink-0 text-muted" />
                 <input
                   type="text"
@@ -1388,7 +1218,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                 )}
               </div>
               {showSuggestions && (
-                <div className="absolute left-3 right-3 top-full z-50 mt-0.5 rounded-xl overflow-hidden shadow-lg" style={{ background: '#fff', border: '1px solid #E5E7EB' }}>
+                <div className="absolute left-4 right-4 top-full z-50 mt-0.5 rounded-lg overflow-hidden" style={{ background: '#fff', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-m)' }}>
                   {suggestions.slice(0, 6).map(s => (
                     <button
                       key={s}
@@ -1412,7 +1242,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             <span style={{ color: '#fff' }}>{meta.icon}</span>
           </div>
           <div className="min-w-0 flex-1">
-            <p className="font-display font-black text-sm text-heading leading-tight">{meta.headline}</p>
+            <p className="font-display font-semibold text-sm text-heading leading-tight">{meta.headline}</p>
             <p className="text-xs text-muted mt-0.5 truncate">{meta.sub}</p>
           </div>
           <Sparkles className="w-3.5 h-3.5 ml-auto shrink-0 text-brand" />
@@ -1428,11 +1258,8 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             type="button"
             onClick={handleSearch}
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-soft disabled:opacity-40 disabled:cursor-not-allowed"
-            style={activeTab === 'Hotels'
-              ? { background: '#1C64F2', color: '#fff' }
-              : { background: '#fff', color: '#1C64F2', border: '2px solid #1C64F2' }
-            }
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg font-semibold uppercase tracking-[0.04em] text-sm transition-all duration-200 active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-soft disabled:opacity-40 disabled:cursor-not-allowed"
+            style={{ background: 'var(--color-brand)', color: '#fff' }}
           >
             {loading
               ? <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
@@ -1441,10 +1268,10 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             {loading ? 'AI is on it…' : (
               searchQuery.trim() && activeTab === 'Hotels'  ? `Search "${searchQuery.trim()}"` :
               searchQuery.trim() && activeTab === 'Food'    ? `Search "${searchQuery.trim()}"` :
-              activeTab === 'Hotels'    ? 'Find my hotel in Thanjavur' :
-              activeTab === 'Food'      ? 'Find restaurants in Thanjavur' :
-              activeTab === 'Itinerary' ? 'Build my Thanjavur day plan' :
-              'Get my AI visit guide'
+              activeTab === 'Hotels'    ? 'Search Hotels' :
+              activeTab === 'Food'      ? 'Search Food' :
+              activeTab === 'Itinerary' ? 'Build Day Plan' :
+              'Get Visit Guide'
             )}
           </button>
         </div>
@@ -1454,16 +1281,16 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
 
       {/* ── Popular searches ───────────────────────────────────── */}
       <div className="relative z-10">
-        <p className="text-[10px] font-bold text-muted uppercase tracking-wide mb-2 flex items-center gap-1.5">
+        <p className="text-xs font-normal text-muted mb-2 flex items-center gap-1.5">
           <Search className="w-3 h-3" /> People also search for
         </p>
-        <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
+        <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-none">
           {POPULAR_QUERIES.map((q, i) => (
             <button
               key={i}
               type="button"
               onClick={() => triggerSearch(q.overrides)}
-              className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-white text-xs font-medium text-body hover:border-brand hover:text-brand transition-colors"
+              className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-white text-xs font-medium text-body hover:border-brand hover:text-brand transition-colors"
             >
               <Search className="w-3 h-3 text-muted shrink-0" />
               {q.label}
@@ -1475,7 +1302,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       {/* ── Recent searches ────────────────────────────────────── */}
       {recentSearches.length > 0 && (
         <div className="relative z-10">
-          <p className="text-[10px] font-bold text-muted uppercase tracking-wide mb-2 flex items-center gap-1.5">
+          <p className="text-xs font-normal text-muted mb-2 flex items-center gap-1.5">
             <Clock className="w-3 h-3" /> Recent
           </p>
           <div className="flex flex-wrap gap-1.5">
@@ -1484,11 +1311,11 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                 key={i}
                 type="button"
                 onClick={() => { onDestinationSelect?.(s.destination); triggerSearch({ tab: s.tab, destination: s.destination }); }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-white text-xs font-medium text-body hover:border-brand hover:text-brand transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-white text-xs font-medium text-body hover:border-brand hover:text-brand transition-colors"
               >
                 <MapPin className="w-3 h-3 text-muted shrink-0" />
                 {s.destination}
-                <span className="text-[10px] text-muted">· {s.tab}</span>
+                <span className="text-xs text-muted">· {s.tab}</span>
               </button>
             ))}
           </div>
@@ -1504,7 +1331,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             </div>
           ))}
         </div>
-        <p className="text-[11px] text-muted">
+        <p className="text-xs text-muted">
           <span className="text-heading font-bold">127 AI trip plans</span> generated today in {destination || 'Thanjavur'}
         </p>
       </div>
@@ -1513,8 +1340,8 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <h2 className="font-display font-black text-base text-heading">Plan your visit</h2>
-            <p className="text-[10px] text-muted mt-0.5">Tap a card — AI builds your shortlist</p>
+            <h2 className="font-display font-semibold text-lg text-heading">Plan your visit</h2>
+            <p className="text-xs text-muted mt-0.5">Tap a card — AI builds your shortlist</p>
           </div>
         </div>
 
@@ -1538,15 +1365,15 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                 <div className="absolute inset-0 rounded-2xl" style={{ background: TAB_META[item.tab].accent, opacity: 0.2 }} />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent rounded-2xl" />
                 <div className="absolute top-3 left-3 z-10">
-                  <span className="text-white text-[9px] font-black uppercase tracking-wide px-2 py-1 rounded-full" style={{ background: TAB_META[item.tab].accent }}>{item.tab}</span>
+                  <span className="text-white text-xs font-black uppercase tracking-wide px-2 py-1 rounded-full" style={{ background: TAB_META[item.tab].accent }}>{item.tab}</span>
                 </div>
                 <div className="absolute top-3 right-3 z-10">
-                  <span className="text-white text-[9px] font-black px-2 py-1 rounded-full" style={{ background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(6px)' }}>⭐ Featured</span>
+                  <span className="text-white text-xs font-black px-2 py-1 rounded-full" style={{ background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(6px)' }}>⭐ Featured</span>
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
                   <span className="text-2xl leading-none drop-shadow">{item.emoji}</span>
                   <p className="text-white font-display font-black text-lg leading-tight mt-1.5 drop-shadow">{item.label}</p>
-                  <p className="text-white/70 text-[11px] mt-0.5">{item.desc}</p>
+                  <p className="text-white/70 text-xs mt-0.5">{item.desc}</p>
                 </div>
               </motion.button>
             );
@@ -1568,12 +1395,12 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               <div className="absolute inset-0 rounded-2xl" style={{ background: TAB_META[item.tab].accent, opacity: 0.25 }} />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent rounded-2xl" />
               <div className="absolute top-2.5 left-2.5 z-10">
-                <span className="text-white text-[8px] font-black uppercase tracking-wide px-1.5 py-0.5 rounded-full" style={{ background: TAB_META[item.tab].accent }}>{item.tab}</span>
+                <span className="text-white text-xs font-black uppercase tracking-wide px-1.5 py-0.5 rounded-full" style={{ background: TAB_META[item.tab].accent }}>{item.tab}</span>
               </div>
               <div className="absolute bottom-0 left-0 right-0 p-3 z-10">
                 <span className="text-lg leading-none drop-shadow">{item.emoji}</span>
                 <p className="text-white font-display font-black text-sm leading-tight mt-1 drop-shadow">{item.label}</p>
-                <p className="text-white/70 text-[9px] mt-0.5 leading-tight">{item.desc}</p>
+                <p className="text-white/70 text-xs mt-0.5 leading-tight">{item.desc}</p>
               </div>
             </motion.button>
           ))}
@@ -1584,10 +1411,10 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       <div className="relative z-10 border-t border-border pt-5">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <h2 className="font-display font-black text-base text-heading">Discover Thanjavur</h2>
-            <p className="text-[10px] text-muted mt-0.5">Must-see landmarks · Opens Explore</p>
+            <h2 className="font-display font-semibold text-lg text-heading">Discover Thanjavur</h2>
+            <p className="text-xs text-muted mt-0.5">Must-see landmarks · Opens Explore</p>
           </div>
-          <span className="text-[10px] text-muted shrink-0">Swipe →</span>
+          <span className="text-xs text-muted shrink-0 flex items-center gap-0.5">Swipe <ChevronRight className="w-3 h-3" /></span>
         </div>
         <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none -mx-4 px-4">
           {INSPIRATION_CITIES.map(c => (
@@ -1608,7 +1435,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
               <div className="absolute top-3 right-3 z-10">
-                <span className="text-white text-[9px] font-black uppercase tracking-wide px-2 py-1 rounded-full"
+                <span className="text-white text-xs font-black uppercase tracking-wide px-2 py-1 rounded-full"
                   style={{ background: TAB_META.Explore.accent }}>
                   Explore
                 </span>
@@ -1616,7 +1443,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
                 <span className="text-2xl leading-none drop-shadow">{c.emoji}</span>
                 <p className="text-white font-display font-black text-base leading-tight mt-1.5 drop-shadow">{c.city}</p>
-                <p className="text-white/75 text-[11px] mt-0.5 leading-tight">{c.hook}</p>
+                <p className="text-white/75 text-xs mt-0.5 leading-tight">{c.hook}</p>
               </div>
             </button>
           ))}
@@ -1627,10 +1454,10 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       <div className="relative z-10 border-t border-border pt-5">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <h2 className="font-display font-black text-base text-heading">Plan another city</h2>
-            <p className="text-[10px] text-muted mt-0.5">Tap to switch destination</p>
+            <h2 className="font-display font-semibold text-lg text-heading">Plan another city</h2>
+            <p className="text-xs text-muted mt-0.5">Tap to switch destination</p>
           </div>
-          <span className="text-[10px] text-muted shrink-0">Swipe →</span>
+          <span className="text-xs text-muted shrink-0 flex items-center gap-0.5">Swipe <ChevronRight className="w-3 h-3" /></span>
         </div>
         <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none -mx-4 px-4">
           {POPULAR_DESTINATIONS.map(c => (
@@ -1651,13 +1478,14 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
               {/* Coming soon badge */}
               <div className="absolute top-3 left-3 z-10">
-                <span className="text-white text-[9px] font-black uppercase tracking-wide px-2 py-1 rounded-full bg-black/40 backdrop-blur-sm">
+                <span className="text-xs font-semibold uppercase tracking-wide px-2 py-1 rounded backdrop-blur-sm"
+                  style={{ background: 'rgba(250,202,21,0.18)', border: '1px solid rgba(250,202,21,0.40)', color: 'var(--color-warning)' }}>
                   Coming Soon
                 </span>
               </div>
               <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
                 <p className="text-white font-display font-black text-xl leading-tight drop-shadow">{c.city}</p>
-                <p className="text-white/75 text-[11px] mt-0.5 leading-tight">{c.sub}</p>
+                <p className="text-white/75 text-xs mt-0.5 leading-tight">{c.sub}</p>
               </div>
             </motion.button>
           ))}
@@ -1666,11 +1494,13 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
 
       {/* ── Trending chips ─────────────────────────────────────────────────── */}
       <div className="relative z-10 border-t border-border pt-5 pb-2">
-        <div className="flex items-center gap-1.5 mb-3">
-          <Flame className="w-3.5 h-3.5 text-brand shrink-0" />
-          <span className="text-xs font-bold text-heading">
-            Trending in {destination || 'your city'}
-          </span>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-1.5">
+            <Flame className="w-3.5 h-3.5 text-brand shrink-0" />
+            <h2 className="font-display font-semibold text-lg text-heading">
+              Trending in {destination || 'your city'}
+            </h2>
+          </div>
         </div>
         <div className="flex flex-wrap gap-2">
           {meta.trending.map(topic => (
@@ -1679,7 +1509,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               type="button"
               whileTap={{ scale: 0.95 }}
               onClick={() => triggerSearch(TRENDING_OVERRIDES[topic] ?? { tab: activeTab })}
-              className="text-xs font-medium px-3 py-1.5 rounded-full border border-border bg-white text-body hover:border-brand hover:text-brand hover:bg-blue-50 active:scale-95 active:bg-blue-50 transition-all duration-150 select-none"
+              className="text-xs font-medium px-3 py-1.5 rounded-lg border border-border bg-white text-body hover:border-brand hover:text-brand hover:bg-brand-softer active:scale-95 active:bg-brand-softer transition-all duration-150 select-none"
             >
               {topic}
             </motion.button>

@@ -33,7 +33,7 @@ export function Badge({ variant = 'neutral', children, dot = false, pill = false
     <span
       className={[
         'inline-flex items-center gap-1.5 px-2 py-0.5 text-xs font-semibold',
-        pill ? 'rounded-full' : 'rounded-md',
+        pill ? 'rounded-full' : 'rounded',
         variantClasses[variant],
         className,
       ].join(' ')}

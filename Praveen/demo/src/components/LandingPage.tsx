@@ -97,8 +97,8 @@ function HeroPhotoPanel({ active, setActive }: { active: number; setActive: (i: 
       initial={{ opacity: 0, x: 40 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.3, duration: 0.7, ease: 'easeOut' }}
-      className="relative w-full rounded-3xl overflow-hidden"
-      style={{ height: '560px', boxShadow: '0 0 60px rgba(59,130,246,0.18), 0 30px 60px rgba(0,0,0,0.6)' }}
+      className="relative w-full rounded-3xl overflow-hidden h-[260px] md:h-[560px]"
+      style={{ boxShadow: '0 0 60px rgba(59,130,246,0.18), 0 30px 60px rgba(0,0,0,0.6)' }}
     >
       {/* All images pre-rendered so browser loads them all in parallel on mount.
           Stable keys mean no remount on transition — just opacity/scale update. */}
@@ -109,12 +109,15 @@ function HeroPhotoPanel({ active, setActive }: { active: number; setActive: (i: 
           alt={dest.city}
           loading="eager"
           className="absolute inset-0 w-full h-full object-cover"
-          initial={{ opacity: 0 }}
-          animate={{
-            opacity: i === active ? 1 : 0,
-            scale:   i === active ? 1 : 1.04,
-          }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
+          initial={{ opacity: 0, scale: 1 }}
+          animate={i === active
+            ? { opacity: 1, scale: 1.08 }
+            : { opacity: 0, scale: 1 }
+          }
+          transition={i === active
+            ? { opacity: { duration: 0.6, ease: 'easeOut' }, scale: { duration: 6, ease: 'easeOut' } }
+            : { opacity: { duration: 0.5, ease: 'easeOut' }, scale: { duration: 0.5, ease: 'easeOut' } }
+          }
           style={{ willChange: 'opacity, transform', zIndex: i === active ? 1 : 0 }}
         />
       ))}
@@ -126,20 +129,20 @@ function HeroPhotoPanel({ active, setActive }: { active: number; setActive: (i: 
           <motion.div key={active} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.3 }}>
             <div className="flex flex-wrap gap-2 mb-3">
               {d.tags.map(tag => (
-                <span key={tag} className="bg-white/15 backdrop-blur-sm border border-white/25 text-white text-[11px] font-semibold px-3 py-1 rounded-full">{tag}</span>
+                <span key={tag} className="bg-white/15 backdrop-blur-sm border border-white/25 text-white text-xs font-semibold px-3 py-1 rounded-full">{tag}</span>
               ))}
             </div>
-            <p className="text-white/65 text-sm font-medium mb-1">{d.subtitle}</p>
+            <p className="text-white/75 text-sm font-medium mb-1">{d.subtitle}</p>
             <h3 className="text-white font-display font-black text-4xl tracking-tight leading-none">{d.city}</h3>
           </motion.div>
         </AnimatePresence>
-        <div className="bg-white/8 backdrop-blur-xl border border-white/15 rounded-2xl p-4 flex items-start gap-3">
-          <div className="w-9 h-9 bg-brand rounded-xl flex items-center justify-center shrink-0 mt-0.5"
+        <div className="hidden md:flex bg-white/8 backdrop-blur-xl border border-white/15 rounded-2xl p-4 items-start gap-3">
+          <div className="w-9 h-9 bg-brand rounded-lg flex items-center justify-center shrink-0 mt-0.5"
             style={{ boxShadow: '0 0 16px rgba(28,100,242,0.55)' }}>
             <Sparkles className="w-4 h-4 text-white" />
           </div>
           <div className="min-w-0 space-y-1">
-            <p className="text-white/50 text-[10px] font-black uppercase tracking-widest">AI Pick · Why ranked #1</p>
+            <p className="text-white/75 text-xs font-normal">AI Pick · Why ranked #1</p>
             <p className="text-white/90 text-sm leading-relaxed">{d.aiPick}</p>
           </div>
         </div>
@@ -187,26 +190,26 @@ function TestimonialCarousel() {
             exit={{ opacity: 0, y: -16, filter: 'blur(4px)' }}
             transition={{ duration: 0.4, ease: 'easeOut' }}
             className="rounded-2xl p-7 border"
-            style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(255,255,255,0.08)' }}
+            style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)', boxShadow: 'var(--shadow-xs)' }}
           >
             <Quote className="w-8 h-8 mb-4 text-brand/55" />
-            <p className="text-base leading-relaxed italic mb-5" style={{ color: 'rgba(255,255,255,0.7)' }}>"{t.text}"</p>
+            <p className="text-base leading-relaxed italic mb-5 text-body">"{t.text}"</p>
             <div className="flex items-center justify-between flex-wrap gap-3">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-brand text-white font-black flex items-center justify-center"
                   style={{ boxShadow: '0 0 14px rgba(28,100,242,0.35)' }}>{t.avatar}</div>
                 <div>
-                  <p className="font-bold text-white text-sm">{t.name}</p>
-                  <p className="text-xs flex items-center gap-1" style={{ color: 'rgba(255,255,255,0.38)' }}>
+                  <p className="font-semibold text-heading text-sm">{t.name}</p>
+                  <p className="text-xs flex items-center gap-1 text-muted">
                     <MapPin className="w-3 h-3" />{t.location}
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <div className="inline-flex items-center gap-1.5 border rounded-xl px-3 py-1.5"
-                  style={{ background: 'rgba(28,100,242,0.1)', borderColor: 'rgba(28,100,242,0.22)' }}>
-                  <CheckCircle className="w-3.5 h-3.5 text-brand-border" />
-                  <span className="text-xs font-bold text-brand-soft">{t.highlight}</span>
+                <div className="inline-flex items-center gap-1.5 border rounded-lg px-3 py-1.5"
+                  style={{ background: 'var(--color-brand-softer)', borderColor: 'var(--color-brand-soft)' }}>
+                  <CheckCircle className="w-3.5 h-3.5 text-brand" />
+                  <span className="text-xs font-bold text-brand">{t.highlight}</span>
                 </div>
                 <div className="flex gap-0.5">
                   {Array.from({ length: t.stars }).map((_, j) => <Star key={j} className="w-3.5 h-3.5 fill-warning text-warning" />)}
@@ -227,12 +230,12 @@ function TestimonialCarousel() {
             style={{
               width: i === active ? '28px' : '8px',
               height: '8px',
-              background: i === active ? '#1C64F2' : 'rgba(255,255,255,0.2)',
+              background: i === active ? 'var(--color-brand)' : 'var(--color-border-medium)',
             }}
           />
         ))}
       </div>
-      <p className="text-center text-xs mt-3" style={{ color: 'rgba(255,255,255,0.25)' }}>
+      <p className="text-center text-xs mt-3 text-muted">
         {active + 1} of {TESTIMONIALS.length} reviews
       </p>
     </div>
@@ -299,22 +302,22 @@ function FoodScene() {
         .fs3{animation:fs-rise 2.1s ease-out infinite 1.36s}
       `}</style>
       {/* ground glow */}
-      <ellipse cx="50" cy="90" rx="20" ry="2.5" fill="rgba(245,158,11,.2)"/>
+      <ellipse cx="50" cy="90" rx="20" ry="2.5" fill="rgba(28,100,242,.15)"/>
       {/* steam */}
-      <path className="fs1" d="M37 46 Q39 39 37 32" stroke="rgba(251,146,60,.7)" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
-      <path className="fs2" d="M50 43 Q52 36 50 29" stroke="rgba(251,146,60,.7)" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
-      <path className="fs3" d="M63 46 Q65 39 63 32" stroke="rgba(251,146,60,.7)" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+      <path className="fs1" d="M37 46 Q39 39 37 32" stroke="rgba(96,165,250,.7)" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+      <path className="fs2" d="M50 43 Q52 36 50 29" stroke="rgba(96,165,250,.7)" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+      <path className="fs3" d="M63 46 Q65 39 63 32" stroke="rgba(96,165,250,.7)" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
       {/* bowl body */}
-      <path d="M17 58 Q17 84 50 86 Q83 84 83 58 Z" fill="rgba(245,158,11,.16)" stroke="rgba(251,191,36,.6)" strokeWidth="1.5"/>
+      <path d="M17 58 Q17 84 50 86 Q83 84 83 58 Z" fill="rgba(28,100,242,.12)" stroke="rgba(96,165,250,.6)" strokeWidth="1.5"/>
       {/* rim */}
-      <ellipse cx="50" cy="58" rx="33" ry="7" fill="rgba(245,158,11,.26)" stroke="rgba(251,191,36,.65)" strokeWidth="1.5"/>
+      <ellipse cx="50" cy="58" rx="33" ry="7" fill="rgba(28,100,242,.22)" stroke="rgba(96,165,250,.65)" strokeWidth="1.5"/>
       {/* content */}
-      <ellipse cx="50" cy="58" rx="29" ry="5.5" fill="rgba(251,146,60,.42)"/>
+      <ellipse cx="50" cy="58" rx="29" ry="5.5" fill="rgba(28,100,242,.35)"/>
       {/* noodle swirl */}
-      <path d="M33 58 Q41 51 49 58 Q57 65 65 58 Q70 52 68 59" stroke="rgba(254,215,170,.85)" strokeWidth="2.2" fill="none" strokeLinecap="round"/>
+      <path d="M33 58 Q41 51 49 58 Q57 65 65 58 Q70 52 68 59" stroke="rgba(147,197,253,.85)" strokeWidth="2.2" fill="none" strokeLinecap="round"/>
       {/* chopsticks */}
-      <line x1="70" y1="38" x2="60" y2="65" stroke="rgba(251,191,36,.85)" strokeWidth="2" strokeLinecap="round"/>
-      <line x1="76" y1="38" x2="66" y2="65" stroke="rgba(251,191,36,.85)" strokeWidth="2" strokeLinecap="round"/>
+      <line x1="70" y1="38" x2="60" y2="65" stroke="rgba(96,165,250,.85)" strokeWidth="2" strokeLinecap="round"/>
+      <line x1="76" y1="38" x2="66" y2="65" stroke="rgba(96,165,250,.85)" strokeWidth="2" strokeLinecap="round"/>
     </svg>
   );
 }
@@ -331,22 +334,22 @@ function ItinScene() {
         .ip3{animation:it-pin 3.6s ease-in-out infinite 2.2s}
       `}</style>
       {/* map bg */}
-      <rect x="12" y="18" width="76" height="64" rx="4" fill="rgba(139,92,246,.08)" stroke="rgba(167,139,250,.22)" strokeWidth="1"/>
+      <rect x="12" y="18" width="76" height="64" rx="4" fill="rgba(28,100,242,.08)" stroke="rgba(96,165,250,.22)" strokeWidth="1"/>
       {/* grid */}
-      <line x1="12" y1="37" x2="88" y2="37" stroke="rgba(167,139,250,.11)" strokeWidth=".5"/>
-      <line x1="12" y1="56" x2="88" y2="56" stroke="rgba(167,139,250,.11)" strokeWidth=".5"/>
-      <line x1="36" y1="18" x2="36" y2="82" stroke="rgba(167,139,250,.11)" strokeWidth=".5"/>
-      <line x1="60" y1="18" x2="60" y2="82" stroke="rgba(167,139,250,.11)" strokeWidth=".5"/>
+      <line x1="12" y1="37" x2="88" y2="37" stroke="rgba(96,165,250,.11)" strokeWidth=".5"/>
+      <line x1="12" y1="56" x2="88" y2="56" stroke="rgba(96,165,250,.11)" strokeWidth=".5"/>
+      <line x1="36" y1="18" x2="36" y2="82" stroke="rgba(96,165,250,.11)" strokeWidth=".5"/>
+      <line x1="60" y1="18" x2="60" y2="82" stroke="rgba(96,165,250,.11)" strokeWidth=".5"/>
       {/* animated route */}
       <path className="ir" d="M27 73 Q27 56 42 56 Q57 56 57 37 Q57 27 73 27"
-        stroke="rgba(167,139,250,.9)" strokeWidth="2.5" fill="none"
+        stroke="rgba(96,165,250,.9)" strokeWidth="2.5" fill="none"
         strokeLinecap="round" strokeLinejoin="round"
         strokeDasharray="7 4" strokeDashoffset="230"/>
       {/* pins */}
-      <g className="ip1"><circle cx="27" cy="73" r="5.5" fill="rgba(139,92,246,.95)"/><text x="27" y="76.5" textAnchor="middle" fill="white" fontSize="5.5" fontWeight="bold">A</text></g>
-      <g className="ip2"><circle cx="57" cy="37" r="5.5" fill="rgba(139,92,246,.85)"/><text x="57" y="40.5" textAnchor="middle" fill="white" fontSize="5.5" fontWeight="bold">B</text></g>
-      <g className="ip3"><circle cx="73" cy="27" r="5.5" fill="rgba(139,92,246,.75)"/><text x="73" y="30.5" textAnchor="middle" fill="white" fontSize="5.5" fontWeight="bold">C</text></g>
-      <ellipse cx="50" cy="84" rx="22" ry="2" fill="rgba(139,92,246,.14)"/>
+      <g className="ip1"><circle cx="27" cy="73" r="5.5" fill="rgba(28,100,242,.95)"/><text x="27" y="76.5" textAnchor="middle" fill="white" fontSize="5.5" fontWeight="bold">A</text></g>
+      <g className="ip2"><circle cx="57" cy="37" r="5.5" fill="rgba(28,100,242,.85)"/><text x="57" y="40.5" textAnchor="middle" fill="white" fontSize="5.5" fontWeight="bold">B</text></g>
+      <g className="ip3"><circle cx="73" cy="27" r="5.5" fill="rgba(28,100,242,.75)"/><text x="73" y="30.5" textAnchor="middle" fill="white" fontSize="5.5" fontWeight="bold">C</text></g>
+      <ellipse cx="50" cy="84" rx="22" ry="2" fill="rgba(28,100,242,.14)"/>
     </svg>
   );
 }
@@ -362,28 +365,28 @@ function ExploreScene() {
         .er1{animation:ex-pulse 2.6s ease-in-out infinite}
         .er2{animation:ex-pulse2 2.6s ease-in-out infinite .7s}
       `}</style>
-      <circle className="er1" cx="50" cy="50" r="36" stroke="rgba(16,185,129,.3)" strokeWidth="1" fill="none"/>
-      <circle className="er2" cx="50" cy="50" r="27" stroke="rgba(16,185,129,.4)" strokeWidth="1" fill="none"/>
-      <circle cx="50" cy="50" r="22" fill="rgba(16,185,129,.07)" stroke="rgba(52,211,153,.5)" strokeWidth="1.5"/>
-      <text x="50" y="27"  textAnchor="middle" fill="rgba(52,211,153,.95)" fontSize="7" fontWeight="bold">N</text>
-      <text x="50" y="79"  textAnchor="middle" fill="rgba(52,211,153,.4)"  fontSize="6">S</text>
-      <text x="79" y="53"  textAnchor="middle" fill="rgba(52,211,153,.4)"  fontSize="6">E</text>
-      <text x="21" y="53"  textAnchor="middle" fill="rgba(52,211,153,.4)"  fontSize="6">W</text>
+      <circle className="er1" cx="50" cy="50" r="36" stroke="rgba(28,100,242,.3)" strokeWidth="1" fill="none"/>
+      <circle className="er2" cx="50" cy="50" r="27" stroke="rgba(28,100,242,.4)" strokeWidth="1" fill="none"/>
+      <circle cx="50" cy="50" r="22" fill="rgba(28,100,242,.07)" stroke="rgba(96,165,250,.5)" strokeWidth="1.5"/>
+      <text x="50" y="27"  textAnchor="middle" fill="rgba(96,165,250,.95)" fontSize="7" fontWeight="bold">N</text>
+      <text x="50" y="79"  textAnchor="middle" fill="rgba(96,165,250,.4)"  fontSize="6">S</text>
+      <text x="79" y="53"  textAnchor="middle" fill="rgba(96,165,250,.4)"  fontSize="6">E</text>
+      <text x="21" y="53"  textAnchor="middle" fill="rgba(96,165,250,.4)"  fontSize="6">W</text>
       <g className="en">
-        <polygon points="50,30 47,50 50,54 53,50" fill="rgba(52,211,153,.95)"/>
+        <polygon points="50,30 47,50 50,54 53,50" fill="rgba(96,165,250,.95)"/>
         <polygon points="50,70 47,50 50,46 53,50" fill="rgba(255,255,255,.2)"/>
       </g>
-      <circle cx="50" cy="50" r="3.5" fill="rgba(52,211,153,1)"/>
+      <circle cx="50" cy="50" r="3.5" fill="#1C64F2"/>
       <circle cx="50" cy="50" r="1.8" fill="white"/>
-      <ellipse cx="50" cy="84" rx="14" ry="2" fill="rgba(16,185,129,.17)"/>
+      <ellipse cx="50" cy="84" rx="14" ry="2" fill="rgba(28,100,242,.17)"/>
     </svg>
   );
 }
 
 /* ── 3D Tilt card ─────────────────────────────────────────────────────── */
-function TiltCard({ label, desc, glow, illustration, onClick }: {
+function TiltCard({ label, desc, glow, illustration, onClick, animDelay = 0 }: {
   label: string; desc: string; glow: string;
-  illustration: React.ReactNode; onClick: () => void;
+  illustration: React.ReactNode; onClick: () => void; animDelay?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const mx  = useMotionValue(0);
@@ -408,16 +411,16 @@ function TiltCard({ label, desc, glow, illustration, onClick }: {
         style={{
           rotateX, rotateY,
           transformStyle: 'preserve-3d',
-          background: 'rgba(255,255,255,0.035)',
-          backdropFilter: 'blur(12px)',
-          boxShadow: '0 0 0 1px rgba(255,255,255,0.06), 0 8px 32px rgba(0,0,0,0.5)',
+          background: '#0C1220',
+          boxShadow: '0 0 0 1px rgba(255,255,255,0.09), 0 16px 48px rgba(12,18,32,0.30)',
         }}
         whileHover={{ scale: 1.03 }}
         whileTap={{ scale: 0.97 }}
-        initial={{ opacity: 0, y: 28 }}
+        initial={{ opacity: 0, y: 32 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="cursor-pointer relative group rounded-2xl overflow-hidden border border-white/10 p-7 flex flex-col items-center text-center gap-4 select-none h-full"
+        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: animDelay }}
+        viewport={{ once: true, amount: 0.2 }}
+        className="cursor-pointer relative group rounded-2xl border border-white/10 p-7 flex flex-col items-center text-center gap-4 select-none h-full"
       >
         {/* Top glow on hover */}
         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-2xl"
@@ -433,10 +436,10 @@ function TiltCard({ label, desc, glow, illustration, onClick }: {
         </div>
 
         {/* Label */}
-        <h3 className="relative z-10 font-display font-black text-xl text-white">{label}</h3>
+        <h3 className="relative z-10 font-display font-semibold text-xl text-white">{label}</h3>
 
         {/* Desc */}
-        <p className="relative z-10 text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.42)' }}>{desc}</p>
+        <p className="relative z-10 text-sm leading-relaxed" style={{ color: 'var(--color-on-dark-body)' }}>{desc}</p>
 
         {/* CTA arrow */}
         <div className="relative z-10 flex items-center gap-1 text-xs font-bold mt-auto opacity-0 group-hover:opacity-100 transition-all duration-300"
@@ -507,24 +510,24 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
   };
 
   return (
-    <div className="min-h-screen flex flex-col overflow-x-hidden" style={{ background: 'var(--color-darkest)' }}>
+    <div className="min-h-screen flex flex-col overflow-x-hidden bg-bg-app">
 
       {/* ── Navbar ─────────────────────────────────────────────────── */}
       <header className="sticky top-0 z-40 border-b"
-        style={{ background: 'rgba(6,8,15,0.82)', backdropFilter: 'blur(20px)', borderColor: 'rgba(255,255,255,0.08)' }}>
+        style={{ background: 'rgba(249,250,251,0.92)', backdropFilter: 'blur(20px)', borderColor: 'rgba(0,0,0,0.07)', boxShadow: '0 1px 12px rgba(28,100,242,0.06)' }}>
         <div className="max-w-screen-xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-brand rounded-lg flex items-center justify-center"
-              style={{ boxShadow: '0 0 18px rgba(28,100,242,0.55)' }}>
+              style={{ boxShadow: '0 0 12px rgba(28,100,242,0.30)' }}>
               <Compass className="w-4 h-4 text-white" />
             </div>
-            <span className="font-display font-black text-xl text-white tracking-tight">
-              Trip<span className="text-brand-border">AI</span>
+            <span className="font-display font-semibold text-xl text-heading tracking-tight">
+              Trip<span className="text-brand">AI</span>
             </span>
           </div>
           <div className="flex items-center gap-2">
             <button onClick={handleCtaClick}
-              className="px-3 py-2 text-sm font-medium rounded-lg transition-colors text-white/60 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30">
+              className="px-3 py-2 text-sm font-medium rounded-lg transition-colors text-body hover:text-heading focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-soft">
               Log in
             </button>
             <Button size="sm" onClick={handleCtaClick}>
@@ -535,15 +538,15 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
       </header>
 
       {/* ── Hero ───────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden" style={{ background: '#0C1220', backgroundImage: 'radial-gradient(ellipse 80% 50% at 50% 0%, rgba(28,100,242,0.20) 0%, transparent 70%)' }}>
         {/* Mesh orbs */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-[-25%] left-[-15%] w-[680px] h-[680px] rounded-full blur-[140px] animate-aurora"
-            style={{ background: 'rgba(28,100,242,0.21)' }} />
-          <div className="absolute top-[5%] right-[-20%] w-[580px] h-[580px] rounded-full blur-[140px] animate-aurora-reverse"
-            style={{ background: 'rgba(139,92,246,0.15)' }} />
-          <div className="absolute bottom-[-15%] left-[28%] w-[480px] h-[480px] rounded-full blur-[120px] animate-aurora-slow"
-            style={{ background: 'rgba(16,185,129,0.09)' }} />
+            style={{ background: 'rgba(28,100,242,0.28)' }} />
+          <div className="absolute top-[5%] right-[-20%] w-[580px] h-[580px] rounded-full blur-[160px] animate-aurora-reverse"
+            style={{ background: 'rgba(28,100,242,0.14)' }} />
+          <div className="absolute bottom-[-10%] left-[30%] w-[500px] h-[500px] rounded-full blur-[130px] animate-aurora-slow"
+            style={{ background: 'rgba(28,100,242,0.09)' }} />
         </div>
 
         <div className="relative max-w-screen-xl mx-auto w-full px-4 md:px-8 pt-10 pb-10 md:pt-14 md:pb-14 lg:pt-16 lg:pb-16">
@@ -557,44 +560,44 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
                 Your AI travel co-pilot
               </div>
 
-              <h1 className="text-[2.6rem] md:text-5xl lg:text-[3.25rem] font-display font-black text-white leading-[1.1] tracking-tight">
+              <h1 className="text-4xl md:text-5xl font-display font-semibold text-white leading-[1.1] tracking-tight">
                 <span className="block">Still on tab 6?</span>
                 <span className="block">AI picks the best in</span>
                 <CityRotator city={HERO_DESTINATIONS[heroActive].city} />
-                <span className="block text-2xl md:text-3xl font-semibold mt-1" style={{ color: 'rgba(255,255,255,0.38)' }}>
+                <span className="block text-2xl md:text-3xl font-semibold mt-1" style={{ color: 'var(--color-on-dark-body)' }}>
                   so you don't have to.
                 </span>
               </h1>
 
-              <p className="text-base md:text-lg leading-relaxed max-w-md" style={{ color: 'rgba(255,255,255,0.52)' }}>
+              <p className="text-base md:text-lg leading-relaxed max-w-md" style={{ color: 'var(--color-on-dark-body)' }}>
                 Tell TripAI where you're headed and what matters to you. It scans 100+ places on Google, AI-ranks every result, and tells you exactly why each one fits — in under 10 seconds.
               </p>
 
-              {/* Glassmorphic search */}
+              {/* Search */}
               <div className="space-y-3 max-w-[440px]">
                 <div className="relative">
-                  <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: 'rgba(255,255,255,0.35)' }} />
+                  <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-brand pointer-events-none" />
                   <input
                     type="text"
                     value={demoSearch}
                     onChange={e => setDemoSearch(e.target.value)}
                     placeholder="Where are you headed? Goa, Jaipur, Bangalore…"
-                    className="w-full pl-11 pr-4 py-4 rounded-2xl text-sm text-white outline-none transition-all duration-300 focus:ring-2 focus:ring-brand-border/40"
+                    className="w-full pl-11 pr-4 py-4 rounded-2xl text-sm text-heading placeholder:text-muted outline-none transition-all duration-300 focus:ring-2 focus:ring-brand/30"
                     style={{
-                      background: 'rgba(255,255,255,0.055)',
-                      border: '1px solid rgba(255,255,255,0.11)',
-                      backdropFilter: 'blur(16px)',
+                      background: 'rgba(255,255,255,0.97)',
+                      border: '1.5px solid rgba(255,255,255,1)',
+                      boxShadow: '0 4px 24px rgba(0,0,0,0.18)',
                     }}
                     onKeyDown={e => e.key === 'Enter' && handleCtaClick()}
                   />
                 </div>
-                <Button onClick={handleCtaClick} size="lg" className="w-full justify-center py-4 text-[15px] rounded-2xl">
+                <Button onClick={handleCtaClick} size="lg" className="w-full justify-center py-4 text-base rounded-2xl">
                   Show me the best <ArrowRight className="w-4 h-4" />
                 </Button>
               </div>
 
               {/* Trust row */}
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm pt-1" style={{ color: 'rgba(255,255,255,0.42)' }}>
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm pt-1" style={{ color: 'var(--color-on-dark-body)' }}>
                 <span className="flex items-center gap-1.5"><CheckCircle className="w-4 h-4 text-success-medium shrink-0" />No credit card needed</span>
                 <span className="flex items-center gap-1.5"><Star className="w-4 h-4 fill-warning text-warning shrink-0" />Live Google ratings</span>
                 <span className="flex items-center gap-1.5"><Zap className="w-4 h-4 text-brand-border shrink-0" />Under 10 seconds</span>
@@ -602,7 +605,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
             </motion.div>
 
             {/* Right */}
-            <div className="hidden md:block">
+            <div className="mt-6 md:mt-0">
               <HeroPhotoPanel active={heroActive} setActive={setHeroActive} />
             </div>
           </div>
@@ -610,20 +613,20 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
       </section>
 
       {/* ── How it works ───────────────────────────────────────────── */}
-      <section className="py-16 md:py-20 border-y" style={{ background: 'rgba(255,255,255,0.018)', borderColor: 'rgba(255,255,255,0.07)' }}>
+      <section className="py-16 md:py-20 border-y border-border bg-surface">
         <div className="max-w-screen-xl mx-auto px-4 md:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-display font-black text-white mb-3">Three steps. Zero tab-switching.</h2>
-            <p className="max-w-md mx-auto" style={{ color: 'rgba(255,255,255,0.42)' }}>From where you're going to what's worth booking — without opening another tab.</p>
+            <h2 className="text-3xl font-semibold text-heading mb-3">Three steps. Zero tab-switching.</h2>
+            <p className="max-w-md mx-auto text-body">From where you're going to what's worth booking — without opening another tab.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
             {HOW.map((h, i) => (
               <motion.div key={h.step} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="text-center space-y-3">
                 <div className="w-12 h-12 rounded-2xl bg-brand text-white flex items-center justify-center mx-auto"
-                  style={{ boxShadow: '0 0 22px rgba(28,100,242,0.4)' }}>{h.icon}</div>
-                <div className="text-xs font-black text-brand-border uppercase tracking-widest">{h.step}</div>
-                <h3 className="font-display font-bold text-sm text-white">{h.title}</h3>
-                <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.42)' }}>{h.desc}</p>
+                  style={{ boxShadow: '0 0 14px rgba(28,100,242,0.25)' }}>{h.icon}</div>
+                <div className="text-xs font-semibold text-brand">{h.step}</div>
+                <h3 className="font-display font-semibold text-base text-heading">{h.title}</h3>
+                <p className="text-sm font-normal leading-relaxed text-body">{h.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -633,7 +636,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
       {/* ── City poster slider ─────────────────────────────────────── */}
       <section className="py-10 md:py-14 overflow-hidden">
         <div className="max-w-screen-xl mx-auto px-4 md:px-8 mb-6">
-          <p className="text-xs font-black uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.25)' }}>
+          <p className="text-xs font-normal text-muted">
             We've got eyes on these cities
           </p>
         </div>
@@ -641,14 +644,14 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
       </section>
 
       {/* ── 3D Category cards ──────────────────────────────────────── */}
-      <section className="py-16 md:py-24">
+      <section className="py-16 md:py-24 bg-bg-app border-b border-border">
         <div className="max-w-screen-xl mx-auto px-4 md:px-8">
           <div className="text-center mb-14">
-            <h2 className="text-3xl md:text-4xl font-display font-black text-white mb-3">One search. Four answers.</h2>
-            <p style={{ color: 'rgba(255,255,255,0.42)' }}>Pick what you need — AI ranks the best options in under 10 seconds.</p>
+            <h2 className="text-3xl md:text-4xl font-semibold text-heading mb-3">One search. Four answers.</h2>
+            <p className="text-body">Pick what you need — AI ranks the best options in under 10 seconds.</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 items-stretch">
-            {CATEGORIES.map(c => (
+            {CATEGORIES.map((c, i) => (
               <TiltCard
                 key={c.label}
                 label={c.label}
@@ -656,6 +659,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
                 glow={c.glow}
                 illustration={c.illustration}
                 onClick={() => handleCategoryClick(c.label)}
+                animDelay={i * 0.1}
               />
             ))}
           </div>
@@ -663,22 +667,22 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
       </section>
 
       {/* ── Testimonials ───────────────────────────────────────────── */}
-      <section className="py-16 md:py-20 border-y" style={{ background: 'rgba(255,255,255,0.018)', borderColor: 'rgba(255,255,255,0.07)' }}>
+      <section className="py-16 md:py-20 border-y border-border bg-surface">
         <div className="max-w-screen-xl mx-auto px-4 md:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-display font-black text-white mb-3">From people who stopped tab-switching</h2>
-            <p style={{ color: 'rgba(255,255,255,0.42)' }}>Real searches. Real relief.</p>
+            <h2 className="text-3xl font-semibold text-heading mb-3">From people who stopped tab-switching</h2>
+            <p className="text-body">Real searches. Real relief.</p>
           </div>
           <TestimonialCarousel />
         </div>
       </section>
 
       {/* ── Features ───────────────────────────────────────────────── */}
-      <section className="py-16 md:py-20">
+      <section className="py-16 md:py-20 bg-bg-app border-b border-border">
         <div className="max-w-screen-xl mx-auto px-4 md:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-display font-black text-white mb-3">Built different. Works better.</h2>
-            <p style={{ color: 'rgba(255,255,255,0.42)' }}>Every detail exists to save you time, not waste it.</p>
+            <h2 className="text-3xl font-semibold text-heading mb-3">Built different. Works better.</h2>
+            <p className="text-body">Every detail exists to save you time, not waste it.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
@@ -687,11 +691,11 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
               { icon: <Shield className="w-6 h-6" />,   title: 'Your shortlist, not a search', desc: 'Save what the AI found. Compare options side by side. Share with whoever\'s joining. Revisit when plans change.' },
             ].map((f, i) => (
               <motion.div key={f.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="flex gap-4">
-                <div className="w-10 h-10 rounded-xl bg-brand text-white flex items-center justify-center shrink-0"
-                  style={{ boxShadow: '0 0 18px rgba(28,100,242,0.38)' }}>{f.icon}</div>
+                <div className="w-10 h-10 rounded-lg bg-brand text-white flex items-center justify-center shrink-0"
+                  style={{ boxShadow: '0 0 12px rgba(28,100,242,0.25)' }}>{f.icon}</div>
                 <div className="space-y-1">
-                  <h3 className="font-display font-bold text-sm text-white">{f.title}</h3>
-                  <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.42)' }}>{f.desc}</p>
+                  <h3 className="font-display font-semibold text-base text-heading">{f.title}</h3>
+                  <p className="text-sm font-normal leading-relaxed text-body">{f.desc}</p>
                 </div>
               </motion.div>
             ))}
@@ -700,16 +704,16 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
       </section>
 
       {/* ── CTA banner ─────────────────────────────────────────────── */}
-      <section className="py-16 md:py-24 relative overflow-hidden">
+      <section className="py-16 md:py-24 relative overflow-hidden" style={{ background: '#0C1220' }}>
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] rounded-full blur-[110px]"
-            style={{ background: 'rgba(28,100,242,0.16)' }} />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[360px] rounded-full blur-[120px]"
+            style={{ background: 'rgba(28,100,242,0.22)' }} />
         </div>
         <div className="relative max-w-2xl mx-auto px-4 text-center space-y-6">
-          <h2 className="text-3xl md:text-4xl font-display font-black text-white">
+          <h2 className="text-3xl md:text-4xl font-semibold text-white">
             Your next trip is<br />10 seconds away.
           </h2>
-          <p style={{ color: 'rgba(255,255,255,0.38)' }}>AI-ranked. Google-verified. Always free.</p>
+          <p style={{ color: 'var(--color-on-dark-body)' }}>AI-ranked. Google-verified. Always free.</p>
           <Button size="xl" onClick={handleCtaClick} className="mx-auto">
             Start for free <ArrowRight className="w-5 h-5" />
           </Button>
@@ -717,14 +721,14 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
       </section>
 
       {/* ── Footer ─────────────────────────────────────────────────── */}
-      <footer className="border-t py-8" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+      <footer className="border-t py-8" style={{ background: '#0C1220', borderColor: 'rgba(255,255,255,0.08)' }}>
         <div className="max-w-screen-xl mx-auto px-4 md:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Compass className="w-4 h-4 text-brand-border" />
-            <span className="font-display font-black text-white">TripAI</span>
+            <span className="font-display font-semibold text-white">TripAI</span>
           </div>
-          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.28)' }}>Powered by Google Places + Gemini AI</p>
-          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.28)' }}>© 2026 TripAI</p>
+          <p className="text-xs" style={{ color: 'var(--color-on-dark-muted)' }}>Powered by Google Places + Gemini AI</p>
+          <p className="text-xs" style={{ color: 'var(--color-on-dark-muted)' }}>© 2026 TripAI</p>
         </div>
       </footer>
 
@@ -761,10 +765,10 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
                 <X className="w-4 h-4" />
               </button>
               <span className="text-4xl block mb-3">{cityNotice.emoji}</span>
-              <h3 className="text-white font-display font-black text-xl mb-2">
+              <h3 className="text-white font-display font-semibold text-xl mb-2">
                 {cityNotice.city} is coming soon
               </h3>
-              <p className="text-sm leading-relaxed mb-5" style={{ color: 'rgba(255,255,255,0.55)' }}>
+              <p className="text-sm leading-relaxed mb-5" style={{ color: 'var(--color-on-dark-body)' }}>
                 Full AI recommendations are currently live only for{' '}
                 <span className="font-bold text-warning-strong">Thanjavur</span>.
                 Every hotel, restaurant, and landmark — AI-ranked in seconds.
