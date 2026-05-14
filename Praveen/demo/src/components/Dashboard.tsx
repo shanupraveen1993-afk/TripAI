@@ -1093,7 +1093,6 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
     Explore:   { headline: 'Explore every landmark',  sub: 'Deep-dive guides powered by real reviews' },
   };
   const hero = TAB_HERO[activeTab];
-  const heroPhotoUri = heroPhotos[activeTab] ?? null;
 
   // Swipe gesture to switch tabs
   const swipeTouchX = useRef<number | null>(null);
@@ -1116,19 +1115,25 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       onTouchEnd={handleTouchEnd}
     >
 
-      {/* ── Hero — all tabs ───────────────────────────────────────── */}
-      <motion.div
-        key={activeTab + '-hero'}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.22 }}
+      {/* ── Hero — all tabs (no remount on tab switch, crossfade images) ─── */}
+      <div
         className="relative overflow-hidden rounded-2xl"
         style={{ minHeight: 220 }}
       >
-        {heroPhotoUri
-          ? <img src={heroPhotoUri} alt={activeTab} className="absolute inset-0 w-full h-full object-cover object-center" draggable={false} />
-          : <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg,#1E429F 0%,#1C64F2 100%)' }} />
-        }
+        {/* Gradient fallback — always underneath */}
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg,#1E429F 0%,#1C64F2 100%)' }} />
+        {/* All fetched tab photos kept mounted; opacity crossfade on tab switch */}
+        {(Object.entries(heroPhotos) as [Tab, string][]).map(([tab, uri]) => (
+          <img
+            key={tab}
+            src={uri}
+            alt={tab}
+            draggable={false}
+            decoding="async"
+            className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-500"
+            style={{ opacity: tab === activeTab ? 1 : 0 }}
+          />
+        ))}
         <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.18) 40%, rgba(0,0,0,0.62) 100%)' }} />
         {/* Greeting */}
         {firstName && (
@@ -1136,11 +1141,20 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             {greeting}, {firstName} 👋
           </div>
         )}
-        {/* Hero text */}
-        <div className="absolute bottom-5 left-5 right-5">
-          <p className="text-white font-display font-black text-lg leading-tight drop-shadow">{hero.headline}</p>
-          <p className="text-white/75 text-xs mt-0.5 leading-snug">{hero.sub}</p>
-        </div>
+        {/* Hero text — animate on tab switch */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab + '-text'}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+            className="absolute bottom-5 left-5 right-5"
+          >
+            <p className="text-white font-display font-black text-lg leading-tight drop-shadow">{hero.headline}</p>
+            <p className="text-white/75 text-xs mt-0.5 leading-snug">{hero.sub}</p>
+          </motion.div>
+        </AnimatePresence>
         {/* Location pill */}
         <div className="absolute top-4 right-5">
           <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-white text-xs font-bold"
@@ -1149,7 +1163,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             {destination || 'Thanjavur'}
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* ── Category selector — always sticky below header ── */}
       <div
@@ -1360,6 +1374,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                 style={{ height: 180 }}
               >
                 <img src={uImg(item.imgId, 800, 360)} alt={item.label}
+                  loading="eager" decoding="async"
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
                 <div className="absolute inset-0 rounded-2xl" style={{ background: TAB_META[item.tab].accent, opacity: 0.2 }} />
@@ -1390,6 +1405,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               style={{ height: 138 }}
             >
               <img src={uImg(item.imgId, 440, 280)} alt={item.label}
+                loading="eager" decoding="async"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
               <div className="absolute inset-0 rounded-2xl" style={{ background: TAB_META[item.tab].accent, opacity: 0.25 }} />
@@ -1429,6 +1445,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                 <img
                   src={uImg(c.imgId, 440, 300)}
                   alt={c.city}
+                  loading="lazy" decoding="async"
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                 />
@@ -1471,6 +1488,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               <img
                 src={uImg(c.imgId, 440, 300)}
                 alt={c.city}
+                loading="lazy" decoding="async"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
               />

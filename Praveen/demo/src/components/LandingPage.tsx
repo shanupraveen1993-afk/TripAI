@@ -16,6 +16,7 @@ interface LandingPageProps {
   onTabSelect: (tab: Tab, dest?: string) => void;
   isLoggedIn: boolean;
   onAuthSuccess?: (user: { name: string; email: string; avatar?: string }, dest?: string) => void;
+  onNonThanjavurCity?: (city: string) => void;
 }
 
 /* ── City rotator — controlled, driven by shared heroActive index ─────── */
@@ -447,7 +448,10 @@ const CATEGORIES: { label: Tab; desc: string; glow: string; illustration: React.
 /* ══════════════════════════════════════════════════════════════════════
    Main component
 ══════════════════════════════════════════════════════════════════════ */
-export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingPageProps) {
+const isThanjavurDest = (dest: string) =>
+  /thanjavur|tanjore/i.test(dest.trim()) || dest.trim() === '';
+
+export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanjavurCity }: LandingPageProps) {
   const [authOpen, setAuthOpen]     = useState(false);
   const [pendingTab, setPendingTab] = useState<Tab | null>(null);
   const [demoSearch, setDemoSearch] = useState('');
@@ -479,8 +483,13 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
   };
 
   const handleCtaClick = () => {
-    if (isLoggedIn) { onTabSelect(heroTab, demoSearch || undefined); return; }
-    pendingDestRef.current = demoSearch;
+    const dest = demoSearch.trim();
+    if (dest && !isThanjavurDest(dest)) {
+      onNonThanjavurCity?.(dest);
+      return;
+    }
+    if (isLoggedIn) { onTabSelect(heroTab, dest || undefined); return; }
+    pendingDestRef.current = dest;
     setPendingTab(null);
     setAuthOpen(true);
   };

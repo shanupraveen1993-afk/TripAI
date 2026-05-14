@@ -1499,7 +1499,7 @@ export function ResultsView({
             {isLoadingMore ? 'Regenerating…' : 'Try Different Set'}
           </Button>
         )}
-        <Button onClick={handleSave} icon={saved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />} className="flex-1" variant={saved ? 'success' : 'brand'}>
+        <Button onClick={handleSave} icon={saved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />} className="flex-1" variant={saved ? 'success' : 'outline'}>
           {saved ? 'Plan saved' : 'Save this plan'}
         </Button>
       </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { Compass, MapPin, Search, X } from 'lucide-react';
+import { ArrowRight, Compass, MapPin, Search, X } from 'lucide-react';
 import { PlaceCardSkeleton, ItineraryItemSkeleton } from './components/ui/Skeleton';
 import { LandingPage } from './components/LandingPage';
 import { Navbar, MainSection } from './components/Navbar';
@@ -62,6 +62,7 @@ export default function App() {
   const [lastSearchFilters, setLastSearchFilters] = useState<DashboardFilters | null>(null);
   const [backContext, setBackContext] = useState<'dashboard' | 'itinerary-results'>('dashboard');
   const [itinStopCount, setItinStopCount] = useState(5);
+  const [nonThanjavurNotice, setNonThanjavurNotice] = useState<string | null>(null);
 
   // Scroll to top on every screen transition (dashboard, loading, results)
   useEffect(() => {
@@ -157,11 +158,9 @@ export default function App() {
     /thanjavur|tanjore/i.test(dest.trim()) || dest.trim() === '';
 
   const runSearch = async (filters: DashboardFilters, seed: number) => {
-    // Non-Thanjavur city → show city-lock screen instead of running search
+    // Non-Thanjavur city → show notice popup, stay on dashboard
     if (filters.destination && !isThanjavurCity(filters.destination)) {
-      setSearchLocation(filters.destination);
-      setContent('citylock');
-      window.scrollTo({ top: 0, behavior: 'instant' });
+      setNonThanjavurNotice(filters.destination);
       return;
     }
     setActiveTab(filters.tab);
@@ -364,13 +363,22 @@ export default function App() {
   };
 
   const handleDestinationSelect = (dest: string) => {
-    setSearchLocation(dest);
     if (dest && !isThanjavurCity(dest)) {
-      setContent('citylock');
-      window.scrollTo({ top: 0, behavior: 'instant' });
+      setNonThanjavurNotice(dest);
     } else {
+      setSearchLocation(dest);
       setContent('dashboard');
     }
+  };
+
+  // Landing page hero: non-Thanjavur city → navigate to dashboard + show notice
+  const handleNonThanjavurCity = (city: string) => {
+    setSearchLocation('Thanjavur');
+    setInitialTab('Hotels');
+    setActiveTab('Hotels');
+    setContent('dashboard');
+    setAppScreen(user !== null ? 'app' : 'browse');
+    setNonThanjavurNotice(city);
   };
 
   const recentSearches = savedTrips
@@ -428,16 +436,6 @@ export default function App() {
 
     return (
       <AnimatePresence mode="wait">
-        {contentScreen === 'citylock' && (
-          <motion.div key="citylock" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>
-            <CityLockScreen
-              destination={searchLocation}
-              onBack={() => { setSearchLocation('Thanjavur'); setContent('dashboard'); }}
-              onTryThanjavur={() => { setSearchLocation('Thanjavur'); setContent('dashboard'); }}
-            />
-          </motion.div>
-        )}
-
         {contentScreen === 'dashboard' && (
           <motion.div key="dashboard" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>
             <Dashboard
@@ -531,6 +529,7 @@ export default function App() {
         onTabSelect={handleTabSelect}
         isLoggedIn={user !== null}
         onAuthSuccess={handleAuthSuccess}
+        onNonThanjavurCity={handleNonThanjavurCity}
       />
     );
   }
@@ -602,6 +601,43 @@ export default function App() {
         >
           <AuthForm asModal onSuccess={handleBrowseAuthSuccess} />
         </Modal>
+
+        {/* Non-Thanjavur city notice */}
+        <AnimatePresence>
+          {nonThanjavurNotice && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-5"
+              style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}
+              onClick={() => setNonThanjavurNotice(null)}
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.92, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.92, y: 20 }}
+                transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+                className="rounded-2xl p-6 max-w-sm w-full relative"
+                style={{ background: 'rgba(10,14,30,0.98)', border: '1px solid rgba(255,255,255,0.10)', boxShadow: '0 24px 80px rgba(0,0,0,0.7)' }}
+                onClick={e => e.stopPropagation()}
+              >
+                <button onClick={() => setNonThanjavurNotice(null)} className="absolute top-3 right-3 p-1 rounded-lg text-white/40 hover:text-white/80 transition-colors">
+                  <X className="w-4 h-4" />
+                </button>
+                <p className="text-4xl mb-3">📍</p>
+                <h3 className="text-white font-display font-semibold text-xl mb-2">{nonThanjavurNotice} isn't live yet</h3>
+                <p className="text-sm leading-relaxed mb-5" style={{ color: 'rgba(255,255,255,0.65)' }}>
+                  TripAI is fully live in <span className="font-semibold" style={{ color: 'var(--color-warning)' }}>Thanjavur</span> — hotels, restaurants, and landmarks AI-ranked in seconds. {nonThanjavurNotice} is next on our roadmap.
+                </p>
+                <Button onClick={() => setNonThanjavurNotice(null)} className="w-full justify-center">
+                  Try Thanjavur <ArrowRight className="w-4 h-4" />
+                </Button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     );
   }
@@ -622,6 +658,43 @@ export default function App() {
       <main className="pt-2">
         {renderContent()}
       </main>
+
+      {/* Non-Thanjavur city notice */}
+      <AnimatePresence>
+        {nonThanjavurNotice && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-5"
+            style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}
+            onClick={() => setNonThanjavurNotice(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.92, y: 20 }}
+              transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+              className="rounded-2xl p-6 max-w-sm w-full relative"
+              style={{ background: 'rgba(10,14,30,0.98)', border: '1px solid rgba(255,255,255,0.10)', boxShadow: '0 24px 80px rgba(0,0,0,0.7)' }}
+              onClick={e => e.stopPropagation()}
+            >
+              <button onClick={() => setNonThanjavurNotice(null)} className="absolute top-3 right-3 p-1 rounded-lg text-white/40 hover:text-white/80 transition-colors">
+                <X className="w-4 h-4" />
+              </button>
+              <p className="text-4xl mb-3">📍</p>
+              <h3 className="text-white font-display font-semibold text-xl mb-2">{nonThanjavurNotice} isn't live yet</h3>
+              <p className="text-sm leading-relaxed mb-5" style={{ color: 'rgba(255,255,255,0.65)' }}>
+                TripAI is fully live in <span className="font-semibold" style={{ color: 'var(--color-warning)' }}>Thanjavur</span> — hotels, restaurants, and landmarks AI-ranked in seconds. {nonThanjavurNotice} is next on our roadmap.
+              </p>
+              <Button onClick={() => setNonThanjavurNotice(null)} className="w-full justify-center">
+                Try Thanjavur <ArrowRight className="w-4 h-4" />
+              </Button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
