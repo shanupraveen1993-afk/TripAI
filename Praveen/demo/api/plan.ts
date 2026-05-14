@@ -945,6 +945,37 @@ async function fetchPlaces(
   return places;
 }
 
+// ─── Multi-query pool fetch ───────────────────────────────────────────────────
+// Runs up to 5 query variants in parallel (each capped at 20 by the Places API),
+// deduplicates by place.id, and returns up to `maxPool` unique candidates.
+// Use for Hotels and Food to get ~80-100 candidates instead of 8-20.
+interface PoolVariant {
+  query:  string;
+  seed:   number;
+  opts?:  FetchOptions;
+}
+async function fetchPlacesPool(
+  variants: PoolVariant[],
+  maxPool = 100,
+): Promise<any[]> {
+  const results = await Promise.allSettled(
+    variants.map(v => fetchPlaces(v.query, v.seed, 20, v.opts ?? {}))
+  );
+  const seen = new Set<string>();
+  const pool: any[] = [];
+  for (const r of results) {
+    if (r.status !== 'fulfilled') continue;
+    for (const p of r.value) {
+      const id = (p.id ?? p.displayName?.text ?? '') as string;
+      if (!id || seen.has(id)) continue;
+      seen.add(id);
+      pool.push(p);
+      if (pool.length >= maxPool) return pool;
+    }
+  }
+  return pool;
+}
+
 // When searchQuery looks like a name (e.g. "Hotel Tamilnadu", "Kannapa restaurant"),
 // pin the best name-matching result to position #1 after Gemini re-ranking.
 // Gemini optimises for quality — this ensures the place you searched for is always first.
@@ -2510,11 +2541,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         noLocationBias: !!filters.searchQuery,
       };
 
-      // Tags selected → Google filters by combined tag query. Widen radius if sparse.
-      // No tags → broad hotel search.
-      let mergedPool = await fetchPlaces(query, searchSeed, 10, fetchOpts);
-      if (mergedPool.length < 5) {
-        mergedPool = await fetchPlaces(query, searchSeed, 15, fetchOpts);
+      // 5 parallel variants → deduplicated pool of up to 100 candidates.
+      // Single call kept for free-text search (name-specific queries don't benefit from variants).
+      let mergedPool: any[];
+      if (filters.searchQuery) {
+        mergedPool = await fetchPlaces(query, searchSeed, 20, fetchOpts);
+      } else {
+        const hotelVariants: PoolVariant[] = [
+          { query, seed: searchSeed,            opts: fetchOpts },
+          { query, seed: (searchSeed + 1) % 4, opts: fetchOpts },
+          { query: `budget hotels lodges accommodation in ${city} ${state}`, seed: searchSeed,            opts: fetchOpts },
+          { query: `hotels near ${city} ${state}`,                           seed: (searchSeed + 2) % 4, opts: fetchOpts },
+          { query: `best hotels ${city} Tamil Nadu`,                         seed: (searchSeed + 3) % 4, opts: fetchOpts },
+        ];
+        mergedPool = await fetchPlacesPool(hotelVariants);
       }
 
       // Strip restaurants (South Indian "hotels" etc.) + city guard
@@ -2787,26 +2827,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const foodNoLocationBias = !!filters.searchQuery;
 
     const foodWithPhotos = !filters.searchQuery; // no photos for free-text search results
-    let rawPlaces = await fetchPlaces(query, searchSeed, 20, {
+    const foodBaseOpts: FetchOptions = {
       withPhotos:     foodWithPhotos,
       minRating:      apiMinRating,
       openNow:        apiOpenNow || undefined,
       includedType:   apiIncludedType,
       center:         cityCenter,
       noLocationBias: foodNoLocationBias,
-    });
+    };
 
-    if (rawPlaces.length < 5) {
-      const broadQuery = `restaurants in ${city} ${getCityState(city)}`;
-      const fallback = await fetchPlaces(broadQuery, searchSeed, 20, {
-        withPhotos:     foodWithPhotos,
-        minRating:      apiMinRating,
-        openNow:        apiOpenNow || undefined,
-        includedType:   apiIncludedType,
-        center:         cityCenter,
-        noLocationBias: foodNoLocationBias,
-      });
-      if (fallback.length > rawPlaces.length) rawPlaces = fallback;
+    // 5 parallel variants for tag/filter searches → ~80-100 unique candidates.
+    // Free-text search stays single-call (name-specific, variants add noise).
+    let rawPlaces: any[];
+    if (filters.searchQuery) {
+      rawPlaces = await fetchPlaces(query, searchSeed, 20, foodBaseOpts);
+    } else {
+      const broadOpts: FetchOptions = { ...foodBaseOpts, includedType: undefined, minRating: 0, noLocationBias: false };
+      const foodVariants: PoolVariant[] = [
+        { query, seed: searchSeed,            opts: foodBaseOpts },
+        { query, seed: (searchSeed + 1) % 4, opts: foodBaseOpts },
+        { query: `restaurants dining in ${city} ${foodState}`,              seed: searchSeed,            opts: broadOpts },
+        { query: `tiffin center mess food hotels ${city} ${foodState}`,     seed: (searchSeed + 2) % 4, opts: broadOpts },
+        { query: `best restaurants ${city} Tamil Nadu`,                     seed: (searchSeed + 3) % 4, opts: broadOpts },
+      ];
+      rawPlaces = await fetchPlacesPool(foodVariants);
     }
 
     const localPlaces  = filterCityOnly(rawPlaces, city);
