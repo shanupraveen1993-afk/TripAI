@@ -97,7 +97,7 @@ function HeroPhotoPanel({ active, setActive }: { active: number; setActive: (i: 
       initial={{ opacity: 0, x: 40 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.3, duration: 0.7, ease: 'easeOut' }}
-      className="relative w-full rounded-3xl overflow-hidden h-[260px] md:h-[560px]"
+      className="relative w-full rounded-2xl overflow-hidden h-[260px] md:h-[560px]"
       style={{ boxShadow: '0 0 60px rgba(59,130,246,0.18), 0 30px 60px rgba(0,0,0,0.6)' }}
     >
       {/* All images pre-rendered so browser loads them all in parallel on mount.
@@ -196,7 +196,7 @@ function TestimonialCarousel() {
             <p className="text-base leading-relaxed italic mb-5 text-body">"{t.text}"</p>
             <div className="flex items-center justify-between flex-wrap gap-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-brand text-white font-black flex items-center justify-center"
+                <div className="w-10 h-10 rounded-full bg-brand text-white font-bold flex items-center justify-center"
                   style={{ boxShadow: '0 0 14px rgba(28,100,242,0.35)' }}>{t.avatar}</div>
                 <div>
                   <p className="font-semibold text-heading text-sm">{t.name}</p>
@@ -538,7 +538,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
               <div className="inline-flex items-center gap-2 border text-brand-soft text-xs font-bold px-3.5 py-1.5 rounded-full"
                 style={{ background: 'rgba(28,100,242,0.1)', borderColor: 'rgba(28,100,242,0.28)' }}>
                 <Sparkles className="w-3.5 h-3.5" />
-                Your AI travel co-pilot
+                AI that explains every pick
               </div>
 
               <h1 className="text-4xl md:text-5xl font-display font-semibold text-white leading-[1.1] tracking-tight">
@@ -575,13 +575,16 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
                 <Button onClick={handleCtaClick} size="lg" className="w-full justify-center py-4 text-base rounded-2xl">
                   Show me the best <ArrowRight className="w-4 h-4" />
                 </Button>
+                <p className="text-center text-xs" style={{ color: 'var(--color-on-dark-muted)' }}>
+                  ✓ Free forever · No credit card needed
+                </p>
               </div>
 
               {/* Trust row */}
               <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm pt-1" style={{ color: 'var(--color-on-dark-body)' }}>
-                <span className="flex items-center gap-1.5"><CheckCircle className="w-4 h-4 text-success-medium shrink-0" />No credit card needed</span>
                 <span className="flex items-center gap-1.5"><Star className="w-4 h-4 fill-warning text-warning shrink-0" />Live Google ratings</span>
                 <span className="flex items-center gap-1.5"><Zap className="w-4 h-4 text-brand-border shrink-0" />Under 10 seconds</span>
+                <span className="flex items-center gap-1.5"><span className="text-base leading-none shrink-0">🇮🇳</span>Built for India</span>
               </div>
             </motion.div>
 
@@ -694,22 +697,39 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
           <h2 className="text-3xl md:text-4xl font-semibold text-white">
             Your next trip is<br />10 seconds away.
           </h2>
-          <p style={{ color: 'var(--color-on-dark-body)' }}>AI-ranked. Google-verified. Always free.</p>
+          <p style={{ color: 'var(--color-on-dark-body)' }}>India's AI travel ranker — Google-verified, always free.</p>
           <Button size="xl" onClick={handleCtaClick} className="mx-auto">
             Start for free <ArrowRight className="w-5 h-5" />
           </Button>
+          <p className="text-xs" style={{ color: 'var(--color-on-dark-muted)' }}>✓ Free forever · No login wall to explore</p>
         </div>
       </section>
 
       {/* ── Footer ─────────────────────────────────────────────────── */}
-      <footer className="border-t py-8" style={{ background: '#0C1220', borderColor: 'rgba(255,255,255,0.08)' }}>
-        <div className="max-w-screen-xl mx-auto px-4 md:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <Compass className="w-4 h-4 text-brand-border" />
-            <span className="font-display font-semibold text-white">TripAI</span>
+      <footer className="border-t py-10" style={{ background: '#0C1220', borderColor: 'rgba(255,255,255,0.08)' }}>
+        <div className="max-w-screen-xl mx-auto px-4 md:px-8 space-y-6">
+          {/* Top row */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <Compass className="w-4 h-4 text-brand-border" />
+              <span className="font-display font-semibold text-white">TripAI</span>
+              <span className="text-xs px-2 py-0.5 rounded-full ml-1" style={{ background: 'rgba(28,100,242,0.15)', color: 'var(--color-brand-light)', border: '1px solid rgba(28,100,242,0.25)' }}>
+                🇮🇳 India's AI travel ranker
+              </span>
+            </div>
+            <p className="text-xs" style={{ color: 'var(--color-on-dark-muted)' }}>
+              Powered by Google Places + Gemini AI
+            </p>
           </div>
-          <p className="text-xs" style={{ color: 'var(--color-on-dark-muted)' }}>Powered by Google Places + Gemini AI</p>
-          <p className="text-xs" style={{ color: 'var(--color-on-dark-muted)' }}>© 2026 TripAI</p>
+          {/* Bottom row — links + copyright */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+            <div className="flex items-center gap-5 text-xs" style={{ color: 'var(--color-on-dark-muted)' }}>
+              <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+              <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+              <a href="https://x.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Twitter / X</a>
+            </div>
+            <p className="text-xs" style={{ color: 'var(--color-on-dark-muted)' }}>© 2026 TripAI · All rights reserved</p>
+          </div>
         </div>
       </footer>
 
