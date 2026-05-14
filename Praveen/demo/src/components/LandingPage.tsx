@@ -457,6 +457,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
   /* ── Single shared timer — drives both CityRotator (left) and
      HeroPhotoPanel (right) so they always show the same city ── */
   const [heroActive, setHeroActive] = useState(0);
+  const [heroTab,   setHeroTab]   = useState<Tab>('Hotels');
   useEffect(() => {
     const id = setInterval(
       () => setHeroActive(i => (i + 1) % HERO_DESTINATIONS.length),
@@ -478,7 +479,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
   };
 
   const handleCtaClick = () => {
-    if (isLoggedIn) { onTabSelect('Hotels', demoSearch || undefined); return; }
+    if (isLoggedIn) { onTabSelect(heroTab, demoSearch || undefined); return; }
     pendingDestRef.current = demoSearch;
     setPendingTab(null);
     setAuthOpen(true);
@@ -530,25 +531,42 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16 items-center">
 
             {/* Left */}
-            <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }} className="space-y-7">
+            <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }} className="space-y-6">
+
+              {/* Badge */}
               <div className="inline-flex items-center gap-2 border text-brand-soft text-xs font-bold px-3.5 py-1.5 rounded-full"
                 style={{ background: 'rgba(28,100,242,0.1)', borderColor: 'rgba(28,100,242,0.28)' }}>
                 <Sparkles className="w-3.5 h-3.5" />
                 AI that explains every pick
               </div>
 
+              {/* Headline — short + direct */}
               <h1 className="text-4xl md:text-5xl font-display font-semibold text-white leading-[1.1] tracking-tight">
-                <span className="block">Still on tab 6?</span>
-                <span className="block">AI picks the best in</span>
+                <span className="block">Find the best in</span>
                 <CityRotator city={HERO_DESTINATIONS[heroActive].city} />
-                <span className="block text-2xl md:text-3xl font-semibold mt-1" style={{ color: 'var(--color-on-dark-body)' }}>
-                  so you don't have to.
-                </span>
               </h1>
-
-              <p className="text-base md:text-lg leading-relaxed max-w-md" style={{ color: 'var(--color-on-dark-body)' }}>
-                Tell TripAI where you're headed and what matters to you. It scans 100+ places on Google, AI-ranks every result, and tells you exactly why each one fits — in under 10 seconds.
+              <p className="text-base leading-snug" style={{ color: 'var(--color-on-dark-body)' }}>
+                AI-ranked results with the reason behind every pick — in 10 seconds.
               </p>
+
+              {/* Tab selector */}
+              <div className="flex gap-2 flex-wrap">
+                {(['Hotels', 'Food', 'Itinerary', 'Explore'] as Tab[]).map(tab => (
+                  <button
+                    key={tab}
+                    type="button"
+                    onClick={() => setHeroTab(tab)}
+                    className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                      heroTab === tab
+                        ? 'bg-brand text-white'
+                        : 'text-white/65 hover:text-white hover:bg-white/10'
+                    }`}
+                    style={heroTab === tab ? {} : { background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.10)' }}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
 
               {/* Search */}
               <div className="space-y-3 max-w-[440px]">
@@ -558,7 +576,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
                     type="text"
                     value={demoSearch}
                     onChange={e => setDemoSearch(e.target.value)}
-                    placeholder="Where are you headed? Goa, Jaipur, Bangalore…"
+                    placeholder="City — try Thanjavur"
                     className="w-full pl-11 pr-4 py-4 rounded-2xl text-sm text-heading placeholder:text-muted outline-none transition-all duration-300 focus:ring-2 focus:ring-brand/30"
                     style={{
                       background: 'rgba(255,255,255,0.97)',
@@ -574,7 +592,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess }: LandingP
               </div>
 
               {/* Trust row */}
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm pt-1" style={{ color: 'var(--color-on-dark-body)' }}>
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm" style={{ color: 'var(--color-on-dark-body)' }}>
                 <span className="flex items-center gap-1.5"><Star className="w-4 h-4 fill-warning text-warning shrink-0" />Live Google ratings</span>
                 <span className="flex items-center gap-1.5"><Zap className="w-4 h-4 text-brand-border shrink-0" />Under 10 seconds</span>
                 <span className="flex items-center gap-1.5"><span className="text-base leading-none shrink-0">🇮🇳</span>Built for India</span>
