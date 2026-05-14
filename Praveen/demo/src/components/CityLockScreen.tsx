@@ -59,37 +59,12 @@ export function CityLockScreen({ destination, onBack, onTryThanjavur }: CityLock
         background: 'radial-gradient(circle, rgba(99,102,241,0.08), transparent 70%)', filter: 'blur(40px)',
       }} />
 
-      {/* Concentric rings + temple */}
+      {/* Concentric rings */}
       <div className="relative flex items-center justify-center mb-8" style={{ animation: 'cl-float 4s ease-in-out infinite' }}>
         <div className="absolute rounded-full" style={{ width: 200, height: 200, border: '1px solid rgba(28,100,242,0.20)', animation: 'cl-ring3 3.6s ease-in-out infinite 0.8s' }} />
         <div className="absolute rounded-full" style={{ width: 148, height: 148, border: '1px solid rgba(28,100,242,0.30)', animation: 'cl-ring2 3.6s ease-in-out infinite 0.4s' }} />
         <div className="absolute rounded-full" style={{ width: 104, height: 104, border: '2px solid rgba(28,100,242,0.40)', animation: 'cl-ring 3.6s ease-in-out infinite' }} />
         <div className="absolute w-16 h-16 rounded-full" style={{ background: 'radial-gradient(circle, rgba(28,100,242,0.35), transparent 70%)', filter: 'blur(12px)' }} />
-        <span className="relative z-10 select-none" style={{ fontSize: '3.5rem', lineHeight: 1, filter: 'drop-shadow(0 0 18px rgba(28,100,242,0.8)) drop-shadow(0 0 40px rgba(28,100,242,0.35))' }}>🛕</span>
-      </div>
-
-      {/* City signal badge */}
-      <div
-        className="flex items-center gap-2 px-3 py-1.5 rounded-full mb-5 text-xs font-normal"
-        style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(240,82,82,0.40)', color: 'var(--color-danger)' }}
-      >
-        <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: 'var(--color-danger)' }} />
-        Signal not found · {destination}
-      </div>
-
-      {/* Headline */}
-      <div className="text-center mb-4">
-        <h1 className="font-display font-semibold tracking-tight leading-none mb-1" style={{
-          fontSize: 'clamp(2rem, 7vw, 3.2rem)',
-          background: 'linear-gradient(135deg, #1C64F2 0%, #9061F9 50%, #1C64F2 100%)',
-          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-          backgroundSize: '200% auto', backgroundClip: 'text',
-        }}>
-          Live in Thanjavur
-        </h1>
-        <p className="text-xs font-normal mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
-          AI · Travel · India
-        </p>
       </div>
 
       {/* Notice card */}
