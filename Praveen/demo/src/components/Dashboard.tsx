@@ -644,6 +644,14 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
     onSearch(buildFilters());
   };
 
+  const NON_VEG_ITEMS = [
+    // segment tags
+    'Non-Veg', 'Chettinad',
+    // advanced dish names
+    'Mutton', 'Chicken', 'Fish Curry', 'Prawn', 'Crab',
+    'Mandi', 'Shawarma', 'BBQ & Grills', 'Alfaham',
+  ];
+
   const renderFilters = () => {
     switch (activeTab) {
 
@@ -802,14 +810,13 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
 
               {foodTagData.segments && Object.keys(foodTagData.segments).length > 0
                 ? Object.entries(foodTagData.segments).map(([seg, tags]) => {
-                  const NON_VEG_TAGS = ['Non-Veg', 'Chettinad'];
                   if (tags.length === 0) return null;
                   return (
                   <div key={seg} className="mb-2">
                     <p className="text-xs font-normal text-muted mb-1.5">{seg}</p>
                     <div className="flex flex-wrap gap-1.5">
                       {tags.map((tag: string) => {
-                        const isVegBlocked = dietType === 'Pure Veg' && NON_VEG_TAGS.includes(tag);
+                        const isVegBlocked = dietType === 'Pure Veg' && NON_VEG_ITEMS.includes(tag);
                         const isSelected   = foodTags.includes(tag);
                         const isMaxed      = foodTags.length >= 2 && !isSelected;
                         const isDisabled   = isVegBlocked || isMaxed;
@@ -901,24 +908,28 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                     <p className="text-xs font-normal text-muted mb-1">{group}</p>
                     <div className="flex flex-wrap gap-1.5">
                       {items.map(item => {
-                        const isSelected = foodTags.includes(item);
-                        const isMaxed    = foodTags.length >= 2 && !isSelected;
+                        const isVegBlocked = dietType === 'Pure Veg' && NON_VEG_ITEMS.includes(item);
+                        const isSelected   = foodTags.includes(item);
+                        const isMaxed      = foodTags.length >= 2 && !isSelected;
+                        const isDisabled   = isVegBlocked || isMaxed;
                         return (
                           <button
                             key={item}
                             type="button"
-                            disabled={isMaxed}
+                            disabled={isDisabled}
                             onClick={() => setFoodTags(prev =>
                               prev.includes(item) ? prev.filter(t => t !== item)
                                 : prev.length >= 2 ? [...prev.slice(1), item]
                                 : [...prev, item]
                             )}
                             className="px-3 py-1.5 rounded-lg border-2 text-xs font-medium transition-all"
-                            style={isSelected
-                              ? { borderColor: 'var(--color-brand)', background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
-                              : isMaxed
-                                ? { borderColor: 'var(--color-border)', background: 'var(--color-bg-app)', color: 'var(--color-border-medium)', cursor: 'not-allowed' }
-                                : { borderColor: 'var(--color-border)', background: '#fff', color: 'var(--color-muted)' }
+                            style={isVegBlocked
+                              ? { borderColor: '#E5E7EB', background: '#F9FAFB', color: '#D1D5DB', cursor: 'not-allowed', opacity: 0.5 }
+                              : isSelected
+                                ? { borderColor: 'var(--color-brand)', background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
+                                : isMaxed
+                                  ? { borderColor: 'var(--color-border)', background: 'var(--color-bg-app)', color: 'var(--color-border-medium)', cursor: 'not-allowed' }
+                                  : { borderColor: 'var(--color-border)', background: '#fff', color: 'var(--color-muted)' }
                             }
                           >
                             {item}
@@ -1273,7 +1284,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                 const next = dietType === 'Pure Veg' ? 'Any' : 'Pure Veg';
                 setDietType(next);
                 if (next === 'Pure Veg')
-                  setFoodTags(prev => prev.filter(t => !['Non-Veg', 'Chettinad'].includes(t)));
+                  setFoodTags(prev => prev.filter(t => !NON_VEG_ITEMS.includes(t)));
               }}
               className="ml-auto shrink-0 text-xs font-bold px-2 py-0.5 rounded-full transition-all"
               style={dietType === 'Pure Veg'
