@@ -3009,31 +3009,45 @@ Return a JSON array of EXACTLY ${stopCount} stops. Return ONLY valid JSON. No ma
     const clean = raw.replace(/```json|```/g, '').trim();
     const stops = JSON.parse(clean);
 
-    // Post-process: shift all stop times if Gemini ignored the startTime
-    const toMin = (t: string) => {
-      const match = t?.match(/(\d+):(\d+)\s*(AM|PM)/i);
-      if (!match) return -1;
-      let hh = parseInt(match[1]); const mm = parseInt(match[2]);
-      if (match[3].toUpperCase() === 'PM' && hh !== 12) hh += 12;
-      if (match[3].toUpperCase() === 'AM' && hh === 12) hh = 0;
-      return hh * 60 + mm;
+    // Post-process: enforce startTime — shift all times if Gemini ignored it
+    const parseTimeMin = (t: string): number => {
+      if (!t) return -1;
+      // 12-hr: "7:00 AM", "07:00 AM", "4:00 PM"
+      const m12 = t.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+      if (m12) {
+        let hh = parseInt(m12[1]); const mm = parseInt(m12[2]);
+        if (m12[3].toUpperCase() === 'PM' && hh !== 12) hh += 12;
+        if (m12[3].toUpperCase() === 'AM' && hh === 12) hh = 0;
+        return hh * 60 + mm;
+      }
+      // 24-hr: "07:00", "16:00"
+      const m24 = t.match(/^(\d{1,2}):(\d{2})$/);
+      if (m24) return parseInt(m24[1]) * 60 + parseInt(m24[2]);
+      return -1;
     };
-    const fromMin = (min: number) => {
+    const formatMin = (min: number): string => {
       const total = ((min % 1440) + 1440) % 1440;
       const hh = Math.floor(total / 60); const mm = total % 60;
       const period = hh >= 12 ? 'PM' : 'AM';
       const h12 = hh > 12 ? hh - 12 : hh === 0 ? 12 : hh;
       return `${h12}:${mm.toString().padStart(2, '0')} ${period}`;
     };
-    const [rh, rm] = startTime.split(':').map(Number);
-    const requestedMin = rh * 60 + rm;
-    const firstMin = toMin(stops[0]?.time ?? '');
-    if (firstMin >= 0 && firstMin < requestedMin) {
-      const offset = requestedMin - firstMin;
-      stops.forEach((s: any) => {
-        if (s.time)     s.time     = fromMin(toMin(s.time)     + offset);
-        if (s.departBy) s.departBy = fromMin(toMin(s.departBy) + offset);
-      });
+    const [rqH, rqM] = startTime.split(':').map(Number);
+    const requestedMin = rqH * 60 + rqM;
+    if (Array.isArray(stops) && stops.length > 0 && requestedMin > 7 * 60) {
+      const firstMin = parseTimeMin(stops[0]?.time ?? '');
+      const baseMin = firstMin >= 0 ? firstMin : 7 * 60;
+      const offset = requestedMin - baseMin;
+      if (offset > 0) {
+        stops.forEach((s: any) => {
+          const t = parseTimeMin(s.time ?? '');
+          s.time = t >= 0 ? formatMin(t + offset) : formatMin(requestedMin);
+          if (s.departBy) {
+            const d = parseTimeMin(s.departBy);
+            s.departBy = d >= 0 ? formatMin(d + offset) : undefined;
+          }
+        });
+      }
     }
 
     const validTraffic = (v: unknown) =>

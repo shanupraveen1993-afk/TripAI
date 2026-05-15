@@ -179,7 +179,12 @@ export default function App() {
         const timeSlot = filters.startTime || 'Morning';
         const slotStopMap: Record<string, number> = { Morning: 5, Afternoon: 3, Evening: 2 };
         setItinStopCount(slotStopMap[timeSlot] ?? 5);
-        const stops = await fetchItinerary(timeSlot, seed);
+        const stops = await fetchItinerary(
+          timeSlot, seed,
+          filters.destination || searchLocation || 'Thanjavur',
+          filters.itinDate,
+          filters.startPoint,
+        );
         if (stops.length > 0) {
           setLiveItinerary(stops);
           setItinStopCount(stops.length);

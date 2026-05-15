@@ -101,7 +101,13 @@ export async function fetchPlan(tab: string, seed = 0, filters: PlanFilters = {}
   return { results: data.results ?? [] };
 }
 
-export async function fetchItinerary(timeSlot = 'Morning', seed = 0): Promise<LiveItineraryStop[]> {
+export async function fetchItinerary(
+  timeSlot = 'Morning',
+  seed = 0,
+  city = 'Thanjavur',
+  itinDate?: string,
+  startPoint?: string,
+): Promise<LiveItineraryStop[]> {
   const timeMap: Record<string, string> = { Morning: '07:00', Afternoon: '12:00', Evening: '16:00' };
   const stopMap: Record<string, number> = { Morning: 5, Afternoon: 3, Evening: 2 };
   const startTime = timeMap[timeSlot] ?? '07:00';
@@ -109,7 +115,7 @@ export async function fetchItinerary(timeSlot = 'Morning', seed = 0): Promise<Li
   const r = await fetch('/api/plan', {
     method:  'POST',
     headers: { 'Content-Type': 'application/json' },
-    body:    JSON.stringify({ tab: 'Itinerary', startTime, stopCount, searchSeed: seed }),
+    body:    JSON.stringify({ tab: 'Itinerary', startTime, stopCount, searchSeed: seed, city, itinDate, startPoint }),
   });
   if (!r.ok) throw new Error(`API error ${r.status}`);
   const data = await r.json() as { itinerary: LiveItineraryStop[] };
