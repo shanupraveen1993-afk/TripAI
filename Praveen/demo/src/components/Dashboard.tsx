@@ -803,31 +803,34 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               {foodTagData.segments && Object.keys(foodTagData.segments).length > 0
                 ? Object.entries(foodTagData.segments).map(([seg, tags]) => {
                   const NON_VEG_TAGS = ['Non-Veg', 'Chettinad'];
-                  const visibleTags = dietType === 'Pure Veg' ? tags.filter((t: string) => !NON_VEG_TAGS.includes(t)) : tags;
-                  if (visibleTags.length === 0) return null;
+                  if (tags.length === 0) return null;
                   return (
                   <div key={seg} className="mb-2">
                     <p className="text-xs font-normal text-muted mb-1.5">{seg}</p>
                     <div className="flex flex-wrap gap-1.5">
-                      {visibleTags.map((tag: string) => {
-                        const isSelected = foodTags.includes(tag);
-                        const isMaxed    = foodTags.length >= 2 && !isSelected;
+                      {tags.map((tag: string) => {
+                        const isVegBlocked = dietType === 'Pure Veg' && NON_VEG_TAGS.includes(tag);
+                        const isSelected   = foodTags.includes(tag);
+                        const isMaxed      = foodTags.length >= 2 && !isSelected;
+                        const isDisabled   = isVegBlocked || isMaxed;
                         return (
                           <button
                             key={tag}
                             type="button"
-                            disabled={isMaxed}
+                            disabled={isDisabled}
                             onClick={() => setFoodTags(prev =>
                               prev.includes(tag) ? prev.filter(t => t !== tag)
                                 : prev.length >= 2 ? [...prev.slice(1), tag]
                                 : [...prev, tag]
                             )}
                             className="px-3 py-2 rounded-lg border-2 text-xs font-medium transition-all"
-                            style={isSelected
-                              ? { borderColor: 'var(--color-brand)', background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
-                              : isMaxed
-                                ? { borderColor: 'var(--color-border)', background: 'var(--color-bg-app)', color: 'var(--color-border-medium)', cursor: 'not-allowed' }
-                                : { borderColor: 'var(--color-border)', background: '#fff', color: 'var(--color-muted)' }
+                            style={isVegBlocked
+                              ? { borderColor: '#E5E7EB', background: '#F9FAFB', color: '#D1D5DB', cursor: 'not-allowed', opacity: 0.5 }
+                              : isSelected
+                                ? { borderColor: 'var(--color-brand)', background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
+                                : isMaxed
+                                  ? { borderColor: 'var(--color-border)', background: 'var(--color-bg-app)', color: 'var(--color-border-medium)', cursor: 'not-allowed' }
+                                  : { borderColor: 'var(--color-border)', background: '#fff', color: 'var(--color-muted)' }
                             }
                           >
                             {tag}
@@ -1266,7 +1269,12 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
           {activeTab === 'Food' ? (
             <button
               type="button"
-              onClick={() => setDietType(d => d === 'Pure Veg' ? 'Any' : 'Pure Veg')}
+              onClick={() => {
+                const next = dietType === 'Pure Veg' ? 'Any' : 'Pure Veg';
+                setDietType(next);
+                if (next === 'Pure Veg')
+                  setFoodTags(prev => prev.filter(t => !['Non-Veg', 'Chettinad'].includes(t)));
+              }}
               className="ml-auto shrink-0 text-xs font-bold px-2 py-0.5 rounded-full transition-all"
               style={dietType === 'Pure Veg'
                 ? { background: '#ECFDF5', color: '#059669', border: '1.5px solid #059669' }
