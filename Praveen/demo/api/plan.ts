@@ -2935,7 +2935,9 @@ async function geminiItinerary(places: any[], startTime = '07:00', stopCount = 5
   const period  = h >= 12 ? 'PM' : 'AM';
   const hour12  = h > 12 ? h - 12 : h === 0 ? 12 : h;
   const startStr = `${hour12}:${m.toString().padStart(2, '0')} ${period}`;
-  const sessionLabel = stopCount === 5 ? 'full day' : stopCount === 3 ? 'afternoon' : 'evening';
+  const sessionLabel = startTime.startsWith('16') ? 'evening'
+                     : startTime.startsWith('12') ? 'afternoon'
+                     : 'full day';
 
   const isThanjavur = /thanjavur|tanjore/i.test(city);
   const cityFacts   = isThanjavur ? THANJAVUR_FACTS : '';
@@ -3188,7 +3190,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                        : rawStartTime === 'Afternoon' ? '12:00'
                        : rawStartTime === 'Evening'   ? '16:00'
                        : rawStartTime;
-    const stopCount    = Math.min(Math.max(parseInt(String(req.body?.stopCount ?? '5'), 10) || 5, 2), 5);
+    // Derive defaults from rawStartTime so frontend doesn't need to send stopCount
+    const defaultStops = rawStartTime === 'Evening' ? 2 : rawStartTime === 'Afternoon' ? 3 : 5;
+    const stopCount    = Math.min(Math.max(parseInt(String(req.body?.stopCount ?? defaultStops), 10) || defaultStops, 2), 5);
     const searchSeed   = parseInt((req.body?.searchSeed ?? '0') as string, 10);
     const itinCity     = ((req.body?.city as string) ?? 'Thanjavur').trim();
     const itinState    = getCityState(itinCity);
