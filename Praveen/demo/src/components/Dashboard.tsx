@@ -1259,7 +1259,15 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             <p className="font-display font-semibold text-sm text-heading leading-tight">{meta.headline}</p>
             <p className="text-xs text-muted mt-0.5 truncate">{meta.sub}</p>
           </div>
-          <Sparkles className="w-3.5 h-3.5 ml-auto shrink-0 text-brand" />
+          {activeTab === 'Food' && dietType === 'Pure Veg' && (
+            <span className="ml-auto shrink-0 text-xs font-bold px-2 py-0.5 rounded-full"
+              style={{ background: '#ECFDF5', color: '#059669', border: '1px solid #6EE7B7' }}>
+              Pure Veg
+            </span>
+          )}
+          {!(activeTab === 'Food' && dietType === 'Pure Veg') && (
+            <Sparkles className="w-3.5 h-3.5 ml-auto shrink-0 text-brand" />
+          )}
         </div>
 
         <div className="p-4">
