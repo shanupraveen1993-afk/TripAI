@@ -239,6 +239,37 @@ const FOOD_TAG_META: FoodTagMeta[] = [
   { tag: 'Highly Rated',     segment: 'Value & Experience', group: 'B', freq: 62 },
 ];
 
+// Segment + group assignment for ALL food tag keywords — used for dynamic discovery.
+// Scores ALL these against the 50-place pool; top-5 per segment float to the top.
+const FOOD_TAG_SEGMENT_MAP: Record<string, { segment: string; group: 'A' | 'B' }> = {
+  // Cuisine & Dish
+  'Biryani':         { segment: 'Cuisine & Dish',     group: 'B' },
+  'South Indian':    { segment: 'Cuisine & Dish',     group: 'B' },
+  'Non-Veg':         { segment: 'Cuisine & Dish',     group: 'B' },
+  'Tiffin & Snacks': { segment: 'Cuisine & Dish',     group: 'B' },
+  'Chettinad Style': { segment: 'Cuisine & Dish',     group: 'B' },
+  'Breakfast':       { segment: 'Cuisine & Dish',     group: 'B' },
+  'Lunch':           { segment: 'Cuisine & Dish',     group: 'B' },
+  'Dinner':          { segment: 'Cuisine & Dish',     group: 'B' },
+  // Taste & Quality
+  'Fresh & Hot':     { segment: 'Taste & Quality',    group: 'B' },
+  'Authentic':       { segment: 'Taste & Quality',    group: 'B' },
+  'Good Quantity':   { segment: 'Taste & Quality',    group: 'B' },
+  'Spicy':           { segment: 'Taste & Quality',    group: 'B' },
+  'Delicious':       { segment: 'Taste & Quality',    group: 'B' },
+  'Clean':           { segment: 'Taste & Quality',    group: 'B' },
+  // Value & Experience
+  'Affordable':      { segment: 'Value & Experience', group: 'B' },
+  'Value for Money': { segment: 'Value & Experience', group: 'B' },
+  'Family Dining':   { segment: 'Value & Experience', group: 'B' },
+  'Quick Service':   { segment: 'Value & Experience', group: 'B' },
+  'Highly Rated':    { segment: 'Value & Experience', group: 'B' },
+  'Good Ambience':   { segment: 'Value & Experience', group: 'B' },
+  'AC Dine-in':      { segment: 'Value & Experience', group: 'B' },
+  'Friendly Staff':  { segment: 'Value & Experience', group: 'B' },
+  'Top Pick':        { segment: 'Value & Experience', group: 'B' },
+};
+
 const HOTEL_FALLBACKS = [
   'Near Big Temple', 'Near Railway Station', 'City Centre', 'Easy Parking', 'Walkable Distance',
   'Spacious Rooms', 'Good Amenities', 'In-House Restaurant', 'Quiet & Peaceful', 'Breakfast Included',
@@ -250,23 +281,37 @@ function getCityKey(city: string): string {
   return city.trim().toLowerCase().replace(/[^a-z]/g, '');
 }
 
-async function fetchHotels(city: string): Promise<any[]> {
-  const r = await fetch('https://places.googleapis.com/v1/places:searchText', {
-    method:  'POST',
-    headers: {
-      'Content-Type':     'application/json',
-      'X-Goog-Api-Key':   PLACES_KEY,
-      'X-Goog-FieldMask': FIELD_MASK,
-    },
-    body: JSON.stringify({
-      textQuery:      `hotels lodges in ${city}`,
-      maxResultCount: 20,
-      languageCode:   'en',
-    }),
-  });
-  if (!r.ok) throw new Error(`Places ${r.status}`);
-  const data = await r.json() as { places?: any[] };
-  return data.places ?? [];
+// Parallel pool fetch — runs multiple queries concurrently, deduplicates by place ID.
+// Free-tier safe: 2-3 queries × 20 results = up to 50 unique candidates per call.
+async function fetchPool(queries: string[], max = 50): Promise<any[]> {
+  const results = await Promise.allSettled(
+    queries.map(q =>
+      fetch('https://places.googleapis.com/v1/places:searchText', {
+        method:  'POST',
+        headers: {
+          'Content-Type':     'application/json',
+          'X-Goog-Api-Key':   PLACES_KEY,
+          'X-Goog-FieldMask': FIELD_MASK,
+        },
+        body: JSON.stringify({ textQuery: q, maxResultCount: 20, languageCode: 'en' }),
+      })
+      .then(r => r.ok ? r.json() : { places: [] })
+      .then((d: any) => (d.places ?? []) as any[])
+    )
+  );
+  const seen = new Set<string>();
+  const pool: any[] = [];
+  for (const r of results) {
+    if (r.status !== 'fulfilled') continue;
+    for (const p of r.value) {
+      const id = (p.id ?? p.displayName?.text ?? '') as string;
+      if (!id || seen.has(id)) continue;
+      seen.add(id);
+      pool.push(p);
+      if (pool.length >= max) return pool;
+    }
+  }
+  return pool;
 }
 
 // Score each tag against real hotel corpus — returns count of hotels matching
@@ -302,15 +347,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Candidate tag list: curated for known cities, Thanjavur template for unknown
     const candidateMeta = metaEntry ? metaEntry[1] : (CITY_TAG_META['thanjavur'] ?? []);
 
-    // Always validate against real Places API data
+    // Pool fetch: 3 queries × 20 = up to 50 unique hotels (free-tier safe)
     if (PLACES_KEY) {
       try {
-        const places = await fetchHotels(city);
+        const places = await fetchPool([
+          `hotels lodges in ${city}`,
+          `budget hotels accommodation in ${city}`,
+          `best hotels ${city} Tamil Nadu`,
+        ], 50);
 
-        // Score every tag against real corpus
         const scored = scoreTagsAgainstPlaces(candidateMeta, places);
 
-        // Sort within each segment by real frequency (descending)
         const segments: Record<string, string[]> = {};
         for (const seg of ['Where?', 'Room & Stay', 'Value & Service'] as const) {
           const inSeg = scored
@@ -327,11 +374,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.json({ tags, segments, groupA, city, total: places.length });
       } catch (err) {
         console.error('[/api/tags hotels]', err);
-        // fall through to static fallback
       }
     }
 
-    // No API key or fetch failed — return static curated list
+    // No API key or fetch failed — static fallback
     const tags = candidateMeta.map(m => ({ tag: m.tag, count: m.freq ?? 0 }));
     const segments: Record<string, string[]> = {};
     for (const seg of ['Where?', 'Room & Stay', 'Value & Service']) {
@@ -342,7 +388,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.json({ tags, segments, groupA, city, total: candidateMeta.length });
   }
 
-  // ── Food — segmented response ─────────────────────────────────────────────
+  // ── Food ──────────────────────────────────────────────────────────────────
+  // Static fallback using hardcoded FOOD_TAG_META
   function buildFoodSegmentResponse(meta: FoodTagMeta[], total: number) {
     const tags = meta.map(m => ({ tag: m.tag, count: m.freq ?? 0 }));
     const segments: Record<string, string[]> = {};
@@ -359,31 +406,49 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const r = await fetch('https://places.googleapis.com/v1/places:searchText', {
-      method:  'POST',
-      headers: {
-        'Content-Type':     'application/json',
-        'X-Goog-Api-Key':   PLACES_KEY,
-        'X-Goog-FieldMask': FIELD_MASK,
-      },
-      body: JSON.stringify({ textQuery: `restaurants in ${city}`, maxResultCount: 20, languageCode: 'en' }),
-    });
-    if (!r.ok) throw new Error(`Places ${r.status}`);
-    const data   = await r.json() as { places?: any[] };
-    const places = data.places ?? [];
+    // Pool fetch: 3 queries × 20 = up to 50 unique restaurants (free-tier safe)
+    const places = await fetchPool([
+      `restaurants in ${city}`,
+      `tiffin food hotels dining in ${city}`,
+      `best restaurants ${city} Tamil Nadu`,
+    ], 50);
 
-    // Score each tag against live corpus, update freq
-    const scored = FOOD_TAG_META.map(m => {
-      const kws = FOOD_TAG_KEYWORDS[m.tag] ?? [];
+    // Score ALL tags in FOOD_TAG_SEGMENT_MAP against the 50-place corpus.
+    // This discovers which tags genuinely appear across real places — not just
+    // validates a pre-written list against 20 results.
+    const scored = Object.entries(FOOD_TAG_SEGMENT_MAP).map(([tag, meta]) => {
+      const kws = FOOD_TAG_KEYWORDS[tag] ?? [];
       let count = 0;
       for (const p of places) {
         const corpus = buildCorpus(p);
         if (kws.some(k => corpus.includes(k))) count++;
       }
-      return { ...m, freq: count };
+      return { tag, segment: meta.segment, group: meta.group, freq: count };
     });
 
-    return res.json(buildFoodSegmentResponse(scored, places.length));
+    // Per segment: sort by real frequency, take top 5 that appear in ≥2 places
+    const segments: Record<string, string[]> = {};
+    for (const seg of ['Cuisine & Dish', 'Taste & Quality', 'Value & Experience']) {
+      const inSeg = scored
+        .filter(m => m.segment === seg && m.freq >= 2)
+        .sort((a, b) => b.freq - a.freq)
+        .slice(0, 5);
+      if (inSeg.length > 0) segments[seg] = inSeg.map(m => m.tag);
+    }
+
+    // Fall back to static list for any segment that got no results from live data
+    for (const seg of ['Cuisine & Dish', 'Taste & Quality', 'Value & Experience']) {
+      if (!segments[seg] || segments[seg].length === 0) {
+        segments[seg] = FOOD_TAG_META.filter(m => m.segment === seg).map(m => m.tag);
+      }
+    }
+
+    const tags = scored
+      .filter(m => m.freq >= 2)
+      .sort((a, b) => b.freq - a.freq)
+      .map(m => ({ tag: m.tag, count: m.freq }));
+
+    return res.json({ tags, segments, groupA: [], city, total: places.length });
   } catch (err) {
     console.error('[/api/tags food]', err);
     return res.json(buildFoodSegmentResponse(FOOD_TAG_META, 0));
