@@ -19,6 +19,8 @@ type ItineraryStop = {
   travelToNext?: string; departBy?: string; imgId?: string;
   duration?: string; crowdLevel?: 'Low' | 'Moderate' | 'High';
   reachNote?: string; entryFee?: string; highlights?: string[];
+  cautionNote?: string; avoidNote?: string;
+  reviews?: Array<{ text: string; author: string; location: string; stars: number; ago: string }>;
 } | LiveItineraryStop;
 import { fetchPhoto } from '../api/client';
 import { useToast } from './ui/Toast';
@@ -1064,14 +1066,20 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                     style={{ overflow: 'hidden' }}
                   >
                     <div className="px-3.5 pb-3.5 border-t border-border/50 pt-3 space-y-2.5" style={{ background: '#F9FAFB' }}>
-                      {/* 2-card grid */}
+
+                      {/* 2-card grid: Timing & Crowd + Good to Know */}
                       <div className="grid grid-cols-2 gap-2">
-                        {/* Card 1: Visit Info */}
-                        <div className="rounded-lg p-3 flex flex-col gap-2 border" style={{ background: '#F9FAFB', borderColor: '#E5E7EB' }}>
-                          <span className="text-xs font-semibold text-muted flex items-center gap-1">
-                            <Clock className="w-3 h-3" /> Visit Info
+                        {/* Card 1: Timing & Crowd */}
+                        <div className="rounded-lg p-3 flex flex-col gap-2 border" style={{ background: '#EBF5FF', borderColor: '#C3DDFD' }}>
+                          <span className="text-xs font-semibold text-brand flex items-center gap-1">
+                            <Clock className="w-3 h-3" /> Timing & Crowd
                           </span>
                           <div className="flex flex-col gap-1.5 text-xs text-body">
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-muted">🕐</span>
+                              <span className="font-semibold">{stop.time}</span>
+                              {stop.departBy && <span className="text-muted">→ {stop.departBy}</span>}
+                            </div>
                             <div className="flex items-center gap-1.5">
                               <span className="text-muted">⏱</span>
                               <span className="font-semibold">{stop.duration ?? '1–2 hrs'}</span>
@@ -1082,35 +1090,63 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                                 <span className="font-semibold">{stop.entryFee}</span>
                               </div>
                             )}
-                            <div className="flex items-center gap-1.5 flex-wrap">
-                              <span className="text-muted">🕐</span>
-                              <span className="font-semibold">{stop.time}</span>
-                              {stop.departBy && <span className="text-muted text-xs">→ leave {stop.departBy}</span>}
-                            </div>
+                            {crowd && stop.crowdLevel && (
+                              <div className={`flex items-center gap-1.5 font-semibold px-2 py-1 rounded-lg mt-0.5 ${crowd.bg} ${crowd.text}`}>
+                                <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${crowd.dot}`} />
+                                {stop.crowdLevel} crowd
+                              </div>
+                            )}
                           </div>
                         </div>
 
-                        {/* Card 2: Smart Guide */}
-                        <div className="rounded-lg p-3 flex flex-col gap-2 border" style={{ background: '#DEF7EC', borderColor: '#A7F3D0' }}>
-                          <span className="text-xs font-semibold text-success-strong flex items-center gap-1">
-                            <Compass className="w-3 h-3" /> Smart Guide
+                        {/* Card 2: Good to Know */}
+                        <div className="rounded-lg p-3 flex flex-col gap-2 border" style={{ background: '#FFFBEB', borderColor: '#FCD34D' }}>
+                          <span className="text-xs font-semibold flex items-center gap-1" style={{ color: '#92400E' }}>
+                            <Info className="w-3 h-3" /> Good to Know
                           </span>
-                          <div className="flex flex-col gap-1.5">
-                            {crowd && stop.crowdLevel && (
-                              <div className={`flex items-center gap-1.5 text-xs font-semibold px-2 py-1 rounded-lg ${crowd.bg} ${crowd.text}`}>
-                                <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${crowd.dot}`} />
-                                {stop.crowdLevel} crowd now
-                              </div>
-                            )}
-                            {stop.reachNote && (
-                              <p className="text-xs text-body leading-snug">{stop.reachNote}</p>
-                            )}
-                            {!stop.reachNote && !crowd && (
-                              <p className="text-xs text-muted leading-snug italic">Visit during early morning for best experience.</p>
-                            )}
-                          </div>
+                          <p className="text-xs leading-snug" style={{ color: '#78350F' }}>
+                            {(stop as any).cautionNote || stop.reachNote || 'Plan to arrive a few minutes before your scheduled time.'}
+                          </p>
                         </div>
                       </div>
+
+                      {/* Avoid These — if avoidNote exists */}
+                      {(stop as any).avoidNote && (
+                        <div className="flex items-start gap-2 p-2.5 rounded-lg border" style={{ background: '#FDE8E8', borderColor: '#F9A8A8' }}>
+                          <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" style={{ color: '#C81E1E' }} />
+                          <div>
+                            <span className="text-xs font-bold block mb-0.5" style={{ color: '#C81E1E' }}>Avoid</span>
+                            <p className="text-xs leading-snug" style={{ color: '#9B1C1C' }}>{(stop as any).avoidNote}</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Reviews — time-slot highlighted */}
+                      {(() => {
+                        const stopReviews: Array<{ text: string; author: string; location: string; stars: number; ago: string }> =
+                          (stop as any).reviews ?? [];
+                        const timeKws = TIME_REVIEW_KEYWORDS['Morning'] ?? [];
+                        const displayed = stopReviews
+                          .filter(r => r.stars >= 3 && r.text)
+                          .sort((a, b) => scoreReviewForTime(b.text, 'Morning') - scoreReviewForTime(a.text, 'Morning'))
+                          .slice(0, 2);
+                        if (!displayed.length) return null;
+                        return (
+                          <div className="space-y-2">
+                            <span className="text-xs font-semibold text-muted flex items-center gap-1">
+                              <Star className="w-3 h-3 fill-warning text-warning" /> Visitor Reviews
+                            </span>
+                            {displayed.map((r, i) => (
+                              <ReviewCard
+                                key={i}
+                                review={r as ReviewItem}
+                                idx={i}
+                                keywords={timeKws}
+                              />
+                            ))}
+                          </div>
+                        );
+                      })()}
 
                       {/* Travel note to next stop */}
                       {stop.travelToNext && (
@@ -1233,7 +1269,18 @@ function ExploreView({ place, visitTime = 'Morning' }: { place: ExploreResult; v
         <p className="text-xs text-body leading-relaxed">"{place.insight}"</p>
       </div>
 
-      {/* ── 2-card: Visit Guide + Prepare ───────────────────── */}
+      {/* ── Best Time row ────────────────────────────────────── */}
+      {(place as any).bestTime && (
+        <div className="flex items-start gap-2 p-2.5 rounded-lg border" style={{ background: '#F0FDF4', borderColor: '#A7F3D0' }}>
+          <Clock className="w-3.5 h-3.5 shrink-0 mt-0.5 text-success-strong" />
+          <div>
+            <span className="text-xs font-bold text-success-strong block mb-0.5">Best Time to Visit</span>
+            <p className="text-xs leading-snug text-body">{(place as any).bestTime}</p>
+          </div>
+        </div>
+      )}
+
+      {/* ── 2-card: Visit Guide + How to Prepare ────────────── */}
       <div className="grid grid-cols-2 gap-2">
         <div className="rounded-lg p-3 flex flex-col gap-2 border" style={{ background: '#DEF7EC', borderColor: '#A7F3D0' }}>
           <span className="text-xs font-semibold text-success-strong flex items-center gap-1">
@@ -1241,13 +1288,24 @@ function ExploreView({ place, visitTime = 'Morning' }: { place: ExploreResult; v
           </span>
           <p className="text-xs text-body leading-relaxed whitespace-pre-line">{place.flow}</p>
         </div>
-        <div className="rounded-lg p-3 flex flex-col gap-2 border bg-warning-soft border-warning-medium/40">
-          <span className="text-xs font-semibold text-warning-strong flex items-center gap-1">
-            <Info className="w-3 h-3" /> How to Prepare
+        <div className="rounded-lg p-3 flex flex-col gap-2 border" style={{ background: '#FFFBEB', borderColor: '#FCD34D' }}>
+          <span className="text-xs font-semibold flex items-center gap-1" style={{ color: '#92400E' }}>
+            <Info className="w-3 h-3" /> Good to Know
           </span>
-          <p className="text-xs text-body leading-relaxed">{place.preparation}</p>
+          <p className="text-xs leading-relaxed" style={{ color: '#78350F' }}>{place.preparation}</p>
         </div>
       </div>
+
+      {/* ── Avoid These ──────────────────────────────────────── */}
+      {(place as any).avoidNote && (
+        <div className="flex items-start gap-2 p-3 rounded-lg border" style={{ background: '#FDE8E8', borderColor: '#F9A8A8' }}>
+          <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" style={{ color: '#C81E1E' }} />
+          <div>
+            <span className="text-xs font-bold block mb-0.5" style={{ color: '#C81E1E' }}>Avoid These</span>
+            <p className="text-xs leading-snug" style={{ color: '#9B1C1C' }}>{(place as any).avoidNote}</p>
+          </div>
+        </div>
+      )}
 
       {/* ── Tags ────────────────────────────────────────────── */}
       {place.tags.length > 0 && (

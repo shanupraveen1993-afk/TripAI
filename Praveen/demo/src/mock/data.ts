@@ -63,6 +63,9 @@ export interface ItineraryStop {
   entryFee?: string;
   highlights?: string[];
   reachNote?: string;
+  cautionNote?: string;
+  avoidNote?: string;
+  reviews?: ReviewItem[];
   imgId?: string;
 }
 
@@ -77,6 +80,8 @@ export interface ExploreResult {
   insight: string;
   flow: string;
   preparation: string;
+  bestTime?: string | null;
+  avoidNote?: string | null;
   tags: string[];
   reviews: ReviewItem[];
   photoColor: string;

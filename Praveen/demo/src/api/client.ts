@@ -43,6 +43,9 @@ export interface LiveItineraryStop {
   entryFee?:        string | null;
   highlights?:      string[];
   reachNote?:       string;
+  cautionNote?:     string;
+  avoidNote?:       string;
+  reviews?:         Array<{ text: string; author: string; location: string; stars: number; ago: string }>;
   imgId?:           string;
   photoRef?:        string | null;
 }
@@ -58,6 +61,8 @@ export interface ExploreGuide {
   insight:      string;
   flow:         string;
   preparation:  string;
+  bestTime?:    string | null;
+  avoidNote?:   string | null;
   tags:         string[];
   reviews:      Array<{ text: string; author: string; location: string; stars: number; ago: string }>;
   photoColor:   string;

@@ -2950,7 +2950,9 @@ For EACH stop return this exact JSON object:
   "departBy": "time to leave e.g. '10:30 AM' — omit this field for the last stop",
   "entryFee": "from GROUND TRUTH above e.g. 'Free entry' or '₹50 / adult'",
   "highlights": ["specific section or feature 1", "specific feature 2", "specific feature 3"],
-  "reachNote": "one sentence: how to reach from the previous stop, including auto fare if applicable"
+  "reachNote": "one sentence: how to reach from the previous stop, including auto fare if applicable",
+  "cautionNote": "one 15-word tip visitors should know — crowd warning, dress code, or timing constraint specific to this stop",
+  "avoidNote": "one specific 15-word thing to avoid at this stop e.g. 'Avoid inner sanctum queues after 10 AM — wait exceeds 40 min'"
 }
 
 VALIDATION RULES (Gemini must follow):
@@ -2989,8 +2991,10 @@ Return a JSON array of EXACTLY ${stopCount} stops. Return ONLY valid JSON. No ma
       currentTraffic:   validTraffic(s.currentTraffic),
       yesterdayTraffic: validTraffic(s.yesterdayTraffic),
       crowdLevel:       validCrowd(s.crowdLevel),
-      ...(s.travelToNext ? { travelToNext: s.travelToNext } : {}),
-      ...(s.departBy     ? { departBy:     s.departBy     } : {}),
+      ...(s.travelToNext  ? { travelToNext:  s.travelToNext  } : {}),
+      ...(s.departBy      ? { departBy:      s.departBy      } : {}),
+      ...(s.cautionNote   ? { cautionNote:   s.cautionNote   } : {}),
+      ...(s.avoidNote     ? { avoidNote:     s.avoidNote     } : {}),
       entryFee:         s.entryFee          ?? null,
       highlights:       Array.isArray(s.highlights) ? s.highlights.slice(0, 3) : [],
       reachNote:        s.reachNote         ?? '',
@@ -3047,6 +3051,10 @@ TASK: Return a JSON object with these exact keys:
   "flow": "Numbered step-by-step visit sequence for ${timeSlot}. Use SPECIFIC section names (e.g. 'East Gopuram entrance', 'Nandi mandapam', 'Durbar Hall'). Include entry/shoe removal notes where relevant. Format exactly as: 1. Step\\n2. Step\\n3. Step\\n4. Step\\n5. Step (4-6 steps)",
 
   "preparation": "Max 45 words. Be TIME-SLOT SPECIFIC — crowd at ${timeSlot} is different from other times. Include: what to wear, what to bring, any entry rules, parking/auto notes if relevant.",
+
+  "bestTime": "Max 20 words. Absolute best time to visit this specific location and WHY — crowd, light, access, or ritual timing.",
+
+  "avoidNote": "Max 25 words. One concrete thing to avoid at this place — specific to section, queue, timing, or restriction. Make it actionable.",
 
   "status": "${timeSlot === 'Evening' ? 'Busy' : 'Open'}"
 }
@@ -3120,6 +3128,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           insight:      guide?.insight     ?? `${locationName} is one of Thanjavur's most significant heritage sites.`,
           flow:         guide?.flow        ?? '1. Arrive at the main entrance\n2. Remove footwear\n3. Explore the outer courtyard\n4. Visit the inner sanctum',
           preparation:  guide?.preparation ?? 'Wear covered clothing. Remove footwear at entrance. Donations welcome.',
+          bestTime:     guide?.bestTime    ?? null,
+          avoidNote:    guide?.avoidNote   ?? null,
           tags: (place.types ?? []).slice(0, 5).map((t: string) =>
             t.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())
           ),
@@ -3165,7 +3175,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(500).json({ error: 'Could not generate itinerary' });
       }
 
-      // Attach Google Places photo ref by matching stop name to rawPlaces
+      // Attach Google Places photo ref and reviews by matching stop name to rawPlaces
       const stopsWithPhotos = stops.map((s: any) => {
         const sn = s.stop.toLowerCase();
         const match = rawPlaces.find((p: any) => {
@@ -3173,7 +3183,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           return sn.includes(pn) || pn.includes(sn) ||
             pn.split(' ').some((w: string) => w.length > 4 && sn.includes(w));
         });
-        return { ...s, photoRef: match?.photos?.[0]?.name ?? null };
+        const placeReviews = sortReviewsForDisplay(filterReviewsForDisplay(match?.reviews ?? []))
+          .slice(0, 3)
+          .map((r: any) => ({
+            text:     r.text?.text ?? '',
+            author:   r.authorAttribution?.displayName ?? 'Visitor',
+            location: 'Tamil Nadu',
+            stars:    r.rating ?? 5,
+            ago:      r.relativePublishTimeDescription ?? 'Recently',
+          }));
+        return {
+          ...s,
+          photoRef: match?.photos?.[0]?.name ?? null,
+          reviews:  placeReviews,
+          ...(s.cautionNote ? {} : { cautionNote: extractCautionNote(match?.reviews ?? []) }),
+        };
       });
 
       return res.json({ itinerary: stopsWithPhotos });
