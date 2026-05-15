@@ -177,7 +177,7 @@ const THANJAVUR_ACTIONS: Array<{
   overrides: QuickOverride;
 }> = [
   { tab: 'Hotels',    label: 'Stay near Big Temple', desc: 'Top-rated · Walking distance',  emoji: '🛕', imgId: '1686310894901-d326b8722c13', overrides: { tab: 'Hotels',    hotelTag: 'Near Big Temple' } },
-  { tab: 'Food',      label: 'Thanjavur thali/meals',       desc: 'Authentic Chola cuisine',       emoji: '🍛', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Thali/Meals' } },
+  { tab: 'Food',      label: 'Thanjavur thali/meals',       desc: 'Authentic Chola cuisine',       emoji: '🍛', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Mess & Meals' } },
   { tab: 'Itinerary', label: '1-day plan',            desc: 'AI routed · Full day',          emoji: '🗺️', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Itinerary', startTime: 'Morning' } },
   { tab: 'Explore',   label: 'Brihadeeswarar',        desc: 'UNESCO · Chola masterpiece',    emoji: '🏛️', imgId: '1701665837448-cdbb9fab5a0d', overrides: { tab: 'Explore',   exploreTarget: 'Brihadeeswarar Temple' } },
 ];
@@ -208,22 +208,22 @@ interface SmartPick {
 const POPULAR_QUERIES: { label: string; overrides: QuickOverride }[] = [
   { label: 'best hotel in thanjavur',                      overrides: { tab: 'Hotels' } },
   { label: 'best hotel near big temple in thanjavur',      overrides: { tab: 'Hotels', hotelTag: 'Near Big Temple' } },
-  { label: 'best family hotel in thanjavur',               overrides: { tab: 'Hotels', hotelTag: 'Friendly Staff' } },
-  { label: 'best highly recommended hotel in thanjavur',   overrides: { tab: 'Hotels', hotelTag: 'Highly Recommended' } },
+  { label: 'best family hotel in thanjavur',               overrides: { tab: 'Hotels', hotelTag: 'Good Amenities' } },
+  { label: 'best highly recommended hotel in thanjavur',   overrides: { tab: 'Hotels', hotelTag: 'Highly Rated' } },
   { label: 'best hotel near railway station thanjavur',    overrides: { tab: 'Hotels', hotelTag: 'Near Railway Station' } },
 ];
 
 const SMART_PICKS: Record<string, SmartPick[]> = {
   thanjavur: [
     { label: 'Near Big Temple',    sub: 'Hotels · Walking distance', emoji: '🛕', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1686310894901-d326b8722c13', overrides: { tab: 'Hotels',    hotelTag: 'Near Big Temple' } },
-    { label: 'Thanjavur thali/meals',    sub: 'Food · Authentic Chola',    emoji: '🍛', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Thali/Meals' } },
+    { label: 'Thanjavur thali/meals',    sub: 'Food · Authentic Chola',    emoji: '🍛', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Mess & Meals' } },
     { label: 'Brihadeeswarar',     sub: 'Explore · UNESCO site',     emoji: '🏛️', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1701665837448-cdbb9fab5a0d', overrides: { tab: 'Explore',   exploreTarget: 'Brihadeeswarar Temple' } },
     { label: '1-day Thanjavur',    sub: 'Itinerary · AI routed',     emoji: '🗺️', grad: 'linear-gradient(135deg,#1C64F2,#1E429F)', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Itinerary', startTime: 'Morning' } },
-    { label: 'Filter coffee',      sub: 'Food · Local café culture', emoji: '☕', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1509042239860-f550ce710b93', overrides: { tab: 'Food',      foodTag: 'Cafe' } },
+    { label: 'Filter coffee',      sub: 'Food · Local café culture', emoji: '☕', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1509042239860-f550ce710b93', overrides: { tab: 'Food',      foodTag: 'Cafe & Drinks' } },
     { label: 'Royal Palace',       sub: 'Explore · Maratha heritage', emoji: '🏰', grad: 'linear-gradient(135deg,#1C64F2,#1E429F)', imgId: '1622018135960-249abd263aeb', overrides: { tab: 'Explore',   exploreTarget: 'Thanjavur Maratha Palace Royal Museum' } },
   ],
   bangalore: [
-    { label: 'Best coffee & cafes',  sub: 'Quick · Near you',     emoji: '☕', grad: 'linear-gradient(135deg,#1C64F2,#1E429F)', imgId: '1509042239860-f550ce710b93', overrides: { tab: 'Food',      foodTag: 'Cafe' } },
+    { label: 'Best coffee & cafes',  sub: 'Quick · Near you',     emoji: '☕', grad: 'linear-gradient(135deg,#1C64F2,#1E429F)', imgId: '1509042239860-f550ce710b93', overrides: { tab: 'Food',      foodTag: 'Cafe & Drinks' } },
     { label: 'Heritage stays',        sub: 'Hotels · Curated',    emoji: '🏛️', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1708782462555-b3af03b4b3d2', overrides: { tab: 'Hotels',    hotelTag: 'Heritage' } },
     { label: 'Plan my Bangalore day', sub: 'Full day · AI routed',emoji: '🗺️', grad: 'linear-gradient(135deg,#1C64F2,#1E429F)', imgId: '1708782462555-b3af03b4b3d2', overrides: { tab: 'Itinerary', startTime: 'Morning' } },
     { label: 'Top landmarks',         sub: 'What to see · Ranked',emoji: '🏯', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1708782462555-b3af03b4b3d2', overrides: { tab: 'Explore',   exploreTarget: 'Vidhana Soudha' } },
@@ -235,7 +235,7 @@ const SMART_PICKS: Record<string, SmartPick[]> = {
     { label: 'Best seafood',         sub: 'Fresh · Near beach',   emoji: '🦞', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1624791596524-d989400f3241', overrides: { tab: 'Food',      foodTag: 'Seafood' } },
     { label: '1-day Goa plan',       sub: 'Itinerary · Beaches',  emoji: '🛵', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Itinerary', startTime: 'Morning' } },
     { label: 'Must-see beaches',     sub: 'Explore · Ranked',     emoji: '🏖️', grad: 'linear-gradient(135deg,#1C64F2,#1E429F)', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Explore',   exploreTarget: 'Calangute Beach' } },
-    { label: 'Cafe & street eats',   sub: 'Food · Nightlife',     emoji: '🍹', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Food',      foodTag: 'Cafe' } },
+    { label: 'Cafe & street eats',   sub: 'Food · Nightlife',     emoji: '🍹', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Food',      foodTag: 'Cafe & Drinks' } },
     { label: 'City centre stays',    sub: 'Hotels · Best value',  emoji: '💰', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Hotels',    hotelTag: 'City Centre' } },
   ],
   mumbai: [
@@ -249,7 +249,7 @@ const SMART_PICKS: Record<string, SmartPick[]> = {
   jaipur: [
     { label: 'Heritage palaces',     sub: 'Explore · Pink City',  emoji: '🏰', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Explore',   exploreTarget: 'Amber Fort' } },
     { label: 'Royal palace stays',   sub: 'Hotels · Heritage',    emoji: '🏯', grad: 'linear-gradient(135deg,#1C64F2,#1E429F)', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Hotels',    hotelTag: 'Heritage' } },
-    { label: 'Rajasthani thali',     sub: 'Food · Authentic',     emoji: '🍛', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Thali/Meals' } },
+    { label: 'Rajasthani thali',     sub: 'Food · Authentic',     emoji: '🍛', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Mess & Meals' } },
     { label: 'Pink City walk',       sub: 'Itinerary · Full day', emoji: '🛺', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Itinerary', startTime: 'Morning' } },
     { label: 'Bazaar & markets',     sub: 'Explore · Shopping',   emoji: '🛍️', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Explore',   exploreTarget: 'Johari Bazaar' } },
     { label: 'Street food',          sub: 'Food · Iconic eats',   emoji: '✨', grad: 'linear-gradient(135deg,#1C64F2,#1E429F)', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Food',      foodTag: 'Street Food' } },
@@ -259,7 +259,7 @@ const SMART_PICKS: Record<string, SmartPick[]> = {
     { label: 'City centre stays',    sub: 'Hotels · Best value',  emoji: '💰', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Hotels',    hotelTag: 'City Centre' } },
     { label: 'Chandni Chowk food',   sub: 'Street food · Iconic', emoji: '🥙', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Street Food' } },
     { label: 'Red Fort',             sub: 'Explore · Must-see',   emoji: '🏰', grad: 'linear-gradient(135deg,#1C64F2,#1E429F)', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Explore',   exploreTarget: 'Red Fort' } },
-    { label: 'North Indian thali',   sub: 'Food · Top picks',     emoji: '🍽️', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Thali/Meals' } },
+    { label: 'North Indian thali',   sub: 'Food · Top picks',     emoji: '🍽️', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Mess & Meals' } },
     { label: 'Heritage hotels',      sub: 'Hotels · Old Delhi',   emoji: '🏛️', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Hotels',    hotelTag: 'Heritage' } },
   ],
   default: [
@@ -292,7 +292,7 @@ const TRENDING_OVERRIDES: Record<string, QuickOverride> = {
   'Pure veg':        { tab: 'Food',      foodTag: 'Street Food', dietType: 'Veg' },
   'Street food':     { tab: 'Food',      foodTag: 'Street Food' },
   'Seafood':         { tab: 'Food',      foodTag: 'Seafood' },
-  'Craft beer bars': { tab: 'Food',      foodTag: 'Cafe' },
+  'Craft beer bars': { tab: 'Food',      foodTag: 'Cafe & Drinks' },
   'Family day out':  { tab: 'Itinerary', startTime: 'Morning' },
   'Couple getaway':  { tab: 'Itinerary', startTime: 'Morning' },
   'Solo explorer':   { tab: 'Itinerary', startTime: 'Morning' },
