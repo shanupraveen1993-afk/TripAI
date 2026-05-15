@@ -331,10 +331,6 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
   // Expand tag names → actual words that appear in review text
   const reviewKeywords = expandTagsToKeywords(selectedTags);
 
-  // Only surface 3★+ reviews, best first — 1-2★ signals are captured in trendVerdict/trendReason
-  const displayReviews = [...place.reviews]
-    .filter(r => r.stars >= 3)
-    .sort((a, b) => b.stars - a.stars);
 
   const share = () => {
     if (navigator.share) {
@@ -641,144 +637,119 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           >
             <div className="border-t border-border p-3 space-y-2.5">
 
-              {/* ── 2-card Decision Strip — no overlap with main card ── */}
+              {/* ── 1. Top insight ── */}
+              {place.aiDetail?.whyOverOthers && (
+                <p className="text-xs text-body leading-relaxed">
+                  {highlightKeywords(place.aiDetail.whyOverOthers, reviewKeywords)}
+                </p>
+              )}
+
+              {/* ── 2. Be Cautious + Best For cards ── */}
+              <div className="grid grid-cols-2 gap-2">
+                <div className="rounded-lg p-3 flex flex-col gap-1.5 border"
+                  style={{ background: 'var(--color-warning-soft, #fffbeb)', borderColor: 'var(--color-warning-medium, #fcd34d)' }}>
+                  <span className="text-xs font-semibold uppercase tracking-wide flex items-center gap-1 text-amber-700">
+                    <AlertTriangle className="w-2.5 h-2.5" />Be Cautious
+                  </span>
+                  <p className="text-xs text-body leading-relaxed">
+                    {(place as any).cautionNote || place.aiDetail?.caveat || 'No notable concerns from recent visitors'}
+                  </p>
+                </div>
+
+                <div className="rounded-lg p-3 flex flex-col gap-1.5 border"
+                  style={{ background: 'var(--color-brand-softer)', border: '1px solid var(--color-food-border)' }}>
+                  <span className="text-xs font-semibold uppercase tracking-wide flex items-center gap-1 text-brand">
+                    <CheckCircle className="w-2.5 h-2.5" />Best For
+                  </span>
+                  <p className="text-xs text-body leading-relaxed">
+                    {place.aiDetail?.bestFor || '—'}
+                  </p>
+                </div>
+              </div>
+
+              {/* ── 3. Recent pulse — consistency + rating trend ── */}
               {(() => {
                 const ratings = place.recentRatings ?? [];
                 const recentAvg = ratings.length > 0
-                  ? +(ratings.reduce((s, r) => s + r, 0) / ratings.length).toFixed(1)
+                  ? +(ratings.reduce((s: number, r: number) => s + r, 0) / ratings.length).toFixed(1)
                   : null;
                 const trendColor =
                   place.trendVerdict === 'improving' ? '#057A55'
                   : place.trendVerdict === 'declining' ? '#92400E'
                   : '#6B7280';
+                const trendLabel =
+                  place.trendVerdict === 'improving' ? 'Rising recently'
+                  : place.trendVerdict === 'declining' ? 'Slipping recently'
+                  : 'Consistent lately';
+                const bullets: string[] = (place as any).recentSentiment ?? [];
+                if (recentAvg === null && bullets.length === 0) return null;
                 return (
-                  <>
-                  <div className="grid grid-cols-2 gap-2">
-
-                    {/* Card 1: Positive highlights */}
-                    <div className="rounded-lg p-3 flex flex-col gap-2 border"
-                      style={{ background: 'var(--color-success-soft)', borderColor: 'var(--color-success-medium)' }}>
-                      <span className="text-xs font-semibold uppercase tracking-wide flex items-center gap-1 text-emerald-700">
-                        <CheckCircle className="w-2.5 h-2.5" />What's Good
-                      </span>
-                      <p className="text-xs text-body leading-relaxed line-clamp-3">{highlightKeywords(place.aiDetail.whyOverOthers, reviewKeywords)}</p>
-                      {place.aiDetail.bestFor && (
-                        <p className="text-xs text-muted leading-snug line-clamp-2 border-t border-emerald-100 pt-1.5">{place.aiDetail.bestFor}</p>
-                      )}
-                    </div>
-
-                    {/* Card 2: Caution — what to be aware of */}
-                    <div className="rounded-lg p-3 flex flex-col gap-2 border"
-                      style={{ background: 'var(--color-warning-soft, #fffbeb)', borderColor: 'var(--color-warning-medium, #fcd34d)' }}>
-                      <span className="text-xs font-semibold uppercase tracking-wide flex items-center gap-1 text-amber-700">
-                        <AlertTriangle className="w-2.5 h-2.5" />Be Aware
-                      </span>
-                      {(place as any).cautionNote ? (
-                        <p className="text-xs text-body leading-relaxed">{(place as any).cautionNote}</p>
-                      ) : place.aiDetail.caveat ? (
-                        <p className="text-xs text-body leading-relaxed">{place.aiDetail.caveat}</p>
-                      ) : (
-                        <p className="text-xs text-muted">No notable concerns from recent visitors</p>
-                      )}
-                      {recentAvg !== null && (
-                        <div className="flex items-baseline gap-1 border-t border-amber-100 pt-1.5">
-                          <span className="text-sm font-bold" style={{ color: trendColor }}>{recentAvg}★</span>
-                          <span className="text-xs text-muted">recent</span>
-                          <span className="text-xs text-placeholder mx-0.5">·</span>
-                          <span className="text-xs text-muted">{place.rating}★ overall</span>
-                        </div>
-                      )}
-                    </div>
-
-                  </div>
-
-                  {/* Recent sentiment bullets — facts + keywords + recent stats */}
-                  {(() => {
-                    const bullets: string[] = (place as any).recentSentiment ?? [];
-                    if (bullets.length === 0) return null;
-                    return (
-                      <div className="rounded-lg border border-border overflow-hidden divide-y divide-border bg-bg-app">
-                        {bullets.map((b: string, i: number) => (
-                          <div key={i} className="flex items-start gap-2 px-3 py-1.5">
-                            <span className="w-1.5 h-1.5 rounded-full bg-brand shrink-0 mt-1.5" />
-                            <span className="text-xs text-body leading-snug">{b}</span>
-                          </div>
-                        ))}
+                  <div className="rounded-lg border border-border bg-bg-app overflow-hidden divide-y divide-border">
+                    {recentAvg !== null && (
+                      <div className="flex items-center gap-2 px-3 py-2">
+                        <span className="text-sm font-bold" style={{ color: trendColor }}>{recentAvg}★</span>
+                        <span className="text-xs text-muted">recent avg</span>
+                        <span className="text-xs text-placeholder">·</span>
+                        <span className="text-xs text-muted">{place.rating}★ all-time</span>
+                        <span className="ml-auto text-xs font-medium" style={{ color: trendColor }}>{trendLabel}</span>
                       </div>
-                    );
-                  })()}
-                  </>
+                    )}
+                    {bullets.map((b: string, i: number) => (
+                      <div key={i} className="flex items-start gap-2 px-3 py-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-brand shrink-0 mt-1.5" />
+                        <span className="text-xs text-body leading-snug">{b}</span>
+                      </div>
+                    ))}
+                  </div>
                 );
               })()}
 
-              {/* Data signals — unique only, no duplicates from cards above */}
+              {/* ── 4. Reviews — last 5 months, recent first, highlighted ── */}
               {(() => {
-                const unique = place.aiDetail.dataPoints.filter(dp =>
-                  !/^\d+\.\d+★ from \d/.test(dp) &&                                       // rating+count — main card
-                  !/recent guests avg|Trending up|Trending down|Consistent —/.test(dp) && // trend — card 1
-                  !/% tag match/.test(dp) &&                                               // match% — main card
-                  !dp.startsWith('₹') &&                                                   // price — main card
-                  !/open for check-in|Currently open|Currently closed/.test(dp)            // open status — main card
-                );
-                if (unique.length === 0) return null;
+                function agoToDays(ago: string): number {
+                  const m = ago.match(/(\d+)\s+(day|week|month)/);
+                  if (!m) return 0;
+                  const n = parseInt(m[1], 10);
+                  if (m[2] === 'day')   return n;
+                  if (m[2] === 'week')  return n * 7;
+                  if (m[2] === 'month') return n * 30;
+                  return 0;
+                }
+                const recentReviews = place.reviews
+                  .filter(r => r.stars >= 3 && agoToDays(r.ago) <= 150)
+                  .sort((a, b) => agoToDays(a.ago) - agoToDays(b.ago))
+                  .slice(0, 3);
+                if (recentReviews.length === 0) return null;
                 return (
-                  <div className="rounded-lg border border-border overflow-hidden divide-y divide-border bg-bg-app">
-                    {unique.map((dp, i) => {
-                      const isTag = dp.startsWith('✓') || dp.startsWith('~');
-                      const icon  = isTag
-                        ? <CheckCircle className="w-3 h-3 text-success shrink-0" />
-                        : <span className="w-1.5 h-1.5 rounded-full bg-border shrink-0 mt-0.5" />;
-                      return (
-                        <div key={i} className="flex items-start gap-2 px-3 py-1.5">
-                          <span className="mt-0.5 shrink-0 flex items-center">{icon}</span>
-                          <span className="text-xs text-body leading-snug">{dp}</span>
+                  <div className="bg-bg-app border border-border rounded-lg overflow-hidden divide-y divide-border">
+                    {recentReviews.map((r, i) => (
+                      <div key={i} className="px-3 py-2.5 space-y-1">
+                        <div className="flex items-center gap-2">
+                          <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-xs font-black text-white"
+                            style={{ background: AVATAR_COLORS[i % AVATAR_COLORS.length] }}>
+                            {r.author.charAt(0)}
+                          </div>
+                          <span className="text-xs font-semibold text-heading">{r.author}</span>
+                          <span className="text-xs text-muted">· {r.location}</span>
+                          <div className="ml-auto flex items-center gap-1.5 shrink-0">
+                            <div className="flex gap-0.5">
+                              {Array.from({ length: 5 }).map((_, j) => (
+                                <Star key={j} className={`w-2.5 h-2.5 ${j < r.stars ? 'fill-warning text-warning' : 'text-border'}`} />
+                              ))}
+                            </div>
+                            {r.stars === 5 && <span className="text-xs font-medium text-success-strong bg-success-soft px-1.5 py-0.5 rounded-full border border-success-medium/30">✓ Loved it</span>}
+                            {r.stars === 4 && <span className="text-xs font-medium text-warning-strong bg-warning-soft px-1.5 py-0.5 rounded-full border border-warning-medium/40">✓ Liked it</span>}
+                          </div>
                         </div>
-                      );
-                    })}
+                        <p className="text-xs text-body leading-relaxed italic line-clamp-3">
+                          "{highlightKeywords(r.text, [...(r.highlight ? [r.highlight] : []), ...reviewKeywords, ...(place.matchedKeyword ? [place.matchedKeyword] : [])])}"
+                        </p>
+                        <p className="text-xs text-muted">{r.ago} · via Google</p>
+                      </div>
+                    ))}
                   </div>
                 );
               })()}
-
-              {/* Insider Tip */}
-              {place.aiDetail.insiderTip && (
-                <div className="flex items-start gap-2 rounded-lg px-2.5 py-2" style={{ background: 'var(--color-brand-softer)', border: '1px solid var(--color-food-border)' }}>
-                  <Lightbulb className="w-3 h-3 shrink-0 mt-0.5 text-brand" />
-                  <p className="text-xs text-body leading-relaxed">
-                    <span className="font-semibold text-brand">Insider tip: </span>{place.aiDetail.insiderTip}
-                  </p>
-                </div>
-              )}
-
-              {/* Reviews */}
-              {displayReviews.length > 0 && (
-                <div className="bg-bg-app border border-border rounded-lg overflow-hidden divide-y divide-border">
-                  {displayReviews.slice(0, 2).map((r, i) => (
-                    <div key={i} className="px-3 py-2.5 space-y-1">
-                      <div className="flex items-center gap-2">
-                        <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-xs font-black text-white"
-                          style={{ background: AVATAR_COLORS[i % AVATAR_COLORS.length] }}>
-                          {r.author.charAt(0)}
-                        </div>
-                        <span className="text-xs font-semibold text-heading">{r.author}</span>
-                        <span className="text-xs text-muted">· {r.location}</span>
-                        <div className="ml-auto flex items-center gap-1.5 shrink-0">
-                          <div className="flex gap-0.5">
-                            {Array.from({ length: 5 }).map((_, j) => (
-                              <Star key={j} className={`w-2.5 h-2.5 ${j < r.stars ? 'fill-warning text-warning' : 'text-border'}`} />
-                            ))}
-                          </div>
-                          {r.stars === 5 && <span className="text-xs font-medium text-success-strong bg-success-soft px-1.5 py-0.5 rounded-full border border-success-medium/30">✓ Loved it</span>}
-                          {r.stars === 4 && <span className="text-xs font-medium text-warning-strong bg-warning-soft px-1.5 py-0.5 rounded-full border border-warning-medium/40">✓ Liked it</span>}
-                        </div>
-                      </div>
-                      <p className="text-xs text-body leading-relaxed italic line-clamp-3">
-                        "{highlightKeywords(r.text, [...(r.highlight ? [r.highlight] : []), ...reviewKeywords, ...(place.matchedKeyword ? [place.matchedKeyword] : [])])}"
-                      </p>
-                      <p className="text-xs text-muted">{r.ago} · via Google</p>
-                    </div>
-                  ))}
-                </div>
-              )}
 
               {/* All reviews link */}
               {place.googleMapsUri && (
