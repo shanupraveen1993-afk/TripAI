@@ -224,7 +224,6 @@ const FOOD_TAG_META: FoodTagMeta[] = [
   { tag: 'Biryani',          segment: 'Cuisine & Dish',     group: 'B', freq: 37 },
   { tag: 'South Indian',     segment: 'Cuisine & Dish',     group: 'B', freq: 34 },
   { tag: 'Non-Veg',          segment: 'Cuisine & Dish',     group: 'B', freq: 43 },
-  { tag: 'Pure Veg',         segment: 'Cuisine & Dish',     group: 'B', freq: 31 },
   { tag: 'Tiffin & Snacks',  segment: 'Cuisine & Dish',     group: 'B', freq: 28 },
   // Taste & Quality (5)
   { tag: 'Fresh & Hot',      segment: 'Taste & Quality',    group: 'B', freq: 55 },
