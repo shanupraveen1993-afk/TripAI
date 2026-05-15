@@ -559,14 +559,14 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
 
   const FOOD_TAG_FALLBACK: CityTagsResult = {
     tags: [
-      'Biryani', 'South Indian', 'Non-Veg', 'Tiffin & Snacks',
-      'Fresh & Hot', 'Authentic', 'Good Quantity', 'Spicy', 'Chettinad Style',
-      'Affordable', 'Value for Money', 'Family Dining', 'Quick Service', 'Highly Rated',
+      'South Indian', 'Biryani', 'Chettinad', 'North Indian', 'Mess & Meals',
+      'Tiffin', 'Fine Dining', 'Buffet', 'Cafe & Drinks', 'Family Dining',
+      'Fresh & Hot', 'Budget Friendly', 'Authentic', 'Lunch Spot', 'Dinner Special',
     ],
     segments: {
-      'Cuisine & Dish':     ['Biryani', 'South Indian', 'Non-Veg', 'Tiffin & Snacks'],
-      'Taste & Quality':    ['Fresh & Hot', 'Authentic', 'Good Quantity', 'Spicy', 'Chettinad Style'],
-      'Value & Experience': ['Affordable', 'Value for Money', 'Family Dining', 'Quick Service', 'Highly Rated'],
+      'Cuisine':      ['South Indian', 'Biryani', 'Chettinad', 'North Indian', 'Mess & Meals'],
+      'Dining Style': ['Tiffin', 'Fine Dining', 'Buffet', 'Cafe & Drinks', 'Family Dining'],
+      'Preference':   ['Fresh & Hot', 'Budget Friendly', 'Authentic', 'Lunch Spot', 'Dinner Special'],
     },
   };
 
@@ -583,7 +583,14 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       setHotelTagData(ht);
       setFoodTagData(ft.segments ? ft : FOOD_TAG_FALLBACK);
     }).catch(() => {
-      setHotelTagData({ tags: ['Near Big Temple', 'Near Railway Station', 'City Centre', 'Easy Parking', 'Walkable Distance', 'Spacious Rooms', 'Good Amenities', 'In-House Restaurant', 'Quiet & Peaceful', 'Breakfast Included', 'Value for Money', 'Budget-Friendly', 'Prompt Service', 'Good Hospitality', 'Highly Recommended'] });
+      setHotelTagData({
+        tags: ['Near Big Temple', 'City Centre', 'Near Railway Station', 'Quiet & Peaceful', 'Free Parking', 'Good Amenities', 'Good WiFi', 'Spacious Rooms', 'Swimming Pool', 'In-House Restaurant', 'Budget Stay', 'Premium Stay', 'Highly Rated', 'Heritage Stay', 'Breakfast Included'],
+        segments: {
+          'Location':  ['Near Big Temple', 'City Centre', 'Near Railway Station', 'Quiet & Peaceful', 'Free Parking'],
+          'Rooms':     ['Good Amenities', 'Good WiFi', 'Spacious Rooms', 'Swimming Pool', 'In-House Restaurant'],
+          'Stay Type': ['Budget Stay', 'Premium Stay', 'Highly Rated', 'Heritage Stay', 'Breakfast Included'],
+        },
+      });
       setFoodTagData(FOOD_TAG_FALLBACK);
     }).finally(() => setTagsLoading(false));
   }, [destination]);

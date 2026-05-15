@@ -113,54 +113,29 @@ function getCityState(city: string): string {
   return 'Tamil Nadu';
 }
 
-// Food tag → keywords — 25 tags (5×5), each subsuming all related variants
+// Food tag → keywords — 15 active tags (3×5)
 const FOOD_TAG_KEYWORDS: Record<string, string[]> = {
-  // ── Cuisine & Dish ───────────────────────────────────────────────────────
-  'Biryani':        ['biryani', 'biriyani', 'dum biryani', 'briyani', 'mandi biryani', 'biryani house', 'biryani point', 'chicken biryani', 'mutton biryani', 'veg biryani', 'dum rice'],
-  'Pure Veg':       ['pure veg', 'veg only', 'vegetarian only', 'sattvic', 'saivam', 'no non-veg', 'bhavan', 'vegetarian restaurant', 'bhawan', 'serves vegetarian'],
-  'Non-Veg':        ['non-veg', 'nonveg', 'chicken', 'mutton', 'fish', 'prawn', 'non veg', 'seafood', 'meat', 'egg', 'shawarma', 'kozhi', 'meen', 'non vegetarian'],
-  'South Indian':   ['south indian', 'dosa', 'dosai', 'idli', 'idly', 'sambar', 'pongal', 'vada', 'rasam', 'banana leaf', 'saapadu', 'uttapam', 'appam', 'idiyappam', 'south indian restaurant'],
-  'Tiffin':         ['tiffin', 'tiffin center', 'tiffin centre', 'morning tiffin', 'evening tiffin', 'tiffin shop', 'idli', 'dosa', 'dosai', 'vada', 'vadai', 'pongal', 'idly', 'uttapam', 'upma'],
-  // ── Meal & Timing ────────────────────────────────────────────────────────
-  'Lunch':          ['lunch', 'lunch meals', 'lunch thali', 'afternoon meals', 'lunch time', 'afternoon', 'meals', 'full meals', 'banana leaf meals', 'rice meals'],
-  'All Day':        ['all day', 'open all day', 'all time', 'anytime', 'full day', 'variety', 'multi cuisine', 'open late', '24 hours', 'always open'],
-  'Dinner':         ['dinner', 'night food', 'evening meals', 'dinner time', 'supper', 'night restaurant', 'dinner menu', 'night dining'],
-  'Snacks':         ['snacks', 'snack', 'bajji', 'bonda', 'chaat', 'evening snack', 'street food', 'bakery', 'tea shop', 'tea stall', 'murukku', 'parotta', 'kothu parotta', 'chat'],
-  'Breakfast':      ['breakfast', 'morning tiffin', 'morning', 'idli', 'dosa', 'tiffin', 'pongal', 'upma', 'morning snack', 'early morning', 'idli vada'],
-  // ── Taste & Quality ──────────────────────────────────────────────────────
-  'Delicious':      ['delicious', 'tasty', 'flavorful', 'flavour', 'yummy', 'amazing taste', 'loved the taste', 'great taste', 'wonderful food', 'mouthwatering', 'taste is good'],
-  'Fresh':          ['fresh', 'freshly', 'freshly cooked', 'freshly prepared', 'hot and fresh', 'cooked fresh', 'fresh ingredients', 'hot food', 'made fresh'],
-  'Spicy':          ['spicy', 'spice', 'masala', 'pepper', 'tangy', 'hot and spicy', 'spice level', 'well spiced', 'fiery', 'chilli', 'peppery'],
-  'Good Quantity':  ['quantity', 'generous', 'generous portions', 'good quantity', 'full stomach', 'enough food', 'large portion', 'filling', 'heavy meal', 'generous serving'],
-  'Authentic':      ['authentic', 'traditional', 'original', 'homemade', 'age old', 'heritage', 'classic', 'real taste', 'old recipe', 'native style', 'cooked fresh'],
-  // ── Dining Experience ────────────────────────────────────────────────────
-  // "ac" removed — substring-matches "place"/"each"/"black" etc. in every review corpus.
-  // "dine in/dine-in/dining hall" removed — dineIn boolean handles sit-down detection;
-  // these keywords match even in negated reviews ("there isn't a proper dine-in option").
-  // Remaining keywords are multi-word AC-specific phrases that cannot false-match.
-  'AC Dine-in':     ['air conditioned', 'air conditioning', 'fully ac', 'ac restaurant', 'ac hall', 'centrally ac', 'cool ambience', 'ac available', 'air-conditioned'],
-  'Friendly Staff': ['friendly staff', 'helpful staff', 'staff friendly', 'attentive staff', 'courteous', 'polite staff', 'warm staff', 'good service', 'prompt service', 'caring staff'],
-  'Family Dining':  ['family', 'family friendly', 'family restaurant', 'comfortable seating', 'spacious', 'kids', 'group dining', 'seating capacity', 'couples', 'large group'],
-  'Clean':          ['clean', 'hygienic', 'hygiene', 'neat', 'tidy', 'clean place', 'cleanliness', 'spotless', 'well maintained', 'sanitized'],
-  // ── Value & Price ────────────────────────────────────────────────────────
-  'Highly Rated':   ['highly recommended', 'must visit', 'must try', 'top rated', 'best in thanjavur', 'everyone recommends', 'go-to place', 'popular', 'famous', 'well known', 'landmark'],
-  'Value for Money':['value for money', 'worth it', 'worth the price', 'good value', 'value', 'money worth', 'cost effective', 'decent price', 'reasonable price'],
-  'Good Portions':  ['quantity', 'generous portions', 'good quantity', 'generous serving', 'good portions', 'full value', 'filling meal', 'large serving', 'generous meal'],
-  'Affordable':     ['affordable', 'cheap', 'pocket friendly', 'inexpensive', 'budget friendly', 'low price', 'very affordable', 'economical', 'budget meal'],
-  // ── New 3×5 food tags ────────────────────────────────────────────────────
-  'Tiffin & Snacks': ['tiffin', 'tiffin center', 'tiffin shop', 'idli', 'dosa', 'dosai', 'vada', 'vadai', 'parotta', 'snack', 'puri', 'poori', 'upma', 'pongal', 'bajji', 'bonda'],
-  'Fresh & Hot':     ['fresh', 'freshly', 'freshly cooked', 'hot', 'piping hot', 'freshly prepared', 'served hot', 'warm food', 'made fresh', 'hot and fresh'],
-  'Chettinad Style': ['chettinad', 'chetnaad', 'nattu kozhi', 'kuzhambu', 'pepper chicken', 'country chicken', 'chettinad cuisine', 'chettinad style', 'anjappar'],
-  'Quick Service':   ['quick service', 'fast service', 'prompt', 'speedy', 'quick', 'fast', 'efficient service', 'attentive staff', 'good service'],
-  // ── Legacy — Dashboard preset overrides (other cities) ───────────────────
-  'Thali/Meals':    ['thali', 'meals', 'meal', 'banana leaf', 'unlimited meals', 'full meals', 'set meals', 'lunch thali', 'saapadu', 'virunthu'],
-  'North Indian':   ['north indian', 'paneer', 'naan', 'roti', 'butter chicken', 'dal makhani', 'tandoor', 'punjabi', 'paratha', 'mughlai'],
-  'Chettinad':      ['chettinad', 'chettinaad', 'nattu kozhi', 'kuzhambu', 'pepper chicken', 'chettinad cuisine', 'anjappar', 'country chicken'],
-  'Filter Coffee':  ['filter coffee', 'filter kaapi', 'degree coffee', 'kaapi', 'south indian coffee', 'decoction', 'coffee shop'],
-  'Buffet':         ['buffet', 'unlimited buffet', 'all you can eat', 'buffet lunch', 'buffet dinner', 'unlimited meals'],
-  'Cafe':           ['cafe', 'coffee shop', 'cappuccino', 'filter coffee', 'kaapi', 'bakery cafe'],
-  'Street Food':    ['street food', 'chaat', 'gol gappa', 'pani puri', 'bhel puri', 'vada pav', 'pav bhaji'],
-  'Seafood':        ['seafood', 'fish', 'prawn', 'crab', 'lobster', 'meen', 'sea food'],
+  // ── Diet (strict filter — do NOT change, used by applyStrictFilter) ──────
+  'Pure Veg':          ['pure veg', 'veg only', 'vegetarian only', 'sattvic', 'saivam', 'no non-veg', 'bhavan', 'vegetarian restaurant', 'bhawan', 'serves vegetarian'],
+  'Non-Veg':           ['non-veg', 'nonveg', 'chicken', 'mutton', 'fish', 'prawn', 'non veg', 'seafood', 'meat', 'egg', 'shawarma', 'kozhi', 'meen', 'non vegetarian'],
+  // ── Cuisine (5) ──────────────────────────────────────────────────────────
+  'South Indian':      ['south indian', 'dosa', 'dosai', 'idli', 'idly', 'sambar', 'pongal', 'vada', 'rasam', 'banana leaf', 'saapadu', 'uttapam', 'idiyappam'],
+  'Biryani':           ['biryani', 'biriyani', 'dum biryani', 'briyani', 'mandi biryani', 'biryani house', 'chicken biryani', 'mutton biryani'],
+  'Chettinad':         ['chettinad', 'nattu kozhi', 'kuzhambu', 'pepper chicken', 'country chicken', 'anjappar', 'chettinad style', 'chettinad cuisine'],
+  'North Indian':      ['north indian', 'paneer', 'butter masala', 'naan', 'roti', 'dal makhani', 'kadai', 'punjabi', 'butter chicken'],
+  'Mess & Meals':      ['mess', 'meals', 'full meals', 'thali', 'banana leaf', 'saapadu', 'lunch thali', 'rice meals'],
+  // ── Dining Style (5) ─────────────────────────────────────────────────────
+  'Tiffin':            ['tiffin', 'tiffin center', 'tiffin centre', 'idli', 'dosa', 'vada', 'pongal', 'upma', 'morning tiffin', 'breakfast'],
+  'Fine Dining':       ['fine dine', 'fine dining', 'fine-dine', 'elegant', 'upscale dining', 'fine cuisine', 'fine restaurant', 'ambience', 'ambiance', 'atmosphere', 'romantic', 'classy', 'fancy', 'interiors', 'decor', 'premium dining', 'special occasion'],
+  'Buffet':            ['buffet', 'unlimited buffet', 'all you can eat', 'buffet lunch', 'buffet dinner', 'unlimited spread'],
+  'Cafe & Drinks':     ['cafe', 'filter coffee', 'filter kaapi', 'degree coffee', 'kaapi', 'strong tea', 'coffee shop', 'beverages', 'south indian coffee', 'coffee', 'tea', 'chai', 'cold coffee', 'juice', 'shakes', 'milkshake', 'espresso', 'latte'],
+  'Family Dining':     ['family', 'families', 'kids', 'children', 'family friendly', 'family dining', 'family restaurant'],
+  // ── Preference (5) ───────────────────────────────────────────────────────
+  'Fresh & Hot':       ['fresh', 'freshly cooked', 'hot and fresh', 'made fresh', 'steaming hot', 'piping hot', 'freshly made', 'hot food', 'served hot', 'warm food', 'just cooked', 'freshly prepared', 'hot dish', 'made to order'],
+  'Budget Friendly':   ['affordable', 'cheap', 'pocket friendly', 'value for money', 'value money', 'affordable price', 'economical', 'budget meal', 'low price', 'reasonable', 'worth it', 'good price', 'inexpensive', 'cost effective', 'cheap rate', 'value', 'cheap food'],
+  'Authentic':         ['authentic', 'authentic taste', 'traditional', 'original', 'since 1964', 'authentic south', 'ancestral', 'old recipe', 'generations', 'age old', 'traditional taste', 'heritage', 'original taste', 'classic', 'old school', 'timeless', 'unchanged recipe', 'traditional method'],
+  'Lunch Spot':        ['lunch', 'lunch thali', 'afternoon', 'noon', 'lunch time', 'lunch crowd', 'midday'],
+  'Dinner Special':    ['dinner', 'evening', 'night', 'dinner menu', 'dinner special', 'serves dinner', 'late night', 'dinner time', 'evenings', 'night time', 'open late', 'dinner crowd', 'dinner buffet', 'evening meal', 'night dining'],
 };
 
 // Place types that indicate food/restaurant — used to exclude from hotel results
@@ -172,14 +147,27 @@ const RESTAURANT_TYPES = new Set([
 ]);
 
 // Types that confirm a place is NOT a restaurant — hard exclude from Food results
-// Catches fish stalls, aquariums, pet shops, supermarkets that mention food items
 const NON_RESTAURANT_TYPES = new Set([
   'aquarium', 'pet_store', 'zoo', 'supermarket', 'grocery_store', 'convenience_store',
   'department_store', 'clothing_store', 'shoe_store', 'hardware_store', 'furniture_store',
   'fish_market', 'seafood_market', 'market', 'fish_store', 'butcher_shop',
   'tourist_attraction', 'museum', 'art_gallery', 'park', 'church', 'mosque', 'temple',
   'hospital', 'pharmacy', 'bank', 'atm', 'gas_station', 'car_wash', 'car_repair',
+  'car_dealer', 'motorcycle_dealer', 'auto_parts_store', 'car_rental', 'vehicle_rental',
   'lodging', 'hotel', 'motel', 'guest_house',
+]);
+
+// Types that hard-exclude a place from Hotel results
+// A car dealer / service center has no lodging type — must be blocked explicitly
+const NON_HOTEL_TYPES = new Set([
+  'restaurant', 'cafe', 'bakery', 'bar', 'food', 'meal_delivery', 'meal_takeaway',
+  'fast_food_restaurant', 'south_indian_restaurant', 'north_indian_restaurant',
+  'car_dealer', 'motorcycle_dealer', 'auto_parts_store', 'car_repair', 'car_wash',
+  'car_rental', 'vehicle_rental', 'gas_station', 'fuel',
+  'school', 'university', 'college', 'hospital', 'clinic', 'doctor', 'pharmacy',
+  'bank', 'atm', 'finance', 'insurance_agency', 'real_estate_agency',
+  'shopping_mall', 'electronics_store', 'clothing_store', 'hardware_store',
+  'tourist_attraction', 'museum', 'art_gallery', 'park', 'church', 'mosque', 'temple',
 ]);
 
 // Food tags that map to a Google Places includedType — kept for Veg/Pure Veg only
@@ -203,7 +191,7 @@ const HOTEL_TAG_VERIFY: Record<string, string[] | null> = {
   'Well Maintained':     ['maintained', 'well-maintained', 'neat', 'maintenance'],
   'Fresh Rooms':         ['fresh', 'odour', 'smell', 'odor', 'bathroom', 'toilet', 'shower', 'towels'],
   'Near Big Temple':     ['temple', 'kovil', 'big temple', 'brihadeeswarar', 'gopuram'],
-  'Near Railway Station':['railway station', 'railway', 'junction', 'station road'],
+  'Near Railway Station':['railway station', 'railway', 'junction', 'station road', 'station', 'near station', 'train station', 'walking distance', 'walk from station'],
   'Central & Walkable':  null,  // GPS-verified via CITY_LANDMARKS
   'City Centre':         null,  // GPS-verified via CITY_LANDMARKS
   'Easy Parking':        ['parking', 'car park', 'valet', 'garage'],
@@ -217,10 +205,16 @@ const HOTEL_TAG_VERIFY: Record<string, string[] | null> = {
   'Warm Hospitality':    ['courteous', 'polite', 'professional', 'hospitality', 'welcoming', 'heartwarming'],
   'Quick Response':      ['prompt', 'quick', 'smooth', 'responsive'],
   'Spacious Rooms':      ['spacious', 'large room', 'roomy', 'big room', 'good space'],
-  'AC Rooms':            ['ac room', 'air conditioned room', 'air conditioning', 'ac available', 'fully ac', 'centrally ac'],
+  'AC Rooms':            ['ac room', 'air conditioned room', 'air-conditioned room', 'centrally air', 'fully ac', 'ac available'],
+  'Hot Water':           ['hot water', 'geyser', 'hot shower', 'warm water'],
+  'Good WiFi':           ['wifi', 'wi-fi', 'free wifi', 'internet', 'fast wifi'],
+  'Free Parking':        ['parking', 'car park', 'free parking', 'valet', 'garage'],
+  'Budget Stay':         ['budget', 'affordable', 'cheap', 'economical', 'inexpensive', 'low cost', 'lodge'],
+  'Premium Stay':        ['luxury', 'premium', 'five star', '5 star', 'star hotel', 'suite', 'upscale'],
+  'Highly Rated':        ['recommend', 'recommended', 'excellent', 'best hotel', 'outstanding', 'top rated'],
   'Comfortable & Quiet': ['comfortable', 'comfort', 'cozy', 'quiet', 'peaceful', 'calm', 'serene'],
   'Good Amenities':      ['amenities', 'wifi', 'internet', 'lift', 'pool', 'facilities', 'generator'],
-  'In-House Restaurant': ['restaurant', 'dining', 'dining hall', 'meals', 'food court'],
+  'In-House Restaurant': ['in-house restaurant', 'hotel restaurant', 'hotel dining', 'dining hall', 'restaurant in hotel', 'food court'],
   'Breakfast Included':  ['breakfast', 'complimentary breakfast', 'free breakfast'],
   'Good Food':           ['food', 'tasty', 'delicious', 'recommend', 'excellent', 'amazing'],
   'Value for Money':     ['value', 'affordable', 'worth', 'money', 'price', 'budget', 'reasonable'],
@@ -229,9 +223,10 @@ const HOTEL_TAG_VERIFY: Record<string, string[] | null> = {
   'Near Bus Stand':      ['bus stand', 'bus station', 'setc', 'bus terminus'],
   'Parking':             ['parking', 'car park', 'valet', 'garage'],
   'Heritage':            ['heritage', 'historical', 'palace', 'colonial', 'traditional', 'fort'],
-  'Swimming Pool':       ['pool', 'swimming pool', 'swim'],
   'Sea View':            ['sea view', 'ocean view', 'beach view', 'sea facing'],
   'River View':          ['river view', 'riverside', 'waterfront'],
+  'Swimming Pool':       ['swimming pool', 'pool', 'swim', 'pool side'],
+  'Heritage Stay':       ['heritage', 'boutique', 'historic', 'traditional', 'colonial', 'period', 'old charm'],
   'Family Friendly':     null,
   'Business':            null,
   'Rooftop':             null,
@@ -279,34 +274,43 @@ function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): nu
 // Legacy tag names kept for backward-compat with SMART_PICKS quick-override paths.
 const TAG_TEXT_KEYWORDS: Record<string, string[]> = {
   // ── Cleanliness & Hygiene ─────────────────────────────────────────────────
-  'Spotlessly Clean':    ['clean', 'cleaning', 'cleanliness', 'spotless', 'spotlessly', 'immaculate', 'hygienic', 'hygiene', 'sanitized', 'sanitary'],
-  'Well Maintained':     ['maintained', 'well-maintained', 'maintenance', 'neat', 'tidy', 'neatly'],
-  'Fresh Rooms':         ['fresh', 'odour', 'smell', 'odor', 'bathroom', 'toilet', 'shower', 'towels', 'bath'],
+  'Spotlessly Clean':    ['clean', 'cleaning', 'cleanliness', 'spotless', 'spotlessly', 'immaculate', 'hygienic', 'hygiene', 'sanitized', 'sanitary', 'very clean', 'neatly', 'squeaky clean', 'well cleaned', 'tidy'],
+  'Well Maintained':     ['maintained', 'well-maintained', 'maintenance', 'neat', 'tidy', 'neatly', 'well kept', 'good condition', 'looks new', 'renovated', 'well managed', 'properly maintained', 'upkeep', 'clean property'],
+  'Fresh Rooms':         ['fresh', 'odour', 'smell', 'odor', 'bathroom', 'toilet', 'shower', 'towels', 'bath', 'linen', 'bed sheets', 'bedding', 'airy', 'ventilated', 'fresh linen', 'clean sheets', 'fresh towels', 'no smell', 'pleasant smell', 'mattress'],
   // ── Location & Access ────────────────────────────────────────────────────
-  'Near Big Temple':     ['temple', 'kovil', 'big temple', 'brihadeeswarar', 'gopuram'],
-  'Near Railway Station':['railway station', 'railway', 'junction', 'station road'],
-  'Central & Walkable':  ['city centre', 'main road', 'central', 'town centre', 'walk', 'walkable', 'walking distance', 'minutes away', 'nearby', 'convenient'],
-  'City Centre':         ['city', 'centre', 'central', 'city center', 'town', 'main road', 'heart of', 'prime location'],
-  'Easy Parking':        ['parking', 'car park', 'valet', 'garage', 'bike parking'],
+  'Near Big Temple':     ['temple', 'kovil', 'big temple', 'brihadeeswarar', 'gopuram', 'close to temple', 'walking distance', 'temple nearby', '5 minutes', '10 minutes', 'few minutes'],
+  'Near Railway Station':['railway station', 'railway', 'junction', 'station road', 'station', 'near station', 'train station', 'walking distance', 'walk from station', 'minutes from station', 'close to station', '5 min', '10 min', 'minutes away', 'auto stand', 'easy access'],
+  'Central & Walkable':  ['city centre', 'main road', 'central', 'town centre', 'walk', 'walkable', 'walking distance', 'minutes away', 'nearby', 'convenient', 'prime location', 'good location', 'great location', 'central location', 'near everything', 'well located', 'located well', 'good connectivity'],
+  'City Centre':         ['city', 'centre', 'central', 'city center', 'town', 'main road', 'heart of', 'prime location', 'good location', 'great location'],
+  'Easy Parking':        ['parking', 'car park', 'valet', 'garage', 'bike parking', 'two wheeler', 'bike stand', 'vehicle parking', 'parking space', 'ample parking', 'free parking', 'parking available'],
+  'Free Parking':        ['parking', 'car park', 'free parking', 'bike parking', 'two wheeler', 'bike stand', 'vehicle parking', 'parking space', 'ample parking', 'parking available', 'complimentary parking'],
   'Walkable Distance':   ['walk', 'walking', 'walkable', 'nearby', 'close to', 'minutes walk', 'walking distance'],
-  'Quiet & Peaceful':    ['quiet', 'peaceful', 'calm', 'serene', 'tranquil', 'noise-free', 'peaceful stay'],
-  'Budget-Friendly':     ['budget', 'affordable', 'cheap', 'economical', 'inexpensive', 'low cost', 'lodge'],
-  'Prompt Service':      ['prompt', 'quick service', 'fast service', 'responsive', 'smooth', 'efficient'],
-  'Good Hospitality':    ['hospitality', 'welcoming', 'warm', 'courteous', 'polite', 'hospitable', 'heartwarming'],
-  'Highly Recommended':  ['recommend', 'recommended', 'must stay', 'must visit', 'excellent', 'best', 'outstanding'],
+  'Quiet & Peaceful':    ['quiet', 'peaceful', 'calm', 'serene', 'tranquil', 'noise-free', 'peaceful stay', 'no noise', 'undisturbed', 'relaxing', 'silent', 'restful'],
+  'Budget-Friendly':     ['budget', 'affordable', 'cheap', 'economical', 'inexpensive', 'low cost', 'lodge', 'reasonable', 'worth', 'good price', 'value for money', 'pocket friendly'],
+  'Prompt Service':      ['prompt', 'quick service', 'fast service', 'responsive', 'smooth', 'efficient', 'quick check', 'hassle free', 'no wait', 'immediate', 'timely', 'fast check', 'smooth check-in', 'easy check-in'],
+  'Good Hospitality':    ['hospitality', 'welcoming', 'warm', 'courteous', 'polite', 'hospitable', 'heartwarming', 'felt at home', 'warm welcome', 'great hospitality', 'excellent hospitality'],
+  'Highly Recommended':  ['recommend', 'recommended', 'must stay', 'must visit', 'excellent', 'best', 'outstanding', 'highly recommend', 'would recommend'],
   // ── Staff & Hospitality ───────────────────────────────────────────────────
-  'Friendly & Helpful':  ['friendly', 'warm', 'warmth', 'welcoming', 'hospitable', 'helpful', 'attentive', 'cooperative', 'caring', 'supportive'],
-  'Warm Hospitality':    ['courteous', 'polite', 'professional', 'respectful', 'well-behaved', 'hospitality', 'heartwarming', 'outstanding service', 'teamwork'],
-  'Quick Response':      ['prompt', 'promptly', 'quick', 'smooth check', 'responsive', 'fast service'],
+  'Friendly & Helpful':  ['friendly', 'warm', 'warmth', 'welcoming', 'hospitable', 'helpful', 'attentive', 'cooperative', 'caring', 'supportive', 'kind', 'polite', 'courteous', 'nice staff', 'good staff', 'excellent staff', 'great staff', 'staff was'],
+  'Warm Hospitality':    ['courteous', 'polite', 'professional', 'respectful', 'well-behaved', 'hospitality', 'heartwarming', 'outstanding service', 'teamwork', 'warm welcome', 'made us feel', 'felt at home', 'personal touch', 'went above', 'great hospitality', 'excellent hospitality', 'welcoming'],
+  'Quick Response':      ['prompt', 'promptly', 'quick', 'smooth check', 'responsive', 'fast service', 'quick check-in', 'smooth check-in', 'hassle free', 'hassle-free', 'no waiting', 'immediate', 'timely', 'fast check', 'easy check', 'efficient'],
   // ── Room & Comfort ────────────────────────────────────────────────────────
-  'Spacious Rooms':      ['spacious', 'large room', 'big room', 'roomy', 'good space'],
-  'Comfortable & Quiet': ['comfortable', 'comfort', 'comfortably', 'cozy', 'cosi', 'quiet', 'peaceful', 'calm', 'serene', 'noise-free', 'peaceful stay'],
-  'Good Amenities':      ['amenities', 'wifi', 'internet', 'lift', 'pool', 'facilities', 'generator'],
-  'In-House Restaurant': ['restaurant', 'dining', 'dining hall', 'meals', 'food court'],
+  'Spacious Rooms':      ['spacious', 'large room', 'big room', 'roomy', 'good space', 'spacious room', 'large rooms', 'good size', 'well sized', 'ample space', 'big rooms', 'comfortable room', 'big', 'huge room', 'enough space', 'good room size', 'nice room'],
+  'Comfortable & Quiet': ['comfortable', 'comfort', 'comfortably', 'cozy', 'cosi', 'quiet', 'peaceful', 'calm', 'serene', 'noise-free', 'peaceful stay', 'relaxing', 'good sleep', 'slept well', 'sound sleep', 'undisturbed', 'no noise'],
+  // ── Amenities — tags missing from here caused zero keyword matches ─────────
+  'AC Rooms':            ['ac', 'air conditioned', 'air conditioning', 'air-conditioned', 'centrally air', 'fully ac', 'ac room', 'ac available', 'cool room', 'cooling', 'well cooled', 'ac working', 'temperature'],
+  'Hot Water':           ['hot water', 'geyser', 'hot shower', 'warm water', 'geyser working', 'hot bath', 'warm shower', 'all amenities', 'basic amenities', 'facilities available', 'well equipped', 'hot tap', 'warm tap'],
+  'Good WiFi':           ['wifi', 'wi-fi', 'free wifi', 'internet', 'fast wifi', 'wifi available', 'good wifi', 'wifi working', 'wifi speed', 'high speed', 'internet access', 'broadband', 'connectivity'],
+  'Good Amenities':      ['amenities', 'wifi', 'wi-fi', 'internet', 'lift', 'elevator', 'pool', 'facilities', 'generator', 'power backup', 'backup', 'ac', 'air conditioning', 'parking', 'well equipped', 'good facilities', 'all facilities', 'basic amenities', 'all amenities', 'tv', 'television', 'fridge', 'refrigerator', 'geyser', 'kettle', 'equipped'],
+  'In-House Restaurant': ['in-house restaurant', 'hotel restaurant', 'hotel dining', 'restaurant in hotel', 'dining hall', 'hotel has restaurant', 'restaurant facility', 'food court', 'restaurant', 'dining', 'canteen', 'breakfast served', 'meals served', 'food available', 'room service', 'attached restaurant', 'meals', 'food at hotel', 'food served'],
   // ── Food & Value ─────────────────────────────────────────────────────────
-  'Breakfast Included':  ['breakfast included', 'complimentary breakfast', 'free breakfast', 'breakfast provided'],
+  'Breakfast Included':  ['breakfast included', 'complimentary breakfast', 'free breakfast', 'breakfast provided', 'breakfast', 'morning meal', 'breakfast was', 'breakfast served', 'morning breakfast', 'breakfast available', 'buffet breakfast'],
   'Good Food':           ['food', 'tasty', 'delicious', 'good food', 'fresh food', 'recommend', 'recommended', 'excellent', 'amazing', 'wonderful', 'must visit'],
+  'Highly Rated':        ['recommend', 'recommended', 'highly recommend', 'excellent', 'outstanding', 'best hotel', 'great hotel', 'wonderful', 'amazing', 'superb', 'fantastic', 'loved', 'great stay', 'best stay', 'top rated', 'must visit', 'must stay', 'exceptional', 'perfect', 'very good', 'thoroughly enjoyed'],
   'Value for Money':     ['value for money', 'affordable', 'worth', 'good value', 'money', 'price', 'budget', 'reasonable', 'economical', 'decent price'],
+  // ── Stay Type ─────────────────────────────────────────────────────────────
+  'Premium Stay':        ['luxury', 'premium', 'five star', '5 star', 'star hotel', 'suite', 'upscale', 'elite', 'luxurious', 'high-end', 'top class', 'world class'],
+  'Heritage Stay':       ['heritage', 'historical', 'traditional', 'colonial', 'period', 'old charm', 'boutique', 'vintage', 'antique', 'old building', 'historic'],
   // ── Legacy tags — kept for SMART_PICKS / TRENDING_OVERRIDES paths ────────
   'Near Temple':          ['temple', 'kovil', 'big temple', 'brihadeeswarar', 'gopuram'],
   'Near Bus Stand':       ['bus stand', 'bus station', 'setc', 'bus terminus'],
@@ -412,11 +416,10 @@ function scoreAllTagsForHotel(place: any, selectedTags: string[], cityKey: strin
     if (lm && lat !== undefined && lng !== undefined) {
       const dist = haversineKm(lat, lng, lm.lat, lm.lng);
       let score: number;
-      if      (dist <= 1.5) { score = 1.0; tagEvidence[tag] = `${dist.toFixed(1)}km from ${lm.label} (GPS ✓)`; }
-      else if (dist <= 2.5) { score = 0.8; tagEvidence[tag] = `${dist.toFixed(1)}km from ${lm.label}`; }
-      else if (dist <= 4.0) { score = 0.5; tagEvidence[tag] = `${dist.toFixed(1)}km from ${lm.label}`; }
-      else if (dist <= 7.0) { score = 0.15; tagEvidence[tag] = `${dist.toFixed(1)}km — not nearby`; }
-      else                  { score = 0.0;  tagEvidence[tag] = `${dist.toFixed(1)}km — far`; }
+      if      (dist <= 2.0) { score = 1.0; tagEvidence[tag] = `Within 2km of ${lm.label}`; }
+      else if (dist <= 4.0) { score = 0.6; tagEvidence[tag] = `About 3–4km from ${lm.label}`; }
+      else if (dist <= 7.0) { score = 0.15; tagEvidence[tag] = `Over 5km — not nearby`; }
+      else                  { score = 0.0;  tagEvidence[tag] = `Far from ${lm.label}`; }
       allTagScores[tag] = score;
       const snip = findSnippet(TAG_TEXT_KEYWORDS[tag] ?? []);
       if (snip) tagSnippets[tag] = snip;
@@ -450,13 +453,18 @@ function scoreAllTagsForHotel(place: any, selectedTags: string[], cityKey: strin
   const parkSnip = findSnippet(TAG_TEXT_KEYWORDS['Easy Parking'] ?? []);
   if (parkSnip) { tagSnippets['Easy Parking'] = parkSnip; tagSnippets['Parking'] = parkSnip; }
 
-  // ── IN-HOUSE RESTAURANT — dineIn boolean ─────────────────────────────────
+  // ── IN-HOUSE RESTAURANT — specific keyword phrases required ─────────────
+  // dineIn boolean alone is not enough (it's true even for pure restaurants).
+  // Need specific phrases like "in-house restaurant", "hotel restaurant", "dining hall".
+  // Single generic hit is intentionally below threshold (0.40) to prevent false matches.
   const scoreRestaurant = (() => {
-    if (place.dineIn === true)  return { score: 1.0, ev: 'Dine-in (Google ✓)' };
-    if (place.dineIn === false) return { score: 0.0, ev: 'No dine-in' };
+    if (place.dineIn === false) return { score: 0.0, ev: 'No dine-in (Google ✓)' };
     const kws  = TAG_TEXT_KEYWORDS['In-House Restaurant'] ?? [];
     const hits = countHits(allText, kws);
-    return { score: hits >= 2 ? 0.80 : hits === 1 ? 0.55 : 0.08, ev: hits > 0 ? '"restaurant/dining" in reviews' : '' };
+    // dineIn true boosts only when review also confirms (avoids scoring restaurants-named-hotels)
+    if (place.dineIn === true && hits >= 1) return { score: 0.95, ev: 'Dine-in (Google ✓) + review confirms' };
+    if (place.dineIn === true)              return { score: 0.65, ev: 'Dine-in confirmed (Google ✓)' };
+    return { score: hits >= 2 ? 0.85 : hits === 1 ? 0.40 : 0.05, ev: hits > 0 ? '"in-house restaurant/dining hall" in reviews' : '' };
   })();
   allTagScores['In-House Restaurant'] = scoreRestaurant.score;
   if (scoreRestaurant.ev) tagEvidence['In-House Restaurant'] = scoreRestaurant.ev;
@@ -486,7 +494,8 @@ function scoreAllTagsForHotel(place: any, selectedTags: string[], cityKey: strin
   for (const tag of ['Spacious Rooms', 'Comfortable & Quiet', 'Good Amenities'] as const) {
     const kws  = TAG_TEXT_KEYWORDS[tag] ?? [];
     const hits = countWeightedHits(kws);
-    allTagScores[tag] = hits >= 3 ? 0.95 : hits >= 2 ? 0.82 : hits >= 1 ? 0.45 : hits >= 0.4 ? 0.30 : 0.10;
+    // 1 hit = 0.65 (above PERFECT_THRESHOLD=0.55) so single keyword mention qualifies
+    allTagScores[tag] = hits >= 3 ? 0.95 : hits >= 2 ? 0.82 : hits >= 1 ? 0.65 : hits >= 0.4 ? 0.40 : 0.10;
     if (hits > 0) { tagEvidence[tag] = `"${kws[0]}" ×${hits.toFixed(1)} in positive reviews`; const s = findSnippet(kws); if (s) tagSnippets[tag] = s; }
   }
   // Good Amenities — boolean boost on top of keyword score (each is an independent facility signal)
@@ -638,6 +647,77 @@ function scoreAllTagsForHotel(place: any, selectedTags: string[], cityKey: strin
     const s = findSnippet(hrKws); if (s) tagSnippets['Highly Recommended'] = s;
   }
 
+  // ── AC ROOMS — ≥2 review mentions of multi-word AC phrases ─────────────
+  {
+    const acKws   = TAG_TEXT_KEYWORDS['AC Rooms'] ?? [];
+    const acHits  = reviews.filter((r: any) =>
+      acKws.some(kw => (r.text?.text ?? '').toLowerCase().includes(kw))
+    ).length;
+    let acScore   = acHits >= 3 ? 1.0 : acHits === 2 ? 0.90 : acHits === 1 ? 0.60 : countHits(allText, acKws) >= 1 ? 0.45 : 0.10;
+    let acEv      = acHits > 0 ? `"ac room" mentioned in ${acHits} reviews` : '';
+    allTagScores['AC Rooms'] = acScore;
+    if (acEv) tagEvidence['AC Rooms'] = acEv;
+    const s = findSnippet(acKws); if (s) tagSnippets['AC Rooms'] = s;
+  }
+
+  // ── HOT WATER — review mentions ─────────────────────────────────────────
+  {
+    const hwKws  = TAG_TEXT_KEYWORDS['Hot Water'] ?? [];
+    const hwHits = reviews.filter((r: any) =>
+      hwKws.some(kw => (r.text?.text ?? '').toLowerCase().includes(kw))
+    ).length;
+    allTagScores['Hot Water'] = hwHits >= 2 ? 1.0 : hwHits === 1 ? 0.75 : countHits(allText, hwKws) >= 1 ? 0.55 : 0.10;
+    if (hwHits > 0) { tagEvidence['Hot Water'] = `"hot water" in ${hwHits} reviews`; const s = findSnippet(hwKws); if (s) tagSnippets['Hot Water'] = s; }
+  }
+
+  // ── GOOD WIFI — review mentions ─────────────────────────────────────────
+  {
+    const wfKws  = TAG_TEXT_KEYWORDS['Good WiFi'] ?? [];
+    const wfHits = reviews.filter((r: any) =>
+      wfKws.some(kw => (r.text?.text ?? '').toLowerCase().includes(kw))
+    ).length;
+    allTagScores['Good WiFi'] = wfHits >= 2 ? 1.0 : wfHits === 1 ? 0.75 : countHits(allText, wfKws) >= 1 ? 0.55 : 0.10;
+    if (wfHits > 0) { tagEvidence['Good WiFi'] = `"wifi" in ${wfHits} reviews`; const s = findSnippet(wfKws); if (s) tagSnippets['Good WiFi'] = s; }
+  }
+
+  // ── FREE PARKING — same logic as Easy Parking ────────────────────────────
+  allTagScores['Free Parking'] = scoreParking.score;
+  if (scoreParking.ev) tagEvidence['Free Parking'] = scoreParking.ev;
+  if (parkSnip) tagSnippets['Free Parking'] = parkSnip;
+
+  // ── BUDGET STAY — mirrors Budget-Friendly ───────────────────────────────
+  allTagScores['Budget Stay'] = allTagScores['Budget-Friendly'] ?? 0.3;
+  tagEvidence['Budget Stay']  = tagEvidence['Budget-Friendly']  ?? '';
+  tagSnippets['Budget Stay']  = tagSnippets['Budget-Friendly']  ?? '';
+
+  // ── PREMIUM STAY — priceLevel EXPENSIVE + name signals ──────────────────
+  {
+    const PREMIUM_NAME_RX = /\b(grand|resort|palace|suite|spa|international|tower|crown|imperial|royal|executive|luxury)\b/i;
+    let psScore = 0.10; let psEv = '';
+    if (priceLevel === 'PRICE_LEVEL_EXPENSIVE' || priceLevel === 'PRICE_LEVEL_VERY_EXPENSIVE') {
+      psScore = 1.0; psEv = 'Premium price tier (Google ✓)';
+    } else if (priceLevel === 'PRICE_LEVEL_MODERATE') {
+      psScore = 0.35; psEv = 'Mid-range — not premium';
+    } else if (priceLevel === 'PRICE_LEVEL_INEXPENSIVE') {
+      psScore = 0.0; psEv = 'Budget — not premium';
+    }
+    if (PREMIUM_NAME_RX.test(name)) { psScore = Math.min(psScore + 0.25, 1.0); psEv = [psEv, 'premium name signal'].filter(Boolean).join(' + '); }
+    if (rating >= 4.2 && (place.userRatingCount ?? 0) >= 100) psScore = Math.min(psScore + 0.10, 1.0);
+    allTagScores['Premium Stay'] = psScore;
+    if (psEv) tagEvidence['Premium Stay'] = psEv;
+  }
+
+  // ── HIGHLY RATED (hotel) — rating × volume metric ────────────────────────
+  {
+    let hrScore = 0.20;
+    if      (rating >= 4.5 && (place.userRatingCount ?? 0) >= 100) hrScore = 1.0;
+    else if (rating >= 4.3 && (place.userRatingCount ?? 0) >= 30)  hrScore = 0.85;
+    else if (rating >= 4.0 && (place.userRatingCount ?? 0) >= 10)  hrScore = 0.65;
+    else if (rating >= 3.8)                                         hrScore = 0.45;
+    allTagScores['Highly Rated'] = hrScore;
+    tagEvidence['Highly Rated']  = `${rating}★ across ${place.userRatingCount ?? 0} reviews`;
+  }
+
   // ── LEGACY TAGS — scored for SMART_PICKS / TRENDING_OVERRIDES paths ──────
   {
     // Budget Stay
@@ -664,6 +744,10 @@ function scoreAllTagsForHotel(place: any, selectedTags: string[], cityKey: strin
     allTagScores['Heritage'] = nameH ? 0.95 : hits >= 2 ? 0.65 : hits === 1 ? 0.45 : 0.2;
     tagEvidence['Heritage'] = nameH ? 'Heritage — name confirmed' : hits > 0 ? `"heritage" ×${hits}` : 'Not mentioned';
     const snip = findSnippet(kws); if (snip) tagSnippets['Heritage'] = snip;
+    // Heritage Stay — active tag (19 keyword hits in top-34 Thanjavur hotel reviews)
+    allTagScores['Heritage Stay'] = allTagScores['Heritage'];
+    if (tagEvidence['Heritage']) tagEvidence['Heritage Stay'] = tagEvidence['Heritage'];
+    if (tagSnippets['Heritage']) tagSnippets['Heritage Stay'] = tagSnippets['Heritage'];
   }
   for (const tag of ['Pilgrim Friendly', 'Pure Veg Hotel', 'Swimming Pool', 'Rooftop Access', 'Power Backup', '24hr Front Desk', 'Temple View'] as const) {
     const kws  = TAG_TEXT_KEYWORDS[tag] ?? [];
@@ -763,10 +847,17 @@ const HOTEL_TAG_SEARCH: Record<string, string> = {
   'Hygienic':            'hygienic hotel clean sanitary',
   'Fresh Rooms_old':     'hotel fresh rooms clean odour free',
   'Clean Bathrooms':     'hotel clean bathroom shower towels',
-  'City Centre':         'hotel Thanjavur central area main road',
+  'City Centre':         'hotel Thanjavur central area main road bus stand',
   'Walkable Distance':   'hotel walkable distance Thanjavur nearby',
   'Quiet & Peaceful':    'quiet peaceful hotel Thanjavur calm serene',
   'Budget-Friendly':     'cheapest hotel Thanjavur budget affordable',
+  'Budget Stay':         'budget lodge affordable hotel Thanjavur economical',
+  'Premium Stay':        'luxury premium star hotel Thanjavur suite',
+  'Highly Rated':        'best rated hotel Thanjavur highly recommended top',
+  'AC Rooms':            'hotel air conditioned rooms Thanjavur AC room',
+  'Hot Water':           'hotel hot water geyser Thanjavur',
+  'Good WiFi':           'hotel wifi internet Thanjavur free wifi',
+  'Free Parking':        'hotel parking free parking Thanjavur car park',
   'Prompt Service':      'hotel quick service Thanjavur efficient',
   'Good Hospitality':    'best service hotel Thanjavur hospitality welcoming',
   'Highly Recommended':  'most recommended hotel Thanjavur excellent',
@@ -784,7 +875,6 @@ const HOTEL_TAG_SEARCH: Record<string, string> = {
   'Near Market':         'hotel near market bazaar',
   'Parking':             'hotel with parking',
   'Heritage':            'heritage historical hotel traditional',
-  'Budget Stay':         'budget affordable economy hotel lodge',
   'Family Friendly':     'family hotel children spacious rooms',
   'Business':            'business corporate executive hotel',
   'Luxury':              'luxury premium five star hotel',
@@ -798,6 +888,39 @@ const HOTEL_TAG_SEARCH: Record<string, string> = {
   'Temple View':         'hotel temple view room gopuram',
   'Power Backup':        'hotel generator power backup',
   '24hr Front Desk':     'hotel 24 hour reception front desk',
+};
+
+// Short primary search term per hotel tag — drives clean Google queries (1-3 words)
+const HOTEL_TAG_SHORT_TERM: Record<string, string> = {
+  'Spotlessly Clean':    'clean hygienic',
+  'Well Maintained':     'well maintained',
+  'Fresh Rooms':         'fresh rooms',
+  'Near Big Temple':     'near brihadeeswarar temple',
+  'Near Railway Station':'near railway station',
+  'Central & Walkable':  'city centre walkable',
+  'Easy Parking':        'with parking',
+  'Friendly & Helpful':  'friendly helpful staff',
+  'Warm Hospitality':    'warm hospitality',
+  'Quick Response':      'quick service',
+  'Spacious Rooms':      'spacious rooms',
+  'Comfortable & Quiet': 'comfortable quiet',
+  'Good Amenities':      'amenities wifi',
+  'In-House Restaurant': 'with restaurant',
+  'Breakfast Included':  'breakfast included',
+  'Good Food':           'good food',
+  'Value for Money':     'value for money',
+  'Budget Stay':         'budget affordable',
+  'Premium Stay':        'luxury premium',
+  'Highly Rated':        'highly rated',
+  'AC Rooms':            'air conditioned',
+  'Hot Water':           'hot water',
+  'Good WiFi':           'wifi internet',
+  'Free Parking':        'free parking',
+  'Quiet & Peaceful':    'quiet peaceful',
+  'Budget-Friendly':     'budget affordable',
+  'Pure Veg Hotel':      'pure veg',
+  'Pilgrim Friendly':    'pilgrim friendly',
+  'Heritage Stay':       'heritage boutique',
 };
 
 // Hotel price range → extra query keyword so Places returns price-relevant results
@@ -841,6 +964,27 @@ function buildHotelQuery(filters: UserFilters): string {
     return `${priceKw} ${tagTerm} in ${city} ${state}`.replace(/\s+/g, ' ').trim();
   }
   return `${priceKw} hotels in ${city} ${state}`.replace(/\s+/g, ' ').trim();
+}
+
+// 3 distinct natural-language hotel queries from tag keywords — varied Google result sets
+function buildHotelQueryVariants(tags: string[], city: string): [string, string, string] {
+  const primaryTag = tags[0];
+  const shortTerm  = HOTEL_TAG_SHORT_TERM[primaryTag] ?? primaryTag.toLowerCase();
+  const kws        = (TAG_TEXT_KEYWORDS[primaryTag] ?? []) as string[];
+
+  // Find keywords that don't overlap with the short term
+  const shortWords = shortTerm.split(' ');
+  const extras = kws.filter(k => !shortWords.some(w => k.includes(w)) && k.length > 3);
+
+  const q1 = `hotel ${shortTerm} in ${city}`;
+  const q2 = extras.length > 0
+    ? `${extras[0]} hotel in ${city}`
+    : `best hotel ${shortTerm} ${city} Tamil Nadu`;
+  const q3 = extras.length > 1
+    ? `${extras[Math.floor(extras.length / 2)]} hotel ${city}`
+    : `top hotel ${shortTerm} ${city} Tamil Nadu`;
+
+  return [q1, q2, q3];
 }
 
 // Default city centre — overridden per-request via FetchOptions.center
@@ -919,6 +1063,133 @@ function computeTrendScore(place: any): number {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// QUALITY SCORE — combines rating with review volume (log-damped)
+// Formula: rating × reviews^0.2 — volume matters but diminishes beyond 1000
+// Examples: 4.0★/1000 reviews = 15.9 > 4.5★/200 reviews = 12.98 (per user spec)
+// ─────────────────────────────────────────────────────────────────────────────
+// Specific food/experience words that appear in genuine reviews
+const GENUINE_WORDS = new Set([
+  'biryani','biriyani','dosa','idli','thali','chicken','mutton','fish','meals',
+  'rice','sambar','curry','roti','naan','coffee','tiffin','vada','pongal',
+  'kuzhambu','parotta','kozhi','meen','prawn','dosai','rasam','chettinad',
+  'nattu','pepper','tandoor','kebab','buffet','dinner','lunch','breakfast',
+  'ambience','service','staff','clean','parking','family','kids','outdoor',
+  'delicious','tasty','fresh','spicy','sweet','sour','flavour','flavor',
+  'portion','quantity','price','value','affordable','expensive','waiting',
+]);
+
+function computeAuthenticityScore(place: any): number {
+  const reviews  = (place.reviews ?? []) as any[];
+  const rating   = place.rating ?? 0;
+  const count    = place.userRatingCount ?? 0;
+  if (reviews.length === 0) return 0.6;
+
+  let score = 1.0;
+
+  // 1. All reviews are 5★ — suspicious uniformity
+  const ratings5 = reviews.filter((r: any) => (r.rating ?? 0) === 5).length;
+  if (ratings5 === reviews.length && reviews.length >= 3) score -= 0.25;
+
+  // 2. Very short reviews — avg < 40 chars means no real experience described
+  const avgLen = reviews.reduce((s: number, r: any) => s + (r.text?.text ?? '').length, 0) / reviews.length;
+  if (avgLen < 25) score -= 0.35;
+  else if (avgLen < 50) score -= 0.15;
+
+  // 3. No genuine specific words across all reviews — pure generic praise
+  const combinedText = reviews.map((r: any) => (r.text?.text ?? '').toLowerCase()).join(' ');
+  const hasGenuineWord = [...GENUINE_WORDS].some(w => combinedText.includes(w));
+  if (!hasGenuineWord) score -= 0.20;
+
+  // 4. High rating with very few reviews — unverified, easy to inflate
+  if (rating >= 4.7 && count < 50)  score -= 0.20;
+  else if (rating >= 4.5 && count < 80) score -= 0.10;
+
+  // 5. Bonus: diverse star ratings (not all same) — sign of organic reviews
+  if (new Set(reviews.map((r: any) => r.rating ?? 0)).size >= 2) score += 0.05;
+
+  return Math.max(0.1, Math.min(1.0, score));
+}
+
+function computeQualityScore(place: any): number {
+  const rating  = place.rating ?? 0;
+  const reviews = place.userRatingCount ?? 0;
+  return rating * Math.pow(Math.max(reviews, 1), 0.2) * computeAuthenticityScore(place);
+}
+
+const HOTEL_GENUINE_WORDS = new Set([
+  'clean','room','staff','check','wifi','parking','breakfast','food','water',
+  'ac','air','toilet','bathroom','shower','bed','pillow','towel','lift',
+  'reception','service','maintained','hygienic','spacious','quiet','peaceful',
+  'temple','station','centre','central','walking','location','nearby',
+  'friendly','helpful','courteous','hospitality','professional','prompt',
+  'amenities','generator','restaurant','dining','affordable','budget',
+  'comfortable','cozy','neat','tidy','fresh','value','worth',
+]);
+
+function computeHotelAuthenticityScore(place: any): number {
+  const reviews = (place.reviews ?? []) as any[];
+  const rating  = place.rating ?? 0;
+  const count   = place.userRatingCount ?? 0;
+  if (reviews.length === 0) return 0.6;
+
+  let score = 1.0;
+  const ratings5 = reviews.filter((r: any) => (r.rating ?? 0) === 5).length;
+  if (ratings5 === reviews.length && reviews.length >= 3) score -= 0.25;
+
+  const avgLen = reviews.reduce((s: number, r: any) => s + (r.text?.text ?? '').length, 0) / reviews.length;
+  if (avgLen < 25) score -= 0.35;
+  else if (avgLen < 50) score -= 0.15;
+
+  const combinedText = reviews.map((r: any) => (r.text?.text ?? '').toLowerCase()).join(' ');
+  const hasGenuineWord = [...HOTEL_GENUINE_WORDS].some(w => combinedText.includes(w));
+  if (!hasGenuineWord) score -= 0.20;
+
+  if (rating >= 4.7 && count < 30) score -= 0.20;
+  else if (rating >= 4.5 && count < 50) score -= 0.10;
+
+  if (new Set(reviews.map((r: any) => r.rating ?? 0)).size >= 2) score += 0.05;
+  return Math.max(0.1, Math.min(1.0, score));
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AI SIGNALS — recentTrend, consistency, oneWord label, numberInsights string
+// Designed to be passed to Gemini for richer comparative analysis
+// ─────────────────────────────────────────────────────────────────────────────
+function computeAISignals(place: any): {
+  recentTrend:    'Rising' | 'Stable' | 'Declining' | 'Unknown';
+  consistency:    'High' | 'Medium' | 'Low';
+  oneWord:        string;
+  numberInsights: string;
+} {
+  const rating      = place.rating ?? 0;
+  const reviews     = place.userRatingCount ?? 0;
+  const qualityScore = computeQualityScore(place);
+  const trendScore  = computeTrendScore(place);
+
+  const recentTrend: 'Rising' | 'Stable' | 'Declining' | 'Unknown' =
+    (place.reviews ?? []).length === 0 ? 'Unknown' :
+    trendScore >= 0.65 ? 'Rising' :
+    trendScore >= 0.45 ? 'Stable' : 'Declining';
+
+  const consistency: 'High' | 'Medium' | 'Low' =
+    (rating >= 4.2 && reviews >= 500)  ? 'High'   :
+    (rating >= 3.8 && reviews >= 100)  ? 'Medium' : 'Low';
+
+  const oneWord =
+    qualityScore >= 25 && rating >= 4.4 ? 'Iconic'      :
+    qualityScore >= 18 && rating >= 4.2 ? 'Established' :
+    recentTrend === 'Rising' && rating >= 4.3 ? 'Rising' :
+    rating >= 4.5 && reviews < 200      ? 'Hidden Gem'  :
+    rating >= 4.0 && reviews >= 300     ? 'Consistent'  :
+    recentTrend === 'Declining'         ? 'Declining'   :
+    rating >= 4.0                       ? 'Reliable'    : 'Mixed';
+
+  const numberInsights = `${rating}★ · ${reviews.toLocaleString()} reviews · Score ${qualityScore.toFixed(1)} · ${recentTrend}`;
+
+  return { recentTrend, consistency, oneWord, numberInsights };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // INSIGHT SCORE — wires computeBuckets() into a 0–1 quality signal
 // Hotels weight hygiene + service + quality + value
 // Food weights taste + quality + service + ambience
@@ -935,17 +1206,108 @@ function computeInsightScore(place: any, tab: string): number {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Filter reviews older than MAX_DISPLAY_AGE_YEARS from UI display.
-// Falls back to all reviews if fewer than 2 recent ones exist, so cards never go empty.
-const MAX_DISPLAY_AGE_MS = 6 * 30.4375 * 24 * 3600 * 1000; // 6 months
+// Caution: extract what users should watch out for from 1–3★ reviews.
+// Returns a short phrase (max ~12 words) or null if nothing notable.
+function extractCautionNote(reviews: any[]): string | null {
+  const negative = reviews.filter(r => (r.rating ?? 5) <= 3 && (r.text?.text ?? '').length > 20);
+  if (negative.length === 0) return null;
+  const text = negative.map(r => (r.text?.text ?? '').toLowerCase()).join(' ');
+  const complaints: { label: string; kws: string[] }[] = [
+    { label: 'long wait times',        kws: ['wait', 'slow service', 'queue', 'long time', 'takes time', 'delayed'] },
+    { label: 'gets very crowded',      kws: ['crowded', 'very busy', 'rush', 'no seats', 'packed', 'full house'] },
+    { label: 'limited parking nearby', kws: ['no parking', 'parking issue', 'parking problem', 'hard to park'] },
+    { label: 'service needs work',     kws: ['rude', 'bad service', 'poor service', 'unfriendly', 'attitude'] },
+    { label: 'can be noisy inside',    kws: ['noisy', 'very loud', 'too loud', 'noise'] },
+    { label: 'cleanliness concerns',   kws: ['dirty', 'unclean', 'not clean', 'unhygienic'] },
+    { label: 'portions are small',     kws: ['small portion', 'less quantity', 'less food', 'not enough'] },
+    { label: 'quality can vary',       kws: ['cold food', 'stale', 'tasteless', 'bland', 'not fresh', 'disappointing', 'inconsistent'] },
+    { label: 'pricey for what you get',kws: ['expensive', 'overpriced', 'costly', 'not worth the price'] },
+    { label: 'rooms need maintenance', kws: ['maintenance', 'old room', 'broken', 'needs repair', 'outdated', 'worn out'] },
+  ];
+  const found: string[] = [];
+  for (const c of complaints) {
+    if (c.kws.some(k => text.includes(k))) {
+      found.push(c.label);
+      if (found.length >= 2) break;
+    }
+  }
+  if (found.length === 0) return null;
+  return found.length === 1
+    ? `Some visitors mention ${found[0]}`
+    : `Watch for: ${found.join(', ')}`;
+}
+
+// Recent sentiment: 2–3 factual bullets combining recent review stats + tag/keyword facts.
+const MS_3M = 3 * 30.4375 * 24 * 3600 * 1000;
+function buildRecentSentiment(
+  reviews: any[],
+  tagEvidenceMap: Record<string, string>,
+  matchedTags: string[],
+  rating: number,
+  reviewCount: number,
+  tagSnippetsMap: Record<string, string> = {},
+): string[] {
+  const now    = Date.now();
+  const recent = reviews.filter(r => r.publishTime && (now - new Date(r.publishTime).getTime()) < MS_3M);
+  const bullets: string[] = [];
+
+  // Bullet 1: recent visitor ratio
+  if (recent.length > 0) {
+    const posCount = recent.filter(r => (r.rating ?? 0) >= 4).length;
+    const negCount = recent.filter(r => (r.rating ?? 0) <= 2).length;
+    if (posCount >= 1) bullets.push(`${posCount}/${recent.length} recent visitors rated 4★ or higher`);
+    else if (negCount >= 1) bullets.push(`${negCount} of ${recent.length} recent visitors rated 2★ or below`);
+  }
+
+  // Bullet 2: best tag evidence fact (location / keyword count)
+  for (const tag of matchedTags) {
+    const ev = tagEvidenceMap[tag];
+    if (ev && !ev.includes('not nearby') && !ev.includes('Far from') && !ev.includes('Over 5km')) {
+      bullets.push(ev);
+      break;
+    }
+  }
+
+  // Bullet 3: top tag snippet (actual review quote about a tag)
+  for (const tag of matchedTags) {
+    const snip = tagSnippetsMap[tag];
+    if (snip && snip.length > 10) {
+      bullets.push(`Guests say: "${snip.slice(0, 70).trim()}…"`);
+      break;
+    }
+  }
+
+  // Fallback bullet: overall credibility
+  if (bullets.length === 0) {
+    bullets.push(`${rating}★ from ${reviewCount.toLocaleString()} verified visitors`);
+  }
+
+  return bullets.slice(0, 3);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Hard limit: never show reviews older than 5 months. No fallback to old reviews.
+const MAX_DISPLAY_AGE_MS = 5 * 30.4375 * 24 * 3600 * 1000; // 5 months — hard cap, no fallback
+
+function isGenuineReview(r: any): boolean {
+  const text = (r.text?.text ?? '').trim();
+  if (text.length < 25) return false;
+  // Pure generic praise with no specific content — likely fake
+  const genericOnly = /^[\s!.,]*((good|great|nice|best|amazing|excellent|wonderful|awesome|fantastic|must visit|highly recommend|must try|loved it|perfect|superb|outstanding|very good|so good|really good|too good)[\s!.,]*)+$/i.test(text);
+  if (genericOnly) return false;
+  return true;
+}
 
 function filterReviewsForDisplay(reviews: any[]): any[] {
   const now = Date.now();
+  // Hard recency filter — no fallback. Reviews older than 5 months never show.
   const recent = reviews.filter(r => {
-    if (!r.publishTime) return true;
+    if (!r.publishTime) return false; // no date = exclude
     return (now - new Date(r.publishTime).getTime()) < MAX_DISPLAY_AGE_MS;
   });
-  return recent.length >= 2 ? recent : reviews;
+  // Strip fake/generic reviews; fall back to recent (not old) if too few genuine
+  const genuine = recent.filter(isGenuineReview);
+  return genuine.length >= 1 ? genuine : recent;
 }
 
 // REVIEW SORT — unified sort used for all UI review display and Gemini context.
@@ -1160,52 +1522,64 @@ interface UserFilters {
 
 // Map UI food tags → Places API search query strings
 const FOOD_TAG_SEARCH: Record<string, string> = {
-  // ── Cuisine & Dish ────────────────────────────────────────────────────────
-  'Biryani':        'biryani biriyani dum biryani restaurant',
-  'Pure Veg':       'pure vegetarian veg restaurant',
-  'Non-Veg':        'non veg chicken mutton fish restaurant',
-  'South Indian':   'dosa idli sambar south indian restaurant',
-  'Tiffin':         'tiffin center idli dosa vada breakfast restaurant',
-  'Tiffin & Snacks':'tiffin snacks breakfast restaurant Thanjavur',
-  'Fresh & Hot':    'fresh hot food restaurant Thanjavur',
-  'Chettinad Style':'chettinad restaurant Thanjavur pepper kuzhambu',
-  'Quick Service':  'fast service restaurant Thanjavur prompt',
-  // ── Meal & Timing ────────────────────────────────────────────────────────
-  'Lunch':          'lunch thali meals restaurant afternoon',
-  'All Day':        'restaurant all day menu variety',
-  'Dinner':         'dinner biryani night restaurant',
-  'Snacks':         'snacks bajji chaat street food evening',
-  'Breakfast':      'breakfast tiffin idli dosa morning restaurant',
-  // ── Taste & Quality ──────────────────────────────────────────────────────
-  'Delicious':      'delicious tasty restaurant thanjavur',
-  'Fresh':          'fresh freshly cooked restaurant',
-  'Spicy':          'spicy masala pepper restaurant',
-  'Good Quantity':  'generous portions quantity restaurant',
-  'Authentic':      'authentic traditional south indian restaurant',
-  // ── Dining Experience ────────────────────────────────────────────────────
-  'AC Dine-in':     'air conditioned restaurant dine in',
-  'Friendly Staff': 'friendly staff service restaurant',
-  'Family Dining':  'family restaurant dining comfortable seating',
-  'Good Ambience':  'good ambience atmosphere restaurant',
-  'Clean':          'clean hygienic restaurant',
-  // ── Value & Price ─────────────────────────────────────────────────────────
-  'Highly Rated':   'highly recommended restaurant thanjavur',
-  'Value for Money':'value for money restaurant worth',
-  'Good Portions':  'generous portions restaurant quantity',
-  'Affordable':     'affordable cheap budget restaurant',
-  'Top Pick':       'best restaurant popular local favourite',
+  // ── Active 25 food tags (5×5) ─────────────────────────────────────────────
+  'South Indian':     'dosa idli sambar south indian restaurant meals',
+  'Biryani':          'biryani biriyani dum biryani restaurant',
+  'North Indian':     'paneer north indian butter masala naan roti restaurant',
+  'Multi Cuisine':    'multi cuisine variety restaurant continental',
+  'Grills & BBQ':     'grill bbq barbecue grilled chicken restaurant',
+  'Mess & Meals':     'mess meals thali banana leaf lunch restaurant',
+  'Tiffin':           'tiffin idli dosa vada pongal morning breakfast restaurant',
+  'Fine Dining':      'fine dining restaurant elegant upscale',
+  'Buffet':           'buffet restaurant unlimited meals all you can eat',
+  'Cafe & Drinks':    'cafe filter coffee kaapi degree coffee south indian',
+  'Authentic':        'authentic traditional south indian restaurant original',
+  'Homely Food':      'homely food home cooked comfort restaurant',
+  'Chettinad':        'chettinad nattu kozhi kuzhambu pepper chicken restaurant',
+  'Fresh & Hot':      'fresh freshly cooked hot restaurant',
+  'Must Try':         'must try best restaurant popular must visit',
+  'Outdoor Seating':  'outdoor seating open air terrace garden restaurant',
+  'Family Dining':    'family restaurant dining comfortable kids',
+  'Highly Rated':     'highly recommended best rated restaurant',
+  'Lunch Spot':       'lunch thali banana leaf meals afternoon restaurant',
+  'Dinner Special':   'dinner evening night restaurant dinner menu',
+  'Budget Friendly':  'affordable cheap budget tiffin meals restaurant',
+  'Value for Money':  'value for money worth restaurant good value',
+  'Ample Parking':    'parking car parking restaurant free parking',
+  'Large Portions':   'generous portions quantity restaurant filling',
+  'Veg Options':      'vegetarian veg options serves veg restaurant',
+  'Pure Veg':         'pure veg vegetarian restaurant only veg',
+  'Non-Veg':          'chicken mutton non veg restaurant',
+  // ── Legacy (backward-compat, city presets) ───────────────────────────────
+  'Seafood':         'seafood fish prawn crab restaurant',
+  'Dine-In':         'dine in restaurant seating dining hall',
+  'Family Friendly': 'family restaurant dining comfortable kids',
+  'Quick Bites':     'fast food takeaway street food quick bites',
+  // ── Legacy ───────────────────────────────────────────────────────────────
+  'Chettinad Style': 'chettinad restaurant pepper kuzhambu',
+  'Quick Service':   'fast service restaurant',
+  'Affordable':      'affordable cheap budget restaurant',
+  'AC Dine-in':      'air conditioned restaurant dine in',
+  'Good Ambience':   'good ambience atmosphere restaurant',
+  'Lunch':           'lunch thali meals restaurant afternoon',
+  'All Day':         'restaurant all day menu variety',
+  'Dinner':          'dinner biryani night restaurant',
+  'Snacks':          'snacks bajji chaat street food evening',
+  'Breakfast':       'breakfast tiffin idli dosa morning restaurant',
+  'Delicious':       'delicious tasty restaurant',
+  'Fresh':           'fresh freshly cooked restaurant',
+  'Spicy':           'spicy masala pepper restaurant',
+  'Good Quantity':   'generous portions quantity restaurant',
+  'Friendly Staff':  'friendly staff service restaurant',
+  'Clean':           'clean hygienic restaurant',
+  'Good Portions':   'generous portions restaurant quantity',
+  'Top Pick':        'best restaurant popular local favourite',
   // ── Legacy — Dashboard preset overrides (other cities) ───────────────────
   'Thali/Meals':    'thali meals banana leaf restaurant',
   'Thali':          'thali meals banana leaf restaurant',
-  'North Indian':   'paneer north indian naan roti restaurant tandoor',
-  'Chettinad':      'chettinad restaurant pepper chicken kuzhambu',
-  'Filter Coffee':  'filter coffee kaapi south indian cafe',
-  'Buffet':         'buffet restaurant unlimited meals',
   'Cafe':           'cafe coffee filter coffee kaapi restaurant',
   'Street Food':    'street food chaat snacks local restaurant',
-  'Seafood':        'seafood fish prawn crab restaurant',
   'Veg Biryani':    'veg biryani vegetable biryani restaurant',
-  'Multi Cuisine':  'multi cuisine variety restaurant continental',
   // ── FOOD_ADVANCED dish quick-picks ───────────────────────────────────────
   'Dosa':           'dosa masala dosa south indian restaurant',
   'Idli':           'idli tiffin south indian restaurant',
@@ -1239,6 +1613,63 @@ const MEAL_TIME_QUERY: Record<string, string> = {
   'Lunch':     'lunch thali meals rice sambar afternoon',
   'Dinner':    'dinner restaurant night biryani',
 };
+
+// Clean 1-3 word Google-friendly terms per tag — used for composed query
+// (tag 1 is priority anchor, tag 2 is added as a bonus hint)
+const FOOD_TAG_SHORT_TERM: Record<string, string> = {
+  'South Indian':    'south indian',
+  'Biryani':         'biryani',
+  'North Indian':    'north indian',
+  'Multi Cuisine':   'multi cuisine',
+  'Grills & BBQ':    'grills bbq',
+  'Mess & Meals':    'meals',
+  'Tiffin':          'tiffin',
+  'Fine Dining':     'fine dining',
+  'Buffet':          'buffet',
+  'Cafe & Drinks':   'cafe',
+  'Authentic':       'authentic',
+  'Homely Food':     'home food',
+  'Chettinad':       'chettinad',
+  'Fresh & Hot':     'fresh',
+  'Must Try':        'best',
+  'Outdoor Seating': 'outdoor seating',
+  'Family Dining':   'family',
+  'Highly Rated':    'top rated',
+  'Lunch Spot':      'lunch',
+  'Dinner Special':  'dinner',
+  'Budget Friendly': 'budget',
+  'Value for Money': 'value',
+  'Ample Parking':   'parking',
+  'Large Portions':  'generous',
+  'Veg Options':     'vegetarian',
+  'Pure Veg':        'pure veg',
+  'Non-Veg':         'non veg',
+};
+
+// Compose a clean Google-style query from tag short terms
+// tags[0] = priority anchor, tags[1] = bonus (dropped on fallback)
+// Tag 1 = 100% priority — drives the Google query with all its related keywords
+// Tag 2 = bonus only — applied as a ranking preference after fetch, never narrows the query
+// Returns 3 distinct natural-language queries for the primary tag.
+// Each query is a clean Google-style phrase (not a word-soup) so Google returns varied results.
+function buildFoodQueryVariants(tags: string[], city: string): [string, string, string] {
+  const primaryTag = tags[0];
+  const shortTerm  = FOOD_TAG_SHORT_TERM[primaryTag] ?? primaryTag.toLowerCase();
+  const kws        = (FOOD_TAG_KEYWORDS[primaryTag] ?? []) as string[];
+
+  // Extra keywords: phrases that don't overlap with the short term
+  const extras = kws.filter(k => !k.includes(shortTerm) && !shortTerm.includes(k) && k.length > 3);
+
+  const q1 = `${shortTerm} restaurant in ${city}`;
+  const q2 = extras.length > 0
+    ? `${extras[0]} restaurant in ${city}`
+    : `best ${shortTerm} food restaurant ${city} Tamil Nadu`;
+  const q3 = extras.length > 1
+    ? `${extras[Math.floor(extras.length / 2)]} restaurant ${city}`
+    : `top ${shortTerm} restaurant ${city} Tamil Nadu`;
+
+  return [q1, q2, q3];
+}
 
 function buildFoodQuery(filters: UserFilters): string {
   const city     = filters.city ?? 'Thanjavur';
@@ -1482,15 +1913,69 @@ function scorePlaceForFilters(place: any, tab: string, f: UserFilters): PlaceSco
             if (gbpNotVeg || nvHits >= 1) tagsMatched++;
             continue;
           }
-          if (tag === 'AC Dine-in') {
-            // dineIn boolean is the definitive signal for sit-down service.
-            // AC signal: keyword fallback since Google has no dedicated AC boolean.
-            if (place.dineIn === false) { /* confirmed takeout-only — 0 */ }
-            else {
-              const acKws = FOOD_TAG_KEYWORDS['AC Dine-in'] ?? [];
-              const hasAcKw = acKws.some(kw => allText.includes(kw));
-              tagsMatched += place.dineIn === true ? (hasAcKw ? 1 : 0.5) : (hasAcKw ? 0.6 : 0);
-            }
+          // Buffet: primaryType first, keyword fallback
+          if (tag === 'Buffet') {
+            if ((place.primaryType ?? '').includes('buffet')) { tagsMatched += 1; continue; }
+            const kws = FOOD_TAG_KEYWORDS['Buffet'] ?? [];
+            tagsMatched += kws.some(kw => allText.includes(kw)) ? 0.85 : 0;
+            continue;
+          }
+          // Fine Dining: primaryType=fine_dining_restaurant first, keyword fallback
+          if (tag === 'Fine Dining') {
+            if ((place.primaryType ?? '').includes('fine_dining')) { tagsMatched += 1; continue; }
+            const kws = FOOD_TAG_KEYWORDS['Fine Dining'] ?? [];
+            tagsMatched += kws.some(kw => allText.includes(kw)) ? 0.85 : 0;
+            continue;
+          }
+          // Highly Rated: rating + review count (pure metric — no keywords needed)
+          if (tag === 'Highly Rated') {
+            const rating = place.rating ?? 0;
+            const cnt    = place.userRatingCount ?? 0;
+            if (rating >= 4.3 && cnt >= 100) { tagsMatched += 1; }
+            else if (rating >= 4.0 && cnt >= 50) { tagsMatched += 0.7; }
+            else if (rating >= 4.3) { tagsMatched += 0.6; }
+            continue;
+          }
+          // Cafe & Drinks: servesCoffee boolean first (53% populated — real signal)
+          if (tag === 'Cafe & Drinks') {
+            if (place.servesCoffee === true) { tagsMatched += 1; continue; }
+            const kws = FOOD_TAG_KEYWORDS['Cafe & Drinks'] ?? [];
+            tagsMatched += kws.some(kw => allText.includes(kw)) ? 0.8 : 0;
+            continue;
+          }
+          // Lunch Spot: servesLunch boolean first, keyword fallback (lunch=16 in real data)
+          if (tag === 'Lunch Spot') {
+            if (place.servesLunch === true) { tagsMatched += 1; continue; }
+            const kws = FOOD_TAG_KEYWORDS['Lunch Spot'] ?? [];
+            const hits = kws.filter(kw => allText.includes(kw)).length;
+            tagsMatched += hits >= 2 ? 1 : hits === 1 ? 0.75 : 0;
+            continue;
+          }
+          // Family Dining: primaryType=family_restaurant first
+          if (tag === 'Family Dining') {
+            if ((place.primaryType ?? '').includes('family_restaurant')) { tagsMatched += 1; continue; }
+            const kws = FOOD_TAG_KEYWORDS['Family Dining'] ?? [];
+            tagsMatched += kws.some(kw => allText.includes(kw)) ? 0.7 : 0;
+            continue;
+          }
+          // Dinner Special: servesDinner boolean first
+          if (tag === 'Dinner Special') {
+            if (place.servesDinner === true) { tagsMatched += 1; continue; }
+            const kws = FOOD_TAG_KEYWORDS['Dinner Special'] ?? [];
+            tagsMatched += kws.some(kw => allText.includes(kw)) ? 0.75 : 0;
+            continue;
+          }
+          // Authentic: keyword match against review corpus
+          if (tag === 'Authentic') {
+            const kws = FOOD_TAG_KEYWORDS['Authentic'] ?? [];
+            tagsMatched += kws.some(kw => allText.includes(kw)) ? 0.75 : 0;
+            continue;
+          }
+          // Mess & Meals: strong keyword signal (mess=17, meals=21 in real data)
+          if (tag === 'Mess & Meals') {
+            const kws = FOOD_TAG_KEYWORDS['Mess & Meals'] ?? [];
+            const hits = kws.filter(kw => allText.includes(kw)).length;
+            tagsMatched += hits >= 3 ? 1 : hits >= 1 ? 0.75 : 0;
             continue;
           }
           const kws = FOOD_TAG_KEYWORDS[tag] ?? (FOOD_TAG_SEARCH[tag] ?? tag.toLowerCase()).split(' ').filter(k => k.length > 3);
@@ -1809,10 +2294,6 @@ function applyTagFilter(places: any[], tab: string, f: UserFilters): any[] {
         if (!kws) continue;
 
         // Biryani: require name match OR 2+ independent review hits.
-        // Prevents high-review-count veg places (Ariya Bhavan) from ranking above
-        // biryani specialists via a single incidental keyword mention.
-        // Exception: Pure Veg mode has a very small pool — relax to 1 hit so
-        // veg-biryani options (e.g. veg biryani bhavans) still surface.
         if (tag === 'Biryani') {
           const pureVegMode = f.dietType === 'Pure Veg' || activeFoodTags.includes('Pure Veg');
           const biryaniNameKws = ['biryani', 'biriyani', 'briyani', 'biryani house', 'biryani point'];
@@ -1821,6 +2302,52 @@ function applyTagFilter(places: any[], tab: string, f: UserFilters): any[] {
             kws.some(kw => (r.text?.text ?? '').toLowerCase().includes(kw))
           ).length;
           if (reviewHits >= (pureVegMode ? 1 : 2)) matched.push(tag);
+          continue;
+        }
+
+        // Buffet: primaryType first, keyword fallback
+        if (tag === 'Buffet') {
+          if ((p.primaryType ?? '').includes('buffet')) { matched.push(tag); continue; }
+          if (kws.some(kw => corpus.includes(kw))) matched.push(tag);
+          continue;
+        }
+
+        // Fine Dining: primaryType first, keyword fallback
+        if (tag === 'Fine Dining') {
+          if ((p.primaryType ?? '').includes('fine_dining')) { matched.push(tag); continue; }
+          if (kws.some(kw => corpus.includes(kw))) matched.push(tag);
+          continue;
+        }
+
+        // Cafe & Drinks: servesCoffee boolean OR keyword
+        if (tag === 'Cafe & Drinks') {
+          if (p.servesCoffee === true || kws.some(kw => corpus.includes(kw))) matched.push(tag);
+          continue;
+        }
+        // Lunch Spot: servesLunch boolean OR keyword
+        if (tag === 'Lunch Spot') {
+          if (p.servesLunch === true || kws.some(kw => corpus.includes(kw))) matched.push(tag);
+          continue;
+        }
+        // Authentic: keyword corpus match
+        if (tag === 'Authentic') {
+          if (kws.some(kw => corpus.includes(kw))) matched.push(tag);
+          continue;
+        }
+        // Family Dining: primaryType first, keyword fallback
+        if (tag === 'Family Dining') {
+          if ((p.primaryType ?? '').includes('family_restaurant')) { matched.push(tag); continue; }
+          if (kws.some(kw => corpus.includes(kw))) matched.push(tag);
+          continue;
+        }
+        // Dinner Special: servesDinner boolean OR keyword (Experience segment)
+        if (tag === 'Dinner Special') {
+          if (p.servesDinner === true || kws.some(kw => corpus.includes(kw))) matched.push(tag);
+          continue;
+        }
+        // Chettinad: strong keyword signal (nattu kozhi, kuzhambu — Thanjavur-specific)
+        if (tag === 'Chettinad') {
+          if (kws.some(kw => corpus.includes(kw))) matched.push(tag);
           continue;
         }
 
@@ -1910,9 +2437,14 @@ function applyTagFilter(places: any[], tab: string, f: UserFilters): any[] {
       if (orMatching.length >= 3) return orMatching;
     }
 
-    // Only narrow down when ≥4 strong keyword matches exist — if fewer, trust Google's
-    // ranking and pass the full pool to Gemini.
-    return matching.length >= 4 ? matching : (matching.length > 0 ? matching : places);
+    // Guarantee minimum 5 results: pad with top quality places from the broader pool
+    // when strict tag matches are fewer than 5.
+    if (matching.length >= 5) return matching;
+    const matchedIds = new Set(matching.map((p: any) => p.id ?? p.displayName?.text ?? ''));
+    const pad = places
+      .filter((p: any) => !matchedIds.has(p.id ?? p.displayName?.text ?? ''))
+      .slice(0, Math.max(0, 5 - matching.length));
+    return matching.length > 0 ? [...matching, ...pad] : places;
   }
 
   return places;
@@ -2001,6 +2533,8 @@ async function geminiRankAndAnalyse(
       tagSnippets,
       matchScore:   (p._matchScore ?? 100) as number,
       reviewDepth,
+      qualityScore: computeQualityScore(p),
+      ...computeAISignals(p),
       buckets:      computeBuckets(allReviews),
       // Top 5 reviews sorted by length — stars included so Gemini knows positive vs negative context
       reviews: byLength.slice(0, 5).map((r: any) => ({
@@ -2008,19 +2542,22 @@ async function geminiRankAndAnalyse(
         text:  (r.text?.text ?? '').slice(0, 200),
         ago:   r.relativePublishTimeDescription ?? '',
       })),
-      // positiveTagMatches: per matched tag, snippets ONLY from 4-5★ reviews — Gemini's ground truth for positive evidence
+      // positiveTagMatches: per tag, snippets ONLY from 4-5★ reviews — Gemini's ground truth.
+      // Includes BOTH matched tags AND selected tags so Gemini always has evidence to quote.
       positiveTagMatches: (() => {
         const result: Record<string, string[]> = {};
-        const activeTags = tab === 'Hotels'
-          ? (p._matchedTags ?? []) as string[]
-          : ((p._matchedTags ?? []) as string[]);
-        for (const tag of activeTags) {
+        const matchedTagList  = (p._matchedTags ?? []) as string[];
+        const selectedTagList = tab === 'Hotels'
+          ? (filters.hotelTags ?? (filters.hotelTag ? [filters.hotelTag] : []))
+          : (filters.foodTags  ?? (filters.foodTag  ? [filters.foodTag]  : []));
+        const allTagsToCheck = [...new Set([...matchedTagList, ...selectedTagList])];
+        for (const tag of allTagsToCheck) {
           const kws = (tab === 'Hotels' ? TAG_TEXT_KEYWORDS[tag] : FOOD_TAG_KEYWORDS[tag]) ?? [];
           if (kws.length === 0) continue;
           const snippets = allReviews
             .filter((r: any) => (r.rating ?? 0) >= 4 && kws.some(k => (r.text?.text ?? '').toLowerCase().includes(k)))
-            .slice(0, 2)
-            .map((r: any) => `[${r.rating}★] ${(r.text?.text ?? '').slice(0, 150)}`);
+            .slice(0, 3)
+            .map((r: any) => `[${r.rating}★] ${(r.text?.text ?? '').slice(0, 200)}`);
           if (snippets.length > 0) result[tag] = snippets;
         }
         return result;
@@ -2211,7 +2748,7 @@ Rank by: (1) matchedTags.length DESC, (2) confirmedTags.length DESC, (3) rating 
   "trendVerdict": "improving" | "declining" | "stable",
   "trendReason": "<max 12 words — MUST quote or closely paraphrase words from the actual review text>",
   "reviewSummary": "<2 sentences — synthesise what reviewers most frequently praise; use words from actual reviews; lead with strongest positive>",
-  "aiNote": "<max 20 words — For Hotels: start with 'Verified by AI:' then state matchedTags count and cite the single best tagEvidence or tagSnippet. Example: 'Verified by AI: matches 3/3 tags — 0.8km from Big Temple, free parking confirmed, heritage building.' For Food: cite review count for the primary filter keyword.>",
+  "aiNote": "<max 20 words — Always start with 'Verified by AI:'. For Hotels: state matchedTags count and cite the single best tagEvidence or tagSnippet. For Food: quote the strongest keyword from positiveTagMatches{} and how many 4-5★ reviews confirm it. Example hotel: 'Verified by AI: 3/3 tags — 0.8km from Big Temple, free parking confirmed.' Example food: 'Verified by AI: 14 reviewers praise the biryani — 4.5★ avg. \"best biryani in Thanjavur\"'.>",
   "filterVerification": "<ONE sentence — ALWAYS use positiveTagMatches{} first (4-5★ reviews only). Quote the actual sentence, e.g. '\"10 minutes walk to the Big Temple\" — 5★ reviewer'. If positiveTagMatches is empty for this tag, use tagSnippets{}. If both empty, say how many total reviews mention it.>",
   "whyOverOthers": "<max 30 words — compare against the other candidates in this list; cite specific numbers or unique features>",
   "bestFor": "<10 words — describe the ideal visitor type>",
@@ -2221,7 +2758,7 @@ Rank by: (1) matchedTags.length DESC, (2) confirmedTags.length DESC, (3) rating 
 
 QUALITY RULES:
 - trendReason: use words found in actual review texts, not invented. If recentAvg < rating, call it declining.
-- aiNote: MUST start with "Verified by AI:" — for hotels cite matchedTags count and best positive evidence; for food cite how many 4-5★ reviews mention the tag
+- aiNote: MUST start with "Verified by AI:" — for hotels cite matchedTags count + best tagEvidence/tagSnippet; for food quote the strongest snippet from positiveTagMatches{} + how many reviews confirm it
 - filterVerification: ALWAYS quote from positiveTagMatches{} (4-5★ reviews). Never quote negative reviews as evidence.
 - reviewSummary: synthesise only what 4-5★ reviewers praise most. If reviews are mostly negative or mixed, lead with that reality in caveat.
 - whyOverOthers: compare specifically against others in this list — cite tag match count, rating, review volume, or unique feature
@@ -2712,11 +3249,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         noLocationBias: !!filters.searchQuery,
       };
 
-      // 5 parallel variants → deduplicated pool of up to 100 candidates.
-      // Single call kept for free-text search (name-specific queries don't benefit from variants).
+      // Fetch strategy:
+      // Search mode: single query (name-specific, no benefit from variants)
+      // Tag mode:    3 DISTINCT natural queries from tag keywords → varied Google results → ~40-60 unique candidates
+      // Browse mode: 5-variant broad pool for discovery
       let mergedPool: any[];
       if (filters.searchQuery) {
         mergedPool = await fetchPlaces(query, searchSeed, 20, fetchOpts);
+      } else if (selectedTags.length > 0) {
+        const [q1, q2, q3] = buildHotelQueryVariants(selectedTags, city);
+        const [p1, p2, p3] = await Promise.all([
+          fetchPlaces(q1, searchSeed, 20, fetchOpts),
+          fetchPlaces(q2, searchSeed, 20, fetchOpts),
+          fetchPlaces(q3, searchSeed, 20, fetchOpts),
+        ]);
+        const hotelSeen = new Set<string>();
+        mergedPool = [];
+        for (const p of [...p1, ...p2, ...p3]) {
+          const pid = p.id ?? p.displayName?.text ?? '';
+          if (pid && !hotelSeen.has(pid)) { hotelSeen.add(pid); mergedPool.push(p); }
+        }
       } else {
         const hotelVariants: PoolVariant[] = [
           { query, seed: searchSeed,            opts: fetchOpts },
@@ -2728,14 +3280,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         mergedPool = await fetchPlacesPool(hotelVariants);
       }
 
-      // Strip restaurants (South Indian "hotels" etc.) + city guard
-      // primaryType is Google's single definitive type — most reliable signal for exclusion.
+      // Strip restaurants, vehicle dealers, and other non-accommodation places + city guard
       const localPool  = filterCityOnly(mergedPool, city);
       const hotelOnly  = localPool.filter(p => {
         const primaryType = (p.primaryType ?? '') as string;
         const types = (p.types ?? []) as string[];
-        if (primaryType && RESTAURANT_TYPES.has(primaryType)) return false;
-        return !types.some(t => RESTAURANT_TYPES.has(t));
+        if (primaryType && NON_HOTEL_TYPES.has(primaryType)) return false;
+        return !types.some(t => NON_HOTEL_TYPES.has(t));
       });
       const basePool = filterStalePlaces(hotelOnly.length >= 2 ? hotelOnly : localPool)
         .filter(p => (p.rating ?? 0) >= 3.5);
@@ -2751,8 +3302,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const effectivePool = cleanPool.length >= 2 ? cleanPool : basePool;
 
       // Require ≥10 reviews so tag scoring has enough signal; fall back to full pool if too few survive
+      // Apply hotel authenticity filter to remove fake-review hotels before scoring
       const reviewedPool = effectivePool.filter(p => (p.userRatingCount ?? 0) >= 10);
-      const qualityPool  = reviewedPool.length >= 3 ? reviewedPool : effectivePool;
+      const qualityPool  = (reviewedPool.length >= 3 ? reviewedPool : effectivePool)
+        .filter(p => computeHotelAuthenticityScore(p) >= 0.35);
 
       // Score ALL tags for every hotel — continuous 0-1 per tag
       const allScored: ScoredHotel[] = qualityPool.map(place => {
@@ -2822,7 +3375,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         ...perfectPlaces.map(c => ({ ...c, _matchTier: 'Perfect Match' as const })),
         ...closeMatchPlaces.map(c => ({ ...c, _matchTier: 'Close Match' as const, _relaxedTag: relaxedTag })),
       ];
-      const finalCandidates = mergedCandidates.length > 0 ? mergedCandidates : candidates.slice(0, 20).map(c => ({ ...c, _matchTier: 'Perfect Match' as const }));
+      let finalCandidates = mergedCandidates.length > 0 ? mergedCandidates : candidates.slice(0, 20).map(c => ({ ...c, _matchTier: 'Perfect Match' as const }));
+
+      // Guarantee minimum 5 — pad from full scored pool when short (e.g. single niche tag)
+      if (finalCandidates.length < 5) {
+        const existingIds = new Set(finalCandidates.map(c => c.place.id ?? c.place.displayName?.text ?? ''));
+        const padItems = candidates
+          .filter(c => !existingIds.has(c.place.id ?? c.place.displayName?.text ?? ''))
+          .slice(0, 5 - finalCandidates.length)
+          .map(c => ({ ...c, _matchTier: 'Close Match' as const, _relaxedTag: null as string | null }));
+        finalCandidates = [...finalCandidates, ...padItems];
+      }
 
       // Attach scores to each place object for Gemini + buildHotelResult
       const placesToRank = finalCandidates.slice(0, 20).map(c => ({
@@ -2853,25 +3416,42 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const matchScore = (p._matchScore    ?? 100) as number;  // 0-100 match %
         const fLayer     = 1 as const;
 
-        // Sort reviews: keyword evidence first, then recent positive reviews
-        const primaryMatchedTag = mTags[0] ?? '';
-        const kws = primaryMatchedTag ? (TAG_TEXT_KEYWORDS[primaryMatchedTag] ?? []) : [];
+        // Keywords from ALL selected + matched tags — catches every synonym across both tags
+        const allHotelKws: string[] = [...new Set(
+          [...selectedTags, ...mTags].flatMap(t => (TAG_TEXT_KEYWORDS[t] ?? []).map((k: string) => k.toLowerCase()))
+        )];
         const displayReviews = filterReviewsForDisplay(p.reviews ?? []);
-        const allSortedReviews = sortReviewsForDisplay(displayReviews, kws);
-        // Prefer 4-5★ reviews that mention the tag keyword; fall back to any match
-        const positiveTagMatched = kws.length > 0
-          ? allSortedReviews.filter((r: any) => (r.rating ?? 0) >= 4 && kws.some((k: string) => (r.text?.text ?? '').toLowerCase().includes(k)))
+        const allSortedReviews = sortReviewsForDisplay(displayReviews, allHotelKws);
+        // Slot 1: MUST contain a tag keyword (positive 4★+ preferred, then any match)
+        const positiveTagMatched = allHotelKws.length > 0
+          ? allSortedReviews.filter((r: any) => (r.rating ?? 0) >= 4 && allHotelKws.some((k: string) => (r.text?.text ?? '').toLowerCase().includes(k)))
           : [];
-        const anyTagMatched = kws.length > 0
-          ? allSortedReviews.filter((r: any) => kws.some((k: string) => (r.text?.text ?? '').toLowerCase().includes(k)))
+        const anyTagMatched = allHotelKws.length > 0
+          ? allSortedReviews.filter((r: any) => allHotelKws.some((k: string) => (r.text?.text ?? '').toLowerCase().includes(k)))
           : [];
+        // Slot 1: Best quality keyword match (4★+ preferred, then any match)
+        // Slot 2: Most RECENT keyword match different from slot 1
         const bestTagMatch = positiveTagMatched.length > 0 ? positiveTagMatched : anyTagMatched;
-        const pickedReviews: any[] = bestTagMatch.length > 0 ? [bestTagMatch[0]] : [];
-        const remainingReviews = allSortedReviews.filter((r: any) => !pickedReviews.includes(r));
-        if (pickedReviews.length < 2) pickedReviews.push(...remainingReviews.slice(0, 2 - pickedReviews.length));
+        const slot1Hotel = bestTagMatch[0];
+        const slot2Hotel = [...anyTagMatched]
+          .filter((r: any) => r !== slot1Hotel)
+          .sort((a: any, b: any) => {
+            const aTime = a.publishTime ? new Date(a.publishTime).getTime() : 0;
+            const bTime = b.publishTime ? new Date(b.publishTime).getTime() : 0;
+            return bTime - aTime; // newest first
+          })[0];
+        const pickedReviews: any[] = [slot1Hotel, slot2Hotel].filter(Boolean);
+        if (pickedReviews.length < 2) {
+          const remaining = allSortedReviews.filter((r: any) => !pickedReviews.includes(r));
+          for (const r of remaining) {
+            if (pickedReviews.length >= 2) break;
+            pickedReviews.push(r);
+          }
+        }
         const uiReviews = pickedReviews.slice(0, 2).map((r: any) => {
             const body = (r.text?.text ?? '').toLowerCase();
-            const matchedKw = kws.find(k => body.includes(k));
+            // Find first matching keyword to use as highlight anchor
+            const matchedKw = allHotelKws.find(k => body.includes(k));
             return {
               text:      r.text?.text ?? '',
               author:    r.authorAttribution?.displayName ?? 'Visitor',
@@ -2957,7 +3537,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           reviewSummary:      ai.reviewSummary   || reviewSummaryFB,
           aiNote:             ai.aiNote          || `Verified by AI: ${rating}★${selectedTags.length > 0 ? ` — ${matchScore}% tag match (${mTags.length}/${selectedTags.length})` : ''}`,
           filterVerification,
-          matchedKeyword:     primaryMatchedTag || null,
+          matchedKeyword:     mTags[0] || null,
           matchedTags:        mTags,
           confirmedTags:      cTags,
           tagEvidence:        Object.values(tEvid)[0] ?? null,
@@ -2968,6 +3548,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           trendVerdict:       ai.trendVerdict ?? 'stable',
           trendReason:        ai.trendReason  || trendReasonFB,
           recentRatings:      recent5.map((r: any) => r.rating ?? 0).filter((n: number) => n > 0),
+          cautionNote:        extractCautionNote(p.reviews ?? []),
+          recentSentiment:    buildRecentSentiment(p.reviews ?? [], tEvid, mTags, rating, reviewCount, tSnip),
           reviews:            uiReviews,
           photoColor:         COLORS[globalIdx % COLORS.length],
           photoRef:           p.photos?.[0]?.name ?? null,
@@ -3011,11 +3593,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       noLocationBias: foodNoLocationBias,
     };
 
-    // 5 parallel variants for tag/filter searches → ~80-100 unique candidates.
-    // Free-text search stays single-call (name-specific, variants add noise).
+    // Tag-selected: single composed query — Google's own ranking handles relevance.
+    // No tags / browse mode: 5-variant pool for broad discovery.
+    // Free-text search: single call, no locationBias (mirrors Google Maps).
+    const activeFoodTags = (filters.foodTags?.length ?? 0) > 0 ? filters.foodTags! : (filters.foodTag ? [filters.foodTag] : []);
     let rawPlaces: any[];
     if (filters.searchQuery) {
       rawPlaces = await fetchPlaces(query, searchSeed, 20, foodBaseOpts);
+    } else if (activeFoodTags.length > 0) {
+      // 3 DISTINCT natural-language queries from tag keywords → varied Google result sets
+      // → ~40-60 unique candidates → guaranteed 5+ quality results after filters
+      const [q1, q2, q3] = buildFoodQueryVariants(activeFoodTags, city);
+      const [p1, p2, p3] = await Promise.all([
+        fetchPlaces(q1, searchSeed, 20, foodBaseOpts),
+        fetchPlaces(q2, searchSeed, 20, foodBaseOpts),
+        fetchPlaces(q3, searchSeed, 20, foodBaseOpts),
+      ]);
+      const tagSeen = new Set<string>();
+      rawPlaces = [];
+      for (const p of [...p1, ...p2, ...p3]) {
+        const pid = p.id ?? p.displayName?.text ?? '';
+        if (pid && !tagSeen.has(pid)) { tagSeen.add(pid); rawPlaces.push(p); }
+      }
     } else {
       const broadOpts: FetchOptions = { ...foodBaseOpts, includedType: undefined, minRating: 0, noLocationBias: false };
       const foodVariants: PoolVariant[] = [
@@ -3051,7 +3650,34 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const foodPool = filterStalePlaces(restaurantPlaces.length >= 2 ? restaurantPlaces : localPlaces)
       .filter(p => (p.rating ?? 0) >= 3.5);
 
-    const tagFiltered  = applyTagFilter(foodPool, tab, filters);
+    // Primary tag filter pipeline — 3-tier fallback to guarantee ≥5 quality results:
+    //   Tier 1: review keyword match (strongest signal — slot 1 review always highlights tag)
+    //   Tier 2: corpus match (name + editorial + reviews, broader net)
+    //   Tier 3: full quality pool (rating ≥3.5, active) — no keyword requirement
+    const primaryTag = activeFoodTags[0];
+    const primaryKws = primaryTag ? (FOOD_TAG_KEYWORDS[primaryTag] ?? []).map((k: string) => k.toLowerCase()) : [];
+    const primaryFiltered = primaryKws.length > 0
+      ? foodPool.filter(p =>
+          (p.reviews ?? []).some((r: any) =>
+            primaryKws.some(k => (r.text?.text ?? '').toLowerCase().includes(k))
+          )
+        )
+      : foodPool;
+    // Fall back to corpus match if review-filter yields < 5
+    const corpusFiltered = primaryKws.length > 0 && primaryFiltered.length < 5
+      ? foodPool.filter(p => {
+          const corpus = [
+            (p.displayName?.text ?? '').toLowerCase(),
+            (p.editorialSummary?.text ?? '').toLowerCase(),
+            ...(p.reviews ?? []).map((r: any) => (r.text?.text ?? '').toLowerCase()),
+          ].join(' ');
+          return primaryKws.some(k => corpus.includes(k));
+        })
+      : primaryFiltered;
+    // Fall back to full quality pool if corpus also yields < 5
+    const poolForTag = corpusFiltered.length >= 5 ? corpusFiltered : foodPool;
+
+    const tagFiltered  = applyTagFilter(poolForTag, tab, filters);
     const hardFiltered = applyStrictFilter(tagFiltered, tab, filters);
     const filterScored = applyFilterScoring(hardFiltered, tab, filters);
 
@@ -3071,7 +3697,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const buildPlaceResult = (p: any, ai: any, globalIdx: number) => {
       const evidence = p._matchEvidence as { keyword: string; snippet: string | null; source: string } | undefined;
 
-      const evidenceKws = evidence?.keyword ? [evidence.keyword.toLowerCase()] : [];
+      // Use full keyword list for all active tags — catches synonyms (biryani/biriyani, etc.)
+      const activeFoodTagsLocal = (filters.foodTags?.length ?? 0) > 0 ? filters.foodTags! : (filters.foodTag ? [filters.foodTag] : []);
+      const tagKws = activeFoodTagsLocal.flatMap(t => (FOOD_TAG_KEYWORDS[t] ?? []).map((k: string) => k.toLowerCase()));
+      const evidenceKws = [...new Set([...(evidence?.keyword ? [evidence.keyword.toLowerCase()] : []), ...tagKws])];
       const displayReviews = filterReviewsForDisplay(p.reviews ?? []);
       const allSortedFood = sortReviewsForDisplay(displayReviews, evidenceKws);
       // Prefer 4-5★ reviews that mention the tag keyword; fall back to any match
@@ -3081,10 +3710,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const anyTagFood = evidenceKws.length > 0
         ? allSortedFood.filter((r: any) => evidenceKws.some((k: string) => (r.text?.text ?? '').toLowerCase().includes(k)))
         : [];
+      // Slot 1: Best quality keyword match (4★+ preferred, then any match)
+      // Slot 2: Most RECENT keyword match different from slot 1
       const bestTagFood = positiveTagFood.length > 0 ? positiveTagFood : anyTagFood;
-      const pickedFood: any[] = bestTagFood.length > 0 ? [bestTagFood[0]] : [];
-      const remainingFood = allSortedFood.filter((r: any) => !pickedFood.includes(r));
-      if (pickedFood.length < 2) pickedFood.push(...remainingFood.slice(0, 2 - pickedFood.length));
+      const slot1Food = bestTagFood[0];
+      const slot2Food = [...anyTagFood]
+        .filter((r: any) => r !== slot1Food)
+        .sort((a: any, b: any) => {
+          const aTime = a.publishTime ? new Date(a.publishTime).getTime() : 0;
+          const bTime = b.publishTime ? new Date(b.publishTime).getTime() : 0;
+          return bTime - aTime; // newest first
+        })[0];
+      const pickedFood: any[] = [slot1Food, slot2Food].filter(Boolean);
+      if (pickedFood.length < 2) {
+        const remaining = allSortedFood.filter((r: any) => !pickedFood.includes(r));
+        for (const r of remaining) {
+          if (pickedFood.length >= 2) break;
+          pickedFood.push(r);
+        }
+      }
       const uiReviews = pickedFood.slice(0, 2).map((r: any) => {
           const body = (r.text?.text ?? '').toLowerCase();
           const matchedKw = evidenceKws.find(k => body.includes(k));
@@ -3149,6 +3793,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         filterLayer:     1 as const,
         trendVerdict:    ai.trendVerdict ?? 'stable',
         trendReason:     ai.trendReason  || trendReasonFB,
+        cautionNote:     extractCautionNote(p.reviews ?? []),
+        recentSentiment: buildRecentSentiment(p.reviews ?? [], {}, p._matchedTags ?? [], rating, reviewCount),
         reviews:         uiReviews,
         photoColor:      COLORS[globalIdx % COLORS.length],
         photoRef:        p.photos?.[0]?.name ?? null,

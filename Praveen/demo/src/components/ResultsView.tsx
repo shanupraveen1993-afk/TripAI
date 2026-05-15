@@ -4,7 +4,7 @@ import {
   ArrowLeft, Star, MapPin, Clock, Navigation, Share2, Compass,
   ChevronRight, ChevronDown, Sparkles, Info, RefreshCw, Bookmark, BookmarkCheck,
   Utensils, CheckCircle, AlertTriangle, RotateCcw, Hotel, Route,
-  TrendingUp, TrendingDown, Minus, ImageIcon, ExternalLink, Map, X, Lightbulb,
+  ImageIcon, ExternalLink, Map, X, Lightbulb,
 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Badge } from './ui/Badge';
@@ -169,7 +169,7 @@ function ReviewCard({ review, idx, keywords = [] }: { review: ReviewItem; idx: n
     : review.stars === 4
     ? <span className="text-xs font-medium text-warning-strong bg-warning-soft px-1.5 py-0.5 rounded-full border border-warning-medium/40 shrink-0">✓ Liked it</span>
     : null;
-  const kws = review.highlight ? [review.highlight] : keywords;
+  const kws = [...(review.highlight ? [review.highlight] : []), ...keywords];
   return (
     <div className="bg-bg-app rounded-lg p-3 border border-border">
       <div className="flex items-start gap-2.5">
@@ -216,46 +216,64 @@ function highlightKeywords(text: string, keywords: string[]): React.ReactNode {
 }
 
 const TAG_KEYWORD_MAP: Record<string, string[]> = {
-  'Biryani':            ['biryani', 'biriyani', 'dum biryani', 'mandi biryani'],
-  'South Indian':       ['dosa', 'idli', 'sambar', 'thali', 'tiffin', 'banana leaf', 'pongal', 'rasam', 'dosai', 'vada', 'vadai'],
-  'Chettinad':          ['chettinad', 'kuzhambu', 'pepper chicken', 'nattu kozhi', 'marathi mokku'],
-  'North Indian':       ['paneer', 'north indian', 'naan', 'roti', 'butter chicken', 'tandoor'],
-  'Cafe & Snacks':      ['cafe', 'coffee', 'filter coffee', 'bakery', 'snacks'],
-  'Tiffin & Snacks':    ['tiffin', 'idli', 'dosa', 'vada', 'snacks', 'bajji', 'bonda'],
-  'Veg Biryani':        ['veg biryani', 'vegetable biryani'],
-  'Multi Cuisine':      ['multi cuisine', 'variety', 'continental'],
-  'Breakfast':          ['breakfast', 'morning', 'tiffin', 'idli', 'dosa', 'pongal'],
-  'Lunch':              ['lunch', 'thali', 'meals', 'rice', 'afternoon', 'noon'],
-  'Dinner':             ['dinner', 'night', 'evening', 'parotta'],
-  'Quick Bites':        ['quick', 'fast service', 'takeaway', 'parcel', 'street food'],
-  'Authentic':          ['authentic', 'traditional', 'original', 'homemade', 'genuine'],
-  'Delicious':          ['delicious', 'tasty', 'flavorful', 'flavour', 'yummy'],
-  'Fresh':              ['fresh', 'freshly cooked', 'freshly prepared'],
-  'Good Quantity':      ['quantity', 'generous', 'good quantity', 'filling'],
-  'Spicy':              ['spicy', 'spice', 'masala', 'pepper', 'tangy', 'hot'],
-  'Affordable':         ['affordable', 'cheap', 'budget', 'pocket friendly', 'inexpensive'],
-  'Value for Money':    ['value for money', 'worth it', 'good value'],
-  'Highly Rated':       ['highly recommended', 'must visit', 'must try', 'top rated'],
-  'Family Dining':      ['family', 'spacious', 'kids', 'comfortable seating', 'group'],
-  'Good Ambience':      ['ambience', 'ambiance', 'atmosphere', 'decor', 'cozy'],
-  'Clean':              ['clean', 'hygienic', 'neat', 'tidy'],
-  'Friendly Staff':     ['friendly staff', 'helpful staff', 'attentive', 'courteous'],
-  'AC Dine-in':         ['ac', 'air conditioned', 'air conditioning'],
-  'Filter Coffee':      ['filter coffee', 'kaapi', 'coffee'],
-  'Thali':              ['thali', 'meals', 'banana leaf'],
+  // ── Food: Cuisine (5) ────────────────────────────────────────────────────
+  'South Indian':    ['dosa', 'idli', 'sambar', 'thali', 'banana leaf', 'pongal', 'rasam', 'dosai', 'vada', 'vadai', 'idiyappam', 'south indian'],
+  'Biryani':         ['biryani', 'biriyani', 'dum biryani', 'mandi biryani', 'chicken biryani', 'mutton biryani'],
+  'Chettinad':       ['chettinad', 'nattu kozhi', 'kuzhambu', 'pepper chicken', 'country chicken', 'anjappar', 'chettinad style', 'chettinad cuisine'],
+  'North Indian':    ['north indian', 'paneer', 'butter masala', 'naan', 'roti', 'dal makhani', 'kadai'],
+  'Mess & Meals':    ['mess', 'meals', 'full meals', 'thali', 'banana leaf', 'saapadu', 'lunch thali'],
+  // ── Food: Dining Style (5) ───────────────────────────────────────────────
+  'Tiffin':          ['tiffin', 'tiffin center', 'tiffin centre', 'idli', 'dosa', 'vada', 'pongal', 'upma', 'morning tiffin', 'breakfast'],
+  'Fine Dining':     ['fine dine', 'fine dining', 'fine-dine', 'elegant', 'upscale dining', 'fine cuisine', 'ambience', 'ambiance', 'atmosphere', 'romantic', 'classy', 'fancy', 'interiors', 'decor', 'premium dining', 'special occasion'],
+  'Buffet':          ['buffet', 'unlimited buffet', 'all you can eat', 'unlimited spread', 'buffet lunch', 'buffet dinner'],
+  'Cafe & Drinks':   ['cafe', 'filter coffee', 'filter kaapi', 'degree coffee', 'kaapi', 'strong tea', 'coffee shop', 'coffee', 'tea', 'chai', 'cold coffee', 'juice', 'shakes', 'milkshake', 'espresso', 'latte'],
+  'Family Dining':   ['family', 'families', 'kids', 'children', 'family friendly', 'family dining'],
+  // ── Food: Preference (5) ─────────────────────────────────────────────────
+  'Fresh & Hot':     ['fresh', 'freshly cooked', 'hot and fresh', 'made fresh', 'steaming hot', 'piping hot', 'hot food', 'served hot', 'warm food', 'just cooked', 'freshly prepared', 'hot dish', 'made to order'],
+  'Budget Friendly': ['affordable', 'cheap', 'budget', 'pocket friendly', 'economical', 'low price', 'affordable price', 'reasonable', 'worth it', 'good price', 'inexpensive', 'cost effective', 'cheap rate', 'value', 'cheap food'],
+  'Authentic':       ['authentic', 'authentic taste', 'traditional', 'original', 'since 1964', 'authentic south', 'old recipe', 'generations', 'age old', 'traditional taste', 'heritage', 'original taste', 'classic', 'old school', 'timeless'],
+  'Lunch Spot':      ['lunch', 'lunch thali', 'afternoon', 'noon', 'lunch time', 'lunch crowd', 'midday', 'banana leaf'],
+  'Dinner Special':  ['dinner', 'evening', 'night', 'dinner menu', 'dinner special', 'serves dinner', 'late night', 'dinner time', 'evenings', 'night time', 'open late', 'dinner crowd', 'dinner buffet', 'evening meal', 'night dining'],
+  // ── Hotels: Cleanliness ──────────────────────────────────────────────────
+  'Spotlessly Clean':   ['clean', 'spotless', 'cleanliness', 'hygienic', 'hygiene', 'sanitized', 'immaculate', 'neat', 'tidy', 'very clean', 'squeaky clean', 'well cleaned', 'neatly'],
+  'Well Maintained':    ['maintained', 'well-maintained', 'maintenance', 'neat', 'tidy', 'neatly kept', 'well kept', 'good condition', 'looks new', 'renovated', 'well managed', 'upkeep'],
+  'Fresh Rooms':        ['fresh', 'odour free', 'smell', 'bathroom', 'toilet', 'shower', 'towels', 'fresh rooms', 'linen', 'bed sheets', 'bedding', 'airy', 'ventilated', 'fresh linen', 'clean sheets', 'mattress'],
+  // ── Hotels: Location ─────────────────────────────────────────────────────
+  'Near Big Temple':    ['big temple', 'brihadeeswarar', 'near temple', 'temple proximity', 'walking distance', 'temple view', 'close to temple', 'temple nearby', '5 minutes', '10 minutes', 'few minutes'],
+  'Near Railway Station': ['railway station', 'railway', 'junction', 'station road', 'station', 'near station', 'train station', 'walking distance', 'walk from station', 'close to station', '5 min', '10 min', 'minutes away'],
+  'Central & Walkable': ['city centre', 'central', 'walkable', 'walk', 'walking distance', 'main road', 'convenient', 'nearby', 'prime location', 'good location', 'great location', 'central location', 'well located', 'near everything'],
+  'City Centre':        ['city centre', 'city center', 'central', 'main road', 'heart of city', 'bus stand', 'prime location', 'good location'],
+  'Quiet & Peaceful':   ['quiet', 'peaceful', 'calm', 'serene', 'tranquil', 'noise-free', 'no noise', 'undisturbed', 'relaxing', 'silent', 'restful'],
+  'Easy Parking':       ['parking', 'car park', 'car parking', 'parking available', 'free parking', 'two wheeler', 'bike stand', 'vehicle parking', 'ample parking'],
+  'Free Parking':       ['parking', 'car park', 'free parking', 'car parking', 'parking available', 'two wheeler', 'bike stand', 'complimentary parking'],
+  // ── Hotels: Staff & Service ──────────────────────────────────────────────
+  'Friendly & Helpful': ['friendly', 'helpful', 'warm', 'welcoming', 'attentive', 'cooperative', 'caring', 'supportive', 'kind', 'polite', 'courteous', 'nice staff', 'good staff', 'excellent staff', 'great staff'],
+  'Warm Hospitality':   ['hospitality', 'courteous', 'polite', 'professional', 'heartwarming', 'outstanding service', 'warm welcome', 'felt at home', 'great hospitality', 'excellent hospitality', 'welcoming'],
+  'Quick Response':     ['prompt', 'quick service', 'fast service', 'smooth check', 'responsive', 'efficient', 'quick check-in', 'smooth check-in', 'hassle free', 'no waiting', 'fast check', 'easy check-in'],
+  'Good Hospitality':   ['hospitality', 'welcoming', 'courteous', 'polite', 'hospitable', 'warm welcome', 'felt at home', 'great hospitality'],
+  'Highly Recommended': ['recommend', 'recommended', 'must stay', 'must visit', 'excellent', 'outstanding', 'highly recommend', 'would recommend'],
+  // ── Hotels: Rooms & Comfort ──────────────────────────────────────────────
+  'Spacious Rooms':     ['spacious', 'large room', 'big room', 'roomy', 'good space', 'huge room', 'enough space', 'good room size', 'nice room', 'spacious room', 'big rooms'],
+  'Comfortable & Quiet':['comfortable', 'comfort', 'cozy', 'quiet', 'peaceful', 'calm', 'serene', 'relaxing', 'good sleep', 'slept well', 'no noise'],
+  'Good WiFi':          ['wifi', 'wi-fi', 'free wifi', 'internet', 'fast wifi', 'wifi available', 'good wifi', 'wifi working', 'internet access', 'high speed', 'connectivity'],
+  // ── Hotels: Amenities & Food ─────────────────────────────────────────────
+  'Good Amenities':     ['amenities', 'wifi', 'lift', 'pool', 'facilities', 'generator', 'power backup', 'all facilities', 'basic amenities', 'all amenities', 'tv', 'fridge', 'geyser', 'equipped', 'well equipped', 'elevator', 'ac'],
+  'In-House Restaurant':['in-house restaurant', 'hotel restaurant', 'hotel dining', 'dining hall', 'restaurant in hotel', 'food court', 'restaurant', 'dining', 'canteen', 'food available', 'meals served', 'room service', 'attached restaurant', 'food at hotel'],
+  'Breakfast Included': ['breakfast included', 'complimentary breakfast', 'free breakfast', 'breakfast provided', 'breakfast', 'morning meal', 'breakfast was', 'breakfast served', 'buffet breakfast'],
+  'Good Food':          ['food', 'tasty', 'delicious', 'good food', 'fresh food', 'recommend', 'amazing'],
+  // ── Hotels: Value ────────────────────────────────────────────────────────
+  'Budget-Friendly':    ['budget', 'affordable', 'cheap', 'economical', 'low cost', 'lodge', 'reasonable', 'worth', 'good price', 'value for money'],
+  // ── Hotels: Stay Type ────────────────────────────────────────────────────
+  'Budget Stay':        ['budget', 'affordable', 'economical', 'lodge', 'inn', 'value for money', 'cheap', 'reasonable'],
+  'Premium Stay':       ['luxury', 'premium', 'five star', '5 star', 'upscale', 'elite', 'suite', 'luxurious', 'high-end', 'top class'],
+  'Heritage Stay':      ['heritage', 'boutique', 'historic', 'traditional', 'old charm', 'colonial', 'vintage', 'antique', 'old building'],
+  'Swimming Pool':      ['swimming pool', 'pool', 'swim', 'pool side'],
+  'Pure Veg Hotel':     ['pure veg', 'veg only', 'vegetarian only', 'sattvic'],
+  'Pilgrim Friendly':   ['pilgrim', 'darshan', 'devotee', 'religious', 'temple town'],
+  // ── Legacy ───────────────────────────────────────────────────────────────
   'Thali/Meals':        ['thali', 'meals', 'banana leaf', 'full meals'],
-  'Non-Veg':            ['chicken', 'mutton', 'fish', 'non-veg', 'chettinad'],
-  'Pure Veg':           ['pure veg', 'veg only', 'vegetarian'],
-  'AC Rooms':           ['ac', 'air conditioned', 'cool room'],
-  'Free WiFi':          ['wifi', 'wi-fi', 'internet'],
-  'Near Big Temple':    ['big temple', 'brihadeeswarar', 'near temple', 'temple proximity', 'walking distance'],
-  'Budget':             ['budget', 'affordable', 'cheap', 'pocket friendly'],
-  'Luxury':             ['luxury', 'premium', 'deluxe', 'five star', 'comfortable'],
-  'Family Rooms':       ['family', 'spacious', 'kids', 'children'],
-  'Restaurant':         ['restaurant', 'dining', 'food'],
-  'Parking':            ['parking', 'park', 'vehicle'],
-  'Breakfast Included': ['breakfast', 'morning meal', 'complimentary'],
-  'Swimming Pool':      ['pool', 'swimming'],
+  'Pure Veg':           ['pure veg', 'veg only', 'vegetarian', 'no non-veg', 'bhavan', 'sattvic'],
+  'Non-Veg':            ['chicken', 'mutton', 'fish', 'non-veg', 'prawn', 'crab', 'kozhi', 'meat'],
 };
 
 function expandTagsToKeywords(tags: string[]): string[] {
@@ -633,58 +651,63 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                   place.trendVerdict === 'improving' ? '#057A55'
                   : place.trendVerdict === 'declining' ? '#92400E'
                   : '#6B7280';
-                const trendIcon =
-                  place.trendVerdict === 'improving' ? <TrendingUp className="w-3.5 h-3.5 shrink-0" style={{ color: trendColor }} />
-                  : place.trendVerdict === 'declining' ? <TrendingDown className="w-3.5 h-3.5 shrink-0" style={{ color: trendColor }} />
-                  : <Minus className="w-3.5 h-3.5 shrink-0" style={{ color: trendColor }} />;
-                const trendLabel =
-                  place.trendVerdict === 'improving' ? 'Rising recently'
-                  : place.trendVerdict === 'declining' ? 'Slipping recently'
-                  : 'Consistent over time';
                 return (
+                  <>
                   <div className="grid grid-cols-2 gap-2">
 
-                    {/* Card 1: Guest Trend — new info not on main card */}
+                    {/* Card 1: Positive highlights */}
                     <div className="rounded-lg p-3 flex flex-col gap-2 border"
-                      style={{ background: 'var(--color-bg-app)', borderColor: 'var(--color-border)' }}>
-                      <div className="flex items-center gap-1.5">
-                        {trendIcon}
-                        <span className="text-xs font-bold" style={{ color: trendColor }}>{trendLabel}</span>
-                      </div>
-                      {recentAvg !== null && (
-                        <div className="flex items-baseline gap-1.5">
-                          <span className="text-lg font-black" style={{ color: trendColor }}>{recentAvg}★</span>
-                          <span className="text-xs text-muted">recent</span>
-                          <span className="text-xs text-placeholder mx-0.5">·</span>
-                          <span className="text-xs text-muted">{place.rating}★ all-time</span>
-                        </div>
-                      )}
-                      {place.trendReason && (
-                        <p className="text-xs text-body leading-relaxed line-clamp-3">{place.trendReason}</p>
-                      )}
-                      {!recentAvg && !place.trendReason && (
-                        <p className="text-xs text-muted">No recent trend data</p>
+                      style={{ background: 'var(--color-success-soft)', borderColor: 'var(--color-success-medium)' }}>
+                      <span className="text-xs font-semibold uppercase tracking-wide flex items-center gap-1 text-emerald-700">
+                        <CheckCircle className="w-2.5 h-2.5" />What's Good
+                      </span>
+                      <p className="text-xs text-body leading-relaxed line-clamp-3">{highlightKeywords(place.aiDetail.whyOverOthers, reviewKeywords)}</p>
+                      {place.aiDetail.bestFor && (
+                        <p className="text-xs text-muted leading-snug line-clamp-2 border-t border-emerald-100 pt-1.5">{place.aiDetail.bestFor}</p>
                       )}
                     </div>
 
-                    {/* Card 2: Why to Choose — AI insight */}
+                    {/* Card 2: Caution — what to be aware of */}
                     <div className="rounded-lg p-3 flex flex-col gap-2 border"
-                      style={{ background: 'var(--color-success-soft)', borderColor: 'var(--color-success-medium)' }}>
-                      <div className="flex flex-col gap-1">
-                        <span className="text-xs font-semibold text-success-strong00 uppercase tracking-wide flex items-center gap-1">
-                          <Trophy className="w-2.5 h-2.5" />Why Ranked #{rank}
-                        </span>
-                        <p className="text-xs text-body leading-relaxed line-clamp-3">{highlightKeywords(place.aiDetail.whyOverOthers, reviewKeywords)}</p>
-                      </div>
-                      <div className="border-t border-emerald-100 pt-2 flex flex-col gap-1">
-                        <span className="text-xs font-semibold text-success-strong00 uppercase tracking-wide flex items-center gap-1">
-                          <CheckCircle className="w-2.5 h-2.5" />Best For
-                        </span>
-                        <p className="text-xs text-body leading-relaxed line-clamp-2">{highlightKeywords(place.aiDetail.bestFor, reviewKeywords)}</p>
-                      </div>
+                      style={{ background: 'var(--color-warning-soft, #fffbeb)', borderColor: 'var(--color-warning-medium, #fcd34d)' }}>
+                      <span className="text-xs font-semibold uppercase tracking-wide flex items-center gap-1 text-amber-700">
+                        <AlertTriangle className="w-2.5 h-2.5" />Be Aware
+                      </span>
+                      {(place as any).cautionNote ? (
+                        <p className="text-xs text-body leading-relaxed">{(place as any).cautionNote}</p>
+                      ) : place.aiDetail.caveat ? (
+                        <p className="text-xs text-body leading-relaxed">{place.aiDetail.caveat}</p>
+                      ) : (
+                        <p className="text-xs text-muted">No notable concerns from recent visitors</p>
+                      )}
+                      {recentAvg !== null && (
+                        <div className="flex items-baseline gap-1 border-t border-amber-100 pt-1.5">
+                          <span className="text-sm font-bold" style={{ color: trendColor }}>{recentAvg}★</span>
+                          <span className="text-xs text-muted">recent</span>
+                          <span className="text-xs text-placeholder mx-0.5">·</span>
+                          <span className="text-xs text-muted">{place.rating}★ overall</span>
+                        </div>
+                      )}
                     </div>
 
                   </div>
+
+                  {/* Recent sentiment bullets — facts + keywords + recent stats */}
+                  {(() => {
+                    const bullets: string[] = (place as any).recentSentiment ?? [];
+                    if (bullets.length === 0) return null;
+                    return (
+                      <div className="rounded-lg border border-border overflow-hidden divide-y divide-border bg-bg-app">
+                        {bullets.map((b: string, i: number) => (
+                          <div key={i} className="flex items-start gap-2 px-3 py-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-brand shrink-0 mt-1.5" />
+                            <span className="text-xs text-body leading-snug">{b}</span>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })()}
+                  </>
                 );
               })()}
 
@@ -726,16 +749,6 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                 </div>
               )}
 
-              {/* Caveat */}
-              {place.aiDetail.caveat && (
-                <div className="flex items-start gap-2 bg-warning-soft border border-warning-medium/30 rounded-lg px-2.5 py-2">
-                  <AlertTriangle className="w-3 h-3 text-warning shrink-0 mt-0.5" />
-                  <p className="text-xs text-body leading-relaxed">
-                    <span className="font-semibold text-warning">Watch out: </span>{place.aiDetail.caveat}
-                  </p>
-                </div>
-              )}
-
               {/* Reviews */}
               {displayReviews.length > 0 && (
                 <div className="bg-bg-app border border-border rounded-lg overflow-hidden divide-y divide-border">
@@ -759,7 +772,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                         </div>
                       </div>
                       <p className="text-xs text-body leading-relaxed italic line-clamp-3">
-                        "{highlightKeywords(r.text, r.highlight ? [r.highlight] : [...reviewKeywords, ...(place.matchedKeyword ? [place.matchedKeyword] : [])])}"
+                        "{highlightKeywords(r.text, [...(r.highlight ? [r.highlight] : []), ...reviewKeywords, ...(place.matchedKeyword ? [place.matchedKeyword] : [])])}"
                       </p>
                       <p className="text-xs text-muted">{r.ago} · via Google</p>
                     </div>
