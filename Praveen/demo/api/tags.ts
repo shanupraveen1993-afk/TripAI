@@ -311,15 +311,41 @@ async function fetchPool(queries: string[], max = 50): Promise<any[]> {
   return pool;
 }
 
-// Score each tag against real hotel corpus — returns count of hotels matching
+// Score each tag against real hotel corpus — returns count of hotels matching.
+// Budget-Friendly and Quiet & Peaceful use multi-signal (API fields + name patterns)
+// since keyword-only matching against premium hotel reviews fails (~10% hit rate).
 function scoreTagsAgainstPlaces(meta: TagMeta[], places: any[]): TagMeta[] {
+  const BUDGET_NAME_RX = /\b(lodge|budget|economy|inn|residency|dormitory|hostel)\b/i;
+  const QP_KWS = ['quiet', 'peaceful', 'calm', 'serene', 'tranquil', 'noise-free'];
   return meta.map(m => {
-    const kws = HOTEL_TAG_KEYWORDS[m.tag] ?? [];
     let count = 0;
-    for (const p of places) {
-      const corpus = buildCorpus(p);
-      if (kws.some(k => corpus.includes(k))) count++;
+
+    if (m.tag === 'Budget-Friendly') {
+      for (const p of places) {
+        const price = p.priceLevel ?? '';
+        if (price === 'PRICE_LEVEL_INEXPENSIVE' || price === 'PRICE_LEVEL_FREE') { count++; continue; }
+        if (price === 'PRICE_LEVEL_MODERATE') { count++; continue; } // moderate counts as budget-accessible
+        const name = (p.displayName?.text ?? '').toLowerCase();
+        if (BUDGET_NAME_RX.test(name)) count++;
+      }
+    } else if (m.tag === 'Quiet & Peaceful') {
+      for (const p of places) {
+        const corpus = buildCorpus(p);
+        const reviewCount = (p.reviews ?? []).filter((r: any) =>
+          QP_KWS.some(k => (r.text?.text ?? '').toLowerCase().includes(k))
+        ).length;
+        if (reviewCount >= 1) { count++; continue; }
+        // goodForGroups=false as proxy: non-group venues tend to be quieter
+        if (p.goodForGroups === false) count++;
+      }
+    } else {
+      const kws = HOTEL_TAG_KEYWORDS[m.tag] ?? [];
+      for (const p of places) {
+        const corpus = buildCorpus(p);
+        if (kws.some(k => corpus.includes(k))) count++;
+      }
     }
+
     return { ...m, freq: count };
   });
 }

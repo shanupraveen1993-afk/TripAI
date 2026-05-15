@@ -526,6 +526,114 @@ function scoreAllTagsForHotel(place: any, selectedTags: string[], cityKey: strin
     tagEvidence['Good Food'] = [tagEvidence['Good Food'], 'serves dessert (Google ✓)'].filter(Boolean).join(' + ');
   }
 
+  // ── BUDGET-FRIENDLY — priceLevel boolean (primary) + name signals + keyword fallback ──
+  // Universal: priceLevel is Google's own cost tier — far more reliable than hoping
+  // guests write "affordable" in reviews of a ₹500/night lodge.
+  {
+    let bfScore = 0.30; let bfEv = '';
+    if      (priceLevel === 'PRICE_LEVEL_INEXPENSIVE' || priceLevel === 'PRICE_LEVEL_FREE') {
+      bfScore = 1.0; bfEv = 'Budget price tier (Google ✓)';
+    } else if (priceLevel === 'PRICE_LEVEL_MODERATE') {
+      bfScore = 0.65; bfEv = 'Moderate price tier';
+    } else if (priceLevel === 'PRICE_LEVEL_EXPENSIVE') {
+      bfScore = 0.10; bfEv = 'Premium — not budget';
+    } else if (priceLevel === 'PRICE_LEVEL_VERY_EXPENSIVE') {
+      bfScore = 0.0;  bfEv = 'Luxury — not budget';
+    }
+    // Name-pattern boost: "lodge", "inn", "residency", "budget", "economy" → typically cheaper
+    const budgetNameRx = /\b(lodge|budget|economy|inn|residency|dormitory|hostel|cheap)\b/i;
+    if (budgetNameRx.test(name)) {
+      bfScore = Math.min(bfScore + 0.20, 1.0);
+      bfEv = [bfEv, 'budget name signal'].filter(Boolean).join(' + ');
+    }
+    // Keyword fallback for priceLevel=null (Google hasn't set the tier yet)
+    if (!priceLevel) {
+      const kws  = TAG_TEXT_KEYWORDS['Budget-Friendly'] ?? [];
+      const hits = countWeightedHits(kws);
+      bfScore = hits >= 2 ? 0.75 : hits === 1 ? 0.55 : budgetNameRx.test(name) ? 0.60 : 0.25;
+      bfEv = hits > 0 ? `"budget/affordable" ×${hits.toFixed(1)} in reviews` : bfEv;
+    }
+    allTagScores['Budget-Friendly'] = bfScore;
+    if (bfEv) tagEvidence['Budget-Friendly'] = bfEv;
+    const s = findSnippet(TAG_TEXT_KEYWORDS['Budget-Friendly'] ?? []); if (s) tagSnippets['Budget-Friendly'] = s;
+  }
+
+  // ── QUIET & PEACEFUL — multi-review signal + goodForGroups inverse ──────────
+  // Universal: count how many of the 5 most recent reviews explicitly mention
+  // quiet/peaceful/calm/serene. 2+ independent reviewers = strong consensus.
+  // goodForGroups=true is a soft negative proxy (group venues tend to be louder).
+  {
+    const qpKws = TAG_TEXT_KEYWORDS['Quiet & Peaceful'] ?? [];
+    // Count distinct reviews (not weighted hits) — we want independent mentions
+    const qpReviewCount = reviews.filter((r: any) =>
+      qpKws.some(kw => (r.text?.text ?? '').toLowerCase().includes(kw))
+    ).length;
+    let qpScore: number; let qpEv = '';
+    if (qpReviewCount >= 3) { qpScore = 1.0;  qpEv = `"peaceful/quiet" in ${qpReviewCount} reviews`; }
+    else if (qpReviewCount === 2) { qpScore = 0.88; qpEv = `"peaceful/quiet" in ${qpReviewCount} reviews`; }
+    else if (qpReviewCount === 1) { qpScore = 0.60; qpEv = `"peaceful/quiet" mentioned in a review`; }
+    else {
+      // No explicit quiet mentions — use goodForGroups as inverse proxy
+      if      (place.goodForGroups === false) { qpScore = 0.65; qpEv = 'Not a group venue (likely quieter)'; }
+      else if (place.goodForGroups === true)  { qpScore = 0.20; qpEv = 'Group-friendly venue (may be busy)'; }
+      else                                    { qpScore = 0.30; qpEv = ''; }
+    }
+    // Mild boost if location tags suggest a non-busy-road location
+    if ((allTagScores['Near Big Temple'] ?? 0) >= 0.5) qpScore = Math.min(qpScore + 0.05, 1.0);
+    allTagScores['Quiet & Peaceful'] = qpScore;
+    if (qpEv) tagEvidence['Quiet & Peaceful'] = qpEv;
+    const s = findSnippet(qpKws); if (s) tagSnippets['Quiet & Peaceful'] = s;
+  }
+
+  // ── PROMPT SERVICE — star-weighted keywords + reservable boolean ───────────
+  {
+    const psKws  = TAG_TEXT_KEYWORDS['Prompt Service'] ?? [];
+    const psHits = countWeightedHits(psKws);
+    let psScore = psHits >= 3 ? 0.95 : psHits >= 2 ? 0.82 : psHits >= 1 ? 0.55 : psHits >= 0.4 ? 0.38 : 0.20;
+    let psEv = psHits > 0 ? `"${psKws[0]}" ×${psHits.toFixed(1)} in positive reviews` : '';
+    // reservable = organised enough to take bookings → correlated with prompt service
+    if (place.reservable === true) { psScore = Math.min(psScore + 0.10, 1.0); psEv = [psEv, 'accepts reservations (Google ✓)'].filter(Boolean).join(' + '); }
+    allTagScores['Prompt Service'] = psScore;
+    if (psEv) tagEvidence['Prompt Service'] = psEv;
+    const s = findSnippet(psKws); if (s) tagSnippets['Prompt Service'] = s;
+  }
+
+  // ── GOOD HOSPITALITY — star-weighted keywords + family/child signals ───────
+  {
+    const ghKws  = TAG_TEXT_KEYWORDS['Good Hospitality'] ?? [];
+    const ghHits = countWeightedHits(ghKws);
+    let ghScore = ghHits >= 3 ? 0.95 : ghHits >= 2 ? 0.82 : ghHits >= 1 ? 0.55 : ghHits >= 0.4 ? 0.38 : 0.20;
+    let ghEv = ghHits > 0 ? `"${ghKws[0]}" ×${ghHits.toFixed(1)} in positive reviews` : '';
+    if (place.menuForChildren === true || place.goodForChildren === true) {
+      ghScore = Math.min(ghScore + 0.10, 1.0); ghEv = [ghEv, 'family-friendly (Google ✓)'].filter(Boolean).join(' + ');
+    }
+    allTagScores['Good Hospitality'] = ghScore;
+    if (ghEv) tagEvidence['Good Hospitality'] = ghEv;
+    const s = findSnippet(ghKws); if (s) tagSnippets['Good Hospitality'] = s;
+  }
+
+  // ── HIGHLY RECOMMENDED — rating × review volume (objective) + keyword boost ─
+  // Universal: a truly recommended hotel is one where the crowd has spoken.
+  // We don't rely on guests writing "I recommend this" — we look at the aggregate.
+  {
+    const hrKws  = TAG_TEXT_KEYWORDS['Highly Recommended'] ?? [];
+    const hrHits = countWeightedHits(hrKws);
+    // Base score from rating + volume — the two signals that define "highly recommended"
+    let hrBase: number;
+    if      (rating >= 4.5 && (place.userRatingCount ?? 0) >= 200) hrBase = 1.0;
+    else if (rating >= 4.3 && (place.userRatingCount ?? 0) >= 50)  hrBase = 0.85;
+    else if (rating >= 4.0 && (place.userRatingCount ?? 0) >= 20)  hrBase = 0.70;
+    else if (rating >= 3.8)                                         hrBase = 0.50;
+    else                                                            hrBase = 0.25;
+    // Keyword boost on top (guests explicitly recommending adds confidence)
+    const hrScore = Math.min(hrBase + (hrHits >= 2 ? 0.10 : hrHits >= 1 ? 0.05 : 0), 1.0);
+    const hrEv = hrHits > 0 ? `${rating}★ × ${place.userRatingCount ?? 0} reviews + "${hrKws[0]}" mentioned`
+                             : `${rating}★ across ${place.userRatingCount ?? 0} reviews`;
+    allTagScores['Highly Recommended'] = hrScore;
+    tagEvidence['Highly Recommended'] = hrEv;
+    const s = findSnippet(hrKws); if (s) tagSnippets['Highly Recommended'] = s;
+  }
+
   // ── LEGACY TAGS — scored for SMART_PICKS / TRENDING_OVERRIDES paths ──────
   {
     // Budget Stay
@@ -1695,6 +1803,20 @@ function applyTagFilter(places: any[], tab: string, f: UserFilters): any[] {
       for (const tag of activeFoodTags) {
         const kws = FOOD_TAG_KEYWORDS[tag];
         if (!kws) continue;
+
+        // Biryani: require name match OR 2+ independent review hits.
+        // Prevents high-review-count veg places (e.g. Ariya Bhavan) from ranking
+        // above actual biryani specialists via a single incidental keyword mention.
+        if (tag === 'Biryani') {
+          const biryaniNameKws = ['biryani', 'biriyani', 'briyani', 'biryani house', 'biryani point'];
+          if (biryaniNameKws.some(k => name.includes(k))) { matched.push(tag); continue; }
+          const reviewHits = (p.reviews ?? []).filter((r: any) =>
+            kws.some(kw => (r.text?.text ?? '').toLowerCase().includes(kw))
+          ).length;
+          if (reviewHits >= 2) matched.push(tag);
+          continue;
+        }
+
         const matchedKw = kws.find(kw => corpus.includes(kw));
         if (matchedKw) matched.push(tag);
       }
