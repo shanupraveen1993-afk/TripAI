@@ -134,7 +134,11 @@ const FOOD_TAG_KEYWORDS: Record<string, string[]> = {
   'Good Quantity':  ['quantity', 'generous', 'generous portions', 'good quantity', 'full stomach', 'enough food', 'large portion', 'filling', 'heavy meal', 'generous serving'],
   'Authentic':      ['authentic', 'traditional', 'original', 'homemade', 'age old', 'heritage', 'classic', 'real taste', 'old recipe', 'native style', 'cooked fresh'],
   // ── Dining Experience ────────────────────────────────────────────────────
-  'AC Dine-in':     ['ac', 'air conditioned', 'air conditioning', 'fully ac', 'ac restaurant', 'ac hall', 'centrally ac', 'cool ambience', 'dine in', 'dine-in', 'dining hall'],
+  // "ac" removed — substring-matches "place"/"each"/"black" etc. in every review corpus.
+  // "dine in/dine-in/dining hall" removed — dineIn boolean handles sit-down detection;
+  // these keywords match even in negated reviews ("there isn't a proper dine-in option").
+  // Remaining keywords are multi-word AC-specific phrases that cannot false-match.
+  'AC Dine-in':     ['air conditioned', 'air conditioning', 'fully ac', 'ac restaurant', 'ac hall', 'centrally ac', 'cool ambience', 'ac available', 'air-conditioned'],
   'Friendly Staff': ['friendly staff', 'helpful staff', 'staff friendly', 'attentive staff', 'courteous', 'polite staff', 'warm staff', 'good service', 'prompt service', 'caring staff'],
   'Family Dining':  ['family', 'family friendly', 'family restaurant', 'comfortable seating', 'spacious', 'kids', 'group dining', 'seating capacity', 'couples', 'large group'],
   'Clean':          ['clean', 'hygienic', 'hygiene', 'neat', 'tidy', 'clean place', 'cleanliness', 'spotless', 'well maintained', 'sanitized'],
@@ -1805,15 +1809,18 @@ function applyTagFilter(places: any[], tab: string, f: UserFilters): any[] {
         if (!kws) continue;
 
         // Biryani: require name match OR 2+ independent review hits.
-        // Prevents high-review-count veg places (e.g. Ariya Bhavan) from ranking
-        // above actual biryani specialists via a single incidental keyword mention.
+        // Prevents high-review-count veg places (Ariya Bhavan) from ranking above
+        // biryani specialists via a single incidental keyword mention.
+        // Exception: Pure Veg mode has a very small pool — relax to 1 hit so
+        // veg-biryani options (e.g. veg biryani bhavans) still surface.
         if (tag === 'Biryani') {
+          const pureVegMode = f.dietType === 'Pure Veg' || activeFoodTags.includes('Pure Veg');
           const biryaniNameKws = ['biryani', 'biriyani', 'briyani', 'biryani house', 'biryani point'];
           if (biryaniNameKws.some(k => name.includes(k))) { matched.push(tag); continue; }
           const reviewHits = (p.reviews ?? []).filter((r: any) =>
             kws.some(kw => (r.text?.text ?? '').toLowerCase().includes(kw))
           ).length;
-          if (reviewHits >= 2) matched.push(tag);
+          if (reviewHits >= (pureVegMode ? 1 : 2)) matched.push(tag);
           continue;
         }
 
@@ -1821,7 +1828,12 @@ function applyTagFilter(places: any[], tab: string, f: UserFilters): any[] {
         if (matchedKw) matched.push(tag);
       }
 
-      // Require at least one tag to match
+      // When 2 tags selected: require BOTH to match (AND logic).
+      // This prevents places that match only the more-common tag (e.g. Non-Veg)
+      // from appearing when the user also wants AC Dine-in or Chettinad Style.
+      // OR fallback is applied at the pool level below if AND yields < 3 results.
+      p._matchedTags_raw = matched;
+      if (activeFoodTags.length >= 2 && matched.length < activeFoodTags.length) return false;
       if (matched.length === 0) return false;
 
       // Count positive (4-5★) review hits for each matched tag — drives ranking
@@ -1878,10 +1890,29 @@ function applyTagFilter(places: any[], tab: string, f: UserFilters): any[] {
       return composite(b) - composite(a);
     });
 
+    // AND-match fallback: if strict AND-filter yielded < 3, relax to OR (at least 1 tag).
+    // This preserves results for niche combos (e.g. Chettinad + AC Dine-in in a small city).
+    if (activeFoodTags.length >= 2 && matching.length < 3) {
+      const orMatching = places.filter(p => {
+        const name_     = (p.displayName?.text ?? '').toLowerCase();
+        const types_    = (p.types ?? []).join(' ').replace(/_/g, ' ').toLowerCase();
+        const editorial_ = (p.editorialSummary?.text ?? '').toLowerCase();
+        const reviews_  = (p.reviews ?? []).slice(0, 5)
+          .map((r: any) => (r.text?.text ?? '').slice(0, 500).toLowerCase()).join(' ');
+        const corpus_   = `${name_} ${types_} ${editorial_} ${reviews_}`;
+        for (const tag of activeFoodTags) {
+          const kws = FOOD_TAG_KEYWORDS[tag];
+          if (!kws) continue;
+          if (kws.some(kw => corpus_.includes(kw))) return true;
+        }
+        return false;
+      });
+      if (orMatching.length >= 3) return orMatching;
+    }
+
     // Only narrow down when ≥4 strong keyword matches exist — if fewer, trust Google's
-    // ranking and pass the full pool to Gemini. This prevents good places (e.g. V Subbaiya
-    // Tiffin whose reviews say "idli" not "tiffin center") from being cut before AI sees them.
-    return matching.length >= 4 ? matching : places;
+    // ranking and pass the full pool to Gemini.
+    return matching.length >= 4 ? matching : (matching.length > 0 ? matching : places);
   }
 
   return places;

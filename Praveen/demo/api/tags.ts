@@ -201,7 +201,7 @@ const FOOD_TAG_KEYWORDS: Record<string, string[]> = {
   'Good Quantity': ['quantity', 'generous', 'generous portions', 'good quantity', 'full stomach', 'enough food', 'large portion', 'filling', 'heavy meal'],
   'Authentic':     ['authentic', 'traditional', 'original', 'homemade', 'age old', 'heritage', 'classic', 'real taste', 'old recipe', 'native style'],
   // ── Dining Experience ────────────────────────────────────────────────────
-  'AC Dine-in':    ['ac', 'air conditioned', 'air conditioning', 'fully ac', 'ac restaurant', 'ac hall', 'centrally ac', 'cool ambience', 'dine in', 'dine-in', 'dining hall'],
+  'AC Dine-in':    ['air conditioned', 'air conditioning', 'fully ac', 'ac restaurant', 'ac hall', 'centrally ac', 'cool ambience', 'ac available', 'air-conditioned'],
   'Friendly Staff':['friendly staff', 'helpful staff', 'staff friendly', 'attentive staff', 'courteous', 'polite staff', 'warm staff', 'good service', 'prompt service'],
   'Family Dining': ['family', 'family friendly', 'family restaurant', 'comfortable seating', 'spacious', 'kids', 'group dining', 'seating capacity', 'couples', 'large group'],
   'Clean':         ['clean', 'hygienic', 'hygiene', 'neat', 'tidy', 'clean place', 'cleanliness', 'spotless', 'well maintained'],
