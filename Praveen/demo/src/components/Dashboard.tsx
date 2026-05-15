@@ -559,12 +559,12 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
 
   const FOOD_TAG_FALLBACK: CityTagsResult = {
     tags: [
-      'Biryani', 'South Indian', 'Non-Veg', 'Pure Veg', 'Tiffin & Snacks',
+      'Biryani', 'South Indian', 'Non-Veg', 'Tiffin & Snacks',
       'Fresh & Hot', 'Authentic', 'Good Quantity', 'Spicy', 'Chettinad Style',
       'Affordable', 'Value for Money', 'Family Dining', 'Quick Service', 'Highly Rated',
     ],
     segments: {
-      'Cuisine & Dish':     ['Biryani', 'South Indian', 'Non-Veg', 'Pure Veg', 'Tiffin & Snacks'],
+      'Cuisine & Dish':     ['Biryani', 'South Indian', 'Non-Veg', 'Tiffin & Snacks'],
       'Taste & Quality':    ['Fresh & Hot', 'Authentic', 'Good Quantity', 'Spicy', 'Chettinad Style'],
       'Value & Experience': ['Affordable', 'Value for Money', 'Family Dining', 'Quick Service', 'Highly Rated'],
     },
