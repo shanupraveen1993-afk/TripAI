@@ -373,6 +373,12 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
   // Competitor-style coloured rating badge (Booking.com / Goibibo pattern)
   const ratingColor = place.rating >= 4.5 ? '#05603A' : place.rating >= 4.0 ? '#1C64F2' : place.rating >= 3.5 ? '#B45309' : '#DC2626';
   const ratingLabel = place.rating >= 4.5 ? 'Excellent' : place.rating >= 4.0 ? 'Very Good' : place.rating >= 3.5 ? 'Good' : 'Fair';
+  const recentRatingsArr = place.recentRatings ?? [];
+  const recentAvgMain = recentRatingsArr.length > 0
+    ? +(recentRatingsArr.reduce((s: number, r: number) => s + r, 0) / recentRatingsArr.length).toFixed(1)
+    : null;
+  const trendColorMain = place.trendVerdict === 'improving' ? '#057A55' : place.trendVerdict === 'declining' ? '#B45309' : '#6B7280';
+  const trendLabelMain = place.trendVerdict === 'improving' ? '↑ Rising' : place.trendVerdict === 'declining' ? '↓ Slipping' : '— Consistent';
   const confirmed   = place.confirmedTags ?? [];
   const matched     = place.matchedTags   ?? [];
   const unconfirmed = matched.filter(t => !confirmed.includes(t));
@@ -435,13 +441,21 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
         {/* Info */}
         <div className="px-3 pt-2.5 pb-1 flex flex-col gap-1.5">
           <h3 className="font-display font-semibold text-lg text-heading leading-snug">{place.name}</h3>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 flex-wrap">
             <div className="flex gap-0.5">
               {Array.from({ length: 5 }).map((_, i) => (
                 <Star key={i} className={`w-3.5 h-3.5 ${i < Math.floor(place.rating) ? 'fill-warning text-warning' : i < place.rating ? 'fill-warning-medium text-warning-medium' : 'text-border'}`} />
               ))}
             </div>
             <span className="text-xs text-muted ml-0.5">({place.reviewCount.toLocaleString()})</span>
+            {recentAvgMain !== null && (
+              <>
+                <span className="text-xs text-placeholder">·</span>
+                <span className="text-xs font-medium" style={{ color: trendColorMain }}>{recentAvgMain}★ recent</span>
+                <span className="text-xs text-placeholder">·</span>
+                <span className="text-xs font-medium" style={{ color: trendColorMain }}>{trendLabelMain}</span>
+              </>
+            )}
           </div>
           <div className="flex items-center gap-1.5 flex-wrap">
             <Badge variant={place.openNow ? 'success' : 'danger'} dot pill>{place.openNow ? 'Open' : 'Closed'}</Badge>
@@ -558,6 +572,14 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               ))}
             </div>
             <span className="text-xs text-muted">({place.reviewCount.toLocaleString()})</span>
+            {recentAvgMain !== null && (
+              <>
+                <span className="text-xs text-placeholder">·</span>
+                <span className="text-xs font-medium" style={{ color: trendColorMain }}>{recentAvgMain}★ recent</span>
+                <span className="text-xs text-placeholder">·</span>
+                <span className="text-xs font-medium" style={{ color: trendColorMain }}>{trendLabelMain}</span>
+              </>
+            )}
             {distLabel && <span className="text-xs text-muted shrink-0">· {distLabel}</span>}
           </div>
           <div className="flex items-center gap-1 flex-wrap">
@@ -649,10 +671,10 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                 <div className="rounded-lg p-3 flex flex-col gap-1.5 border"
                   style={{ background: 'var(--color-warning-soft, #fffbeb)', borderColor: 'var(--color-warning-medium, #fcd34d)' }}>
                   <span className="text-xs font-semibold uppercase tracking-wide flex items-center gap-1 text-amber-700">
-                    <AlertTriangle className="w-2.5 h-2.5" />Be Cautious
+                    <Info className="w-2.5 h-2.5" />Good to Know
                   </span>
                   <p className="text-xs text-body leading-relaxed">
-                    {(place as any).cautionNote || place.aiDetail?.caveat || 'No notable concerns from recent visitors'}
+                    {(place as any).cautionNote || place.aiDetail?.caveat || 'Most visitors had a smooth experience here.'}
                   </p>
                 </div>
 
