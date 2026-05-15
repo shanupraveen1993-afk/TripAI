@@ -1256,18 +1256,18 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             <span style={{ color: '#fff' }}>{meta.icon}</span>
           </div>
           <div className="min-w-0 flex-1">
-            <p className="font-display font-semibold text-sm text-heading leading-tight">{meta.headline}</p>
+            <div className="flex items-center gap-1.5">
+              <p className="font-display font-semibold text-sm text-heading leading-tight">{meta.headline}</p>
+              {activeTab === 'Food' && (
+                <span className="shrink-0 text-xs font-bold px-1.5 py-0.5 rounded-full"
+                  style={{ background: '#ECFDF5', color: '#059669', border: '1px solid #6EE7B7' }}>
+                  Pure Veg
+                </span>
+              )}
+            </div>
             <p className="text-xs text-muted mt-0.5 truncate">{meta.sub}</p>
           </div>
-          {activeTab === 'Food' && dietType === 'Pure Veg' && (
-            <span className="ml-auto shrink-0 text-xs font-bold px-2 py-0.5 rounded-full"
-              style={{ background: '#ECFDF5', color: '#059669', border: '1px solid #6EE7B7' }}>
-              Pure Veg
-            </span>
-          )}
-          {!(activeTab === 'Food' && dietType === 'Pure Veg') && (
-            <Sparkles className="w-3.5 h-3.5 ml-auto shrink-0 text-brand" />
-          )}
+          <Sparkles className="w-3.5 h-3.5 ml-auto shrink-0 text-brand" />
         </div>
 
         <div className="p-4">
