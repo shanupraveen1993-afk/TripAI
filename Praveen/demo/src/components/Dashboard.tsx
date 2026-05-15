@@ -125,13 +125,20 @@ const QUICK_PRESETS: Array<{ label: string; emoji: string; tab: Tab; imgId: stri
 ];
 
 /* ── Destination inspiration cards ──────────────────────────────────── */
-const INSPIRATION_CITIES = [
-  { city: 'Big Temple',       emoji: '🛕', hook: 'UNESCO · Chola masterpiece', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1686310894901-d326b8722c13', exploreTarget: 'Brihadeeswarar Temple'         },
-  { city: 'Royal Palace',     emoji: '🏰', hook: 'Maratha history & art',      grad: 'linear-gradient(135deg,#1C64F2,#1E429F)', imgId: '1622018135960-249abd263aeb', exploreTarget: 'Thanjavur Maratha Palace Royal Museum'        },
-  { city: 'Saraswathi Mahal', emoji: '📚', hook: '60,000 rare manuscripts',    grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1568045919115-f2dacbaa1899', exploreTarget: 'Saraswathi Mahal Library'      },
-  { city: 'Kumbakonam',       emoji: '🌊', hook: 'Temple tanks & ghats',       grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1701665837448-cdbb9fab5a0d', exploreTarget: 'Kumbakonam Temple Tanks'       },
-  { city: 'Gangaikonda',      emoji: '🏛️', hook: 'Hidden Chola capital',       grad: 'linear-gradient(135deg,#6366F1,#3B82F6)', imgId: '1567529684892-09290a1b2d05', exploreTarget: 'Gangaikonda Cholapuram'        },
-  { city: 'Darasuram',        emoji: '🪔', hook: 'Airavatesvara Temple',       grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1541781774459-bb2af2f05b55', exploreTarget: 'Airavatesvara Temple Darasuram' },
+const INSPIRATION_CITIES: Array<{
+  city: string; emoji: string; hook: string; grad: string; imgId: string;
+  exploreTarget?: string; comingSoon?: boolean;
+}> = [
+  // ── Thanjavur landmarks (active) ──────────────────────────────────────────
+  { city: 'Big Temple',       emoji: '🛕', hook: 'UNESCO · Chola masterpiece',    grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1686310894901-d326b8722c13', exploreTarget: 'Brihadeeswarar Temple'                  },
+  { city: 'Royal Palace',     emoji: '🏰', hook: 'Maratha history & art',         grad: 'linear-gradient(135deg,#1C64F2,#1E429F)', imgId: '1622018135960-249abd263aeb', exploreTarget: 'Thanjavur Maratha Palace Royal Museum'   },
+  { city: 'Saraswathi Mahal', emoji: '📚', hook: '60,000 rare manuscripts',       grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1568045919115-f2dacbaa1899', exploreTarget: 'Saraswathi Mahal Library'                },
+  { city: 'Darasuram',        emoji: '🪔', hook: 'Airavatesvara Temple',          grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1541781774459-bb2af2f05b55', exploreTarget: 'Airavatesvara Temple Darasuram'          },
+  // ── Nearby cities (coming soon) ───────────────────────────────────────────
+  { city: 'Kumbakonam',       emoji: '🌊', hook: 'Temple tanks · 18 sacred ghats', grad: 'linear-gradient(135deg,#0369A1,#0284C7)', imgId: '1701665837448-cdbb9fab5a0d', comingSoon: true },
+  { city: 'Trichy',           emoji: '🏯', hook: 'Rock Fort · Srirangam',          grad: 'linear-gradient(135deg,#7C3AED,#6D28D9)', imgId: '1567529684892-09290a1b2d05', comingSoon: true },
+  { city: 'Madurai',          emoji: '🕌', hook: 'Meenakshi Amman · Silk bazaars', grad: 'linear-gradient(135deg,#B45309,#D97706)', imgId: '1567529684892-09290a1b2d05', comingSoon: true },
+  { city: 'Chidambaram',      emoji: '🪷', hook: 'Nataraja Temple · Cosmic dance', grad: 'linear-gradient(135deg,#065F46,#059669)', imgId: '1541781774459-bb2af2f05b55', comingSoon: true },
 ];
 
 /* ── Discover destinations — Booking.com style photo grid ────────────── */
@@ -1480,8 +1487,9 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             <button
               key={c.city}
               type="button"
-              onClick={() => triggerSearch({ tab: 'Explore', exploreTarget: c.exploreTarget })}
-              className="shrink-0 w-[220px] h-[150px] rounded-2xl overflow-hidden relative focus:outline-none focus-visible:ring-2 focus-visible:ring-brand group"
+              disabled={c.comingSoon}
+              onClick={c.comingSoon ? undefined : () => triggerSearch({ tab: 'Explore', exploreTarget: c.exploreTarget })}
+              className={`shrink-0 w-[220px] h-[150px] rounded-2xl overflow-hidden relative focus:outline-none focus-visible:ring-2 focus-visible:ring-brand group ${c.comingSoon ? 'cursor-not-allowed' : ''}`}
               style={{ background: c.grad }}
             >
               {c.imgId && (
@@ -1489,16 +1497,23 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                   src={uImg(c.imgId, 440, 300)}
                   alt={c.city}
                   loading="lazy" decoding="async"
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  className={`absolute inset-0 w-full h-full object-cover transition-transform duration-500 ${c.comingSoon ? 'opacity-60' : 'group-hover:scale-105'}`}
                   onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                 />
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
               <div className="absolute top-3 right-3 z-10">
-                <span className="text-white text-xs font-black uppercase tracking-wide px-2 py-1 rounded-full"
-                  style={{ background: TAB_META.Explore.accent }}>
-                  Explore
-                </span>
+                {c.comingSoon ? (
+                  <span className="text-xs font-semibold uppercase tracking-wide px-2 py-1 rounded backdrop-blur-sm"
+                    style={{ background: 'rgba(250,202,21,0.18)', border: '1px solid rgba(250,202,21,0.40)', color: '#FCD34D' }}>
+                    Coming Soon
+                  </span>
+                ) : (
+                  <span className="text-white text-xs font-black uppercase tracking-wide px-2 py-1 rounded-full"
+                    style={{ background: TAB_META.Explore.accent }}>
+                    Explore
+                  </span>
+                )}
               </div>
               <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
                 <span className="text-2xl leading-none drop-shadow">{c.emoji}</span>

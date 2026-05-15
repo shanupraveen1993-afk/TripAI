@@ -3143,7 +3143,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // ── Itinerary: AI-generated day plan ─────────────────────────────────────
   if (tab === 'Itinerary') {
-    const startTime    = (req.body?.startTime  ?? '07:00') as string;
+    const rawStartTime = (req.body?.startTime  ?? '07:00') as string;
+    const startTime    = rawStartTime === 'Morning'   ? '07:00'
+                       : rawStartTime === 'Afternoon' ? '12:00'
+                       : rawStartTime === 'Evening'   ? '16:00'
+                       : rawStartTime;
     const stopCount    = Math.min(Math.max(parseInt(String(req.body?.stopCount ?? '5'), 10) || 5, 2), 5);
     const searchSeed   = parseInt((req.body?.searchSeed ?? '0') as string, 10);
     const itinCity     = ((req.body?.city as string) ?? 'Thanjavur').trim();
