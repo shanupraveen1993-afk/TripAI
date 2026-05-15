@@ -801,11 +801,15 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               </div>
 
               {foodTagData.segments && Object.keys(foodTagData.segments).length > 0
-                ? Object.entries(foodTagData.segments).map(([seg, tags]) => (
+                ? Object.entries(foodTagData.segments).map(([seg, tags]) => {
+                  const NON_VEG_TAGS = ['Non-Veg', 'Chettinad'];
+                  const visibleTags = dietType === 'Pure Veg' ? tags.filter((t: string) => !NON_VEG_TAGS.includes(t)) : tags;
+                  if (visibleTags.length === 0) return null;
+                  return (
                   <div key={seg} className="mb-2">
                     <p className="text-xs font-normal text-muted mb-1.5">{seg}</p>
                     <div className="flex flex-wrap gap-1.5">
-                      {tags.map((tag: string) => {
+                      {visibleTags.map((tag: string) => {
                         const isSelected = foodTags.includes(tag);
                         const isMaxed    = foodTags.length >= 2 && !isSelected;
                         return (
@@ -832,7 +836,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                       })}
                     </div>
                   </div>
-                ))
+                );})
                 : (
                   <div className="flex flex-wrap gap-1.5">
                     {foodTagData.tags.map(t => {
@@ -1256,18 +1260,23 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             <span style={{ color: '#fff' }}>{meta.icon}</span>
           </div>
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5">
-              <p className="font-display font-semibold text-sm text-heading leading-tight">{meta.headline}</p>
-              {activeTab === 'Food' && (
-                <span className="shrink-0 text-xs font-bold px-1.5 py-0.5 rounded-full"
-                  style={{ background: '#ECFDF5', color: '#059669', border: '1px solid #6EE7B7' }}>
-                  Pure Veg
-                </span>
-              )}
-            </div>
+            <p className="font-display font-semibold text-sm text-heading leading-tight">{meta.headline}</p>
             <p className="text-xs text-muted mt-0.5 truncate">{meta.sub}</p>
           </div>
-          <Sparkles className="w-3.5 h-3.5 ml-auto shrink-0 text-brand" />
+          {activeTab === 'Food' ? (
+            <button
+              type="button"
+              onClick={() => setDietType(d => d === 'Pure Veg' ? 'Any' : 'Pure Veg')}
+              className="ml-auto shrink-0 text-xs font-bold px-2 py-0.5 rounded-full transition-all"
+              style={dietType === 'Pure Veg'
+                ? { background: '#ECFDF5', color: '#059669', border: '1.5px solid #059669' }
+                : { background: '#F9FAFB', color: '#6B7280', border: '1.5px solid #E5E7EB' }}
+            >
+              Pure Veg
+            </button>
+          ) : (
+            <Sparkles className="w-3.5 h-3.5 ml-auto shrink-0 text-brand" />
+          )}
         </div>
 
         <div className="p-4">
