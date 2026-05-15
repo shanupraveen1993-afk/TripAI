@@ -1356,13 +1356,13 @@ function scorePlaceForFilters(place: any, tab: string, f: UserFilters): PlaceSco
         let tagsMatched = 0;
         for (const tag of activeFoodTags) {
           if (tag === 'Pure Veg') {
-            // GBP boolean is ground truth — keyword matching alone misses non-veg places
-            // that mention "veg options" in reviews. Use boolean as primary signal.
-            // PURE_VEG_NAME_SIGNALS includes 'bhavan'/'bhawan' — catches "Shree Ariya Bhavan" pattern.
-            const gbpConfirmed  = place.servesVegetarianFood === true;
+            // Use vegetarian_restaurant type as primary signal — this is Google's exclusive tag
+            // for restaurants that serve ONLY vegetarian food. servesVegetarianFood=true is NOT
+            // used here because it merely means "has veg options" (Barbequeen-type places qualify),
+            // which would incorrectly score a mixed restaurant as Pure Veg.
             const typeConfirmed = (place.types ?? []).includes('vegetarian_restaurant');
             const nameMatch     = PURE_VEG_NAME_SIGNALS.some(s => nameText.includes(s));
-            if (gbpConfirmed || typeConfirmed || nameMatch) tagsMatched++;
+            if (typeConfirmed || nameMatch) tagsMatched++;
             continue;
           }
           if (tag === 'Non-Veg') {
@@ -1547,7 +1547,10 @@ function applyStrictFilter(places: any[], tab: string, f: UserFilters): any[] {
 
   // Pure Veg: hard filter — must be classified as vegetarian_restaurant AND have no
   // non-veg type tags AND must not self-label as "(Non Veg)" / "non-veg" in name.
-  if (f.dietType === 'Pure Veg') {
+  // Applies when dietType = 'Pure Veg' OR when 'Pure Veg' is selected as a foodTag,
+  // so that tag combos like "Pure Veg + Highly Rated" don't let mixed restaurants through.
+  const activeFoodTagsStrict = (f.foodTags?.length ?? 0) > 0 ? f.foodTags! : (f.foodTag ? [f.foodTag] : []);
+  if (f.dietType === 'Pure Veg' || activeFoodTagsStrict.includes('Pure Veg')) {
     const NON_VEG_TYPES = new Set([
       'seafood_restaurant', 'chicken_restaurant', 'bbq_restaurant',
       'barbecue_restaurant', 'butcher_shop', 'fish_and_chips_restaurant',
@@ -1915,16 +1918,18 @@ async function geminiRankAndAnalyse(
     if (isThanjavurCity)
       criteria.push({ label: 'Implicit need', value: 'walkable or close to Brihadeeswarar Temple', weight: 'important' });
   } else if (tab === 'Food') {
-    if (filters.dietType === 'Pure Veg')
-      criteria.push({ label: 'Diet', value: 'STRICTLY Pure Veg — restaurant must serve ONLY vegetarian food. ANY mention of chicken, mutton, fish, egg, seafood, biryani, meat or non-veg in name or reviews = EXCLUDE completely. Do NOT rank or mention non-veg restaurants at all.', weight: 'critical' });
-    else if (filters.dietType === 'Non-Veg')
-      criteria.push({ label: 'Diet', value: 'Non-Veg — HARD RULES: (1) EXCLUDE any place where servesVeg=true — these are confirmed vegetarian-only restaurants. (2) EXCLUDE any place with zero non-veg keywords (chicken/mutton/fish/prawn/crab/egg/meat/seafood/biryani/shawarma/bbq) in reviews. (3) RANK by non-veg keyword count in 4-5★ reviews — more positive non-veg mentions = higher rank. A pure veg restaurant appearing in this list is a critical error.', weight: 'critical' });
-    else if (filters.dietType && filters.dietType !== 'Any')
-      criteria.push({ label: 'Diet', value: filters.dietType, weight: 'critical' });
     {
       const activeTags = (filters.foodTags?.length ?? 0) > 0 ? filters.foodTags! : (filters.foodTag ? [filters.foodTag] : []);
-      if (activeTags.length > 0)
-        criteria.push({ label: 'Cuisine / type (PRIMARY)', value: activeTags.join(' + ') + (activeTags.length > 1 ? ` — rank places that match MORE of these tags higher (union match)` : ''), weight: 'critical' });
+      const pureVegActive = filters.dietType === 'Pure Veg' || activeTags.includes('Pure Veg');
+      if (pureVegActive)
+        criteria.push({ label: 'Diet', value: 'STRICTLY Pure Veg — restaurant must serve ONLY vegetarian food. ANY mention of chicken, mutton, fish, egg, seafood, biryani, meat or non-veg in name or reviews = EXCLUDE completely. Do NOT rank or mention non-veg restaurants at all.', weight: 'critical' });
+      else if (filters.dietType === 'Non-Veg')
+        criteria.push({ label: 'Diet', value: 'Non-Veg — HARD RULES: (1) EXCLUDE any place where servesVeg=true — these are confirmed vegetarian-only restaurants. (2) EXCLUDE any place with zero non-veg keywords (chicken/mutton/fish/prawn/crab/egg/meat/seafood/biryani/shawarma/bbq) in reviews. (3) RANK by non-veg keyword count in 4-5★ reviews — more positive non-veg mentions = higher rank. A pure veg restaurant appearing in this list is a critical error.', weight: 'critical' });
+      else if (filters.dietType && filters.dietType !== 'Any')
+        criteria.push({ label: 'Diet', value: filters.dietType, weight: 'critical' });
+      const tagsForCriteria = pureVegActive ? activeTags.filter(t => t !== 'Pure Veg') : activeTags;
+      if (tagsForCriteria.length > 0)
+        criteria.push({ label: 'Cuisine / type (PRIMARY)', value: tagsForCriteria.join(' + ') + (tagsForCriteria.length > 1 ? ` — rank places that match MORE of these tags higher (union match)` : ''), weight: 'critical' });
     }
     if (filters.mealTime && filters.mealTime !== 'Any')
       criteria.push({ label: 'Meal time', value: filters.mealTime + ' — rank places that specialise in this meal highest', weight: 'critical' });
