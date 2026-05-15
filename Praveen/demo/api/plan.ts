@@ -3060,9 +3060,10 @@ TASK: Return a JSON object with these exact keys:
 }
 
 QUALITY RULES:
-- insight must cite at least one data point from the reviews provided
+- insight: if reviews are provided, cite at least one; if no reviews, use your expert knowledge of this specific place
 - flow steps must name actual physical sections of the place, not generic actions
 - preparation must be actionable ("carry ₹20 for entry" not just "bring money")
+- bestTime and avoidNote MUST always be filled — never leave them empty or null
 - All facts (entry fee, opening hours) must match GROUND TRUTH above
 
 Return ONLY valid JSON. No markdown. No explanation.`;
@@ -3128,8 +3129,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           insight:      guide?.insight     ?? `${locationName} is one of Thanjavur's most significant heritage sites.`,
           flow:         guide?.flow        ?? '1. Arrive at the main entrance\n2. Remove footwear\n3. Explore the outer courtyard\n4. Visit the inner sanctum',
           preparation:  guide?.preparation ?? 'Wear covered clothing. Remove footwear at entrance. Donations welcome.',
-          bestTime:     guide?.bestTime    ?? null,
-          avoidNote:    guide?.avoidNote   ?? null,
+          bestTime:     guide?.bestTime    ?? `Early morning 6–9 AM — fewer visitors, cooler temperature, and best light for the architecture`,
+          avoidNote:    guide?.avoidNote   ?? `Avoid midday hours (11 AM–3 PM) — intense heat with no shade in the outer courtyards`,
           tags: (place.types ?? []).slice(0, 5).map((t: string) =>
             t.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())
           ),

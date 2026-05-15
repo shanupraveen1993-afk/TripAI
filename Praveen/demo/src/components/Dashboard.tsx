@@ -130,15 +130,15 @@ const INSPIRATION_CITIES: Array<{
   exploreTarget?: string; comingSoon?: boolean;
 }> = [
   // ── Thanjavur landmarks (active) ──────────────────────────────────────────
-  { city: 'Big Temple',       emoji: '🛕', hook: 'UNESCO · Chola masterpiece',    grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1686310894901-d326b8722c13', exploreTarget: 'Brihadeeswarar Temple'                  },
-  { city: 'Royal Palace',     emoji: '🏰', hook: 'Maratha history & art',         grad: 'linear-gradient(135deg,#1C64F2,#1E429F)', imgId: '1622018135960-249abd263aeb', exploreTarget: 'Thanjavur Maratha Palace Royal Museum'   },
+  { city: 'Big Temple',       emoji: '🛕', hook: 'UNESCO · Chola masterpiece',    grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1603766806347-54cdf3745953', exploreTarget: 'Brihadeeswarar Temple'                  },
+  { city: 'Royal Palace',     emoji: '🏰', hook: 'Maratha history & art',         grad: 'linear-gradient(135deg,#1C64F2,#1E429F)', imgId: '1523544261025-3159599b1fc3', exploreTarget: 'Thanjavur Maratha Palace Royal Museum'   },
   { city: 'Saraswathi Mahal', emoji: '📚', hook: '60,000 rare manuscripts',       grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1568045919115-f2dacbaa1899', exploreTarget: 'Saraswathi Mahal Library'                },
-  { city: 'Darasuram',        emoji: '🪔', hook: 'Airavatesvara Temple',          grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1541781774459-bb2af2f05b55', exploreTarget: 'Airavatesvara Temple Darasuram'          },
+  { city: 'Darasuram',        emoji: '🪔', hook: 'Airavatesvara Temple',          grad: 'linear-gradient(135deg,#92400E,#B45309)', imgId: '1717701669787-82a23250cfe0', exploreTarget: 'Airavatesvara Temple Darasuram'          },
   // ── Nearby cities (coming soon) ───────────────────────────────────────────
-  { city: 'Kumbakonam',       emoji: '🌊', hook: 'Temple tanks · 18 sacred ghats', grad: 'linear-gradient(135deg,#0369A1,#0284C7)', imgId: '1701665837448-cdbb9fab5a0d', comingSoon: true },
-  { city: 'Trichy',           emoji: '🏯', hook: 'Rock Fort · Srirangam',          grad: 'linear-gradient(135deg,#7C3AED,#6D28D9)', imgId: '1567529684892-09290a1b2d05', comingSoon: true },
-  { city: 'Madurai',          emoji: '🕌', hook: 'Meenakshi Amman · Silk bazaars', grad: 'linear-gradient(135deg,#B45309,#D97706)', imgId: '1567529684892-09290a1b2d05', comingSoon: true },
-  { city: 'Chidambaram',      emoji: '🪷', hook: 'Nataraja Temple · Cosmic dance', grad: 'linear-gradient(135deg,#065F46,#059669)', imgId: '1541781774459-bb2af2f05b55', comingSoon: true },
+  { city: 'Kumbakonam',       emoji: '🌊', hook: 'Temple tanks · 18 sacred ghats', grad: 'linear-gradient(135deg,#0369A1,#0284C7)', imgId: '1671095149873-c982e19e4240', comingSoon: true },
+  { city: 'Trichy',           emoji: '🏯', hook: 'Rock Fort · Srirangam',          grad: 'linear-gradient(135deg,#7C3AED,#6D28D9)', imgId: '1751163053686-7016e8b99099', comingSoon: true },
+  { city: 'Madurai',          emoji: '🕌', hook: 'Meenakshi Amman · Silk bazaars', grad: 'linear-gradient(135deg,#B45309,#D97706)', imgId: '1677434654722-69e7ba88b4ef', comingSoon: true },
+  { city: 'Chidambaram',      emoji: '🪷', hook: 'Nataraja Temple · Cosmic dance', grad: 'linear-gradient(135deg,#065F46,#059669)', imgId: '1625807161536-27903f2200fa', comingSoon: true },
 ];
 
 /* ── Discover destinations — Booking.com style photo grid ────────────── */
@@ -176,10 +176,10 @@ const THANJAVUR_ACTIONS: Array<{
   tab: Tab; label: string; desc: string; emoji: string; imgId: string;
   overrides: QuickOverride;
 }> = [
-  { tab: 'Hotels',    label: 'Stay near Big Temple', desc: 'Top-rated · Walking distance',  emoji: '🛕', imgId: '1686310894901-d326b8722c13', overrides: { tab: 'Hotels',    hotelTag: 'Near Big Temple' } },
+  { tab: 'Hotels',    label: 'Stay near Big Temple', desc: 'Top-rated · Walking distance',  emoji: '🛕', imgId: '1566915682737-3e97a7eed93b', overrides: { tab: 'Hotels',    hotelTag: 'Near Big Temple' } },
   { tab: 'Food',      label: 'Thanjavur thali/meals',       desc: 'Authentic Chola cuisine',       emoji: '🍛', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Mess & Meals' } },
-  { tab: 'Itinerary', label: '1-day plan',            desc: 'AI routed · Full day',          emoji: '🗺️', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Itinerary', startTime: 'Morning' } },
-  { tab: 'Explore',   label: 'Brihadeeswarar',        desc: 'UNESCO · Chola masterpiece',    emoji: '🏛️', imgId: '1701665837448-cdbb9fab5a0d', overrides: { tab: 'Explore',   exploreTarget: 'Brihadeeswarar Temple' } },
+  { tab: 'Itinerary', label: '1-day plan',            desc: 'AI routed · Full day',          emoji: '🗺️', imgId: '1603766806347-54cdf3745953', overrides: { tab: 'Itinerary', startTime: 'Morning' } },
+  { tab: 'Explore',   label: 'Brihadeeswarar',        desc: 'UNESCO · Chola masterpiece',    emoji: '🏛️', imgId: '1693134322630-8c3510d215f6', overrides: { tab: 'Explore',   exploreTarget: 'Brihadeeswarar Temple' } },
 ];
 
 /* ── Quick search override type ─────────────────────────────────────── */
