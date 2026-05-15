@@ -2940,24 +2940,30 @@ async function geminiItinerary(places: any[], startTime = '07:00', stopCount = 5
   const isThanjavur = /thanjavur|tanjore/i.test(city);
   const cityFacts   = isThanjavur ? THANJAVUR_FACTS : '';
   // City-specific sequencing rules injected only when we have verified ground truth
+  const bigTempleRule = sessionLabel === 'evening'
+    ? '1. If Brihadeeswarar Temple is in the list → it MUST be stop 1 (outer temple is open until 8:30 PM; inner sanctum is closed by 4 PM — focus on gopuram, Nandi statue, and outer corridor)'
+    : '1. If Brihadeeswarar Temple is in the list → it MUST be stop 1 (best visited before 9 AM when crowd is low; inner sanctum closes 12:30 PM)';
+
+  const lunchRule = sessionLabel === 'full day'
+    ? '3. Schedule a lunch stop around 12:00–12:30 PM (even if no restaurant is in the list — add "Thanjavur Thali Lunch" as a stop with tip to visit Sri Venkatramana Bhavan or Chola Mess)\n4. If start time is before 8 AM and Big Temple is included → visitor can do 2 full sessions before 10 AM\n5. Sequence remaining stops to minimise backtracking'
+    : '3. Sequence remaining stops to minimise backtracking';
+
   const citySeqRules = isThanjavur ? `
 SEQUENCING RULES (follow in order):
-1. If Brihadeeswarar Temple is in the list → it MUST be stop 1 (best visited before 9 AM when crowd is low; inner sanctum closes 12:30 PM)
+${bigTempleRule}
 2. Thanjavur Palace, Saraswathi Mahal, Art Gallery are a walkable cluster → schedule consecutively, no auto needed between them` : `
 SEQUENCING RULES:
 1. Start with the most iconic / highest-rated attraction
 2. Group walkable/nearby attractions consecutively to minimise travel`;
 
-  const prompt = `You are a local expert trip planner for ${city}. Create a ${stopCount}-stop ${sessionLabel} itinerary starting at ${startStr}.
+  const prompt = `You are a local expert trip planner for ${city}. Create a ${stopCount}-stop ${sessionLabel} itinerary starting at ${startStr}. IMPORTANT: All stop times MUST be at or after ${startStr} — do not schedule any stop before this time.
 
 ${cityFacts}
 
 AVAILABLE ATTRACTIONS (from Google Places — use names as given):
 ${JSON.stringify(topPlaces)}
 ${citySeqRules}
-3. Schedule a lunch stop around 12:00–12:30 PM (even if no restaurant is in the list — add "Thanjavur Thali Lunch" as a stop with tip to visit Sri Venkatramana Bhavan or Chola Mess)
-4. If start time is before 8 AM and Big Temple is included → visitor can do 2 full sessions before 10 AM
-5. Sequence remaining stops to minimise backtracking
+${lunchRule}
 
 For EACH stop return this exact JSON object:
 {
