@@ -3012,12 +3012,16 @@ Return a JSON array of EXACTLY ${stopCount} stops. Return ONLY valid JSON. No ma
     // Hardcoded time schedules per session — Gemini's times are ignored to prevent drift
     const SLOT_TIMES: Record<string, string[]> = {
       '07:00': ['7:00 AM',  '9:00 AM',  '11:00 AM', '1:00 PM', '3:00 PM'],
+      '12:00': ['2:00 PM',  '3:30 PM',  '5:00 PM'],
       '14:00': ['2:00 PM',  '3:30 PM',  '5:00 PM'],
+      '16:00': ['5:00 PM',  '6:30 PM'],
       '17:00': ['5:00 PM',  '6:30 PM'],
     };
     const SLOT_DEPART: Record<string, Array<string | undefined>> = {
       '07:00': ['9:00 AM',  '11:00 AM', '1:00 PM',  '3:00 PM', undefined],
+      '12:00': ['3:30 PM',  '5:00 PM',  undefined],
       '14:00': ['3:30 PM',  '5:00 PM',  undefined],
+      '16:00': ['6:30 PM',  undefined],
       '17:00': ['6:30 PM',  undefined],
     };
     const slotTimes  = SLOT_TIMES[startTime]  ?? SLOT_TIMES['07:00'];
