@@ -15,6 +15,7 @@ const FIELD_MASK = [
   'places.priceLevel',
   'places.servesVegetarianFood',
   'places.location',
+  'places.id',
 ].join(',');
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -203,14 +204,12 @@ const FOOD_TAG_KEYWORDS: Record<string, string[]> = {
   'AC Dine-in':    ['ac', 'air conditioned', 'air conditioning', 'fully ac', 'ac restaurant', 'ac hall', 'centrally ac', 'cool ambience', 'dine in', 'dine-in', 'dining hall'],
   'Friendly Staff':['friendly staff', 'helpful staff', 'staff friendly', 'attentive staff', 'courteous', 'polite staff', 'warm staff', 'good service', 'prompt service'],
   'Family Dining': ['family', 'family friendly', 'family restaurant', 'comfortable seating', 'spacious', 'kids', 'group dining', 'seating capacity', 'couples', 'large group'],
-  'Good Ambience': ['ambience', 'ambiance', 'atmosphere', 'decor', 'interior', 'cozy', 'nice ambience', 'good ambience', 'pleasant', 'well decorated'],
   'Clean':         ['clean', 'hygienic', 'hygiene', 'neat', 'tidy', 'clean place', 'cleanliness', 'spotless', 'well maintained'],
   // ── Value & Price ────────────────────────────────────────────────────────
   'Highly Rated':    ['highly recommended', 'must visit', 'must try', 'top rated', 'best in thanjavur', 'everyone recommends', 'go-to place', 'popular', 'famous', 'well known'],
   'Value for Money': ['value for money', 'worth it', 'worth the price', 'good value', 'value', 'money worth', 'cost effective', 'decent price'],
   'Good Portions':   ['quantity', 'generous portions', 'good quantity', 'generous serving', 'good portions', 'full value', 'filling meal', 'large serving'],
   'Affordable':      ['affordable', 'cheap', 'pocket friendly', 'inexpensive', 'budget friendly', 'low price', 'very affordable', 'economical'],
-  'Top Pick':        ['top pick', 'first choice', 'go-to', 'landmark', 'favourite', 'popular spot', 'crowd favourite', 'local favourite', 'iconic'],
   // ── New 3×5 food tags ────────────────────────────────────────────────────
   'Tiffin & Snacks': ['tiffin', 'tiffin center', 'tiffin shop', 'idli', 'dosa', 'vada', 'vadai', 'parotta', 'snack', 'puri', 'poori', 'upma', 'pongal', 'bajji', 'bonda'],
   'Fresh & Hot':     ['fresh', 'freshly', 'freshly cooked', 'hot', 'piping hot', 'freshly prepared', 'served hot', 'warm food', 'made fresh'],
@@ -264,10 +263,8 @@ const FOOD_TAG_SEGMENT_MAP: Record<string, { segment: string; group: 'A' | 'B' }
   'Family Dining':   { segment: 'Value & Experience', group: 'B' },
   'Quick Service':   { segment: 'Value & Experience', group: 'B' },
   'Highly Rated':    { segment: 'Value & Experience', group: 'B' },
-  'Good Ambience':   { segment: 'Value & Experience', group: 'B' },
   'AC Dine-in':      { segment: 'Value & Experience', group: 'B' },
   'Friendly Staff':  { segment: 'Value & Experience', group: 'B' },
-  'Top Pick':        { segment: 'Value & Experience', group: 'B' },
 };
 
 const HOTEL_FALLBACKS = [
@@ -414,14 +411,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     ], 50);
 
     // Score ALL tags in FOOD_TAG_SEGMENT_MAP against the 50-place corpus.
-    // This discovers which tags genuinely appear across real places — not just
-    // validates a pre-written list against 20 results.
+    // AC Dine-in uses the dineIn boolean (accurate) + keyword fallback for AC signal.
+    // All other tags use keyword matching against the text corpus.
     const scored = Object.entries(FOOD_TAG_SEGMENT_MAP).map(([tag, meta]) => {
-      const kws = FOOD_TAG_KEYWORDS[tag] ?? [];
       let count = 0;
-      for (const p of places) {
-        const corpus = buildCorpus(p);
-        if (kws.some(k => corpus.includes(k))) count++;
+      if (tag === 'AC Dine-in') {
+        for (const p of places) {
+          if (p.dineIn === false) continue; // confirmed takeout-only
+          const kws = FOOD_TAG_KEYWORDS['AC Dine-in'] ?? [];
+          const corpus = buildCorpus(p);
+          if (p.dineIn === true || kws.some(k => corpus.includes(k))) count++;
+        }
+      } else {
+        const kws = FOOD_TAG_KEYWORDS[tag] ?? [];
+        for (const p of places) {
+          const corpus = buildCorpus(p);
+          if (kws.some(k => corpus.includes(k))) count++;
+        }
       }
       return { tag, segment: meta.segment, group: meta.group, freq: count };
     });

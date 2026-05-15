@@ -137,14 +137,12 @@ const FOOD_TAG_KEYWORDS: Record<string, string[]> = {
   'AC Dine-in':     ['ac', 'air conditioned', 'air conditioning', 'fully ac', 'ac restaurant', 'ac hall', 'centrally ac', 'cool ambience', 'dine in', 'dine-in', 'dining hall'],
   'Friendly Staff': ['friendly staff', 'helpful staff', 'staff friendly', 'attentive staff', 'courteous', 'polite staff', 'warm staff', 'good service', 'prompt service', 'caring staff'],
   'Family Dining':  ['family', 'family friendly', 'family restaurant', 'comfortable seating', 'spacious', 'kids', 'group dining', 'seating capacity', 'couples', 'large group'],
-  'Good Ambience':  ['ambience', 'ambiance', 'atmosphere', 'decor', 'interior', 'cozy', 'nice ambience', 'good ambience', 'pleasant', 'well decorated', 'beautiful'],
   'Clean':          ['clean', 'hygienic', 'hygiene', 'neat', 'tidy', 'clean place', 'cleanliness', 'spotless', 'well maintained', 'sanitized'],
   // ── Value & Price ────────────────────────────────────────────────────────
   'Highly Rated':   ['highly recommended', 'must visit', 'must try', 'top rated', 'best in thanjavur', 'everyone recommends', 'go-to place', 'popular', 'famous', 'well known', 'landmark'],
   'Value for Money':['value for money', 'worth it', 'worth the price', 'good value', 'value', 'money worth', 'cost effective', 'decent price', 'reasonable price'],
   'Good Portions':  ['quantity', 'generous portions', 'good quantity', 'generous serving', 'good portions', 'full value', 'filling meal', 'large serving', 'generous meal'],
   'Affordable':     ['affordable', 'cheap', 'pocket friendly', 'inexpensive', 'budget friendly', 'low price', 'very affordable', 'economical', 'budget meal'],
-  'Top Pick':       ['top pick', 'first choice', 'go-to', 'landmark', 'favourite', 'popular spot', 'crowd favourite', 'local favourite', 'iconic', 'institution'],
   // ── New 3×5 food tags ────────────────────────────────────────────────────
   'Tiffin & Snacks': ['tiffin', 'tiffin center', 'tiffin shop', 'idli', 'dosa', 'dosai', 'vada', 'vadai', 'parotta', 'snack', 'puri', 'poori', 'upma', 'pongal', 'bajji', 'bonda'],
   'Fresh & Hot':     ['fresh', 'freshly', 'freshly cooked', 'hot', 'piping hot', 'freshly prepared', 'served hot', 'warm food', 'made fresh', 'hot and fresh'],
@@ -1372,6 +1370,17 @@ function scorePlaceForFilters(place: any, tab: string, f: UserFilters): PlaceSco
             if (gbpNotVeg || nvHits >= 1) tagsMatched++;
             continue;
           }
+          if (tag === 'AC Dine-in') {
+            // dineIn boolean is the definitive signal for sit-down service.
+            // AC signal: keyword fallback since Google has no dedicated AC boolean.
+            if (place.dineIn === false) { /* confirmed takeout-only — 0 */ }
+            else {
+              const acKws = FOOD_TAG_KEYWORDS['AC Dine-in'] ?? [];
+              const hasAcKw = acKws.some(kw => allText.includes(kw));
+              tagsMatched += place.dineIn === true ? (hasAcKw ? 1 : 0.5) : (hasAcKw ? 0.6 : 0);
+            }
+            continue;
+          }
           const kws = FOOD_TAG_KEYWORDS[tag] ?? (FOOD_TAG_SEARCH[tag] ?? tag.toLowerCase()).split(' ').filter(k => k.length > 3);
           // Count how many distinct reviews mention this tag — specialization signal
           const reviewTexts = (place.reviews ?? []).map((r: any) => (r.text?.text ?? '').toLowerCase());
@@ -1505,14 +1514,16 @@ function filterStalePlaces(places: any[]): any[] {
   });
 }
 
-// Only Non-Veg uses this path (Veg/PureVeg handled by includedType at API level;
-// price/openNow handled by priceLevels/openNow at API level).
+// Only Non-Veg/PureVeg use this path (price/openNow handled at API level).
 // ─────────────────────────────────────────────────────────────────────────────
 function applyStrictFilter(places: any[], tab: string, f: UserFilters): any[] {
   if (tab !== 'Food') return places;
 
-  // Non-Veg: 3-layer hard filter — NO fallback to the full pool (would include pure veg places)
-  if (f.dietType === 'Non-Veg') {
+  const activeFoodTagsStrict = (f.foodTags?.length ?? 0) > 0 ? f.foodTags! : (f.foodTag ? [f.foodTag] : []);
+
+  // Non-Veg: 3-layer hard filter. Fires for dietType OR tag selection so that
+  // "Non-Veg + AC Dine-in" cannot surface pure-veg places like Ariya Bhavan.
+  if (f.dietType === 'Non-Veg' || activeFoodTagsStrict.includes('Non-Veg')) {
     return places.filter(p => {
       const name    = (p.displayName?.text ?? '').toLowerCase();
       const reviews = (p.reviews ?? []).map((r: any) => (r.text?.text ?? '').toLowerCase()).join(' ');
@@ -1547,9 +1558,6 @@ function applyStrictFilter(places: any[], tab: string, f: UserFilters): any[] {
 
   // Pure Veg: hard filter — must be classified as vegetarian_restaurant AND have no
   // non-veg type tags AND must not self-label as "(Non Veg)" / "non-veg" in name.
-  // Applies when dietType = 'Pure Veg' OR when 'Pure Veg' is selected as a foodTag,
-  // so that tag combos like "Pure Veg + Highly Rated" don't let mixed restaurants through.
-  const activeFoodTagsStrict = (f.foodTags?.length ?? 0) > 0 ? f.foodTags! : (f.foodTag ? [f.foodTag] : []);
   if (f.dietType === 'Pure Veg' || activeFoodTagsStrict.includes('Pure Veg')) {
     const NON_VEG_TYPES = new Set([
       'seafood_restaurant', 'chicken_restaurant', 'bbq_restaurant',
@@ -1921,13 +1929,15 @@ async function geminiRankAndAnalyse(
     {
       const activeTags = (filters.foodTags?.length ?? 0) > 0 ? filters.foodTags! : (filters.foodTag ? [filters.foodTag] : []);
       const pureVegActive = filters.dietType === 'Pure Veg' || activeTags.includes('Pure Veg');
+      const nonVegActive  = filters.dietType === 'Non-Veg'  || activeTags.includes('Non-Veg');
       if (pureVegActive)
         criteria.push({ label: 'Diet', value: 'STRICTLY Pure Veg — restaurant must serve ONLY vegetarian food. ANY mention of chicken, mutton, fish, egg, seafood, biryani, meat or non-veg in name or reviews = EXCLUDE completely. Do NOT rank or mention non-veg restaurants at all.', weight: 'critical' });
-      else if (filters.dietType === 'Non-Veg')
+      else if (nonVegActive)
         criteria.push({ label: 'Diet', value: 'Non-Veg — HARD RULES: (1) EXCLUDE any place where servesVeg=true — these are confirmed vegetarian-only restaurants. (2) EXCLUDE any place with zero non-veg keywords (chicken/mutton/fish/prawn/crab/egg/meat/seafood/biryani/shawarma/bbq) in reviews. (3) RANK by non-veg keyword count in 4-5★ reviews — more positive non-veg mentions = higher rank. A pure veg restaurant appearing in this list is a critical error.', weight: 'critical' });
       else if (filters.dietType && filters.dietType !== 'Any')
         criteria.push({ label: 'Diet', value: filters.dietType, weight: 'critical' });
-      const tagsForCriteria = pureVegActive ? activeTags.filter(t => t !== 'Pure Veg') : activeTags;
+      const tagsForCriteria = pureVegActive ? activeTags.filter(t => t !== 'Pure Veg') :
+                              nonVegActive  ? activeTags.filter(t => t !== 'Non-Veg')  : activeTags;
       if (tagsForCriteria.length > 0)
         criteria.push({ label: 'Cuisine / type (PRIMARY)', value: tagsForCriteria.join(' + ') + (tagsForCriteria.length > 1 ? ` — rank places that match MORE of these tags higher (union match)` : ''), weight: 'critical' });
     }
