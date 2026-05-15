@@ -137,7 +137,7 @@ export function SavedTrips({ trips, onDelete, onView }: SavedTripsProps) {
 
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
-        <h2 className="font-display font-semibold text-xl text-heading">Trips</h2>
+        <h2 className="font-display font-bold text-xl text-heading">Trips</h2>
       </div>
 
       {/* Inner tabs */}

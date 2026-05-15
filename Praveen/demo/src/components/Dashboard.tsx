@@ -33,10 +33,10 @@ const TAB_META: Record<Tab, {
   Hotels: {
     icon:        <Hotel        className="w-4 h-4" />,
     bigIcon:     <Hotel        className="w-6 h-6" />,
-    accent:      '#1C64F2',
-    accentBg:    '#EBF5FF',
-    accentBorder:'#1C64F2',
-    accentSoft:  '#1C64F215',
+    accent:      'var(--color-brand)',
+    accentBg:    'var(--color-brand-softer)',
+    accentBorder:'var(--color-brand)',
+    accentSoft:  'rgba(28,100,242,0.08)',
     label:       'Hotels',
     headline:    'Best stays',
     sub:         'Price · reviews · AI-ranked',
@@ -45,10 +45,10 @@ const TAB_META: Record<Tab, {
   Food: {
     icon:        <Utensils     className="w-4 h-4" />,
     bigIcon:     <Utensils     className="w-6 h-6" />,
-    accent:      '#1C64F2',
-    accentBg:    '#EBF5FF',
-    accentBorder:'#1C64F2',
-    accentSoft:  '#1C64F215',
+    accent:      'var(--color-brand)',
+    accentBg:    'var(--color-brand-softer)',
+    accentBorder:'var(--color-brand)',
+    accentSoft:  'rgba(28,100,242,0.08)',
     label:       'Food',
     headline:    'Best eats',
     sub:         'Thali · coffee · AI-picked',
@@ -57,10 +57,10 @@ const TAB_META: Record<Tab, {
   Itinerary: {
     icon:        <Route        className="w-4 h-4" />,
     bigIcon:     <Route        className="w-6 h-6" />,
-    accent:      '#1C64F2',
-    accentBg:    '#EBF5FF',
-    accentBorder:'#1C64F2',
-    accentSoft:  '#1C64F215',
+    accent:      'var(--color-brand)',
+    accentBg:    'var(--color-brand-softer)',
+    accentBorder:'var(--color-brand)',
+    accentSoft:  'rgba(28,100,242,0.08)',
     label:       'Itinerary',
     headline:    'Day planned',
     sub:         'Stops · traffic · optimised',
@@ -69,10 +69,10 @@ const TAB_META: Record<Tab, {
   Explore: {
     icon:        <Compass className="w-4 h-4" />,
     bigIcon:     <Compass className="w-6 h-6" />,
-    accent:      '#1C64F2',
-    accentBg:    '#EBF5FF',
-    accentBorder:'#1C64F2',
-    accentSoft:  '#1C64F215',
+    accent:      'var(--color-brand)',
+    accentBg:    'var(--color-brand-softer)',
+    accentBorder:'var(--color-brand)',
+    accentSoft:  'rgba(28,100,242,0.08)',
     label:       'Explore',
     headline:    'Explore spots',
     sub:         'Pick spot · instant guide',
@@ -117,11 +117,11 @@ function getSpotsForDestination(destination: string): string[] {
 
 /* ── Quick presets — image cards ────────────────────────────────────── */
 const QUICK_PRESETS: Array<{ label: string; emoji: string; tab: Tab; imgId: string; grad: string }> = [
-  { label: 'Near Big Temple', emoji: '🛕', tab: 'Hotels',    imgId: '1686310894901-d326b8722c13', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)' },
-  { label: 'Local thali',     emoji: '🍛', tab: 'Food',      imgId: '1711153419402-336ee48f2138', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)' },
-  { label: 'Plan my day',     emoji: '🗺️', tab: 'Itinerary', imgId: '1713729991304-d0b6c328560e', grad: 'linear-gradient(135deg,#1C64F2,#1E429F)' },
-  { label: 'Top locations',   emoji: '🧭', tab: 'Explore',   imgId: '1708782462555-b3af03b4b3d2', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)' },
-  { label: 'Filter coffee',   emoji: '☕', tab: 'Food',      imgId: '1509042239860-f550ce710b93', grad: 'linear-gradient(135deg,#1C64F2,#1E429F)' },
+  { label: 'Near Big Temple', emoji: '🛕', tab: 'Hotels',    imgId: '1686310894901-d326b8722c13', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))' },
+  { label: 'Local thali',     emoji: '🍛', tab: 'Food',      imgId: '1711153419402-336ee48f2138', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))' },
+  { label: 'Plan my day',     emoji: '🗺️', tab: 'Itinerary', imgId: '1713729991304-d0b6c328560e', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-active))' },
+  { label: 'Top locations',   emoji: '🧭', tab: 'Explore',   imgId: '1708782462555-b3af03b4b3d2', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))' },
+  { label: 'Filter coffee',   emoji: '☕', tab: 'Food',      imgId: '1509042239860-f550ce710b93', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-active))' },
 ];
 
 /* ── Destination inspiration cards ──────────────────────────────────── */
@@ -130,9 +130,9 @@ const INSPIRATION_CITIES: Array<{
   exploreTarget?: string; comingSoon?: boolean;
 }> = [
   // ── Thanjavur landmarks (active) ──────────────────────────────────────────
-  { city: 'Big Temple',       emoji: '🛕', hook: 'UNESCO · Chola masterpiece',    grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1603766806347-54cdf3745953', exploreTarget: 'Brihadeeswarar Temple'                  },
-  { city: 'Royal Palace',     emoji: '🏰', hook: 'Maratha history & art',         grad: 'linear-gradient(135deg,#1C64F2,#1E429F)', imgId: '1523544261025-3159599b1fc3', exploreTarget: 'Thanjavur Maratha Palace Royal Museum'   },
-  { city: 'Saraswathi Mahal', emoji: '📚', hook: '60,000 rare manuscripts',       grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1568045919115-f2dacbaa1899', exploreTarget: 'Saraswathi Mahal Library'                },
+  { city: 'Big Temple',       emoji: '🛕', hook: 'UNESCO · Chola masterpiece',    grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', imgId: '1603766806347-54cdf3745953', exploreTarget: 'Brihadeeswarar Temple'                  },
+  { city: 'Royal Palace',     emoji: '🏰', hook: 'Maratha history & art',         grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-active))', imgId: '1523544261025-3159599b1fc3', exploreTarget: 'Thanjavur Maratha Palace Royal Museum'   },
+  { city: 'Saraswathi Mahal', emoji: '📚', hook: '60,000 rare manuscripts',       grad: 'linear-gradient(135deg,var(--color-brand),#3B82F6)', imgId: '1568045919115-f2dacbaa1899', exploreTarget: 'Saraswathi Mahal Library'                },
   { city: 'Darasuram',        emoji: '🪔', hook: 'Airavatesvara Temple',          grad: 'linear-gradient(135deg,#92400E,#B45309)', imgId: '1717701669787-82a23250cfe0', exploreTarget: 'Airavatesvara Temple Darasuram'          },
   // ── Nearby cities (coming soon) ───────────────────────────────────────────
   { city: 'Kumbakonam',       emoji: '🌊', hook: 'Temple tanks · 18 sacred ghats', grad: 'linear-gradient(135deg,#0369A1,#0284C7)', imgId: '1671095149873-c982e19e4240', comingSoon: true },
@@ -144,11 +144,11 @@ const INSPIRATION_CITIES: Array<{
 /* ── Discover destinations — Booking.com style photo grid ────────────── */
 const DISCOVER_DESTINATIONS = [
   { city: 'Goa',       tag: 'Beaches · Seafood · Sunsets',    imgId: '1512343879784-a960bf40e7f2', grad: 'linear-gradient(135deg,#0284C7,#06B6D4)', tab: 'Hotels'    as Tab, featured: true  },
-  { city: 'Jaipur',    tag: 'Pink City · Forts · Heritage',   imgId: '1477587458883-47145ed94245', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', tab: 'Itinerary' as Tab, featured: false },
-  { city: 'Udaipur',   tag: 'Lakes · Palaces',                imgId: 'tV2nFA7slEk',                grad: 'linear-gradient(135deg,#1C64F2,#1E429F)', tab: 'Hotels'    as Tab, featured: false },
-  { city: 'Mumbai',    tag: 'City Life · Nightlife',          imgId: 'xH43OxDSXYw',               grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', tab: 'Hotels'    as Tab, featured: false },
-  { city: 'Rishikesh', tag: 'Adventure · Yoga · Rivers',      imgId: '1506905925346-21bda4d32df4', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', tab: 'Explore'   as Tab, featured: false },
-  { city: 'Kochi',     tag: 'Backwaters · Spice Coast',       imgId: 'RPCQYqLBoYE',               grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', tab: 'Food'      as Tab, featured: false },
+  { city: 'Jaipur',    tag: 'Pink City · Forts · Heritage',   imgId: '1477587458883-47145ed94245', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', tab: 'Itinerary' as Tab, featured: false },
+  { city: 'Udaipur',   tag: 'Lakes · Palaces',                imgId: 'tV2nFA7slEk',                grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-active))', tab: 'Hotels'    as Tab, featured: false },
+  { city: 'Mumbai',    tag: 'City Life · Nightlife',          imgId: 'xH43OxDSXYw',               grad: 'linear-gradient(135deg,var(--color-brand),#3B82F6)', tab: 'Hotels'    as Tab, featured: false },
+  { city: 'Rishikesh', tag: 'Adventure · Yoga · Rivers',      imgId: '1506905925346-21bda4d32df4', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', tab: 'Explore'   as Tab, featured: false },
+  { city: 'Kochi',     tag: 'Backwaters · Spice Coast',       imgId: 'RPCQYqLBoYE',               grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', tab: 'Food'      as Tab, featured: false },
 ];
 
 /* ── Popular destination city cards with real photos ────────────────── */
@@ -161,14 +161,14 @@ interface PopularCity {
 }
 
 const POPULAR_DESTINATIONS: PopularCity[] = [
-  { city: 'Mumbai',    sub: 'Gateway · Marine Drive',  imgId: '1598434192043-71111c1b3f41', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', tab: 'Hotels'    },
+  { city: 'Mumbai',    sub: 'Gateway · Marine Drive',  imgId: '1598434192043-71111c1b3f41', grad: 'linear-gradient(135deg,var(--color-brand),#3B82F6)', tab: 'Hotels'    },
   { city: 'Goa',       sub: 'Beaches · Sunsets',        imgId: '1496442226666-8d4d0e62e6e9', grad: 'linear-gradient(135deg,#0284C7,#06B6D4)', tab: 'Hotels'    },
-  { city: 'Jaipur',    sub: 'Pink City · Forts',        imgId: '1477587458883-47145ed94245', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', tab: 'Itinerary' },
-  { city: 'Delhi',     sub: 'Red Fort · Chandni Chowk', imgId: '1713729991304-d0b6c328560e', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', tab: 'Itinerary' },
-  { city: 'Hyderabad', sub: 'Charminar · Biryani',      imgId: '1657981630164-769503f3a9a8', grad: 'linear-gradient(135deg,#1C64F2,#1E429F)', tab: 'Food'      },
-  { city: 'Bangalore', sub: 'Tech Hub · Gardens',       imgId: '1708782462555-b3af03b4b3d2', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', tab: 'Hotels'    },
-  { city: 'Udaipur',   sub: 'City of Lakes · Palaces',  imgId: '1622018135960-249abd263aeb', grad: 'linear-gradient(135deg,#1C64F2,#1E429F)', tab: 'Hotels'    },
-  { city: 'Kochi',     sub: 'Backwaters · Spice Coast', imgId: '1602216056096-3b40cc0c9944', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', tab: 'Food'      },
+  { city: 'Jaipur',    sub: 'Pink City · Forts',        imgId: '1477587458883-47145ed94245', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', tab: 'Itinerary' },
+  { city: 'Delhi',     sub: 'Red Fort · Chandni Chowk', imgId: '1713729991304-d0b6c328560e', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', tab: 'Itinerary' },
+  { city: 'Hyderabad', sub: 'Charminar · Biryani',      imgId: '1657981630164-769503f3a9a8', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-active))', tab: 'Food'      },
+  { city: 'Bangalore', sub: 'Tech Hub · Gardens',       imgId: '1708782462555-b3af03b4b3d2', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', tab: 'Hotels'    },
+  { city: 'Udaipur',   sub: 'City of Lakes · Palaces',  imgId: '1622018135960-249abd263aeb', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-active))', tab: 'Hotels'    },
+  { city: 'Kochi',     sub: 'Backwaters · Spice Coast', imgId: '1602216056096-3b40cc0c9944', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', tab: 'Food'      },
 ];
 
 /* ── Thanjavur action grid (Segment 1) ──────────────────────────────── */
@@ -215,60 +215,60 @@ const POPULAR_QUERIES: { label: string; overrides: QuickOverride }[] = [
 
 const SMART_PICKS: Record<string, SmartPick[]> = {
   thanjavur: [
-    { label: 'Near Big Temple',    sub: 'Hotels · Walking distance', emoji: '🛕', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1686310894901-d326b8722c13', overrides: { tab: 'Hotels',    hotelTag: 'Near Big Temple' } },
-    { label: 'Thanjavur thali/meals',    sub: 'Food · Authentic Chola',    emoji: '🍛', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Mess & Meals' } },
-    { label: 'Brihadeeswarar',     sub: 'Explore · UNESCO site',     emoji: '🏛️', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1701665837448-cdbb9fab5a0d', overrides: { tab: 'Explore',   exploreTarget: 'Brihadeeswarar Temple' } },
-    { label: '1-day Thanjavur',    sub: 'Itinerary · AI routed',     emoji: '🗺️', grad: 'linear-gradient(135deg,#1C64F2,#1E429F)', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Itinerary', startTime: 'Morning' } },
-    { label: 'Filter coffee',      sub: 'Food · Local café culture', emoji: '☕', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1509042239860-f550ce710b93', overrides: { tab: 'Food',      foodTag: 'Cafe & Drinks' } },
-    { label: 'Royal Palace',       sub: 'Explore · Maratha heritage', emoji: '🏰', grad: 'linear-gradient(135deg,#1C64F2,#1E429F)', imgId: '1622018135960-249abd263aeb', overrides: { tab: 'Explore',   exploreTarget: 'Thanjavur Maratha Palace Royal Museum' } },
+    { label: 'Near Big Temple',    sub: 'Hotels · Walking distance', emoji: '🛕', grad: 'linear-gradient(135deg,var(--color-brand),#3B82F6)', imgId: '1686310894901-d326b8722c13', overrides: { tab: 'Hotels',    hotelTag: 'Near Big Temple' } },
+    { label: 'Thanjavur thali/meals',    sub: 'Food · Authentic Chola',    emoji: '🍛', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Mess & Meals' } },
+    { label: 'Brihadeeswarar',     sub: 'Explore · UNESCO site',     emoji: '🏛️', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', imgId: '1701665837448-cdbb9fab5a0d', overrides: { tab: 'Explore',   exploreTarget: 'Brihadeeswarar Temple' } },
+    { label: '1-day Thanjavur',    sub: 'Itinerary · AI routed',     emoji: '🗺️', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-active))', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Itinerary', startTime: 'Morning' } },
+    { label: 'Filter coffee',      sub: 'Food · Local café culture', emoji: '☕', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', imgId: '1509042239860-f550ce710b93', overrides: { tab: 'Food',      foodTag: 'Cafe & Drinks' } },
+    { label: 'Royal Palace',       sub: 'Explore · Maratha heritage', emoji: '🏰', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-active))', imgId: '1622018135960-249abd263aeb', overrides: { tab: 'Explore',   exploreTarget: 'Thanjavur Maratha Palace Royal Museum' } },
   ],
   bangalore: [
-    { label: 'Best coffee & cafes',  sub: 'Quick · Near you',     emoji: '☕', grad: 'linear-gradient(135deg,#1C64F2,#1E429F)', imgId: '1509042239860-f550ce710b93', overrides: { tab: 'Food',      foodTag: 'Cafe & Drinks' } },
-    { label: 'Heritage stays',        sub: 'Hotels · Curated',    emoji: '🏛️', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1708782462555-b3af03b4b3d2', overrides: { tab: 'Hotels',    hotelTag: 'Heritage' } },
-    { label: 'Plan my Bangalore day', sub: 'Full day · AI routed',emoji: '🗺️', grad: 'linear-gradient(135deg,#1C64F2,#1E429F)', imgId: '1708782462555-b3af03b4b3d2', overrides: { tab: 'Itinerary', startTime: 'Morning' } },
-    { label: 'Top landmarks',         sub: 'What to see · Ranked',emoji: '🏯', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1708782462555-b3af03b4b3d2', overrides: { tab: 'Explore',   exploreTarget: 'Vidhana Soudha' } },
-    { label: 'City centre stays',     sub: 'Hotels · Best value', emoji: '💰', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Hotels',    hotelTag: 'City Centre' } },
-    { label: 'Best biryani',          sub: 'Food · Non-veg',      emoji: '🍛', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Biryani' } },
+    { label: 'Best coffee & cafes',  sub: 'Quick · Near you',     emoji: '☕', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-active))', imgId: '1509042239860-f550ce710b93', overrides: { tab: 'Food',      foodTag: 'Cafe & Drinks' } },
+    { label: 'Heritage stays',        sub: 'Hotels · Curated',    emoji: '🏛️', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', imgId: '1708782462555-b3af03b4b3d2', overrides: { tab: 'Hotels',    hotelTag: 'Heritage' } },
+    { label: 'Plan my Bangalore day', sub: 'Full day · AI routed',emoji: '🗺️', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-active))', imgId: '1708782462555-b3af03b4b3d2', overrides: { tab: 'Itinerary', startTime: 'Morning' } },
+    { label: 'Top landmarks',         sub: 'What to see · Ranked',emoji: '🏯', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', imgId: '1708782462555-b3af03b4b3d2', overrides: { tab: 'Explore',   exploreTarget: 'Vidhana Soudha' } },
+    { label: 'City centre stays',     sub: 'Hotels · Best value', emoji: '💰', grad: 'linear-gradient(135deg,var(--color-brand),#3B82F6)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Hotels',    hotelTag: 'City Centre' } },
+    { label: 'Best biryani',          sub: 'Food · Non-veg',      emoji: '🍛', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Biryani' } },
   ],
   goa: [
     { label: 'Beach hotels',         sub: 'Sea view · Rated',     emoji: '🌊', grad: 'linear-gradient(135deg,#0284C7,#06B6D4)', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Hotels',    hotelTag: 'Sea View' } },
-    { label: 'Best seafood',         sub: 'Fresh · Near beach',   emoji: '🦞', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1624791596524-d989400f3241', overrides: { tab: 'Food',      foodTag: 'Seafood' } },
-    { label: '1-day Goa plan',       sub: 'Itinerary · Beaches',  emoji: '🛵', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Itinerary', startTime: 'Morning' } },
-    { label: 'Must-see beaches',     sub: 'Explore · Ranked',     emoji: '🏖️', grad: 'linear-gradient(135deg,#1C64F2,#1E429F)', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Explore',   exploreTarget: 'Calangute Beach' } },
-    { label: 'Cafe & street eats',   sub: 'Food · Nightlife',     emoji: '🍹', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Food',      foodTag: 'Cafe & Drinks' } },
-    { label: 'City centre stays',    sub: 'Hotels · Best value',  emoji: '💰', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Hotels',    hotelTag: 'City Centre' } },
+    { label: 'Best seafood',         sub: 'Fresh · Near beach',   emoji: '🦞', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', imgId: '1624791596524-d989400f3241', overrides: { tab: 'Food',      foodTag: 'Seafood' } },
+    { label: '1-day Goa plan',       sub: 'Itinerary · Beaches',  emoji: '🛵', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Itinerary', startTime: 'Morning' } },
+    { label: 'Must-see beaches',     sub: 'Explore · Ranked',     emoji: '🏖️', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-active))', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Explore',   exploreTarget: 'Calangute Beach' } },
+    { label: 'Cafe & street eats',   sub: 'Food · Nightlife',     emoji: '🍹', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Food',      foodTag: 'Cafe & Drinks' } },
+    { label: 'City centre stays',    sub: 'Hotels · Best value',  emoji: '💰', grad: 'linear-gradient(135deg,var(--color-brand),#3B82F6)', imgId: '1496442226666-8d4d0e62e6e9', overrides: { tab: 'Hotels',    hotelTag: 'City Centre' } },
   ],
   mumbai: [
-    { label: 'Bandra stays',         sub: 'Hotels · Trendy area', emoji: '🏙️', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Hotels',    hotelArea: 'Bandra' } },
-    { label: 'Street food',          sub: 'Iconic Mumbai eats',   emoji: '🌯', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Street Food' } },
+    { label: 'Bandra stays',         sub: 'Hotels · Trendy area', emoji: '🏙️', grad: 'linear-gradient(135deg,var(--color-brand),#3B82F6)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Hotels',    hotelArea: 'Bandra' } },
+    { label: 'Street food',          sub: 'Iconic Mumbai eats',   emoji: '🌯', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Street Food' } },
     { label: 'Marine Drive',         sub: 'Explore · Landmark',   emoji: '🌆', grad: 'linear-gradient(135deg,#0284C7,#06B6D4)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Explore',   exploreTarget: 'Marine Drive' } },
-    { label: 'Full day Mumbai',      sub: 'Itinerary · AI plan',  emoji: '🗺️', grad: 'linear-gradient(135deg,#1C64F2,#1E429F)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Itinerary', startTime: 'Morning' } },
-    { label: 'Best biryani',         sub: 'Food · Special pick',  emoji: '🍽️', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Food',      foodTag: 'Biryani' } },
-    { label: 'Business hotels',      sub: 'Hotels · Corporate',   emoji: '💼', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Hotels',    hotelTag: 'Business' } },
+    { label: 'Full day Mumbai',      sub: 'Itinerary · AI plan',  emoji: '🗺️', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-active))', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Itinerary', startTime: 'Morning' } },
+    { label: 'Best biryani',         sub: 'Food · Special pick',  emoji: '🍽️', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Food',      foodTag: 'Biryani' } },
+    { label: 'Business hotels',      sub: 'Hotels · Corporate',   emoji: '💼', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Hotels',    hotelTag: 'Business' } },
   ],
   jaipur: [
-    { label: 'Heritage palaces',     sub: 'Explore · Pink City',  emoji: '🏰', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Explore',   exploreTarget: 'Amber Fort' } },
-    { label: 'Royal palace stays',   sub: 'Hotels · Heritage',    emoji: '🏯', grad: 'linear-gradient(135deg,#1C64F2,#1E429F)', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Hotels',    hotelTag: 'Heritage' } },
-    { label: 'Rajasthani thali',     sub: 'Food · Authentic',     emoji: '🍛', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Mess & Meals' } },
-    { label: 'Pink City walk',       sub: 'Itinerary · Full day', emoji: '🛺', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Itinerary', startTime: 'Morning' } },
-    { label: 'Bazaar & markets',     sub: 'Explore · Shopping',   emoji: '🛍️', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Explore',   exploreTarget: 'Johari Bazaar' } },
-    { label: 'Street food',          sub: 'Food · Iconic eats',   emoji: '✨', grad: 'linear-gradient(135deg,#1C64F2,#1E429F)', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Food',      foodTag: 'Street Food' } },
+    { label: 'Heritage palaces',     sub: 'Explore · Pink City',  emoji: '🏰', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Explore',   exploreTarget: 'Amber Fort' } },
+    { label: 'Royal palace stays',   sub: 'Hotels · Heritage',    emoji: '🏯', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-active))', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Hotels',    hotelTag: 'Heritage' } },
+    { label: 'Rajasthani thali',     sub: 'Food · Authentic',     emoji: '🍛', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Mess & Meals' } },
+    { label: 'Pink City walk',       sub: 'Itinerary · Full day', emoji: '🛺', grad: 'linear-gradient(135deg,var(--color-brand),#3B82F6)', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Itinerary', startTime: 'Morning' } },
+    { label: 'Bazaar & markets',     sub: 'Explore · Shopping',   emoji: '🛍️', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Explore',   exploreTarget: 'Johari Bazaar' } },
+    { label: 'Street food',          sub: 'Food · Iconic eats',   emoji: '✨', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-active))', imgId: '1477587458883-47145ed94245', overrides: { tab: 'Food',      foodTag: 'Street Food' } },
   ],
   delhi: [
-    { label: 'Old Delhi heritage',   sub: 'Itinerary · Walk',     emoji: '🕌', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Itinerary', startTime: 'Morning' } },
-    { label: 'City centre stays',    sub: 'Hotels · Best value',  emoji: '💰', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Hotels',    hotelTag: 'City Centre' } },
-    { label: 'Chandni Chowk food',   sub: 'Street food · Iconic', emoji: '🥙', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Street Food' } },
-    { label: 'Red Fort',             sub: 'Explore · Must-see',   emoji: '🏰', grad: 'linear-gradient(135deg,#1C64F2,#1E429F)', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Explore',   exploreTarget: 'Red Fort' } },
-    { label: 'North Indian thali',   sub: 'Food · Top picks',     emoji: '🍽️', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Mess & Meals' } },
-    { label: 'Heritage hotels',      sub: 'Hotels · Old Delhi',   emoji: '🏛️', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Hotels',    hotelTag: 'Heritage' } },
+    { label: 'Old Delhi heritage',   sub: 'Itinerary · Walk',     emoji: '🕌', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Itinerary', startTime: 'Morning' } },
+    { label: 'City centre stays',    sub: 'Hotels · Best value',  emoji: '💰', grad: 'linear-gradient(135deg,var(--color-brand),#3B82F6)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Hotels',    hotelTag: 'City Centre' } },
+    { label: 'Chandni Chowk food',   sub: 'Street food · Iconic', emoji: '🥙', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Street Food' } },
+    { label: 'Red Fort',             sub: 'Explore · Must-see',   emoji: '🏰', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-active))', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Explore',   exploreTarget: 'Red Fort' } },
+    { label: 'North Indian thali',   sub: 'Food · Top picks',     emoji: '🍽️', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Mess & Meals' } },
+    { label: 'Heritage hotels',      sub: 'Hotels · Old Delhi',   emoji: '🏛️', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Hotels',    hotelTag: 'Heritage' } },
   ],
   default: [
-    { label: 'Top rated hotels',     sub: 'Hotels · AI ranked',   emoji: '🏨', grad: 'linear-gradient(135deg,#1C64F2,#3B82F6)', imgId: '1686310894901-d326b8722c13', overrides: { tab: 'Hotels' } },
-    { label: 'Best eats nearby',     sub: 'Food · Highly rated',  emoji: '🍽️', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food' } },
-    { label: 'Plan a full day',      sub: 'Itinerary · Optimised',emoji: '🗺️', grad: 'linear-gradient(135deg,#1C64F2,#1E429F)', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Itinerary', startTime: 'Morning' } },
-    { label: 'Must-see spots',       sub: 'Explore · Don\'t miss',emoji: '🧭', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1708782462555-b3af03b4b3d2', overrides: { tab: 'Explore' } },
-    { label: 'City centre stays',    sub: 'Hotels · Best value',  emoji: '💰', grad: 'linear-gradient(135deg,#1C64F2,#1E429F)', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Hotels',    hotelTag: 'City Centre' } },
-    { label: 'Pure veg options',     sub: 'Food · Filtered',      emoji: '🥗', grad: 'linear-gradient(135deg,#1C64F2,#1A56DB)', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      dietType: 'Veg' } },
+    { label: 'Top rated hotels',     sub: 'Hotels · AI ranked',   emoji: '🏨', grad: 'linear-gradient(135deg,var(--color-brand),#3B82F6)', imgId: '1686310894901-d326b8722c13', overrides: { tab: 'Hotels' } },
+    { label: 'Best eats nearby',     sub: 'Food · Highly rated',  emoji: '🍽️', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food' } },
+    { label: 'Plan a full day',      sub: 'Itinerary · Optimised',emoji: '🗺️', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-active))', imgId: '1713729991304-d0b6c328560e', overrides: { tab: 'Itinerary', startTime: 'Morning' } },
+    { label: 'Must-see spots',       sub: 'Explore · Don\'t miss',emoji: '🧭', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', imgId: '1708782462555-b3af03b4b3d2', overrides: { tab: 'Explore' } },
+    { label: 'City centre stays',    sub: 'Hotels · Best value',  emoji: '💰', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-active))', imgId: '1598434192043-71111c1b3f41', overrides: { tab: 'Hotels',    hotelTag: 'City Centre' } },
+    { label: 'Pure veg options',     sub: 'Food · Filtered',      emoji: '🥗', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      dietType: 'Veg' } },
   ],
 };
 
@@ -406,8 +406,8 @@ function LocationBar({ value, onChange, placeholder, autoDetect, mockResolvedLoc
 function CategorySelector({ active, onChange }: { active: Tab; onChange: (t: Tab) => void }) {
   return (
     <div
-      className="rounded-lg p-1 flex gap-1"
-      style={{ background: 'var(--color-brand)', boxShadow: '0 4px 16px rgba(28,100,242,0.30)' }}
+      className="rounded-lg p-1 flex gap-1 bg-brand"
+      style={{ boxShadow: '0 4px 16px rgba(28,100,242,0.30)' }}
     >
       {TABS.map(tab => {
         const meta = TAB_META[tab];
@@ -417,20 +417,16 @@ function CategorySelector({ active, onChange }: { active: Tab; onChange: (t: Tab
             key={tab}
             type="button"
             onClick={() => onChange(tab)}
-            className="flex-1 flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg transition-all duration-200"
-            style={isActive
-              ? { background: '#fff', boxShadow: 'var(--shadow-xs)' }
-              : { background: 'transparent' }
-            }
+            className={[
+              'flex-1 flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg transition-all duration-200',
+              isActive ? 'bg-white shadow-[var(--shadow-xs)]' : 'bg-transparent',
+            ].join(' ')}
             whileTap={{ scale: 0.96 }}
           >
-            <span className="flex items-center" style={{ color: isActive ? 'var(--color-brand)' : 'rgba(255,255,255,0.9)' }}>
+            <span className={`flex items-center ${isActive ? 'text-brand' : 'text-white/90'}`}>
               {meta.icon}
             </span>
-            <span
-              className="text-xs font-semibold transition-colors duration-200"
-              style={{ color: isActive ? 'var(--color-brand)' : 'rgba(255,255,255,0.9)' }}
-            >
+            <span className={`text-xs font-semibold transition-colors duration-200 ${isActive ? 'text-brand' : 'text-white/90'}`}>
               {meta.label}
             </span>
           </motion.button>
@@ -878,10 +874,10 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                           )}
                           className="px-3 py-2 rounded-lg border-2 text-xs font-medium transition-all"
                           style={isSelected
-                            ? { borderColor: '#1C64F2', background: '#EBF5FF', color: '#1C64F2' }
+                            ? { borderColor: 'var(--color-brand)', background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
                             : isMaxed
-                              ? { borderColor: '#E5E7EB', background: '#F9FAFB', color: '#D1D5DB', cursor: 'not-allowed' }
-                              : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
+                              ? { borderColor: 'var(--color-border)', background: 'var(--color-bg-app)', color: 'var(--color-placeholder)', cursor: 'not-allowed' }
+                              : { borderColor: 'var(--color-border)', background: 'var(--color-surface)',  color: 'var(--color-muted)' }
                           }
                         >
                           {t}
@@ -981,8 +977,8 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                     onClick={() => setItinDate(d)}
                     className="flex-1 py-2 rounded-lg text-xs font-bold border-2 transition-all"
                     style={itinDate === d
-                      ? { borderColor: '#1C64F2', background: '#EBF5FF', color: '#1C64F2' }
-                      : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
+                      ? { borderColor: 'var(--color-brand)', background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
+                      : { borderColor: 'var(--color-border)', background: 'var(--color-surface)',     color: 'var(--color-muted)' }
                     }
                   >
                     {labels[d]}
@@ -1007,10 +1003,10 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                     onClick={() => { setStartTime(t); setShowTimeError(false); }}
                     className="flex-1 flex flex-col items-center gap-0.5 py-2 rounded-lg border-2 transition-all"
                     style={startTime === t
-                      ? { borderColor: '#1C64F2', background: '#EBF5FF', color: '#1C64F2' }
+                      ? { borderColor: 'var(--color-brand)',  background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
                       : showTimeError
-                        ? { borderColor: '#EF4444', background: '#FEF2F2', color: '#6B7280' }
-                        : { borderColor: '#E5E7EB', background: '#fff',    color: '#6B7280' }
+                        ? { borderColor: 'var(--color-danger)', background: 'var(--color-danger-soft)', color: 'var(--color-muted)' }
+                        : { borderColor: 'var(--color-border)', background: 'var(--color-surface)',     color: 'var(--color-muted)' }
                     }
                   >
                     <span className="text-xs font-semibold uppercase tracking-wide">{t}</span>
@@ -1033,7 +1029,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             </AnimatePresence>
           </div>
 
-          <div className="rounded-lg p-2.5 border border-border" style={{ background: '#EBF5FF' }}>
+          <div className="rounded-lg p-2.5 border border-brand-soft/50 bg-brand-softer">
             <p className="text-xs text-muted leading-relaxed">
               <span className="font-bold text-heading">Visual day planner</span> — AI sequences stops by proximity, avoids peak traffic hours, and shows entry tips per location.
             </p>
@@ -1153,7 +1149,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         style={{ minHeight: 220 }}
       >
         {/* Gradient fallback — always underneath */}
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg,#1E429F 0%,#1C64F2 100%)' }} />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg,var(--color-brand-active) 0%,var(--color-brand) 100%)' }} />
         {/* All fetched tab photos kept mounted; opacity crossfade on tab switch */}
         {(Object.entries(heroPhotos) as [Tab, string][]).map(([tab, uri]) => (
           <img
@@ -1389,7 +1385,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       {/* ── Social proof ────────────────────────────────────────── */}
       <div className="flex items-center gap-2 py-1 px-1 relative z-10">
         <div className="flex -space-x-1.5">
-          {['#1C64F2','#1E429F','#3F83F8'].map((c,i) => (
+          {['var(--color-brand)','var(--color-brand-active)','var(--color-brand-border)'].map((c,i) => (
             <div key={i} className="w-5 h-5 rounded-full border-2 border-white flex items-center justify-center text-white text-[7px] font-black" style={{ background: c }}>
               {['K','P','R'][i]}
             </div>
@@ -1404,7 +1400,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <h2 className="font-display font-semibold text-lg text-heading">Plan your visit</h2>
+            <h2 className="font-display font-bold text-lg text-heading">Plan your visit</h2>
             <p className="text-xs text-muted mt-0.5">Tap a card — AI builds your shortlist</p>
           </div>
         </div>
@@ -1477,7 +1473,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       <div className="relative z-10 border-t border-border pt-5">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <h2 className="font-display font-semibold text-lg text-heading">Discover Thanjavur</h2>
+            <h2 className="font-display font-bold text-lg text-heading">Discover Thanjavur</h2>
             <p className="text-xs text-muted mt-0.5">Must-see landmarks · Opens Explore</p>
           </div>
           <span className="text-xs text-muted shrink-0 flex items-center gap-0.5">Swipe <ChevronRight className="w-3 h-3" /></span>
@@ -1529,7 +1525,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       <div className="relative z-10 border-t border-border pt-5">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <h2 className="font-display font-semibold text-lg text-heading">Plan another city</h2>
+            <h2 className="font-display font-bold text-lg text-heading">Plan another city</h2>
             <p className="text-xs text-muted mt-0.5">Tap to switch destination</p>
           </div>
           <span className="text-xs text-muted shrink-0 flex items-center gap-0.5">Swipe <ChevronRight className="w-3 h-3" /></span>
@@ -1573,7 +1569,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-1.5">
             <Flame className="w-3.5 h-3.5 text-brand shrink-0" />
-            <h2 className="font-display font-semibold text-lg text-heading">
+            <h2 className="font-display font-bold text-lg text-heading">
               Trending in {destination || 'your city'}
             </h2>
           </div>

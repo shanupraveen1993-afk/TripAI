@@ -143,7 +143,7 @@ const FOOD_TAG_KEYWORDS: Record<string, string[]> = {
   'Fine Dining':      ['fine dine', 'fine dining', 'elegant', 'upscale dining', 'fine cuisine', 'ambience', 'fine restaurant'],
   'Buffet':           ['buffet', 'unlimited buffet', 'all you can eat', 'buffet lunch', 'buffet dinner', 'unlimited spread'],
   'Cafe & Drinks':    ['cafe', 'filter coffee', 'filter kaapi', 'degree coffee', 'kaapi', 'strong tea', 'coffee shop', 'beverages'],
-  'Family Dining':    ['family', 'families', 'kids', 'children', 'family friendly', 'family dining', 'family restaurant'],
+  'Family Dining':    ['family dining', 'family restaurant', 'family friendly', 'good for families', 'kids menu', 'kids friendly', 'children friendly', 'suitable for kids', 'kids', 'children'],
   // ── Preference (5) ───────────────────────────────────────────────────────
   'Fresh & Hot':      ['fresh', 'freshly cooked', 'hot and fresh', 'made fresh', 'steaming hot', 'piping hot', 'freshly made'],
   'Budget Friendly':  ['affordable', 'cheap', 'budget', 'pocket friendly', 'economical', 'low price', 'affordable price'],

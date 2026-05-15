@@ -62,9 +62,9 @@ const NEARBY_RESTAURANTS = [
 
 /* ── Traffic styling ─────────────────────────────────────────────────── */
 const TRAFFIC_LINE_BG: Record<TrafficLevel, string> = {
-  Light:    '#31C48D',   // success-medium
-  Moderate: '#E3A008',   // warning-strong
-  Heavy:    '#F05252',   // danger
+  Light:    'var(--color-success-medium)',
+  Moderate: 'var(--color-warning-strong)',
+  Heavy:    'var(--color-danger)',
 };
 
 const TRAFFIC_BADGE: Record<TrafficLevel, { bg: string; text: string; dot: string; border: string }> = {
@@ -97,7 +97,7 @@ function ItineraryPhoto({ stopName, photoRef }: {
   if (uri) {
     return <img src={uri} alt={stopName} className="absolute inset-0 w-full h-full object-cover" />;
   }
-  return <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg,#1C64F2,#1E429F)' }} />;
+  return <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-active))' }} />;
 }
 
 const CROWD_BADGE: Record<'Low' | 'Moderate' | 'High', { bg: string; text: string; dot: string; border: string }> = {
@@ -161,7 +161,8 @@ function PlacePhoto({ color, name, photoRef, autoLoad }: { color: string; name: 
 }
 
 const AVATAR_COLORS = [
-  '#1C64F2', '#7C3AED', '#059669', '#D97706', '#DC2626', '#0891B2',
+  'var(--color-brand)', 'var(--color-itinerary)', 'var(--color-explore)',
+  'var(--color-food)', 'var(--color-danger)', '#0891B2',
 ];
 
 function ReviewCard({ review, idx, keywords = [] }: { review: ReviewItem; idx: number; keywords?: string[] }) {
@@ -229,7 +230,7 @@ const TAG_KEYWORD_MAP: Record<string, string[]> = {
   'Fine Dining':     ['fine dine', 'fine dining', 'fine-dine', 'elegant', 'upscale dining', 'fine cuisine', 'ambience', 'ambiance', 'atmosphere', 'romantic', 'classy', 'fancy', 'interiors', 'decor', 'premium dining', 'special occasion'],
   'Buffet':          ['buffet', 'unlimited buffet', 'all you can eat', 'unlimited spread', 'buffet lunch', 'buffet dinner'],
   'Cafe & Drinks':   ['cafe', 'filter coffee', 'filter kaapi', 'degree coffee', 'kaapi', 'strong tea', 'coffee shop', 'coffee', 'tea', 'chai', 'cold coffee', 'juice', 'shakes', 'milkshake', 'espresso', 'latte'],
-  'Family Dining':   ['family', 'families', 'kids', 'children', 'family friendly', 'family dining'],
+  'Family Dining':   ['family dining', 'family restaurant', 'family friendly', 'good for families', 'kids', 'children'],
   // ── Food: Preference (5) ─────────────────────────────────────────────────
   'Fresh & Hot':     ['fresh', 'freshly cooked', 'hot and fresh', 'made fresh', 'steaming hot', 'piping hot', 'hot food', 'served hot', 'warm food', 'just cooked', 'freshly prepared', 'hot dish', 'made to order'],
   'Budget Friendly': ['affordable', 'cheap', 'budget', 'pocket friendly', 'economical', 'low price', 'affordable price', 'reasonable', 'worth it', 'good price', 'inexpensive', 'cost effective', 'cheap rate', 'value', 'cheap food'],
@@ -373,7 +374,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
   );
 
   // Competitor-style coloured rating badge (Booking.com / Goibibo pattern)
-  const ratingColor = place.rating >= 4.5 ? '#05603A' : place.rating >= 4.0 ? '#1C64F2' : place.rating >= 3.5 ? '#B45309' : '#DC2626';
+  const ratingColor = place.rating >= 4.5 ? 'var(--color-success-strong)' : place.rating >= 4.0 ? 'var(--color-brand)' : place.rating >= 3.5 ? 'var(--color-food)' : 'var(--color-danger-strong)';
   const ratingLabel = place.rating >= 4.5 ? 'Excellent' : place.rating >= 4.0 ? 'Very Good' : place.rating >= 3.5 ? 'Good' : 'Fair';
   const recentRatingsArr = place.recentRatings ?? [];
   const recentAvgMain = recentRatingsArr.length > 0
@@ -442,7 +443,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
 
         {/* Info */}
         <div className="px-3 pt-2.5 pb-1 flex flex-col gap-1.5">
-          <h3 className="font-display font-semibold text-lg text-heading leading-snug">{place.name}</h3>
+          <h3 className="font-display font-bold text-lg text-heading leading-snug">{place.name}</h3>
           <div className="flex items-center gap-1 flex-wrap">
             <div className="flex gap-0.5">
               {Array.from({ length: 5 }).map((_, i) => (
@@ -562,7 +563,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               <Sparkles className="w-2.5 h-2.5" /> AI Top Pick
             </span>
           )}
-          <h3 className="font-display font-semibold text-sm text-heading leading-snug line-clamp-2">{place.name}</h3>
+          <h3 className="font-display font-bold text-sm text-heading leading-snug line-clamp-2">{place.name}</h3>
           <div className="flex items-center gap-1.5">
             <div className="text-white text-sm font-black px-2.5 py-0.5 rounded-lg" style={{ background: ratingColor }}>{place.rating}</div>
             <span className="text-xs text-muted font-semibold">{ratingLabel}</span>
@@ -828,11 +829,11 @@ function stopShortName(name: string): string {
 /* ── Travel mode parser ──────────────────────────────────────────────── */
 function getTravelMode(leg: string): { emoji: string; bg: string; color: string } {
   const l = leg.toLowerCase();
-  if (l.includes('walk'))  return { emoji: '🚶', bg: '#DEF7EC', color: '#0E9F6E' };
-  if (l.includes('metro')) return { emoji: '🚇', bg: '#EBF5FF', color: '#1C64F2' };
-  if (l.includes('bus'))   return { emoji: '🚌', bg: '#EBF5FF', color: '#1C64F2' };
-  if (l.includes('auto'))  return { emoji: '🛺', bg: '#EBF5FF', color: '#1C64F2' };
-  return                          { emoji: '🚗', bg: '#EBF5FF', color: '#1C64F2' };
+  if (l.includes('walk'))  return { emoji: '🚶', bg: 'var(--color-success-soft)',  color: 'var(--color-success)' };
+  if (l.includes('metro')) return { emoji: '🚇', bg: 'var(--color-brand-softer)',  color: 'var(--color-brand)' };
+  if (l.includes('bus'))   return { emoji: '🚌', bg: 'var(--color-brand-softer)',  color: 'var(--color-brand)' };
+  if (l.includes('auto'))  return { emoji: '🛺', bg: 'var(--color-brand-softer)',  color: 'var(--color-brand)' };
+  return                          { emoji: '🚗', bg: 'var(--color-brand-softer)',  color: 'var(--color-brand)' };
 }
 
 function ItineraryView({ stops, onRegenerate, onExploreStop }: {
@@ -858,10 +859,10 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
     return sc && crowdOrder[sc] > crowdOrder[w] ? sc : w;
   }, 'Low');
   const crowdStyle = worstCrowd === 'High'
-    ? { bg: '#FDE8E8', text: '#E02424', dot: '#F05252' }
+    ? { bg: 'var(--color-danger-soft)',   text: 'var(--color-danger-strong)',   dot: 'var(--color-danger)' }
     : worstCrowd === 'Moderate'
-    ? { bg: '#EBF5FF', text: '#1C64F2', dot: '#E3A008' }
-    : { bg: '#DEF7EC', text: '#0E9F6E', dot: '#31C48D' };
+    ? { bg: 'var(--color-brand-softer)',  text: 'var(--color-brand)',           dot: 'var(--color-warning-strong)' }
+    : { bg: 'var(--color-success-soft)',  text: 'var(--color-success)',         dot: 'var(--color-success-medium)' };
 
   return (
     <div>
@@ -915,7 +916,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                   >
                     <div
                       className="w-9 h-9 rounded-full flex items-center justify-center font-black text-[15px] shadow ring-2 ring-white transition-transform group-hover:scale-110"
-                      style={{ background: 'linear-gradient(135deg,#1C64F2,#1E429F)', color: '#fff' }}
+                      style={{ background: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-active))', color: '#fff' }}
                     >
                       {idx + 1}
                     </div>
@@ -972,7 +973,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
 
                   {/* Top: stop# + time + duration */}
                   <div className="absolute top-3 left-3 right-3 flex items-start justify-between z-10">
-                    <span className="bg-white text-xs font-black px-2.5 py-1 rounded-full shadow-sm leading-none" style={{ color: '#1C64F2' }}>
+                    <span className="bg-white text-xs font-black px-2.5 py-1 rounded-full shadow-sm leading-none text-brand">
                       Stop {idx + 1}
                     </span>
                     <div className="flex flex-col items-end gap-1">
@@ -1044,8 +1045,8 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                       onClick={() => toggleStop(idx)}
                       className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold border transition-colors"
                       style={isExpanded
-                        ? { background: '#EBF5FF', borderColor: '#1C64F240', color: '#1C64F2' }
-                        : { background: '#F8FAFC', borderColor: '#E2E8F0', color: '#374151' }
+                        ? { background: 'var(--color-brand-softer)', borderColor: 'var(--color-brand-soft)', color: 'var(--color-brand)' }
+                        : { background: 'var(--color-bg-app)', borderColor: 'var(--color-border)', color: 'var(--color-body)' }
                       }
                     >
                       Know More
@@ -1065,12 +1066,12 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                     transition={{ duration: 0.22, ease: 'easeInOut' }}
                     style={{ overflow: 'hidden' }}
                   >
-                    <div className="px-3.5 pb-3.5 border-t border-border/50 pt-3 space-y-2.5" style={{ background: '#F9FAFB' }}>
+                    <div className="px-3.5 pb-3.5 border-t border-border/50 pt-3 space-y-2.5 bg-bg-app">
 
                       {/* 2-card grid: Timing & Crowd + Good to Know */}
                       <div className="grid grid-cols-2 gap-2">
                         {/* Card 1: Timing & Crowd */}
-                        <div className="rounded-lg p-3 flex flex-col gap-2 border" style={{ background: '#EBF5FF', borderColor: '#C3DDFD' }}>
+                        <div className="rounded-lg p-3 flex flex-col gap-2 border bg-brand-softer border-brand-medium">
                           <span className="text-xs font-semibold text-brand flex items-center gap-1">
                             <Clock className="w-3 h-3" /> Timing & Crowd
                           </span>
@@ -1112,11 +1113,11 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
 
                       {/* Avoid These — if avoidNote exists */}
                       {(stop as any).avoidNote && (
-                        <div className="flex items-start gap-2 p-2.5 rounded-lg border" style={{ background: '#FDE8E8', borderColor: '#F9A8A8' }}>
-                          <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" style={{ color: '#C81E1E' }} />
+                        <div className="flex items-start gap-2 p-2.5 rounded-lg border bg-danger-soft border-danger-medium/50">
+                          <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-danger-strong" />
                           <div>
-                            <span className="text-xs font-bold block mb-0.5" style={{ color: '#C81E1E' }}>Avoid</span>
-                            <p className="text-xs leading-snug" style={{ color: '#9B1C1C' }}>{(stop as any).avoidNote}</p>
+                            <span className="text-xs font-bold block mb-0.5 text-danger-strong">Avoid</span>
+                            <p className="text-xs leading-snug text-danger">{(stop as any).avoidNote}</p>
                           </div>
                         </div>
                       )}
@@ -1156,7 +1157,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                             <span className="text-xs font-bold text-body">Next stop: </span>
                             <span className="text-xs text-muted">{stop.travelToNext}</span>
                             {stop.departBy && (
-                              <span className="text-xs font-bold ml-1" style={{ color: '#1C64F2' }}>· leave by {stop.departBy}</span>
+                              <span className="text-xs font-bold ml-1 text-brand">· leave by {stop.departBy}</span>
                             )}
                           </div>
                         </div>
@@ -1261,7 +1262,7 @@ function ExploreView({ place, visitTime = 'Morning' }: { place: ExploreResult; v
       </div>
 
       {/* ── AI Insight (full width) ──────────────────────────── */}
-      <div className="rounded-lg p-3.5 border" style={{ background: '#EBF5FF', borderColor: '#C3DDFD' }}>
+      <div className="rounded-lg p-3.5 border bg-brand-softer border-brand-medium">
         <div className="flex items-center gap-1.5 mb-2">
           <Sparkles className="w-3.5 h-3.5 text-brand" />
           <span className="text-xs font-semibold text-brand">AI Insight</span>
@@ -1282,27 +1283,27 @@ function ExploreView({ place, visitTime = 'Morning' }: { place: ExploreResult; v
 
       {/* ── 2-card: Visit Guide + How to Prepare ────────────── */}
       <div className="grid grid-cols-2 gap-2">
-        <div className="rounded-lg p-3 flex flex-col gap-2 border" style={{ background: '#DEF7EC', borderColor: '#A7F3D0' }}>
+        <div className="rounded-lg p-3 flex flex-col gap-2 border bg-success-soft border-success-medium/50">
           <span className="text-xs font-semibold text-success-strong flex items-center gap-1">
             <Navigation className="w-3 h-3" /> Visit Guide
           </span>
           <p className="text-xs text-body leading-relaxed whitespace-pre-line">{place.flow}</p>
         </div>
-        <div className="rounded-lg p-3 flex flex-col gap-2 border" style={{ background: '#FFFBEB', borderColor: '#FCD34D' }}>
-          <span className="text-xs font-semibold flex items-center gap-1" style={{ color: '#92400E' }}>
+        <div className="rounded-lg p-3 flex flex-col gap-2 border bg-warning-soft border-warning-medium">
+          <span className="text-xs font-semibold flex items-center gap-1 text-food-dark">
             <Info className="w-3 h-3" /> Good to Know
           </span>
-          <p className="text-xs leading-relaxed" style={{ color: '#78350F' }}>{place.preparation}</p>
+          <p className="text-xs leading-relaxed text-food-dark">{place.preparation}</p>
         </div>
       </div>
 
       {/* ── Avoid These ──────────────────────────────────────── */}
       {(place as any).avoidNote && (
-        <div className="flex items-start gap-2 p-3 rounded-lg border" style={{ background: '#FDE8E8', borderColor: '#F9A8A8' }}>
-          <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" style={{ color: '#C81E1E' }} />
+        <div className="flex items-start gap-2 p-3 rounded-lg border bg-danger-soft border-danger-medium/50">
+          <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-danger-strong" />
           <div>
-            <span className="text-xs font-bold block mb-0.5" style={{ color: '#C81E1E' }}>Avoid These</span>
-            <p className="text-xs leading-snug" style={{ color: '#9B1C1C' }}>{(place as any).avoidNote}</p>
+            <span className="text-xs font-bold block mb-0.5 text-danger-strong">Avoid These</span>
+            <p className="text-xs leading-snug text-danger">{(place as any).avoidNote}</p>
           </div>
         </div>
       )}
@@ -1389,10 +1390,10 @@ export function ResultsView({
   const count = tab === 'Itinerary' ? itinerary?.length : tab === 'Explore' ? 1 : results?.length;
 
   const TAB_ACCENT: Record<string, { accent: string; accentBg: string }> = {
-    Hotels:    { accent: '#1C64F2', accentBg: '#EBF5FF' },
-    Food:      { accent: '#1C64F2', accentBg: '#EBF5FF' },
-    Itinerary: { accent: '#1C64F2', accentBg: '#EBF5FF' },
-    Explore:   { accent: '#1C64F2', accentBg: '#EBF5FF' },
+    Hotels:    { accent: 'var(--color-brand)', accentBg: 'var(--color-brand-softer)' },
+    Food:      { accent: 'var(--color-brand)', accentBg: 'var(--color-brand-softer)' },
+    Itinerary: { accent: 'var(--color-brand)', accentBg: 'var(--color-brand-softer)' },
+    Explore:   { accent: 'var(--color-brand)', accentBg: 'var(--color-brand-softer)' },
   };
   const { accent, accentBg } = TAB_ACCENT[tab] ?? TAB_ACCENT.Hotels;
 
@@ -1418,15 +1419,14 @@ export function ResultsView({
 
       {/* Pure Veg active indicator — shown when filter is on */}
       {tab === 'Food' && pureVegFilter && (
-        <div className="flex items-center gap-2 px-3 py-2 rounded-lg mb-3"
-          style={{ background: '#ECFDF5', border: '1.5px solid #059669' }}>
+        <div className="flex items-center gap-2 px-3 py-2 rounded-lg mb-3 bg-explore-soft border border-explore">
           <span className="text-sm leading-none">🟢</span>
-          <span className="text-xs font-bold" style={{ color: '#1C64F2' }}>Pure Veg — non-veg places are dimmed</span>
+          <span className="text-xs font-bold text-brand">Pure Veg — non-veg places are dimmed</span>
         </div>
       )}
 
       {/* Active tag chips — shown when hotel/food tags are applied */}
-      {selectedTags.length > 0 && onCancelTag && (
+      {(tab === 'Hotels' || tab === 'Food') && selectedTags.length > 0 && onCancelTag && (
         <div className="flex flex-wrap gap-2 mb-4">
           {selectedTags.map(tag => (
             <div

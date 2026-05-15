@@ -190,8 +190,7 @@ function TestimonialCarousel() {
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             exit={{ opacity: 0, y: -16, filter: 'blur(4px)' }}
             transition={{ duration: 0.4, ease: 'easeOut' }}
-            className="rounded-2xl p-7 border"
-            style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)', boxShadow: 'var(--shadow-xs)' }}
+            className="rounded-2xl p-7 border border-border bg-surface shadow-[var(--shadow-xs)]"
           >
             <Quote className="w-8 h-8 mb-4 text-brand/55" />
             <p className="text-base leading-relaxed italic mb-5 text-body">"{t.text}"</p>
@@ -418,7 +417,7 @@ function TiltCard({ label, desc, glow, illustration, onClick, animDelay = 0 }: {
         </div>
 
         {/* Label */}
-        <h3 className="relative z-10 font-display font-semibold text-xl text-white">{label}</h3>
+        <h3 className="relative z-10 font-display font-bold text-xl text-white">{label}</h3>
 
         {/* Desc */}
         <p className="relative z-10 text-sm leading-relaxed" style={{ color: 'var(--color-on-dark-body)' }}>{desc}</p>
@@ -439,10 +438,10 @@ function TiltCard({ label, desc, glow, illustration, onClick, animDelay = 0 }: {
 
 /* ── Category metadata ────────────────────────────────────────────────── */
 const CATEGORIES: { label: Tab; desc: string; glow: string; illustration: React.ReactNode }[] = [
-  { label: 'Hotels',    glow: '#1C64F2', illustration: <HotelScene />,   desc: 'Not 150 unfiltered options. AI-ranked picks by budget, area, and what you care about — applied before you see a single result.' },
-  { label: 'Food',      glow: '#1C64F2', illustration: <FoodScene />,    desc: 'Worth the queue or skip it? Diet, vibe, and distance — filtered before you open another app.' },
-  { label: 'Itinerary', glow: '#1C64F2', illustration: <ItinScene />,    desc: 'Your whole day, no backtracking. Stops sequenced around your hotel — so you\'re not zigzagging across the city like a tourist.' },
-  { label: 'Explore',   glow: '#1C64F2', illustration: <ExploreScene />, desc: 'Brihadeeswarar to Airavatesvara. Entry times, dress code, crowd patterns — so you don\'t figure it out after the 2km walk.' },
+  { label: 'Hotels',    glow: 'var(--color-brand)', illustration: <HotelScene />,   desc: 'Not 150 unfiltered options. AI-ranked picks by budget, area, and what you care about — applied before you see a single result.' },
+  { label: 'Food',      glow: 'var(--color-brand)', illustration: <FoodScene />,    desc: 'Worth the queue or skip it? Diet, vibe, and distance — filtered before you open another app.' },
+  { label: 'Itinerary', glow: 'var(--color-brand)', illustration: <ItinScene />,    desc: 'Your whole day, no backtracking. Stops sequenced around your hotel — so you\'re not zigzagging across the city like a tourist.' },
+  { label: 'Explore',   glow: 'var(--color-brand)', illustration: <ExploreScene />, desc: 'Brihadeeswarar to Airavatesvara. Entry times, dress code, crowd patterns — so you don\'t figure it out after the 2km walk.' },
 ];
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -512,7 +511,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
               style={{ boxShadow: '0 0 12px rgba(28,100,242,0.30)' }}>
               <Compass className="w-4 h-4 text-white" />
             </div>
-            <span className="font-display font-semibold text-xl text-heading tracking-tight">
+            <span className="font-display font-bold text-xl text-heading tracking-tight">
               Trip<span className="text-brand">AI</span>
             </span>
           </div>
@@ -525,7 +524,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
       </header>
 
       {/* ── Hero ───────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden" style={{ background: '#0C1220', backgroundImage: 'radial-gradient(ellipse 80% 50% at 50% 0%, rgba(28,100,242,0.20) 0%, transparent 70%)' }}>
+      <section className="relative overflow-hidden bg-darkest" style={{ backgroundImage: 'radial-gradient(ellipse 80% 50% at 50% 0%, rgba(28,100,242,0.20) 0%, transparent 70%)' }}>
         {/* Mesh orbs */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-[-25%] left-[-15%] w-[680px] h-[680px] rounded-full blur-[140px] animate-aurora"
@@ -550,7 +549,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
               </div>
 
               {/* Headline — short + direct */}
-              <h1 className="text-4xl md:text-5xl font-display font-semibold text-white leading-[1.1] tracking-tight">
+              <h1 className="text-4xl md:text-5xl font-display font-bold text-white leading-[1.1] tracking-tight">
                 <span className="block">Find the best in</span>
                 <CityRotator city={HERO_DESTINATIONS[heroActive].city} />
               </h1>
@@ -620,7 +619,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
       <section className="py-16 md:py-20 border-y border-border bg-surface">
         <div className="max-w-screen-xl mx-auto px-4 md:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-semibold text-heading mb-3">Three steps. Zero tab-switching.</h2>
+            <h2 className="text-3xl font-bold text-heading mb-3">Three steps. Zero tab-switching.</h2>
             <p className="max-w-md mx-auto text-body">From where you're going to what's worth booking — without opening another tab.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
@@ -629,7 +628,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
                 <div className="w-12 h-12 rounded-2xl bg-brand text-white flex items-center justify-center mx-auto"
                   style={{ boxShadow: '0 0 14px rgba(28,100,242,0.25)' }}>{h.icon}</div>
                 <div className="text-xs font-semibold text-brand">{h.step}</div>
-                <h3 className="font-display font-semibold text-base text-heading">{h.title}</h3>
+                <h3 className="font-display font-bold text-base text-heading">{h.title}</h3>
                 <p className="text-sm font-normal leading-relaxed text-body">{h.desc}</p>
               </motion.div>
             ))}
@@ -648,10 +647,10 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
       </section>
 
       {/* ── 3D Category cards ──────────────────────────────────────── */}
-      <section className="py-16 md:py-24" style={{ background: '#0C1220' }}>
+      <section className="py-16 md:py-24 bg-darkest">
         <div className="max-w-screen-xl mx-auto px-4 md:px-8">
           <div className="text-center mb-14">
-            <h2 className="text-3xl md:text-4xl font-semibold text-white mb-3">One search. Four answers.</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">One search. Four answers.</h2>
             <p style={{ color: 'var(--color-on-dark-body)' }}>Pick what you need — AI ranks the best options in under 10 seconds.</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 items-stretch">
@@ -674,7 +673,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
       <section className="py-16 md:py-20 border-y border-border bg-surface">
         <div className="max-w-screen-xl mx-auto px-4 md:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-semibold text-heading mb-3">From people who stopped tab-switching</h2>
+            <h2 className="text-3xl font-bold text-heading mb-3">From people who stopped tab-switching</h2>
             <p className="text-body">Real searches. Real relief.</p>
           </div>
           <TestimonialCarousel />
@@ -685,7 +684,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
       <section className="py-16 md:py-20 bg-bg-app border-b border-border">
         <div className="max-w-screen-xl mx-auto px-4 md:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-semibold text-heading mb-3">Built different. Works better.</h2>
+            <h2 className="text-3xl font-bold text-heading mb-3">Built different. Works better.</h2>
             <p className="text-body">Every detail exists to save you time, not waste it.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -698,7 +697,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
                 <div className="w-10 h-10 rounded-lg bg-brand text-white flex items-center justify-center shrink-0"
                   style={{ boxShadow: '0 0 12px rgba(28,100,242,0.25)' }}>{f.icon}</div>
                 <div className="space-y-1">
-                  <h3 className="font-display font-semibold text-base text-heading">{f.title}</h3>
+                  <h3 className="font-display font-bold text-base text-heading">{f.title}</h3>
                   <p className="text-sm font-normal leading-relaxed text-body">{f.desc}</p>
                 </div>
               </motion.div>
@@ -708,13 +707,13 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
       </section>
 
       {/* ── CTA banner ─────────────────────────────────────────────── */}
-      <section className="py-16 md:py-24 relative overflow-hidden" style={{ background: '#0C1220' }}>
+      <section className="py-16 md:py-24 relative overflow-hidden bg-darkest">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[360px] rounded-full blur-[120px]"
             style={{ background: 'rgba(28,100,242,0.22)' }} />
         </div>
         <div className="relative max-w-2xl mx-auto px-4 text-center space-y-6">
-          <h2 className="text-3xl md:text-4xl font-semibold text-white">
+          <h2 className="text-3xl md:text-4xl font-bold text-white">
             Your next trip is<br />10 seconds away.
           </h2>
           <p style={{ color: 'var(--color-on-dark-body)' }}>India's AI travel ranker — Google-verified, always free.</p>
@@ -725,13 +724,13 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
       </section>
 
       {/* ── Footer ─────────────────────────────────────────────────── */}
-      <footer className="border-t py-10" style={{ background: '#0C1220', borderColor: 'rgba(255,255,255,0.08)' }}>
+      <footer className="border-t py-10 bg-darkest" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
         <div className="max-w-screen-xl mx-auto px-4 md:px-8 space-y-6">
           {/* Top row */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <Compass className="w-4 h-4 text-brand-border" />
-              <span className="font-display font-semibold text-white">TripAI</span>
+              <span className="font-display font-bold text-white">TripAI</span>
               <span className="text-xs px-2 py-0.5 rounded-full ml-1" style={{ background: 'rgba(28,100,242,0.15)', color: 'var(--color-brand-light)', border: '1px solid rgba(28,100,242,0.25)' }}>
                 🇮🇳 India's AI travel ranker
               </span>
@@ -785,7 +784,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
                 <X className="w-4 h-4" />
               </button>
               <span className="text-4xl block mb-3">{cityNotice.emoji}</span>
-              <h3 className="text-white font-display font-semibold text-xl mb-2">
+              <h3 className="text-white font-display font-bold text-xl mb-2">
                 {cityNotice.city} isn't live yet
               </h3>
               <p className="text-sm leading-relaxed mb-5" style={{ color: 'var(--color-on-dark-body)' }}>

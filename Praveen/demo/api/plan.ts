@@ -129,7 +129,7 @@ const FOOD_TAG_KEYWORDS: Record<string, string[]> = {
   'Fine Dining':       ['fine dine', 'fine dining', 'fine-dine', 'elegant', 'upscale dining', 'fine cuisine', 'fine restaurant', 'ambience', 'ambiance', 'atmosphere', 'romantic', 'classy', 'fancy', 'interiors', 'decor', 'premium dining', 'special occasion'],
   'Buffet':            ['buffet', 'unlimited buffet', 'all you can eat', 'buffet lunch', 'buffet dinner', 'unlimited spread'],
   'Cafe & Drinks':     ['cafe', 'filter coffee', 'filter kaapi', 'degree coffee', 'kaapi', 'strong tea', 'coffee shop', 'beverages', 'south indian coffee', 'coffee', 'tea', 'chai', 'cold coffee', 'juice', 'shakes', 'milkshake', 'espresso', 'latte'],
-  'Family Dining':     ['family', 'families', 'kids', 'children', 'family friendly', 'family dining', 'family restaurant'],
+  'Family Dining':     ['family dining', 'family restaurant', 'family friendly', 'good for families', 'kids menu', 'kids friendly', 'children friendly', 'suitable for kids', 'kids', 'children'],
   // ── Preference (5) ───────────────────────────────────────────────────────
   'Fresh & Hot':       ['fresh', 'freshly cooked', 'hot and fresh', 'made fresh', 'steaming hot', 'piping hot', 'freshly made', 'hot food', 'served hot', 'warm food', 'just cooked', 'freshly prepared', 'hot dish', 'made to order'],
   'Budget Friendly':   ['affordable', 'cheap', 'pocket friendly', 'value for money', 'value money', 'affordable price', 'economical', 'budget meal', 'low price', 'reasonable', 'worth it', 'good price', 'inexpensive', 'cost effective', 'cheap rate', 'value', 'cheap food'],
@@ -1951,11 +1951,13 @@ function scorePlaceForFilters(place: any, tab: string, f: UserFilters): PlaceSco
             tagsMatched += hits >= 2 ? 1 : hits === 1 ? 0.75 : 0;
             continue;
           }
-          // Family Dining: primaryType=family_restaurant first
+          // Family Dining: primaryType or Google booleans first; keyword phrases only (no bare "family")
           if (tag === 'Family Dining') {
             if ((place.primaryType ?? '').includes('family_restaurant')) { tagsMatched += 1; continue; }
+            if (place.goodForChildren === true || place.menuForChildren === true) { tagsMatched += 1; continue; }
             const kws = FOOD_TAG_KEYWORDS['Family Dining'] ?? [];
-            tagsMatched += kws.some(kw => allText.includes(kw)) ? 0.7 : 0;
+            const hits = kws.filter((kw: string) => allText.includes(kw)).length;
+            tagsMatched += hits >= 2 ? 0.8 : hits === 1 ? 0.4 : 0;
             continue;
           }
           // Dinner Special: servesDinner boolean first
@@ -2334,10 +2336,12 @@ function applyTagFilter(places: any[], tab: string, f: UserFilters): any[] {
           if (kws.some(kw => corpus.includes(kw))) matched.push(tag);
           continue;
         }
-        // Family Dining: primaryType first, keyword fallback
+        // Family Dining: primaryType or Google booleans first; require 2+ keyword hits (no bare "family")
         if (tag === 'Family Dining') {
           if ((p.primaryType ?? '').includes('family_restaurant')) { matched.push(tag); continue; }
-          if (kws.some(kw => corpus.includes(kw))) matched.push(tag);
+          if (p.goodForChildren === true || p.menuForChildren === true) { matched.push(tag); continue; }
+          const hits = kws.filter((kw: string) => corpus.includes(kw)).length;
+          if (hits >= 2) matched.push(tag);
           continue;
         }
         // Dinner Special: servesDinner boolean OR keyword (Experience segment)
