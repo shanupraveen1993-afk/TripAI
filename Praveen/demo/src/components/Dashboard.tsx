@@ -85,11 +85,9 @@ const TABS: Tab[] = ['Hotels', 'Food', 'Itinerary', 'Explore'];
 /* ── Advanced food keywords — from real 50-restaurant review analysis ─── */
 // Items ordered by restaurant coverage from food-items.ts analysis (Thanjavur top-50)
 const FOOD_ADVANCED: { group: string; items: string[] }[] = [
-  { group: 'Rice & Meals',   items: ['Thali/Meals', 'Biryani', 'Dosa', 'Tea', 'Idli'] },
-  { group: 'Non-Veg',        items: ['Mutton', 'Chicken', 'Fish Curry', 'Prawn', 'Crab'] },
-  { group: 'Tiffin',         items: ['Vada', 'Pongal', 'Parotta', 'Idiyappam', 'Sambar'] },
-  { group: 'Veg Dishes',     items: ['Paneer', 'Noodles', 'Filter Coffee', 'Soup', 'Sweets'] },
-  { group: 'Specials',       items: ['Mandi', 'Shawarma', 'BBQ & Grills', 'Alfaham', 'Buffet'] },
+  { group: 'South Indian',  items: ['South Indian Breakfast', 'Pongal & Coffee', 'Thali & Meals', 'Parotta / Kothu', 'Tea & Snacks'] },
+  { group: 'Non-Veg',       items: ['Chicken / Mutton', 'Seafood', 'Grills & Shawarma'] },
+  { group: 'More',          items: ['Biryani & Mandi', 'Indo-Chinese'] },
 ];
 
 /* ── Dynamic popular spots per destination ───────────────────────────── */
@@ -655,11 +653,9 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
   };
 
   const NON_VEG_ITEMS = [
-    // segment tags
     'Non-Veg', 'Chettinad',
-    // advanced dish names
-    'Mutton', 'Chicken', 'Fish Curry', 'Prawn', 'Crab',
-    'Mandi', 'Shawarma', 'BBQ & Grills', 'Alfaham',
+    'Chicken / Mutton', 'Seafood', 'Grills & Shawarma',
+    'Biryani & Mandi',
   ];
 
   const renderFilters = () => {

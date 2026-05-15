@@ -149,7 +149,17 @@ const FOOD_TAG_KEYWORDS: Record<string, string[]> = {
   'Budget Friendly':  ['affordable', 'cheap', 'budget', 'pocket friendly', 'economical', 'low price', 'affordable price'],
   'Authentic':        ['authentic', 'authentic taste', 'traditional', 'original', 'since 1964', 'authentic south', 'ancestral'],
   'Lunch Spot':       ['lunch', 'lunch thali', 'afternoon', 'noon', 'lunch time', 'lunch crowd', 'midday'],
-  'Dinner Special':   ['dinner', 'evening', 'night', 'dinner menu', 'dinner special', 'serves dinner', 'late night'],
+  'Dinner Special':          ['dinner', 'evening', 'night', 'dinner menu', 'dinner special', 'serves dinner', 'late night'],
+  // ── Thematic advanced tags ────────────────────────────────────────────────
+  'South Indian Breakfast':  ['idli', 'dosa', 'dosai', 'vada', 'vadai', 'idly', 'south indian breakfast', 'breakfast'],
+  'Pongal & Coffee':         ['pongal', 'filter coffee', 'filter kaapi', 'degree coffee', 'kaapi', 'ven pongal'],
+  'Thali & Meals':           ['thali', 'meals', 'full meals', 'banana leaf', 'saapadu', 'lunch thali', 'rice meals'],
+  'Parotta / Kothu':         ['parotta', 'kothu', 'kothu parotta', 'idiyappam', 'kothu roti', 'parota'],
+  'Tea & Snacks':            ['tea', 'chai', 'evening snacks', 'snacks', 'pakoda', 'bajji', 'bonda', 'murukku'],
+  'Chicken / Mutton':        ['chicken', 'mutton', 'kozhi', 'chicken curry', 'mutton curry', 'chicken gravy', 'mutton gravy'],
+  'Grills & Shawarma':       ['shawarma', 'bbq', 'grills', 'alfaham', 'barbeque', 'grill', 'grilled', 'kebab', 'tikka'],
+  'Biryani & Mandi':         ['biryani', 'biriyani', 'mandi', 'dum biryani', 'briyani', 'biryani house'],
+  'Indo-Chinese':            ['noodles', 'manchurian', 'fried rice', 'soup', 'indo chinese', 'indo-chinese', 'schezwan', 'chilli chicken'],
 };
 
 // 3×5 matrix — 15 tags

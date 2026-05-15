@@ -137,10 +137,20 @@ const FOOD_TAG_KEYWORDS: Record<string, string[]> = {
   'Lunch Spot':        ['lunch', 'lunch thali', 'afternoon', 'noon', 'lunch time', 'lunch crowd', 'midday'],
   'Dinner Special':    ['dinner', 'evening', 'night', 'dinner menu', 'dinner special', 'serves dinner', 'late night', 'dinner time', 'evenings', 'night time', 'open late', 'dinner crowd', 'dinner buffet', 'evening meal', 'night dining'],
   // ── Non-veg specific dishes (imply Non-Veg hard filter) ──────────────────
-  'Seafood':           ['seafood', 'fish', 'prawn', 'crab', 'lobster', 'squid', 'oyster', 'meen', 'nandu', 'shrimp', 'prawn fry', 'fish fry', 'fish curry', 'sea food'],
-  'Crab':              ['crab', 'nandu', 'crab curry', 'crab masala', 'crab fry', 'crab rice', 'crab roast', 'mud crab'],
-  'Prawn':             ['prawn', 'shrimp', 'prawn masala', 'prawn fry', 'prawn curry', 'prawn biryani', 'chemmeen'],
-  'Chicken Biryani':   ['chicken biryani', 'chicken biriyani', 'chicken dum biryani', 'chicken biryani rice'],
+  'Seafood':               ['seafood', 'fish', 'prawn', 'crab', 'lobster', 'squid', 'oyster', 'meen', 'nandu', 'shrimp', 'prawn fry', 'fish fry', 'fish curry', 'sea food'],
+  'Crab':                  ['crab', 'nandu', 'crab curry', 'crab masala', 'crab fry', 'crab rice', 'crab roast', 'mud crab'],
+  'Prawn':                 ['prawn', 'shrimp', 'prawn masala', 'prawn fry', 'prawn curry', 'prawn biryani', 'chemmeen'],
+  'Chicken Biryani':       ['chicken biryani', 'chicken biriyani', 'chicken dum biryani', 'chicken biryani rice'],
+  // ── Thematic advanced tags ────────────────────────────────────────────────
+  'South Indian Breakfast': ['idli', 'dosa', 'dosai', 'vada', 'vadai', 'idly', 'south indian breakfast', 'breakfast'],
+  'Pongal & Coffee':        ['pongal', 'filter coffee', 'filter kaapi', 'degree coffee', 'kaapi', 'ven pongal'],
+  'Thali & Meals':          ['thali', 'meals', 'full meals', 'banana leaf', 'saapadu', 'lunch thali', 'rice meals'],
+  'Parotta / Kothu':        ['parotta', 'kothu', 'kothu parotta', 'idiyappam', 'kothu roti', 'parota'],
+  'Tea & Snacks':           ['tea', 'chai', 'evening snacks', 'snacks', 'pakoda', 'bajji', 'bonda', 'murukku'],
+  'Chicken / Mutton':       ['chicken', 'mutton', 'kozhi', 'chicken curry', 'mutton curry', 'chicken gravy', 'mutton gravy'],
+  'Grills & Shawarma':      ['shawarma', 'bbq', 'grills', 'alfaham', 'barbeque', 'grill', 'grilled', 'kebab', 'tikka'],
+  'Biryani & Mandi':        ['biryani', 'biriyani', 'mandi', 'dum biryani', 'briyani', 'biryani house'],
+  'Indo-Chinese':           ['noodles', 'manchurian', 'fried rice', 'soup', 'indo chinese', 'indo-chinese', 'schezwan', 'chilli chicken'],
 };
 
 // Place types that indicate food/restaurant — used to exclude from hotel results
@@ -2126,7 +2136,7 @@ function applyStrictFilter(places: any[], tab: string, f: UserFilters): any[] {
   const activeFoodTagsStrict = (f.foodTags?.length ?? 0) > 0 ? f.foodTags! : (f.foodTag ? [f.foodTag] : []);
 
   // Tags that imply non-veg — selecting any of these must exclude pure-veg places.
-  const IMPLICIT_NON_VEG_TAGS = ['Non-Veg', 'Crab', 'Seafood', 'Prawn', 'Chicken Biryani', 'Chettinad', 'Biryani'];
+  const IMPLICIT_NON_VEG_TAGS = ['Non-Veg', 'Crab', 'Seafood', 'Prawn', 'Chicken Biryani', 'Chettinad', 'Biryani', 'Chicken / Mutton', 'Grills & Shawarma', 'Biryani & Mandi'];
   const impliesNonVeg = f.dietType === 'Non-Veg' || activeFoodTagsStrict.some(t => IMPLICIT_NON_VEG_TAGS.includes(t));
 
   // Non-Veg: 3-layer hard filter. Fires for dietType OR tag selection so that
