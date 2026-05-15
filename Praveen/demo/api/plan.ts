@@ -3009,63 +3009,37 @@ Return a JSON array of EXACTLY ${stopCount} stops. Return ONLY valid JSON. No ma
     const clean = raw.replace(/```json|```/g, '').trim();
     const stops = JSON.parse(clean);
 
-    // Post-process: enforce startTime — shift all times if Gemini ignored it
-    const parseTimeMin = (t: string): number => {
-      if (!t) return -1;
-      // 12-hr: "7:00 AM", "07:00 AM", "4:00 PM"
-      const m12 = t.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
-      if (m12) {
-        let hh = parseInt(m12[1]); const mm = parseInt(m12[2]);
-        if (m12[3].toUpperCase() === 'PM' && hh !== 12) hh += 12;
-        if (m12[3].toUpperCase() === 'AM' && hh === 12) hh = 0;
-        return hh * 60 + mm;
-      }
-      // 24-hr: "07:00", "16:00"
-      const m24 = t.match(/^(\d{1,2}):(\d{2})$/);
-      if (m24) return parseInt(m24[1]) * 60 + parseInt(m24[2]);
-      return -1;
+    // Hardcoded time schedules per session — Gemini's times are ignored to prevent drift
+    const SLOT_TIMES: Record<string, string[]> = {
+      '07:00': ['7:00 AM',  '9:00 AM',  '11:00 AM', '1:00 PM', '3:00 PM'],
+      '12:00': ['12:00 PM', '2:00 PM',  '4:00 PM'],
+      '16:00': ['4:00 PM',  '6:00 PM'],
     };
-    const formatMin = (min: number): string => {
-      const total = ((min % 1440) + 1440) % 1440;
-      const hh = Math.floor(total / 60); const mm = total % 60;
-      const period = hh >= 12 ? 'PM' : 'AM';
-      const h12 = hh > 12 ? hh - 12 : hh === 0 ? 12 : hh;
-      return `${h12}:${mm.toString().padStart(2, '0')} ${period}`;
+    const SLOT_DEPART: Record<string, Array<string | undefined>> = {
+      '07:00': ['9:00 AM',  '11:00 AM', '1:00 PM',  '3:00 PM', undefined],
+      '12:00': ['2:00 PM',  '4:00 PM',  undefined],
+      '16:00': ['6:00 PM',  undefined],
     };
-    const [rqH, rqM] = startTime.split(':').map(Number);
-    const requestedMin = rqH * 60 + rqM;
-    if (Array.isArray(stops) && stops.length > 0 && requestedMin > 7 * 60) {
-      const firstMin = parseTimeMin(stops[0]?.time ?? '');
-      const baseMin = firstMin >= 0 ? firstMin : 7 * 60;
-      const offset = requestedMin - baseMin;
-      if (offset > 0) {
-        stops.forEach((s: any) => {
-          const t = parseTimeMin(s.time ?? '');
-          s.time = t >= 0 ? formatMin(t + offset) : formatMin(requestedMin);
-          if (s.departBy) {
-            const d = parseTimeMin(s.departBy);
-            s.departBy = d >= 0 ? formatMin(d + offset) : undefined;
-          }
-        });
-      }
-    }
+    const slotTimes  = SLOT_TIMES[startTime]  ?? SLOT_TIMES['07:00'];
+    const slotDepart = SLOT_DEPART[startTime] ?? SLOT_DEPART['07:00'];
 
     const validTraffic = (v: unknown) =>
       ['Light','Moderate','Heavy'].includes(v as string) ? v as string : 'Light';
     const validCrowd = (v: unknown) =>
       ['Low','Moderate','High'].includes(v as string) ? v as string : 'Moderate';
 
-    return stops.slice(0, stopCount).map((s: any) => ({
+    const stopsArr = Array.isArray(stops) ? stops : [];
+    return stopsArr.slice(0, stopCount).map((s: any, idx: number) => ({
       stop:             s.stop              ?? 'Brihadeeswarar Temple',
-      time:             s.time              ?? startStr,
+      time:             slotTimes[idx]      ?? startStr,
       duration:         s.duration          ?? '1 hr',
       tip:              s.tip               ?? 'Enter early for the best experience.',
       trafficNote:      s.trafficNote       ?? 'Light traffic at this hour.',
       currentTraffic:   validTraffic(s.currentTraffic),
       yesterdayTraffic: validTraffic(s.yesterdayTraffic),
       crowdLevel:       validCrowd(s.crowdLevel),
-      ...(s.travelToNext  ? { travelToNext:  s.travelToNext  } : {}),
-      ...(s.departBy      ? { departBy:      s.departBy      } : {}),
+      ...(s.travelToNext          ? { travelToNext: s.travelToNext }               : {}),
+      ...(slotDepart[idx] != null ? { departBy:     slotDepart[idx] as string }   : {}),
       ...(s.cautionNote   ? { cautionNote:   s.cautionNote   } : {}),
       ...(s.avoidNote     ? { avoidNote:     s.avoidNote     } : {}),
       entryFee:         s.entryFee          ?? null,
