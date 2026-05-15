@@ -2987,6 +2987,7 @@ For EACH stop return this exact JSON object:
 }
 
 VALIDATION RULES (Gemini must follow):
+- CRITICAL: First stop time must be ${startStr}. Every subsequent stop time must be AFTER ${startStr}. NEVER schedule any stop before ${startStr}.
 - currentTraffic / yesterdayTraffic: ONLY "Light", "Moderate", or "Heavy"
 - crowdLevel: ONLY "Low", "Moderate", or "High"
 - Use entry fees EXACTLY from GROUND TRUTH (not guessed)
@@ -3007,6 +3008,33 @@ Return a JSON array of EXACTLY ${stopCount} stops. Return ONLY valid JSON. No ma
     const raw   = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '[]';
     const clean = raw.replace(/```json|```/g, '').trim();
     const stops = JSON.parse(clean);
+
+    // Post-process: shift all stop times if Gemini ignored the startTime
+    const toMin = (t: string) => {
+      const match = t?.match(/(\d+):(\d+)\s*(AM|PM)/i);
+      if (!match) return -1;
+      let hh = parseInt(match[1]); const mm = parseInt(match[2]);
+      if (match[3].toUpperCase() === 'PM' && hh !== 12) hh += 12;
+      if (match[3].toUpperCase() === 'AM' && hh === 12) hh = 0;
+      return hh * 60 + mm;
+    };
+    const fromMin = (min: number) => {
+      const total = ((min % 1440) + 1440) % 1440;
+      const hh = Math.floor(total / 60); const mm = total % 60;
+      const period = hh >= 12 ? 'PM' : 'AM';
+      const h12 = hh > 12 ? hh - 12 : hh === 0 ? 12 : hh;
+      return `${h12}:${mm.toString().padStart(2, '0')} ${period}`;
+    };
+    const [rh, rm] = startTime.split(':').map(Number);
+    const requestedMin = rh * 60 + rm;
+    const firstMin = toMin(stops[0]?.time ?? '');
+    if (firstMin >= 0 && firstMin < requestedMin) {
+      const offset = requestedMin - firstMin;
+      stops.forEach((s: any) => {
+        if (s.time)     s.time     = fromMin(toMin(s.time)     + offset);
+        if (s.departBy) s.departBy = fromMin(toMin(s.departBy) + offset);
+      });
+    }
 
     const validTraffic = (v: unknown) =>
       ['Light','Moderate','Heavy'].includes(v as string) ? v as string : 'Light';
