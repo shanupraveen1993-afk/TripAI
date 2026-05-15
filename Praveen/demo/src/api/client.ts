@@ -108,7 +108,7 @@ export async function fetchItinerary(
   itinDate?: string,
   startPoint?: string,
 ): Promise<LiveItineraryStop[]> {
-  const timeMap: Record<string, string> = { Morning: '07:00', Afternoon: '12:00', Evening: '16:00' };
+  const timeMap: Record<string, string> = { Morning: '07:00', Afternoon: '14:00', Evening: '17:00' };
   const stopMap: Record<string, number> = { Morning: 5, Afternoon: 3, Evening: 2 };
   const startTime = timeMap[timeSlot] ?? '07:00';
   const stopCount = stopMap[timeSlot] ?? 5;
