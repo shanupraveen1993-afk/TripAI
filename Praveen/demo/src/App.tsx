@@ -116,7 +116,7 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, []);
 
-  // Location detection toast — shows once per session on app load
+  // Location detection toast — fires when user opens Itinerary
   const locTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const [locationPhase, setLocationPhase] = useState<'locating' | 'found' | 'done'>('done');
 
@@ -128,17 +128,6 @@ export default function App() {
       setTimeout(() => setLocationPhase('done'),  3400),
     ];
   };
-
-  useEffect(() => {
-    try {
-      if (sessionStorage.getItem('tripai_loc_shown')) return;
-      sessionStorage.setItem('tripai_loc_shown', '1');
-    } catch {}
-    const t = setTimeout(() => triggerLocationToast(), 600);
-    locTimers.current.push(t);
-    return () => locTimers.current.forEach(clearTimeout);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   // Scroll to top on every screen transition (dashboard, loading, results)
   useEffect(() => {
@@ -252,6 +241,7 @@ export default function App() {
       if (filters.tab === 'Explore') {
         // Explore always uses preset data — no API call needed
       } else if (filters.tab === 'Itinerary') {
+        triggerLocationToast();
         const timeSlot = filters.startTime || 'Morning';
         const slotStopMap: Record<string, number> = { Morning: 5, Afternoon: 3, Evening: 2 };
         setItinStopCount(slotStopMap[timeSlot] ?? 5);
@@ -500,6 +490,7 @@ export default function App() {
       const depts = ({ Morning: ['9:00 AM','11:00 AM','1:00 PM','3:00 PM',undefined], Afternoon: ['3:30 PM','5:00 PM',undefined], Evening: ['6:30 PM',undefined] } as Record<string, Array<string|undefined>>)[ts] ?? [];
       setItinStopCount(sc);
       setLiveItinerary(MOCK_ITINERARY.slice(0, sc).map((s, i) => ({ ...s, time: times[i] ?? s.time, departBy: depts[i] })));
+      triggerLocationToast();
       setContent('results');
       return;
     }
