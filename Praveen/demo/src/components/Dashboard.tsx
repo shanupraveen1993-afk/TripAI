@@ -171,13 +171,13 @@ const POPULAR_DESTINATIONS: PopularCity[] = [
 
 /* ── Thanjavur action grid (Segment 1) ──────────────────────────────── */
 const THANJAVUR_ACTIONS: Array<{
-  tab: Tab; label: string; desc: string; emoji: string; imgId: string;
+  tab: Tab; label: string; desc: string; emoji: string; imgId: string; grad: string;
   overrides: QuickOverride;
 }> = [
-  { tab: 'Hotels',    label: 'Stay near Big Temple', desc: 'Top-rated · Walking distance',  emoji: '🛕', imgId: '1566915682737-3e97a7eed93b', overrides: { tab: 'Hotels',    hotelTag: 'Near Big Temple' } },
-  { tab: 'Food',      label: 'Thanjavur thali/meals',       desc: 'Authentic Chola cuisine',       emoji: '🍛', imgId: '1711153419402-336ee48f2138', overrides: { tab: 'Food',      foodTag: 'Mess & Meals' } },
-  { tab: 'Itinerary', label: '1-day plan',            desc: 'AI routed · Full day',          emoji: '🗺️', imgId: '1603766806347-54cdf3745953', overrides: { tab: 'Itinerary', startTime: 'Morning' } },
-  { tab: 'Explore',   label: 'Brihadeeswarar',        desc: 'UNESCO · Chola masterpiece',    emoji: '🏛️', imgId: '1693134322630-8c3510d215f6', overrides: { tab: 'Explore',   exploreTarget: 'Brihadeeswarar Temple' } },
+  { tab: 'Hotels',    label: 'Stay near Big Temple', desc: 'Top-rated · Walking distance', emoji: '🛕', imgId: '1566915682737-3e97a7eed93b', grad: 'linear-gradient(135deg,#1e3a8a,#1d4ed8)', overrides: { tab: 'Hotels',    hotelTag: 'Near Big Temple', usePreset: true } },
+  { tab: 'Food',      label: 'Thanjavur thali',      desc: 'Authentic Chola cuisine',      emoji: '🍛', imgId: '1711153419402-336ee48f2138', grad: 'linear-gradient(135deg,#92400e,#d97706)', overrides: { tab: 'Food',      foodTag: 'Mess & Meals',    usePreset: true } },
+  { tab: 'Itinerary', label: '1-day plan',           desc: 'AI routed · Full day',         emoji: '🗺️', imgId: '1603766806347-54cdf3745953', grad: 'linear-gradient(135deg,#065f46,#059669)', overrides: { tab: 'Itinerary', startTime: 'Morning',      usePreset: true } },
+  { tab: 'Explore',   label: 'Brihadeeswarar',       desc: 'UNESCO · Chola masterpiece',   emoji: '🏛️', imgId: '1693134322630-8c3510d215f6', grad: 'linear-gradient(135deg,#4c1d95,#7c3aed)', overrides: { tab: 'Explore',   exploreTarget: 'Brihadeeswarar Temple' } },
 ];
 
 /* ── Quick search override type ─────────────────────────────────────── */
@@ -190,6 +190,7 @@ interface QuickOverride {
   dietType?: DietType;
   exploreTarget?: string;
   startTime?: string;
+  usePreset?: boolean;
 }
 
 /* ── Smart picks per city ────────────────────────────────────────────── */
@@ -473,10 +474,12 @@ interface DashboardProps {
   loading: boolean;
   recentSearches?: Array<{ destination: string; tab: Tab }>;
   onDestinationSelect?: (destination: string) => void;
+  onTabChange?: (tab: Tab) => void;
   userName?: string;
+  onBentoAction?: (tab: Tab, overrides: QuickOverride) => void;
 }
 
-export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loading, recentSearches = [], onDestinationSelect, userName = '' }: DashboardProps) {
+export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loading, recentSearches = [], onDestinationSelect, onTabChange, userName = '', onBentoAction }: DashboardProps) {
   const [activeTab, setActiveTab]           = useState<Tab>(initialTab);
   // Hotels
   const [priceFilter, setPriceFilter]       = useState('Any');
@@ -1411,9 +1414,9 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                 key="bento-hero"
                 whileTap={{ scale: 0.98 }}
                 type="button"
-                onClick={() => triggerSearch(item.overrides)}
+                onClick={() => onBentoAction ? onBentoAction(item.tab, item.overrides) : triggerSearch(item.overrides)}
                 className="col-span-2 relative overflow-hidden rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand group text-left"
-                style={{ height: 180 }}
+                style={{ height: 180, background: item.grad }}
               >
                 <img src={uImg(item.imgId, 800, 360)} alt={item.label}
                   loading="eager" decoding="async"
@@ -1442,9 +1445,9 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               key={item.tab}
               whileTap={{ scale: 0.96 }}
               type="button"
-              onClick={() => triggerSearch(item.overrides)}
+              onClick={() => onBentoAction ? onBentoAction(item.tab, item.overrides) : triggerSearch(item.overrides)}
               className="relative overflow-hidden rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand group text-left"
-              style={{ height: 138 }}
+              style={{ height: 138, background: item.grad }}
             >
               <img src={uImg(item.imgId, 440, 280)} alt={item.label}
                 loading="eager" decoding="async"

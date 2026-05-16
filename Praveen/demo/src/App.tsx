@@ -389,6 +389,71 @@ export default function App() {
     await runSearch(filters, searchSeed);
   };
 
+  // ── Bento card handler — instant preset for Itinerary/Explore, live API for Hotels/Food ──
+  const handleBentoAction = async (tab: Tab, overrides: { hotelTag?: string; foodTag?: string; startTime?: string; exploreTarget?: string; usePreset?: boolean }) => {
+    if (user === null) { setBrowseAuthOpen(true); return; }
+    const seed = searchSeed + 1;
+    setActiveTab(tab);
+    setSearchSeed(seed);
+    setLastSearchFilters({
+      tab, destination: searchLocation,
+      startDate: '', endDate: '', numPeople: 2, budget: 0,
+      hotelTag: overrides.hotelTag ?? '', hotelTags: overrides.hotelTag ? [overrides.hotelTag] : [],
+      hotelArea: '', priceFilter: 'Any', minRating: 'Any', openNow: false,
+      foodTag: overrides.foodTag ?? '', foodTags: overrides.foodTag ? [overrides.foodTag] : [],
+      dietType: 'Any', dineMode: 'Any', mealTime: 'Any',
+      itinDate: '', startPoint: '', startTime: overrides.startTime ?? 'Morning',
+      exploreTarget: overrides.exploreTarget ?? 'Brihadeeswarar Temple',
+      visitTime: 'Morning', searchQuery: '',
+    });
+    setLiveResults(null);
+    setLiveItinerary(null);
+    setLiveExplore(null);
+    setApiError(false);
+    setIsSaved(false);
+
+    if (tab === 'Explore') {
+      setContent('results');
+      return;
+    }
+
+    if (tab === 'Itinerary') {
+      const ts = overrides.startTime ?? 'Morning';
+      const sc = ({ Morning: 5, Afternoon: 3, Evening: 2 } as Record<string, number>)[ts] ?? 5;
+      const times = ({ Morning: ['7:00 AM','9:00 AM','11:00 AM','1:00 PM','3:00 PM'], Afternoon: ['2:00 PM','3:30 PM','5:00 PM'], Evening: ['5:00 PM','6:30 PM'] } as Record<string, string[]>)[ts] ?? [];
+      const depts = ({ Morning: ['9:00 AM','11:00 AM','1:00 PM','3:00 PM',undefined], Afternoon: ['3:30 PM','5:00 PM',undefined], Evening: ['6:30 PM',undefined] } as Record<string, Array<string|undefined>>)[ts] ?? [];
+      setItinStopCount(sc);
+      setLiveItinerary(MOCK_ITINERARY.slice(0, sc).map((s, i) => ({ ...s, time: times[i] ?? s.time, departBy: depts[i] })));
+      setContent('results');
+      return;
+    }
+
+    setContent('loading');
+    try {
+      const { results } = await fetchPlan(tab, seed, {
+        city: searchLocation || 'Thanjavur',
+        hotelTag:  overrides.hotelTag,
+        hotelTags: overrides.hotelTag ? [overrides.hotelTag] : undefined,
+        foodTag:   overrides.foodTag,
+        foodTags:  overrides.foodTag  ? [overrides.foodTag]  : undefined,
+      });
+      if (results && results.length > 0) {
+        setLiveResults(results);
+      } else {
+        setLiveResults(tab === 'Hotels'
+          ? MOCK_HOTELS.slice(0, 10) as unknown as PlanResult[]
+          : MOCK_FOOD.slice(0, 10) as unknown as PlanResult[]);
+        setApiError(true);
+      }
+    } catch {
+      setLiveResults(tab === 'Hotels'
+        ? MOCK_HOTELS.slice(0, 10) as unknown as PlanResult[]
+        : MOCK_FOOD.slice(0, 10) as unknown as PlanResult[]);
+      setApiError(true);
+    }
+    setContent('results');
+  };
+
   const handleDestinationSelect = (dest: string) => {
     if (dest && !isThanjavurCity(dest)) {
       setNonThanjavurNotice(dest);
@@ -469,6 +534,7 @@ export default function App() {
               destination={searchLocation}
               initialTab={initialTab}
               onSearch={handleSearch}
+              onBentoAction={handleBentoAction}
               loading={false}
               recentSearches={recentSearches}
               onDestinationSelect={handleDestinationSelect}
@@ -621,6 +687,7 @@ export default function App() {
             destination={searchLocation}
             initialTab={initialTab}
             onSearch={handleSearch}
+            onBentoAction={handleBentoAction}
             loading={false}
             onDestinationSelect={handleDestinationSelect}
           />

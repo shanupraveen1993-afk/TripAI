@@ -161,26 +161,6 @@ export function Navbar({ section, onSectionChange, onLogout, userName, searchLoc
 
       </header>
 
-      {/* ── Bottom nav (mobile only) ─────────────────────────────────── */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface border-t border-border" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
-        <div className="flex items-center h-16">
-          {NAV_ITEMS.map(item => (
-            <button
-              key={item.id}
-              onClick={() => onSectionChange(item.id)}
-              className={[
-                'flex-1 flex flex-col items-center justify-center gap-1 h-full transition-colors',
-                section === item.id ? 'text-brand' : 'text-muted hover:text-heading',
-              ].join(' ')}
-            >
-              <span className={section === item.id ? '[&>svg]:stroke-[2.5]' : ''}>
-                {item.icon}
-              </span>
-              <span className="text-xs font-medium">{item.label}</span>
-            </button>
-          ))}
-        </div>
-      </nav>
     </>
   );
 }
