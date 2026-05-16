@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { ArrowRight, Compass, MapPin, Search, X } from 'lucide-react';
 import { PlaceCardSkeleton, ItineraryItemSkeleton } from './components/ui/Skeleton';
@@ -24,6 +24,47 @@ import {
 
 type AppScreen = 'landing' | 'browse' | 'app';
 type ContentScreen = 'dashboard' | 'citylock' | 'loading' | 'results';
+
+/* ── Auto location detection toast ──────────────────────────────────────── */
+function LocationDetectionToast({ phase }: { phase: 'locating' | 'found' | 'done' }) {
+  return (
+    <AnimatePresence>
+      {phase !== 'done' && (
+        <motion.div
+          key="loc-toast"
+          initial={{ opacity: 0, y: 24, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 16, scale: 0.95 }}
+          transition={{ type: 'spring', stiffness: 340, damping: 28 }}
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-2.5 px-4 py-2.5 rounded-full shadow-lg pointer-events-none"
+          style={{
+            background: 'var(--color-itinerary-soft)',
+            border: '1px solid var(--color-itinerary-medium)',
+            boxShadow: '0 8px 32px rgba(124,58,237,0.18)',
+          }}
+        >
+          {phase === 'locating' ? (
+            <>
+              <span className="w-3.5 h-3.5 rounded-full border-2 border-itinerary border-t-transparent animate-spin shrink-0" />
+              <span className="text-xs font-semibold text-itinerary whitespace-nowrap">Detecting your location…</span>
+            </>
+          ) : (
+            <>
+              <motion.span initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: 'spring', stiffness: 400, damping: 20 }} className="shrink-0">
+                <MapPin className="w-3.5 h-3.5 text-itinerary" />
+              </motion.span>
+              <span className="text-xs font-semibold whitespace-nowrap text-itinerary">Thanjavur detected</span>
+              <motion.span initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.1, type: 'spring', stiffness: 400, damping: 20 }}
+                className="text-xs font-bold px-1.5 py-0.5 rounded-full" style={{ background: 'var(--color-itinerary)', color: '#fff' }}>
+                ✓
+              </motion.span>
+            </>
+          )}
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
 
 interface User { name: string; email: string; avatar?: string; }
 
@@ -63,6 +104,30 @@ export default function App() {
   const [backContext, setBackContext] = useState<'dashboard' | 'itinerary-results'>('dashboard');
   const [itinStopCount, setItinStopCount] = useState(5);
   const [nonThanjavurNotice, setNonThanjavurNotice] = useState<string | null>(null);
+
+  // Location detection toast — shows once per session on app load
+  const locTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const [locationPhase, setLocationPhase] = useState<'locating' | 'found' | 'done'>('done');
+
+  const triggerLocationToast = () => {
+    locTimers.current.forEach(clearTimeout);
+    setLocationPhase('locating');
+    locTimers.current = [
+      setTimeout(() => setLocationPhase('found'), 1600),
+      setTimeout(() => setLocationPhase('done'),  3400),
+    ];
+  };
+
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem('tripai_loc_shown')) return;
+      sessionStorage.setItem('tripai_loc_shown', '1');
+    } catch {}
+    const t = setTimeout(() => triggerLocationToast(), 600);
+    locTimers.current.push(t);
+    return () => locTimers.current.forEach(clearTimeout);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Scroll to top on every screen transition (dashboard, loading, results)
   useEffect(() => {
@@ -738,6 +803,7 @@ export default function App() {
             </motion.div>
           )}
         </AnimatePresence>
+      <LocationDetectionToast phase={locationPhase} />
       </div>
     );
   }
@@ -801,6 +867,7 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
+      <LocationDetectionToast phase={locationPhase} />
     </div>
   );
 }
