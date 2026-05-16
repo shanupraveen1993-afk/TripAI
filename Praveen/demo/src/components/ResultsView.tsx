@@ -359,7 +359,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
         </a>
         <a href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
           target="_blank" rel="noopener noreferrer"
-          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold border border-slate-200 text-slate-600 hover:border-brand hover:text-brand transition-colors active:scale-[0.97]">
+          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold border border-border text-muted hover:border-brand hover:text-brand transition-colors active:scale-[0.97]">
           <Map className="w-3 h-3" />Map
         </a>
       </>)}
@@ -433,7 +433,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             </span>
           )}
           <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1.5">
-            <span className="text-white text-sm font-black px-2 py-0.5 rounded-lg shadow" style={{ background: ratingColor }}>{place.rating}</span>
+            <span className="text-white text-sm font-black px-2 py-0.5 rounded-full shadow" style={{ background: ratingColor }}>{place.rating}</span>
             <span className="text-white text-xs font-semibold drop-shadow">{ratingLabel}</span>
           </div>
           {distLabel && (
@@ -565,7 +565,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           )}
           <h3 className="font-display font-bold text-sm text-heading leading-snug line-clamp-2">{place.name}</h3>
           <div className="flex items-center gap-1.5">
-            <div className="text-white text-sm font-black px-2.5 py-0.5 rounded-lg" style={{ background: ratingColor }}>{place.rating}</div>
+            <div className="text-white text-sm font-black px-2.5 py-0.5 rounded-full" style={{ background: ratingColor }}>{place.rating}</div>
             <span className="text-xs text-muted font-semibold">{ratingLabel}</span>
           </div>
           <div className="flex items-center gap-1 flex-wrap">
