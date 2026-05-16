@@ -960,7 +960,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         <div className="space-y-3">
           <div>
             <label className="block text-xs font-semibold text-heading uppercase tracking-wide mb-1">Starting Location</label>
-            <LocationBar value={startPoint} onChange={setStartPoint} placeholder="e.g. Railway Station, Hotel name…" />
+            <LocationBar value={startPoint} onChange={setStartPoint} placeholder="e.g. Railway Station, Hotel name…" autoDetect={isThanjavur(destination)} mockResolvedLocation="Thanjavur" />
           </div>
 
           {/* Time slot — Morning / Afternoon / Evening + mandatory validation */}
