@@ -105,6 +105,17 @@ export default function App() {
   const [itinStopCount, setItinStopCount] = useState(5);
   const [nonThanjavurNotice, setNonThanjavurNotice] = useState<string | null>(null);
 
+  const dismissCityNotice = () => {
+    setNonThanjavurNotice(null);
+    setSearchLocation('Thanjavur');
+  };
+
+  // Disable browser scroll restoration — always start at top on load/back
+  useEffect(() => {
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, []);
+
   // Location detection toast — shows once per session on app load
   const locTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const [locationPhase, setLocationPhase] = useState<'locating' | 'found' | 'done'>('done');
@@ -777,7 +788,7 @@ export default function App() {
               transition={{ duration: 0.2 }}
               className="fixed inset-0 z-50 flex items-center justify-center p-5"
               style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}
-              onClick={() => setNonThanjavurNotice(null)}
+              onClick={dismissCityNotice}
             >
               <motion.div
                 initial={{ opacity: 0, scale: 0.92, y: 20 }}
@@ -788,7 +799,7 @@ export default function App() {
                 style={{ background: 'rgba(10,14,30,0.98)', border: '1px solid rgba(255,255,255,0.10)', boxShadow: '0 24px 80px rgba(0,0,0,0.7)' }}
                 onClick={e => e.stopPropagation()}
               >
-                <button onClick={() => setNonThanjavurNotice(null)} className="absolute top-3 right-3 p-1 rounded-lg text-white/40 hover:text-white/80 transition-colors">
+                <button onClick={dismissCityNotice} className="absolute top-3 right-3 p-1 rounded-lg text-white/40 hover:text-white/80 transition-colors">
                   <X className="w-4 h-4" />
                 </button>
                 <p className="text-4xl mb-3">📍</p>
@@ -796,7 +807,7 @@ export default function App() {
                 <p className="text-sm leading-relaxed mb-5" style={{ color: 'rgba(255,255,255,0.65)' }}>
                   TripAI is fully live in <span className="font-semibold" style={{ color: 'var(--color-warning)' }}>Thanjavur</span> — hotels, restaurants, and landmarks AI-ranked in seconds. {nonThanjavurNotice} is next on our roadmap.
                 </p>
-                <Button onClick={() => setNonThanjavurNotice(null)} className="w-full justify-center">
+                <Button onClick={dismissCityNotice} className="w-full justify-center">
                   Try Thanjavur <ArrowRight className="w-4 h-4" />
                 </Button>
               </motion.div>
@@ -841,7 +852,7 @@ export default function App() {
             transition={{ duration: 0.2 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-5"
             style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}
-            onClick={() => setNonThanjavurNotice(null)}
+            onClick={dismissCityNotice}
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.92, y: 20 }}
@@ -852,7 +863,7 @@ export default function App() {
               style={{ background: 'rgba(10,14,30,0.98)', border: '1px solid rgba(255,255,255,0.10)', boxShadow: '0 24px 80px rgba(0,0,0,0.7)' }}
               onClick={e => e.stopPropagation()}
             >
-              <button onClick={() => setNonThanjavurNotice(null)} className="absolute top-3 right-3 p-1 rounded-lg text-white/40 hover:text-white/80 transition-colors">
+              <button onClick={dismissCityNotice} className="absolute top-3 right-3 p-1 rounded-lg text-white/40 hover:text-white/80 transition-colors">
                 <X className="w-4 h-4" />
               </button>
               <p className="text-4xl mb-3">📍</p>
@@ -860,7 +871,7 @@ export default function App() {
               <p className="text-sm leading-relaxed mb-5" style={{ color: 'rgba(255,255,255,0.65)' }}>
                 TripAI is fully live in <span className="font-semibold" style={{ color: 'var(--color-warning)' }}>Thanjavur</span> — hotels, restaurants, and landmarks AI-ranked in seconds. {nonThanjavurNotice} is next on our roadmap.
               </p>
-              <Button onClick={() => setNonThanjavurNotice(null)} className="w-full justify-center">
+              <Button onClick={dismissCityNotice} className="w-full justify-center">
                 Try Thanjavur <ArrowRight className="w-4 h-4" />
               </Button>
             </motion.div>

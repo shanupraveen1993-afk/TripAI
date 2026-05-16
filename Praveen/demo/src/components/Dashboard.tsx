@@ -1250,18 +1250,15 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         </div>
 
         {/* ── CTA inside card ───────────────────────────────────── */}
-        <div className="px-4 pb-4 pt-3 border-t border-border">
-          <button
-            type="button"
+        <div className="px-4 pb-4 pt-3 border-t border-border flex justify-center">
+          <Button
+            variant="brand"
+            size="md"
             onClick={handleSearch}
-            disabled={loading}
-            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg font-semibold uppercase tracking-[0.04em] text-sm transition-all duration-200 active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-soft disabled:opacity-40 disabled:cursor-not-allowed"
-            style={{ background: 'var(--color-brand)', color: '#fff' }}
+            loading={loading}
+            icon={<Search className="w-4 h-4" />}
+            className="px-10"
           >
-            {loading
-              ? <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-              : <Search className="w-4 h-4" />
-            }
             {loading ? 'AI is on it…' : (
               searchQuery.trim() && activeTab === 'Hotels'  ? `Search "${searchQuery.trim()}"` :
               searchQuery.trim() && activeTab === 'Food'    ? `Search "${searchQuery.trim()}"` :
@@ -1270,7 +1267,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               activeTab === 'Itinerary' ? 'Build Day Plan' :
               'Get Visit Guide'
             )}
-          </button>
+          </Button>
         </div>
         {/* sentinel — category bar unsticks once this exits top of viewport */}
         <div ref={ctaSentinelRef} className="h-px" />
