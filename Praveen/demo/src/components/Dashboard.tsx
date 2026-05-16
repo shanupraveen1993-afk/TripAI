@@ -132,6 +132,8 @@ const INSPIRATION_CITIES: Array<{
   { city: 'Royal Palace',     emoji: '🏰', hook: 'Maratha history & art',         grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-active))', imgId: '1523544261025-3159599b1fc3', exploreTarget: 'Thanjavur Maratha Palace Royal Museum'   },
   { city: 'Saraswathi Mahal', emoji: '📚', hook: '60,000 rare manuscripts',       grad: 'linear-gradient(135deg,var(--color-brand),#3B82F6)', imgId: '1568045919115-f2dacbaa1899', exploreTarget: 'Saraswathi Mahal Library'                },
   { city: 'Darasuram',        emoji: '🪔', hook: 'Airavatesvara Temple',          grad: 'linear-gradient(135deg,#92400E,#B45309)', imgId: '1717701669787-82a23250cfe0', exploreTarget: 'Airavatesvara Temple Darasuram'          },
+  { city: 'Gangaikonda',      emoji: '🏛️', hook: 'Rajendra Chola · Quiet UNESCO', grad: 'linear-gradient(135deg,#44403C,#78716C)', imgId: '1603766806347-54cdf3745953', exploreTarget: 'Gangaikonda Cholapuram'                  },
+  { city: 'Rajarajan Mandapam', emoji: '👑', hook: 'Chola tribute · Big Temple',  grad: 'linear-gradient(135deg,#78350F,#92400E)', imgId: '1693134322630-8c3510d215f6', exploreTarget: 'Rajarajan Manimandapam'                 },
   // ── Nearby cities (coming soon) ───────────────────────────────────────────
   { city: 'Kumbakonam',       emoji: '🌊', hook: 'Temple tanks · 18 sacred ghats', grad: 'linear-gradient(135deg,#0369A1,#0284C7)', imgId: '1671095149873-c982e19e4240', comingSoon: true },
   { city: 'Trichy',           emoji: '🏯', hook: 'Rock Fort · Srirangam',          grad: 'linear-gradient(135deg,#7C3AED,#6D28D9)', imgId: '1751163053686-7016e8b99099', comingSoon: true },
@@ -205,11 +207,11 @@ interface SmartPick {
 
 /* ── Popular searches — shown below the filter card ─────────────────── */
 const POPULAR_QUERIES: { label: string; overrides: QuickOverride }[] = [
-  { label: 'best hotel in thanjavur',                      overrides: { tab: 'Hotels' } },
-  { label: 'best hotel near big temple in thanjavur',      overrides: { tab: 'Hotels', hotelTag: 'Near Big Temple' } },
-  { label: 'best family hotel in thanjavur',               overrides: { tab: 'Hotels', hotelTag: 'Good Amenities' } },
-  { label: 'best highly recommended hotel in thanjavur',   overrides: { tab: 'Hotels', hotelTag: 'Highly Rated' } },
-  { label: 'best hotel near railway station thanjavur',    overrides: { tab: 'Hotels', hotelTag: 'Near Railway Station' } },
+  { label: 'best hotel in thanjavur',                      overrides: { tab: 'Hotels', usePreset: true } },
+  { label: 'best hotel near big temple in thanjavur',      overrides: { tab: 'Hotels', hotelTag: 'Near Big Temple', usePreset: true } },
+  { label: 'best family hotel in thanjavur',               overrides: { tab: 'Hotels', hotelTag: 'Good Amenities', usePreset: true } },
+  { label: 'best highly recommended hotel in thanjavur',   overrides: { tab: 'Hotels', hotelTag: 'Highly Rated', usePreset: true } },
+  { label: 'best hotel near railway station thanjavur',    overrides: { tab: 'Hotels', hotelTag: 'Near Railway Station', usePreset: true } },
 ];
 
 const SMART_PICKS: Record<string, SmartPick[]> = {
@@ -1283,7 +1285,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             <button
               key={i}
               type="button"
-              onClick={() => triggerSearch(q.overrides)}
+              onClick={() => onBentoAction ? onBentoAction(q.overrides.tab!, q.overrides) : triggerSearch(q.overrides)}
               className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-white text-xs font-medium text-body hover:border-brand hover:text-brand transition-colors"
             >
               <Search className="w-3 h-3 text-muted shrink-0" />
