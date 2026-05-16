@@ -963,30 +963,6 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             <LocationBar value={startPoint} onChange={setStartPoint} placeholder="e.g. Railway Station, Hotel name…" />
           </div>
 
-          {/* Date — Today / Tomorrow / Day After */}
-          <div>
-            <label className="block text-xs font-semibold text-heading uppercase tracking-wide mb-1">Date</label>
-            <div className="flex gap-1.5">
-              {(['today', 'tomorrow', 'dayafter'] as const).map(d => {
-                const labels: Record<string, string> = { today: 'Today', tomorrow: 'Tomorrow', dayafter: 'Day After' };
-                return (
-                  <button
-                    key={d}
-                    type="button"
-                    onClick={() => setItinDate(d)}
-                    className="flex-1 py-2 rounded-lg text-xs font-bold border-2 transition-all"
-                    style={itinDate === d
-                      ? { borderColor: 'var(--color-brand)', background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
-                      : { borderColor: 'var(--color-border)', background: 'var(--color-surface)',     color: 'var(--color-muted)' }
-                    }
-                  >
-                    {labels[d]}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
           {/* Time slot — Morning / Afternoon / Evening + mandatory validation */}
           <div>
             <label className="block text-xs font-semibold text-heading uppercase tracking-wide mb-1">
@@ -1028,11 +1004,6 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             </AnimatePresence>
           </div>
 
-          <div className="rounded-lg p-2.5 border border-brand-soft/50 bg-brand-softer">
-            <p className="text-xs text-muted leading-relaxed">
-              <span className="font-bold text-heading">Visual day planner</span> — AI sequences stops by proximity, avoids peak traffic hours, and shows entry tips per location.
-            </p>
-          </div>
         </div>
       );
 
@@ -1065,34 +1036,6 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                 <span>⚠</span> Please select a location to continue
               </p>
             )}
-          </div>
-
-          {/* Time slot */}
-          <div>
-            <label className="block text-xs font-semibold text-heading uppercase tracking-wide mb-2">
-              When are you visiting?
-            </label>
-            <div className="grid grid-cols-3 gap-2">
-              {([
-                ['Morning',   '6am – 12pm'],
-                ['Afternoon', '12pm – 4pm'],
-                ['Evening',   '4pm – 8pm'],
-              ] as const).map(([slot, range]) => (
-                <button
-                  key={slot}
-                  type="button"
-                  onClick={() => setVisitTime(slot)}
-                  className="flex flex-col items-center gap-0.5 py-2.5 rounded-lg border-2 transition-all"
-                  style={visitTime === slot
-                    ? { borderColor: 'var(--color-brand)', background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
-                    : { borderColor: 'var(--color-border)', background: '#fff', color: 'var(--color-muted)' }
-                  }
-                >
-                  <span className="text-xs font-semibold uppercase tracking-wide">{slot}</span>
-                  <span className="text-xs font-normal opacity-70">{range}</span>
-                </button>
-              ))}
-            </div>
           </div>
 
           <div className="rounded-lg p-2.5 border border-border bg-success-soft">
