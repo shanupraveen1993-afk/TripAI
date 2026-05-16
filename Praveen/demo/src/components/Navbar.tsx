@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MapPin, Home, History, User, Compass, LogOut, ChevronDown, AlertCircle } from 'lucide-react';
+import { MapPin, Home, History, User, Compass, LogOut, ChevronDown } from 'lucide-react';
 
 export type MainSection = 'home' | 'history' | 'profile';
 
@@ -52,32 +52,41 @@ function CitySearch({ value, onChange, onPick }: {
     }
   };
 
-  const isDirty    = editing && draft.trim().toLowerCase() !== value.toLowerCase();
+  const isDirty     = editing && draft.trim().toLowerCase() !== value.toLowerCase();
   const isThanjavur = draft.trim().toLowerCase() === 'thanjavur';
 
+  /* ── Idle pill ──────────────────────────────────────────────── */
+  if (!editing) {
+    return (
+      <button
+        type="button"
+        onClick={() => { setDraft(value); setEditing(true); }}
+        className="flex items-center gap-1.5 pl-2.5 pr-3 py-1.5 rounded-full bg-bg-app hover:bg-brand-softer transition-all duration-150 group shrink-0"
+      >
+        <MapPin className="w-3.5 h-3.5 text-brand shrink-0" />
+        <span className="text-sm font-semibold text-heading max-w-[120px] truncate">{value || 'Thanjavur'}</span>
+        <ChevronDown className="w-3 h-3 text-muted group-hover:text-brand transition-colors shrink-0" />
+      </button>
+    );
+  }
+
+  /* ── Edit pill ──────────────────────────────────────────────── */
   return (
-    <div className="relative w-full">
-      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-brand pointer-events-none" />
+    <div className="flex items-center gap-1.5 pl-2.5 pr-3 py-1.5 rounded-full bg-brand-softer ring-1 ring-brand-border shrink-0">
+      <MapPin className="w-3.5 h-3.5 text-brand shrink-0" />
       <input
         type="text"
-        value={editing ? draft : value}
+        value={draft}
         onChange={e => setDraft(e.target.value)}
         onFocus={handleFocus}
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
+        autoFocus
         placeholder="City name…"
-        className={[
-          'w-full pl-9 py-2.5 bg-bg-app border rounded-lg text-sm font-medium focus:outline-none focus:ring-2 transition-colors',
-          isDirty && !isThanjavur ? 'pr-28' : 'pr-3',
-          isDirty && !isThanjavur
-            ? 'border-warning focus:ring-warning-soft text-body'
-            : 'border-border focus:ring-brand-soft focus:border-brand text-body',
-        ].join(' ')}
+        className="bg-transparent text-sm font-semibold text-heading outline-none min-w-0 w-28 sm:w-36"
       />
       {isDirty && !isThanjavur && (
-        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium pointer-events-none" style={{ color: 'var(--color-warning-strong)' }}>
-          Thanjavur only
-        </span>
+        <span className="text-xs font-medium text-warning-strong whitespace-nowrap shrink-0">Thanjavur only</span>
       )}
     </div>
   );
@@ -109,14 +118,15 @@ export function Navbar({ section, onSectionChange, onLogout, userName, searchLoc
             </span>
           </button>
 
-          {/* City search — always visible, flex-1 */}
-          <div className="flex-1 min-w-0">
-            <CitySearch
-              value={searchLocation}
-              onChange={onSearchChange}
-              onPick={handlePick}
-            />
-          </div>
+          {/* Spacer */}
+          <div className="flex-1" />
+
+          {/* City pill — right-aligned, before user menu */}
+          <CitySearch
+            value={searchLocation}
+            onChange={onSearchChange}
+            onPick={handlePick}
+          />
 
           {/* User menu */}
           <div className="shrink-0 relative">
