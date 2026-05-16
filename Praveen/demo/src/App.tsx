@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { ArrowRight, Compass, MapPin, Search, X } from 'lucide-react';
 import { PlaceCardSkeleton, ItineraryItemSkeleton } from './components/ui/Skeleton';
@@ -24,65 +24,6 @@ import {
 
 type AppScreen = 'landing' | 'browse' | 'app';
 type ContentScreen = 'dashboard' | 'citylock' | 'loading' | 'results';
-
-/* ── Auto location detection toast ──────────────────────────────────────── */
-function LocationDetectionToast({ phase }: { phase: 'locating' | 'found' | 'done' }) {
-  return (
-    <AnimatePresence>
-      {phase !== 'done' && (
-        <motion.div
-          key="loc-toast"
-          initial={{ opacity: 0, y: 24, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 16, scale: 0.95 }}
-          transition={{ type: 'spring', stiffness: 340, damping: 28 }}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-2.5 px-4 py-2.5 rounded-full shadow-lg pointer-events-none"
-          style={{
-            background: phase === 'found'
-              ? 'linear-gradient(135deg, var(--color-itinerary-soft), var(--color-itinerary-soft))'
-              : 'linear-gradient(135deg, var(--color-itinerary-soft), var(--color-itinerary-soft))',
-            border: phase === 'found'
-              ? '1px solid var(--color-itinerary-medium)'
-              : '1px solid var(--color-itinerary-medium)',
-            boxShadow: phase === 'found'
-              ? '0 8px 32px rgba(124,58,237,0.18)'
-              : '0 8px 32px rgba(124,58,237,0.14)',
-          }}
-        >
-          {phase === 'locating' ? (
-            <>
-              <span className="w-3.5 h-3.5 rounded-full border-2 border-itinerary border-t-transparent animate-spin shrink-0" />
-              <span className="text-xs font-semibold text-itinerary whitespace-nowrap">Detecting your location…</span>
-            </>
-          ) : (
-            <>
-              <motion.span
-                initial={{ scale: 0.4, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-                className="shrink-0"
-              >
-                <MapPin className="w-3.5 h-3.5 text-itinerary" />
-              </motion.span>
-              <span className="text-xs font-semibold whitespace-nowrap text-itinerary">
-                Thanjavur detected
-              </span>
-              <motion.span
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.1, type: 'spring', stiffness: 400, damping: 20 }}
-                className="text-xs font-bold px-1.5 py-0.5 rounded-full"
-                style={{ background: 'var(--color-itinerary)', color: '#fff' }}
-              >
-                ✓
-              </motion.span>
-            </>
-          )}
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-}
 
 interface User { name: string; email: string; avatar?: string; }
 
@@ -123,50 +64,10 @@ export default function App() {
   const [itinStopCount, setItinStopCount] = useState(5);
   const [nonThanjavurNotice, setNonThanjavurNotice] = useState<string | null>(null);
 
-  const dismissCityNotice = () => {
-    setNonThanjavurNotice(null);
-    setSearchLocation('Thanjavur'); // always reset city field back to Thanjavur
-  };
-
-  // Disable browser scroll restoration — always start at top on load/back
-  useEffect(() => {
-    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  }, []);
-
   // Scroll to top on every screen transition (dashboard, loading, results)
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [contentScreen]);
-
-  // Scroll to top when appScreen changes (landing → app, app → landing)
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  }, [appScreen]);
-
-  // Auto location detection toast — shows once per session
-  const locTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
-  const [locationPhase, setLocationPhase] = useState<'locating' | 'found' | 'done'>('done');
-
-  const triggerLocationToast = () => {
-    locTimers.current.forEach(clearTimeout);
-    setLocationPhase('locating');
-    locTimers.current = [
-      setTimeout(() => setLocationPhase('found'), 1600),
-      setTimeout(() => setLocationPhase('done'),  3400),
-    ];
-  };
-
-  useEffect(() => {
-    try {
-      if (sessionStorage.getItem('tripai_loc_shown')) return;
-      sessionStorage.setItem('tripai_loc_shown', '1');
-    } catch {}
-    const t1 = setTimeout(() => triggerLocationToast(), 600);
-    locTimers.current.push(t1);
-    return () => locTimers.current.forEach(clearTimeout);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   // Also scroll to top when navigating between main sections (history, profile)
   useEffect(() => {
@@ -274,20 +175,6 @@ export default function App() {
     try {
       if (filters.tab === 'Explore') {
         // Explore always uses preset data — no API call needed
-      } else if (filters.usePreset) {
-        // Bento card quick-pick — show preset data instantly, no API call
-        if (filters.tab === 'Itinerary') {
-          const ts = filters.startTime || 'Morning';
-          const sc = ({ Morning: 5, Afternoon: 3, Evening: 2 } as Record<string, number>)[ts] ?? 5;
-          const times = ({ Morning: ['7:00 AM','9:00 AM','11:00 AM','1:00 PM','3:00 PM'], Afternoon: ['2:00 PM','3:30 PM','5:00 PM'], Evening: ['5:00 PM','6:30 PM'] } as Record<string, string[]>)[ts] ?? [];
-          const depts = ({ Morning: ['9:00 AM','11:00 AM','1:00 PM','3:00 PM',undefined], Afternoon: ['3:30 PM','5:00 PM',undefined], Evening: ['6:30 PM',undefined] } as Record<string, Array<string|undefined>>)[ts] ?? [];
-          setItinStopCount(sc);
-          setLiveItinerary(MOCK_ITINERARY.slice(0, sc).map((s, i) => ({ ...s, time: times[i] ?? s.time, departBy: depts[i] })));
-        } else if (filters.tab === 'Hotels') {
-          setLiveResults(MOCK_HOTELS.slice(0, 10) as unknown as PlanResult[]);
-        } else if (filters.tab === 'Food') {
-          setLiveResults(MOCK_FOOD.slice(0, 10) as unknown as PlanResult[]);
-        }
       } else if (filters.tab === 'Itinerary') {
         const timeSlot = filters.startTime || 'Morning';
         const slotStopMap: Record<string, number> = { Morning: 5, Afternoon: 3, Evening: 2 };
@@ -420,73 +307,6 @@ export default function App() {
       type: 'history',
     };
     setSavedTrips(prev => [historyEntry, ...prev.slice(0, 49)]);
-  };
-
-  // ── Bento card handler — sync setup + live API for Hotels/Food ────────────
-  const handleBentoAction = async (tab: Tab, overrides: { hotelTag?: string; foodTag?: string; startTime?: string; exploreTarget?: string }) => {
-    if (user === null) { setBrowseAuthOpen(true); return; }
-    const seed = searchSeed + 1;
-    // All synchronous — committed in same React batch as the click event
-    setActiveTab(tab);
-    setSearchSeed(seed);
-    setLastSearchFilters({
-      tab, destination: searchLocation,
-      startDate: '', endDate: '', numPeople: 2, budget: 0,
-      hotelTag: overrides.hotelTag ?? '', hotelTags: overrides.hotelTag ? [overrides.hotelTag] : [],
-      hotelArea: '', priceFilter: 'Any', minRating: 'Any', openNow: false,
-      foodTag: overrides.foodTag ?? '', foodTags: overrides.foodTag ? [overrides.foodTag] : [],
-      dietType: 'Any', dineMode: 'Any', mealTime: 'Any',
-      itinDate: '', startPoint: '', startTime: overrides.startTime ?? 'Morning',
-      exploreTarget: overrides.exploreTarget ?? 'Brihadeeswarar Temple',
-      visitTime: 'Morning', searchQuery: '',
-    });
-    setLiveResults(null);
-    setLiveItinerary(null);
-    setLiveExplore(null);
-    setApiError(false);
-    setIsSaved(false);
-
-    if (tab === 'Explore') {
-      setContent('results');
-      return;
-    }
-
-    if (tab === 'Itinerary') {
-      const ts = overrides.startTime ?? 'Morning';
-      const sc = ({ Morning: 5, Afternoon: 3, Evening: 2 } as Record<string, number>)[ts] ?? 5;
-      const times = ({ Morning: ['7:00 AM','9:00 AM','11:00 AM','1:00 PM','3:00 PM'], Afternoon: ['2:00 PM','3:30 PM','5:00 PM'], Evening: ['5:00 PM','6:30 PM'] } as Record<string, string[]>)[ts] ?? [];
-      const depts = ({ Morning: ['9:00 AM','11:00 AM','1:00 PM','3:00 PM',undefined], Afternoon: ['3:30 PM','5:00 PM',undefined], Evening: ['6:30 PM',undefined] } as Record<string, Array<string|undefined>>)[ts] ?? [];
-      setItinStopCount(sc);
-      setLiveItinerary(MOCK_ITINERARY.slice(0, sc).map((s, i) => ({ ...s, time: times[i] ?? s.time, departBy: depts[i] })));
-      setContent('results');
-      return;
-    }
-
-    // Hotels and Food — show loading, call live API for real Thanjavur data
-    setContent('loading');
-    try {
-      const { results } = await fetchPlan(tab, seed, {
-        city: searchLocation || 'Thanjavur',
-        hotelTag:  overrides.hotelTag,
-        hotelTags: overrides.hotelTag ? [overrides.hotelTag] : undefined,
-        foodTag:   overrides.foodTag,
-        foodTags:  overrides.foodTag  ? [overrides.foodTag]  : undefined,
-      });
-      if (results && results.length > 0) {
-        setLiveResults(results);
-      } else {
-        setLiveResults(tab === 'Hotels'
-          ? MOCK_HOTELS.slice(0, 10) as unknown as PlanResult[]
-          : MOCK_FOOD.filter(f => f.tags.some(t => ['Thali','South Indian','Pure Veg','Banana Leaf'].includes(t))).slice(0, 10) as unknown as PlanResult[]);
-        setApiError(true);
-      }
-    } catch {
-      setLiveResults(tab === 'Hotels'
-        ? MOCK_HOTELS.slice(0, 10) as unknown as PlanResult[]
-        : MOCK_FOOD.filter(f => f.tags.some(t => ['Thali','South Indian','Pure Veg','Banana Leaf'].includes(t))).slice(0, 10) as unknown as PlanResult[]);
-      setApiError(true);
-    }
-    setContent('results');
   };
 
   // ── Search handler: gate on auth when in browse mode ───────────────────
@@ -649,11 +469,9 @@ export default function App() {
               destination={searchLocation}
               initialTab={initialTab}
               onSearch={handleSearch}
-              onBentoAction={handleBentoAction}
               loading={false}
               recentSearches={recentSearches}
               onDestinationSelect={handleDestinationSelect}
-              onTabChange={t => { if (t === 'Itinerary') triggerLocationToast(); }}
               userName={user?.name ?? ''}
             />
           </motion.div>
@@ -803,10 +621,8 @@ export default function App() {
             destination={searchLocation}
             initialTab={initialTab}
             onSearch={handleSearch}
-            onBentoAction={handleBentoAction}
             loading={false}
             onDestinationSelect={handleDestinationSelect}
-            onTabChange={t => { if (t === 'Itinerary') triggerLocationToast(); }}
           />
         </main>
 
@@ -829,7 +645,7 @@ export default function App() {
               transition={{ duration: 0.2 }}
               className="fixed inset-0 z-50 flex items-center justify-center p-5"
               style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}
-              onClick={dismissCityNotice}
+              onClick={() => setNonThanjavurNotice(null)}
             >
               <motion.div
                 initial={{ opacity: 0, scale: 0.92, y: 20 }}
@@ -840,7 +656,7 @@ export default function App() {
                 style={{ background: 'rgba(10,14,30,0.98)', border: '1px solid rgba(255,255,255,0.10)', boxShadow: '0 24px 80px rgba(0,0,0,0.7)' }}
                 onClick={e => e.stopPropagation()}
               >
-                <button onClick={dismissCityNotice} className="absolute top-3 right-3 p-1 rounded-lg text-white/40 hover:text-white/80 transition-colors">
+                <button onClick={() => setNonThanjavurNotice(null)} className="absolute top-3 right-3 p-1 rounded-lg text-white/40 hover:text-white/80 transition-colors">
                   <X className="w-4 h-4" />
                 </button>
                 <p className="text-4xl mb-3">📍</p>
@@ -848,16 +664,13 @@ export default function App() {
                 <p className="text-sm leading-relaxed mb-5" style={{ color: 'rgba(255,255,255,0.65)' }}>
                   TripAI is fully live in <span className="font-semibold" style={{ color: 'var(--color-warning)' }}>Thanjavur</span> — hotels, restaurants, and landmarks AI-ranked in seconds. {nonThanjavurNotice} is next on our roadmap.
                 </p>
-                <Button onClick={dismissCityNotice} className="w-full justify-center">
+                <Button onClick={() => setNonThanjavurNotice(null)} className="w-full justify-center">
                   Try Thanjavur <ArrowRight className="w-4 h-4" />
                 </Button>
               </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* Auto location detection toast */}
-        <LocationDetectionToast phase={locationPhase} />
       </div>
     );
   }
@@ -895,7 +708,7 @@ export default function App() {
             transition={{ duration: 0.2 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-5"
             style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}
-            onClick={dismissCityNotice}
+            onClick={() => setNonThanjavurNotice(null)}
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.92, y: 20 }}
@@ -906,7 +719,7 @@ export default function App() {
               style={{ background: 'rgba(10,14,30,0.98)', border: '1px solid rgba(255,255,255,0.10)', boxShadow: '0 24px 80px rgba(0,0,0,0.7)' }}
               onClick={e => e.stopPropagation()}
             >
-              <button onClick={dismissCityNotice} className="absolute top-3 right-3 p-1 rounded-lg text-white/40 hover:text-white/80 transition-colors">
+              <button onClick={() => setNonThanjavurNotice(null)} className="absolute top-3 right-3 p-1 rounded-lg text-white/40 hover:text-white/80 transition-colors">
                 <X className="w-4 h-4" />
               </button>
               <p className="text-4xl mb-3">📍</p>
@@ -914,16 +727,13 @@ export default function App() {
               <p className="text-sm leading-relaxed mb-5" style={{ color: 'rgba(255,255,255,0.65)' }}>
                 TripAI is fully live in <span className="font-semibold" style={{ color: 'var(--color-warning)' }}>Thanjavur</span> — hotels, restaurants, and landmarks AI-ranked in seconds. {nonThanjavurNotice} is next on our roadmap.
               </p>
-              <Button onClick={dismissCityNotice} className="w-full justify-center">
+              <Button onClick={() => setNonThanjavurNotice(null)} className="w-full justify-center">
                 Try Thanjavur <ArrowRight className="w-4 h-4" />
               </Button>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Auto location detection toast */}
-      <LocationDetectionToast phase={locationPhase} />
     </div>
   );
 }

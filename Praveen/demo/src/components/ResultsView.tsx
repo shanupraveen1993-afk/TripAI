@@ -354,19 +354,19 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
       {tab === 'Hotels' && (<>
         <a href={place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`}
           target="_blank" rel="noopener noreferrer"
-          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-brand text-white hover:bg-brand/90 transition-colors active:scale-[0.97] shadow-sm">
+          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-brand text-white hover:bg-brand/90 transition-colors active:scale-[0.97] shadow-sm">
           <ExternalLink className="w-3 h-3" />Book
         </a>
         <a href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
           target="_blank" rel="noopener noreferrer"
-          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-border text-body hover:border-brand hover:text-brand transition-colors active:scale-[0.97]">
+          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold border border-slate-200 text-slate-600 hover:border-brand hover:text-brand transition-colors active:scale-[0.97]">
           <Map className="w-3 h-3" />Map
         </a>
       </>)}
       {tab === 'Food' && (
         <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
           target="_blank" rel="noopener noreferrer"
-          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-success text-white hover:bg-success-strong transition-colors active:scale-[0.97] shadow-sm">
+          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-success text-white hover:bg-success-strong transition-colors active:scale-[0.97] shadow-sm">
           <Navigation className="w-3 h-3" />Directions
         </a>
       )}
@@ -410,25 +410,25 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent pointer-events-none" />
           {rank === 1 && (
             <span className="absolute top-2.5 left-2.5 flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold text-white"
-              style={{ background: 'var(--color-brand)' }}>
+              style={{ background: 'rgba(99,102,241,0.88)' }}>
               <Sparkles className="w-2.5 h-2.5" />AI Top Pick
             </span>
           )}
           {rank === 2 && (
             <span className="absolute top-2.5 left-2.5 flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold text-white"
-              style={{ background: 'var(--color-success-strong)' }}>
+              style={{ background: 'rgba(5,150,105,0.88)' }}>
               💰 Best Value
             </span>
           )}
           {rank === 3 && (
             <span className="absolute top-2.5 left-2.5 flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold text-white"
-              style={{ background: 'var(--color-food)' }}>
+              style={{ background: 'rgba(217,119,6,0.88)' }}>
               ⭐ Highly Rated
             </span>
           )}
           {rank === 4 && (
             <span className="absolute top-2.5 left-2.5 flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold text-white"
-              style={{ background: 'var(--color-danger)' }}>
+              style={{ background: 'rgba(220,38,38,0.88)' }}>
               🔥 Popular Pick
             </span>
           )}
@@ -443,25 +443,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
 
         {/* Info */}
         <div className="px-3 pt-2.5 pb-1 flex flex-col gap-1.5">
-          <div className="flex items-start justify-between gap-2">
-            <h3 className="font-display font-bold text-lg text-heading leading-snug flex-1">{place.name}</h3>
-            <div className="flex items-center gap-1 shrink-0 mt-0.5">
-              <button
-                onClick={toggleBookmark}
-                className={`flex items-center justify-center w-8 h-8 rounded-lg border transition-colors active:scale-[0.95] ${bookmarked ? 'border-brand bg-brand-softer text-brand' : 'border-border text-muted'}`}
-                aria-label={bookmarked ? 'Remove bookmark' : 'Save'}
-              >
-                {bookmarked ? <BookmarkCheck className="w-3.5 h-3.5" /> : <Bookmark className="w-3.5 h-3.5" />}
-              </button>
-              <button
-                onClick={share}
-                className="flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted transition-colors active:scale-[0.95]"
-                aria-label="Share"
-              >
-                <Share2 className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
+          <h3 className="font-display font-bold text-lg text-heading leading-snug">{place.name}</h3>
           <div className="flex items-center gap-1 flex-wrap">
             <div className="flex gap-0.5">
               {Array.from({ length: 5 }).map((_, i) => (
@@ -521,23 +503,23 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
         </div>
 
         {/* CTA */}
-        <div className="flex justify-center gap-2 px-3 py-2.5">
+        <div className="flex gap-2 px-3 py-2.5">
           <a href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
             target="_blank" rel="noopener noreferrer"
-            className="flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-lg text-xs font-semibold border border-border text-body active:scale-[0.97]">
+            className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg text-xs font-bold border border-border text-body active:scale-[0.97]">
             <Map className="w-4 h-4 shrink-0" />Map
           </a>
           {tab === 'Hotels' && (
             <a href={place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`}
               target="_blank" rel="noopener noreferrer"
-              className="flex items-center justify-center gap-1.5 px-6 py-2.5 rounded-lg text-sm font-semibold bg-brand text-white active:scale-[0.97] shadow-sm">
+              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-sm font-bold bg-brand text-white active:scale-[0.97] shadow-sm">
               <ExternalLink className="w-4 h-4 shrink-0" />Book Now
             </a>
           )}
           {tab === 'Food' && (
             <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
               target="_blank" rel="noopener noreferrer"
-              className="flex items-center justify-center gap-1.5 px-6 py-2.5 rounded-lg text-sm font-semibold bg-success text-white active:scale-[0.97] shadow-sm">
+              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-sm font-bold bg-success text-white active:scale-[0.97] shadow-sm">
               <Navigation className="w-4 h-4 shrink-0" />Directions
             </a>
           )}
@@ -568,10 +550,10 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               autoLoad={rank === 1}
             />
           </div>
-          {rank === 1 && <span className="absolute top-2 left-2 flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs font-semibold text-white" style={{ background: 'var(--color-brand)' }}><Sparkles className="w-2.5 h-2.5" />AI Top Pick</span>}
-          {rank === 2 && <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded-full text-xs font-semibold text-white" style={{ background: 'var(--color-success-strong)' }}>💰 Best Value</span>}
-          {rank === 3 && <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded-full text-xs font-semibold text-white" style={{ background: 'var(--color-food)' }}>⭐ Highly Rated</span>}
-          {rank === 4 && <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded-full text-xs font-semibold text-white" style={{ background: 'var(--color-danger)' }}>🔥 Popular Pick</span>}
+          {rank === 1 && <span className="absolute top-2 left-2 flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs font-semibold text-white" style={{ background: 'rgba(99,102,241,0.88)' }}><Sparkles className="w-2.5 h-2.5" />Top Pick</span>}
+          {rank === 2 && <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded-full text-xs font-semibold text-white" style={{ background: 'rgba(5,150,105,0.88)' }}>💰 Best Value</span>}
+          {rank === 3 && <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded-full text-xs font-semibold text-white" style={{ background: 'rgba(217,119,6,0.88)' }}>⭐ Highly Rated</span>}
+          {rank === 4 && <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded-full text-xs font-semibold text-white" style={{ background: 'rgba(220,38,38,0.88)' }}>🔥 Popular</span>}
         </div>
 
         {/* Col 2: Info */}
@@ -638,39 +620,23 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           <div className="flex flex-col gap-2">
             <a href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
               target="_blank" rel="noopener noreferrer"
-              className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold border border-border text-body hover:border-brand hover:text-brand transition-colors active:scale-[0.97]">
+              className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold border border-border text-body hover:border-brand hover:text-brand transition-colors active:scale-[0.97]">
               <Map className="w-3.5 h-3.5 shrink-0" />Map
             </a>
             {tab === 'Hotels' && (
               <a href={place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`}
                 target="_blank" rel="noopener noreferrer"
-                className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold bg-brand text-white hover:bg-brand/90 transition-colors active:scale-[0.97] shadow-sm">
+                className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold bg-brand text-white hover:bg-brand/90 transition-colors active:scale-[0.97] shadow-sm">
                 <ExternalLink className="w-3.5 h-3.5 shrink-0" />Book
               </a>
             )}
             {tab === 'Food' && (
               <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
                 target="_blank" rel="noopener noreferrer"
-                className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold bg-success text-white hover:bg-success-strong transition-colors active:scale-[0.97] shadow-sm">
+                className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold bg-success text-white hover:bg-success-strong transition-colors active:scale-[0.97] shadow-sm">
                 <Navigation className="w-3.5 h-3.5 shrink-0" />Directions
               </a>
             )}
-            <div className="flex gap-1.5">
-              <button
-                onClick={toggleBookmark}
-                className={`flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg text-xs font-semibold border transition-colors active:scale-[0.97] ${bookmarked ? 'border-brand bg-brand-softer text-brand' : 'border-border text-muted hover:border-brand hover:text-brand'}`}
-              >
-                {bookmarked ? <BookmarkCheck className="w-3 h-3 shrink-0" /> : <Bookmark className="w-3 h-3 shrink-0" />}
-                {bookmarked ? 'Saved' : 'Save'}
-              </button>
-              <button
-                onClick={share}
-                className="flex items-center justify-center w-9 py-1.5 rounded-lg text-xs font-semibold border border-border text-muted hover:border-brand hover:text-brand transition-colors active:scale-[0.97]"
-                aria-label="Share"
-              >
-                <Share2 className="w-3 h-3" />
-              </button>
-            </div>
           </div>
           <button
             onClick={() => setExpanded(v => !v)}
@@ -829,7 +795,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
   );
 
   // suppress unused-var warnings for state vars no longer used in JSX
-  void cardCollapsed; void setCardCollapsed; void showNearby; void setShowNearby; void openAiRow; void setOpenAiRow; void actionButtons; void showAnalysis; void setShowAnalysis;
+  void cardCollapsed; void setCardCollapsed; void showNearby; void setShowNearby; void openAiRow; void setOpenAiRow; void bookmarked; void share; void actionButtons; void showAnalysis; void setShowAnalysis;
 }
 
 /* ── Trophy icon (not in lucide default set, use inline) ─────────────── */
@@ -1066,18 +1032,18 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                   )}
 
                   {/* CTA row */}
-                  <div className="flex items-center justify-center gap-2">
+                  <div className="flex items-center gap-2">
                     <button
                       type="button"
                       onClick={() => onExploreStop?.(stop.stop)}
-                      className="flex items-center justify-center gap-1.5 px-5 py-2 rounded-lg text-xs font-semibold text-brand border border-brand/30 bg-brand-softer hover:bg-brand-soft transition-colors"
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold text-brand border border-brand/30 bg-brand-softer hover:bg-brand-soft transition-colors"
                     >
                       <Compass className="w-3.5 h-3.5" /> Explore Place
                     </button>
                     <button
                       type="button"
                       onClick={() => toggleStop(idx)}
-                      className="flex items-center justify-center gap-1.5 px-5 py-2 rounded-lg text-xs font-semibold border transition-colors"
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold border transition-colors"
                       style={isExpanded
                         ? { background: 'var(--color-brand-softer)', borderColor: 'var(--color-brand-soft)', color: 'var(--color-brand)' }
                         : { background: 'var(--color-bg-app)', borderColor: 'var(--color-border)', color: 'var(--color-body)' }
@@ -1135,11 +1101,11 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                         </div>
 
                         {/* Card 2: Good to Know */}
-                        <div className="rounded-lg p-3 flex flex-col gap-2 border" style={{ background: 'var(--color-warning-soft)', borderColor: 'var(--color-warning-medium)' }}>
-                          <span className="text-xs font-semibold flex items-center gap-1 text-amber-700">
+                        <div className="rounded-lg p-3 flex flex-col gap-2 border" style={{ background: '#FFFBEB', borderColor: '#FCD34D' }}>
+                          <span className="text-xs font-semibold flex items-center gap-1" style={{ color: '#92400E' }}>
                             <Info className="w-3 h-3" /> Good to Know
                           </span>
-                          <p className="text-xs leading-snug text-amber-900">
+                          <p className="text-xs leading-snug" style={{ color: '#78350F' }}>
                             {(stop as any).cautionNote || stop.reachNote || 'Plan to arrive a few minutes before your scheduled time.'}
                           </p>
                         </div>
@@ -1306,7 +1272,7 @@ function ExploreView({ place, visitTime = 'Morning' }: { place: ExploreResult; v
 
       {/* ── Best Time row ────────────────────────────────────── */}
       {(place as any).bestTime && (
-        <div className="flex items-start gap-2 p-2.5 rounded-lg border" style={{ background: 'var(--color-success-soft)', borderColor: 'var(--color-explore-medium)' }}>
+        <div className="flex items-start gap-2 p-2.5 rounded-lg border" style={{ background: '#F0FDF4', borderColor: '#A7F3D0' }}>
           <Clock className="w-3.5 h-3.5 shrink-0 mt-0.5 text-success-strong" />
           <div>
             <span className="text-xs font-bold text-success-strong block mb-0.5">Best Time to Visit</span>
@@ -1424,10 +1390,10 @@ export function ResultsView({
   const count = tab === 'Itinerary' ? itinerary?.length : tab === 'Explore' ? 1 : results?.length;
 
   const TAB_ACCENT: Record<string, { accent: string; accentBg: string }> = {
-    Hotels:    { accent: 'var(--color-brand)',     accentBg: 'var(--color-brand-softer)' },
-    Food:      { accent: 'var(--color-food)',      accentBg: 'var(--color-food-soft)' },
-    Itinerary: { accent: 'var(--color-itinerary)', accentBg: 'var(--color-itinerary-soft)' },
-    Explore:   { accent: 'var(--color-explore)',   accentBg: 'var(--color-explore-soft)' },
+    Hotels:    { accent: 'var(--color-brand)', accentBg: 'var(--color-brand-softer)' },
+    Food:      { accent: 'var(--color-brand)', accentBg: 'var(--color-brand-softer)' },
+    Itinerary: { accent: 'var(--color-brand)', accentBg: 'var(--color-brand-softer)' },
+    Explore:   { accent: 'var(--color-brand)', accentBg: 'var(--color-brand-softer)' },
   };
   const { accent, accentBg } = TAB_ACCENT[tab] ?? TAB_ACCENT.Hotels;
 
@@ -1455,7 +1421,7 @@ export function ResultsView({
       {tab === 'Food' && pureVegFilter && (
         <div className="flex items-center gap-2 px-3 py-2 rounded-lg mb-3 bg-explore-soft border border-explore">
           <span className="text-sm leading-none">🟢</span>
-          <span className="text-xs font-bold text-success-strong">Pure Veg — non-veg places are dimmed</span>
+          <span className="text-xs font-bold text-brand">Pure Veg — non-veg places are dimmed</span>
         </div>
       )}
 
@@ -1514,7 +1480,7 @@ export function ResultsView({
           </div>
           <button
             onClick={onBack}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg border-2 border-brand text-brand text-sm font-semibold hover:bg-brand hover:text-white transition-all"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg border-2 border-brand text-brand text-sm font-bold hover:bg-brand hover:text-white transition-all"
           >
             <ArrowLeft className="w-4 h-4" /> Adjust filters
           </button>
@@ -1539,7 +1505,7 @@ export function ResultsView({
           </div>
           <button
             onClick={onBack}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg border-2 border-brand text-brand text-sm font-semibold hover:bg-brand hover:text-white transition-all"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg border-2 border-brand text-brand text-sm font-bold hover:bg-brand hover:text-white transition-all"
           >
             <ArrowLeft className="w-4 h-4" /> Adjust filters
           </button>
@@ -1588,47 +1554,6 @@ export function ResultsView({
         ))}
         {tab === 'Itinerary' && itinerary && <ItineraryView stops={itinerary} onRegenerate={onRegenerate} onExploreStop={onExploreStop} />}
         {tab === 'Explore' && explore && <ExploreView place={explore} visitTime={visitTime} />}
-
-        {/* Best restaurants near your hotel — Hotels tab only */}
-        {tab === 'Hotels' && (results?.length ?? 0) > 0 && (
-          <div className="mt-1">
-            <div className="flex items-center gap-2 mb-3">
-              <Utensils className="w-3.5 h-3.5 text-food shrink-0" />
-              <span className="text-sm font-bold text-heading">Best restaurants near your hotel</span>
-              <div className="flex-1 h-px bg-border" />
-            </div>
-            <div className="space-y-2">
-              {NEARBY_RESTAURANTS.map((r, i) => (
-                <div key={i} className="flex items-start gap-3 p-3 bg-surface border border-border rounded-xl">
-                  <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 text-base"
-                    style={{ background: r.dietVeg ? 'var(--color-success-soft)' : 'var(--color-food-soft)' }}>
-                    {r.dietVeg ? '🥗' : '🍛'}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-heading leading-snug">{r.name}</p>
-                    <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
-                      <span className="text-xs text-muted">{r.dist}</span>
-                      <span className="text-xs text-muted">·</span>
-                      <span className="text-xs font-semibold text-warning-strong">★ {r.stars}</span>
-                      <span className="text-xs text-muted">·</span>
-                      <span className="text-xs text-muted">{r.cuisine}</span>
-                      <span className="text-xs text-muted">·</span>
-                      <span className="text-xs font-mono text-muted">{r.price}</span>
-                    </div>
-                    <p className="text-xs text-body leading-snug mt-1 italic line-clamp-2">"{r.aiNote}"</p>
-                  </div>
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.name + ' Thanjavur')}`}
-                    target="_blank" rel="noopener noreferrer"
-                    className="flex items-center gap-1 px-2.5 py-2 rounded-lg text-xs font-semibold bg-success text-white shrink-0 active:scale-[0.97] shadow-sm"
-                  >
-                    <Navigation className="w-3 h-3 shrink-0" />Go
-                  </a>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Actions */}
