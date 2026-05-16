@@ -255,6 +255,7 @@ const FOOD_TAG_KEYWORDS: Record<string, string[]> = {
   // ── Cuisine (5) ──────────────────────────────────────────────────────────
   'South Indian':      ['south indian', 'dosa', 'dosai', 'idli', 'idly', 'sambar', 'pongal', 'vada', 'rasam', 'banana leaf', 'saapadu', 'uttapam', 'idiyappam'],
   'Biryani':           ['biryani', 'biriyani', 'dum biryani', 'briyani', 'mandi biryani', 'biryani house', 'chicken biryani', 'mutton biryani'],
+  'Veg Biryani':       ['veg biryani', 'vegetable biryani', 'veg biriyani', 'veg dum biryani', 'vegetarian biryani', 'veg biryani house', 'veg pulao', 'thalappakatti veg'],
   'Chettinad':         ['chettinad', 'nattu kozhi', 'kuzhambu', 'pepper chicken', 'country chicken', 'anjappar', 'chettinad style', 'chettinad cuisine'],
   'North Indian':      ['north indian', 'paneer', 'butter masala', 'naan', 'roti', 'dal makhani', 'kadai', 'punjabi', 'butter chicken'],
   'Mess & Meals':      ['mess', 'meals', 'full meals', 'thali', 'banana leaf', 'saapadu', 'lunch thali', 'rice meals'],
@@ -1823,7 +1824,11 @@ function buildFoodQueryVariants(tags: string[], city: string): [string, string, 
 function buildFoodQuery(filters: UserFilters): string {
   const city     = filters.city ?? 'Thanjavur';
   const state    = getCityState(city);
-  const allTags  = (filters.foodTags && filters.foodTags.length > 0) ? filters.foodTags : (filters.foodTag ? [filters.foodTag] : []);
+  const rawTags  = (filters.foodTags && filters.foodTags.length > 0) ? filters.foodTags : (filters.foodTag ? [filters.foodTag] : []);
+  // Pure Veg + Biryani → Veg Biryani (veg biryani restaurants, not non-veg)
+  const allTags  = rawTags.includes('Pure Veg') && rawTags.includes('Biryani')
+    ? rawTags.map(t => t === 'Biryani' ? 'Veg Biryani' : t)
+    : rawTags;
 
   // Combine ALL selected tag terms — dedup words so query stays clean
   const tagWords = new Set<string>();
@@ -2041,7 +2046,10 @@ function scorePlaceForFilters(place: any, tab: string, f: UserFilters): PlaceSco
     // ── Craving / Cuisine ─────────────────────────────────────────────────────
     // Use FOOD_TAG_KEYWORDS (rich synonym lists) not FOOD_TAG_SEARCH (short query strings)
     {
-      const activeFoodTags = (f.foodTags?.length ?? 0) > 0 ? f.foodTags! : (f.foodTag ? [f.foodTag] : []);
+      const rawFoodTags    = (f.foodTags?.length ?? 0) > 0 ? f.foodTags! : (f.foodTag ? [f.foodTag] : []);
+      const activeFoodTags = rawFoodTags.includes('Pure Veg') && rawFoodTags.includes('Biryani')
+        ? rawFoodTags.map(t => t === 'Biryani' ? 'Veg Biryani' : t)
+        : rawFoodTags;
       if (activeFoodTags.length > 0) {
         let tagsMatched = 0;
         for (const tag of activeFoodTags) {
