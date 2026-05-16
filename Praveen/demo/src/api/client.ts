@@ -90,8 +90,16 @@ export interface PlanResponse {
   results: PlanResult[];   // AI-selected best 5–10, ranked by Gemini
 }
 
+const API_TIMEOUT_MS = 25_000;
+
+function fetchWithTimeout(url: string, options: RequestInit): Promise<Response> {
+  const ctrl = new AbortController();
+  const tid = setTimeout(() => ctrl.abort(), API_TIMEOUT_MS);
+  return fetch(url, { ...options, signal: ctrl.signal }).finally(() => clearTimeout(tid));
+}
+
 export async function fetchPlan(tab: string, seed = 0, filters: PlanFilters = {}, city = 'Thanjavur'): Promise<PlanResponse> {
-  const r = await fetch('/api/plan', {
+  const r = await fetchWithTimeout('/api/plan', {
     method:  'POST',
     headers: { 'Content-Type': 'application/json' },
     body:    JSON.stringify({ tab, searchSeed: seed, city: filters.city ?? city, ...filters }),
@@ -112,7 +120,7 @@ export async function fetchItinerary(
   const stopMap: Record<string, number> = { Morning: 5, Afternoon: 3, Evening: 2 };
   const startTime = timeMap[timeSlot] ?? '07:00';
   const stopCount = stopMap[timeSlot] ?? 5;
-  const r = await fetch('/api/plan', {
+  const r = await fetchWithTimeout('/api/plan', {
     method:  'POST',
     headers: { 'Content-Type': 'application/json' },
     body:    JSON.stringify({ tab: 'Itinerary', startTime, stopCount, searchSeed: seed, city, itinDate, startPoint }),
