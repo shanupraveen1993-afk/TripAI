@@ -207,11 +207,17 @@ interface SmartPick {
 
 /* ── Popular searches — shown below the filter card ─────────────────── */
 const POPULAR_QUERIES: { label: string; overrides: QuickOverride }[] = [
+  // Hotels
   { label: 'best hotel in thanjavur',                      overrides: { tab: 'Hotels', usePreset: true } },
   { label: 'best hotel near big temple in thanjavur',      overrides: { tab: 'Hotels', hotelTag: 'Near Big Temple', usePreset: true } },
   { label: 'best family hotel in thanjavur',               overrides: { tab: 'Hotels', hotelTag: 'Good Amenities', usePreset: true } },
-  { label: 'best highly recommended hotel in thanjavur',   overrides: { tab: 'Hotels', hotelTag: 'Highly Rated', usePreset: true } },
   { label: 'best hotel near railway station thanjavur',    overrides: { tab: 'Hotels', hotelTag: 'Near Railway Station', usePreset: true } },
+  // Food
+  { label: 'best restaurant in thanjavur',                 overrides: { tab: 'Food', usePreset: true } },
+  { label: 'best thali in thanjavur',                      overrides: { tab: 'Food', foodTag: 'Mess & Meals', usePreset: true } },
+  { label: 'best biryani in thanjavur',                    overrides: { tab: 'Food', foodTag: 'Biryani', usePreset: true } },
+  { label: 'best filter coffee in thanjavur',              overrides: { tab: 'Food', foodTag: 'Cafe & Drinks', usePreset: true } },
+  { label: 'vegetarian restaurants in thanjavur',          overrides: { tab: 'Food', foodTag: 'Pure Veg', usePreset: true } },
 ];
 
 const SMART_PICKS: Record<string, SmartPick[]> = {
