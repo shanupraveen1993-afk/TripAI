@@ -297,31 +297,43 @@ function getSmartPicks(destination: string): SmartPick[] {
 
 /* ── Trending → filter overrides ────────────────────────────────────── */
 const TRENDING_OVERRIDES: Record<string, QuickOverride> = {
-  'Rooftop pool':    { tab: 'Hotels',    hotelTag: 'Rooftop' },
-  'Heritage hotels': { tab: 'Hotels',    hotelTag: 'Heritage' },
-  'Near airport':    { tab: 'Hotels',    hotelTag: 'City Centre' },
-  'Business hotels': { tab: 'Hotels',    hotelTag: 'Business' },
-  'Sea view rooms':  { tab: 'Hotels',    hotelTag: 'Sea View' },
-  'Biryani spots':   { tab: 'Food',      foodTag: 'Biryani' },
-  'Rooftop dining':  { tab: 'Food',      foodTag: 'Street Food' },
-  'Pure veg':        { tab: 'Food',      foodTag: 'Street Food', dietType: 'Veg' },
-  'Street food':     { tab: 'Food',      foodTag: 'Street Food' },
-  'Seafood':         { tab: 'Food',      foodTag: 'Seafood' },
-  'Craft beer bars': { tab: 'Food',      foodTag: 'Cafe & Drinks' },
-  'Family day out':  { tab: 'Itinerary', startTime: 'Morning' },
-  'Couple getaway':  { tab: 'Itinerary', startTime: 'Morning' },
-  'Solo explorer':   { tab: 'Itinerary', startTime: 'Morning' },
-  'Heritage walk':   { tab: 'Itinerary', startTime: 'Morning' },
-  '1-day plan':      { tab: 'Itinerary', startTime: 'Morning' },
-  'Brihadeeswarar Temple':       { tab: 'Explore', exploreTarget: 'Brihadeeswarar Temple' },
-  'Thanjavur Maratha Palace Royal Museum':            { tab: 'Explore', exploreTarget: 'Thanjavur Maratha Palace Royal Museum' },
-  'Saraswathi Mahal':            { tab: 'Explore', exploreTarget: 'Saraswathi Mahal Library' },
-  'Gangaikonda':                 { tab: 'Explore', exploreTarget: 'Gangaikonda Cholapuram' },
-  'Morning visit':               { tab: 'Explore' },
-  'Evening visit':               { tab: 'Explore' },
-  'Photography walk':            { tab: 'Itinerary', startTime: 'Morning' },
-  'Big Temple morning':          { tab: 'Itinerary', startTime: 'Morning' },
-  'Full day heritage':           { tab: 'Itinerary', startTime: 'Morning' },
+  // Hotels
+  'Near Big Temple':  { tab: 'Hotels', hotelTag: 'Near Big Temple' },
+  'Heritage hotels':  { tab: 'Hotels', hotelTag: 'Heritage' },
+  'Temple Nearby':    { tab: 'Hotels', hotelTag: 'Near Temple' },
+  'Family rooms':     { tab: 'Hotels', hotelTag: 'Family Friendly' },
+  'AC rooms':         { tab: 'Hotels', hotelTag: 'AC Rooms' },
+  'Rooftop pool':     { tab: 'Hotels', hotelTag: 'Rooftop' },
+  'Near airport':     { tab: 'Hotels', hotelTag: 'City Centre' },
+  'Business hotels':  { tab: 'Hotels', hotelTag: 'Business' },
+  'Sea view rooms':   { tab: 'Hotels', hotelTag: 'Sea View' },
+  // Food
+  'Thanjavur thali/meals': { tab: 'Food', foodTag: 'Mess & Meals' },
+  'Filter coffee':         { tab: 'Food', foodTag: 'Cafe & Drinks' },
+  'Pure veg':              { tab: 'Food', foodTag: 'Pure Veg', dietType: 'Pure Veg' },
+  'South Indian':          { tab: 'Food', foodTag: 'South Indian' },
+  'Street food':           { tab: 'Food', foodTag: 'Street Food' },
+  'Biryani spots':         { tab: 'Food', foodTag: 'Biryani' },
+  'Rooftop dining':        { tab: 'Food', foodTag: 'Fine Dining' },
+  'Seafood':               { tab: 'Food', foodTag: 'Seafood' },
+  'Craft beer bars':       { tab: 'Food', foodTag: 'Cafe & Drinks' },
+  // Itinerary
+  'Big Temple morning': { tab: 'Itinerary', startTime: 'Morning' },
+  'Full day heritage':  { tab: 'Itinerary', startTime: 'Morning' },
+  'Family outing':      { tab: 'Itinerary', startTime: 'Morning' },
+  'Family day out':     { tab: 'Itinerary', startTime: 'Morning' },
+  'Couple getaway':     { tab: 'Itinerary', startTime: 'Morning' },
+  'Solo explorer':      { tab: 'Itinerary', startTime: 'Morning' },
+  'Heritage walk':      { tab: 'Itinerary', startTime: 'Morning' },
+  '1-day plan':         { tab: 'Itinerary', startTime: 'Morning' },
+  'Photography walk':   { tab: 'Itinerary', startTime: 'Morning' },
+  // Explore
+  'Brihadeeswarar Temple':              { tab: 'Explore', exploreTarget: 'Brihadeeswarar Temple' },
+  'Thanjavur Maratha Palace Royal Museum': { tab: 'Explore', exploreTarget: 'Thanjavur Maratha Palace Royal Museum' },
+  'Saraswathi Mahal':                   { tab: 'Explore', exploreTarget: 'Saraswathi Mahal Library' },
+  'Gangaikonda':                        { tab: 'Explore', exploreTarget: 'Gangaikonda Cholapuram' },
+  'Morning visit':                      { tab: 'Explore', exploreTarget: 'Brihadeeswarar Temple' },
+  'Evening visit':                      { tab: 'Explore', exploreTarget: 'Thanjavur Maratha Palace Royal Museum' },
 };
 
 /* ── Location bar ────────────────────────────────────────────────────── */
@@ -1530,7 +1542,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               key={topic}
               type="button"
               whileTap={{ scale: 0.95 }}
-              onClick={() => triggerSearch(TRENDING_OVERRIDES[topic] ?? { tab: activeTab })}
+              onClick={() => { const ov = TRENDING_OVERRIDES[topic] ?? { tab: activeTab }; onBentoAction ? onBentoAction(ov.tab ?? activeTab, ov) : triggerSearch(ov); }}
               className="text-xs font-medium px-3 py-1.5 rounded-lg border border-border bg-white text-body hover:border-brand hover:text-brand hover:bg-brand-softer active:scale-95 active:bg-brand-softer transition-all duration-150 select-none"
             >
               {topic}

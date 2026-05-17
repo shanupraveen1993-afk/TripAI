@@ -96,12 +96,12 @@ export function AuthForm({ onSuccess, onBack, asModal = false }: AuthFormProps) 
               {/* Google Sign-In button */}
               <Button
                 type="submit"
-                variant="outline"
+                variant="brand"
                 fullWidth
                 loading={loading}
                 icon={!loading ? <GoogleLogo /> : undefined}
-                iconRight={!loading ? <ArrowRight className="w-3.5 h-3.5 text-muted" /> : undefined}
-                className="justify-between hover:border-brand-border"
+                iconRight={!loading ? <ArrowRight className="w-3.5 h-3.5" /> : undefined}
+                className="justify-between"
               >
                 {loading ? 'Signing in…' : 'Continue with Google'}
               </Button>

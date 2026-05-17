@@ -456,7 +456,7 @@ export default function App() {
   };
 
   // ── Bento card handler — instant preset for Itinerary/Explore, live API for Hotels/Food ──
-  const handleBentoAction = async (tab: Tab, overrides: { hotelTag?: string; foodTag?: string; startTime?: string; exploreTarget?: string; usePreset?: boolean }) => {
+  const handleBentoAction = async (tab: Tab, overrides: { hotelTag?: string; foodTag?: string; dietType?: string; startTime?: string; exploreTarget?: string; usePreset?: boolean }) => {
     if (user === null) { setBrowseAuthOpen(true); return; }
     const seed = searchSeed + 1;
     setActiveTab(tab);
@@ -467,7 +467,7 @@ export default function App() {
       hotelTag: overrides.hotelTag ?? '', hotelTags: overrides.hotelTag ? [overrides.hotelTag] : [],
       hotelArea: '', priceFilter: 'Any', minRating: 'Any', openNow: false,
       foodTag: overrides.foodTag ?? '', foodTags: overrides.foodTag ? [overrides.foodTag] : [],
-      dietType: 'Any', dineMode: 'Any', mealTime: 'Any',
+      dietType: (overrides.dietType ?? 'Any') as 'Any' | 'Veg' | 'Non-Veg' | 'Pure Veg', dineMode: 'Any', mealTime: 'Any',
       itinDate: '', startPoint: '', startTime: overrides.startTime ?? 'Morning',
       exploreTarget: overrides.exploreTarget ?? 'Brihadeeswarar Temple',
       visitTime: 'Morning', searchQuery: '',
@@ -503,6 +503,7 @@ export default function App() {
         hotelTags: overrides.hotelTag ? [overrides.hotelTag] : undefined,
         foodTag:   overrides.foodTag,
         foodTags:  overrides.foodTag  ? [overrides.foodTag]  : undefined,
+        dietType:  overrides.dietType,
       });
       if (results && results.length > 0) {
         setLiveResults(results);
@@ -805,7 +806,7 @@ export default function App() {
             </motion.div>
           )}
         </AnimatePresence>
-      <LocationDetectionToast phase={locationPhase} />
+      {activeTab === 'Itinerary' && <LocationDetectionToast phase={locationPhase} />}
       </div>
     );
   }
@@ -869,7 +870,7 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
-      <LocationDetectionToast phase={locationPhase} />
+      {activeTab === 'Itinerary' && <LocationDetectionToast phase={locationPhase} />}
     </div>
   );
 }
