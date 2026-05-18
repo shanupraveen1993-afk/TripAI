@@ -81,6 +81,43 @@
   --color-warning-strong:#E3A008;   /* yellow-400 — warning hover       */
   --color-warning-soft:  #FDF6B2;   /* yellow-100 — warning badge bg    */
   --color-warning-medium:#FCE96A;   /* yellow-200 — warning border      */
+
+  /* ── Spacing scale — 4px base, 8dp rhythm ───────────────────────────── */
+  --space-1:   4px;
+  --space-2:   8px;
+  --space-3:   12px;
+  --space-4:   16px;
+  --space-5:   20px;
+  --space-6:   24px;
+  --space-8:   32px;
+  --space-10:  40px;
+  --space-12:  48px;
+  --space-16:  64px;
+
+  /* ── Typography scale — size + line-height pairs ────────────────────── */
+  --text-2xs:  10px;
+  --text-xs:   12px;  /* captions, labels */
+  --text-sm:   14px;  /* secondary body   */
+  --text-base: 16px;  /* primary body     */
+  --text-lg:   18px;  /* subheadings      */
+  --text-xl:   20px;
+  --text-2xl:  24px;  /* section titles   */
+  --text-3xl:  30px;
+  --text-4xl:  36px;  /* hero headings    */
+
+  --leading-tight:   1.25;   /* headings */
+  --leading-snug:    1.375;
+  --leading-normal:  1.5;    /* body text */
+  --leading-relaxed: 1.625;  /* long-form */
+
+  /* ── Border radius scale ─────────────────────────────────────────────── */
+  --radius-xs:  4px;    /* small chips, badges        */
+  --radius-sm:  6px;    /* inputs, small buttons      */
+  --radius-md:  8px;    /* buttons, dropdowns         */
+  --radius-lg:  12px;   /* cards                      */
+  --radius-xl:  16px;   /* large cards, sheets        */
+  --radius-2xl: 20px;   /* modals                     */
+  --radius-full:9999px; /* pills, tags, avatars       */
 }
 
 /* ─── Elevation / Shadow tokens ─────────────────────────────────────────── */
@@ -89,6 +126,24 @@
   --shadow-s:  0 1px 3px 0px rgba(0,0,0,0.30);
   --shadow-m:  0 4px 8px 3px rgba(0,0,0,0.15);
   --shadow-l:  0 8px 10px 4px rgba(0,0,0,0.15);
+
+  /* ── Z-index scale ───────────────────────────────────────────────────── */
+  --z-base:      0;
+  --z-raised:    10;   /* cards on hover              */
+  --z-dropdown:  100;  /* autocomplete, popovers      */
+  --z-sticky:    200;  /* sticky navbar, tab bar      */
+  --z-overlay:   300;  /* drawers, side panels        */
+  --z-modal:     400;  /* modals, dialogs             */
+  --z-tooltip:   500;  /* tooltips                    */
+  --z-toast:     600;  /* toasts — always on top      */
+  --z-max:       9999; /* critical overlays           */
+
+  /* ── Duration tokens ─────────────────────────────────────────────────── */
+  --duration-instant: 50ms;   /* toggle, checkbox             */
+  --duration-fast:    150ms;  /* hover, press micro           */
+  --duration-normal:  200ms;  /* tab switch, expand/collapse  */
+  --duration-slow:    350ms;  /* modal enter, page transition */
+  --duration-xslow:   500ms;  /* hero animations              */
 }
 
 /* ─── Base ──────────────────────────────────────────────────────────────── */
@@ -210,6 +265,78 @@ input[type="range"] {
 .animate-aurora         { animation: aurora-drift 14s ease-in-out infinite; }
 .animate-aurora-reverse { animation: aurora-drift 19s ease-in-out infinite reverse; }
 .animate-aurora-slow    { animation: aurora-drift 24s ease-in-out infinite 5s; }
+
+/* ─── CityLockScreen animations ─────────────────────────────────────────── */
+@keyframes cl-ring  { 0%,100%{transform:scale(1);opacity:.18} 50%{transform:scale(1.08);opacity:.32} }
+@keyframes cl-ring2 { 0%,100%{transform:scale(1);opacity:.10} 50%{transform:scale(1.12);opacity:.22} }
+@keyframes cl-ring3 { 0%,100%{transform:scale(1);opacity:.06} 50%{transform:scale(1.18);opacity:.14} }
+@keyframes cl-scan  { 0%{top:-4px;opacity:0} 10%{opacity:.6} 90%{opacity:.2} 100%{top:100%;opacity:0} }
+@keyframes cl-float { 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-8px)} }
+@keyframes cl-dot   { 0%,100%{opacity:.15} 50%{opacity:.55} }
+.cl-ring  { animation: cl-ring  3.6s ease-in-out infinite; }
+.cl-ring2 { animation: cl-ring2 3.6s ease-in-out infinite 0.4s; }
+.cl-ring3 { animation: cl-ring3 3.6s ease-in-out infinite 0.8s; }
+.cl-float { animation: cl-float 4s ease-in-out infinite; }
+.cl-scan  { animation: cl-scan  4s ease-in-out infinite; }
+
+/* ─── LandingPage SVG scene animations ──────────────────────────────────── */
+@keyframes hw-blink { 0%,100%{opacity:1} 50%{opacity:.12} }
+.hw1{animation:hw-blink 2.3s ease-in-out infinite}
+.hw2{animation:hw-blink 2.3s ease-in-out infinite .38s}
+.hw3{animation:hw-blink 2.3s ease-in-out infinite .76s}
+.hw4{animation:hw-blink 2.3s ease-in-out infinite 1.14s}
+.hw5{animation:hw-blink 2.3s ease-in-out infinite 1.52s}
+.hw6{animation:hw-blink 2.3s ease-in-out infinite 1.9s}
+
+@keyframes fs-rise { 0%{transform:translateY(0) scaleX(1);opacity:.9} 100%{transform:translateY(-22px) scaleX(1.25);opacity:0} }
+.fs1{animation:fs-rise 2.1s ease-out infinite}
+.fs2{animation:fs-rise 2.1s ease-out infinite .68s}
+.fs3{animation:fs-rise 2.1s ease-out infinite 1.36s}
+
+@keyframes it-draw { 0%{stroke-dashoffset:230} 100%{stroke-dashoffset:0} }
+@keyframes it-pin  { 0%,25%{transform:translateY(-14px);opacity:0} 40%{transform:translateY(2px);opacity:1} 50%{transform:translateY(-1px)} 60%,100%{transform:translateY(0);opacity:1} }
+.ir  { animation: it-draw 3.6s ease-in-out infinite; }
+.ip1 { animation: it-pin 3.6s ease-in-out infinite; }
+.ip2 { animation: it-pin 3.6s ease-in-out infinite 1.1s; }
+.ip3 { animation: it-pin 3.6s ease-in-out infinite 2.2s; }
+
+@keyframes ex-spin   { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
+@keyframes ex-pulse  { 0%,100%{opacity:.6;r:36}  50%{opacity:.15;r:40} }
+@keyframes ex-pulse2 { 0%,100%{opacity:.7;r:27}  50%{opacity:.2;r:31} }
+.en  { transform-origin: 50px 50px; animation: ex-spin 9s linear infinite; }
+.er1 { animation: ex-pulse  2.6s ease-in-out infinite; }
+.er2 { animation: ex-pulse2 2.6s ease-in-out infinite .7s; }
+
+/* ─── Reduced motion — §34.6 ────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .animate-aurora,
+  .animate-aurora-reverse,
+  .animate-aurora-slow,
+  .animate-marquee,
+  .animate-pulse-soft,
+  .cl-ring, .cl-ring2, .cl-ring3, .cl-float, .cl-scan,
+  .hw1, .hw2, .hw3, .hw4, .hw5, .hw6,
+  .fs1, .fs2, .fs3,
+  .ir, .ip1, .ip2, .ip3,
+  .en, .er1, .er2 {
+    animation: none;
+  }
+  .shimmer::after {
+    animation: none;
+  }
+}
+
+/* ─── Dark mode token overrides — §35.2 ─────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg-app:      #0B0F1E;
+    --color-surface:     #111827;
+    --color-heading:     #F9FAFB;
+    --color-body:        #9CA3AF;
+    --color-border:      #1F2937;
+    --color-card-border: #1F2937;
+  }
+}
 
 /* ─── Futuristic — gradient hero text ───────────────────────────────────── */
 .gradient-text-hero {

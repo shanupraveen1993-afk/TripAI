@@ -47,7 +47,7 @@ export function AuthForm({ onSuccess, onBack, asModal = false }: AuthFormProps) 
 
   const wrapper = asModal
     ? 'p-1'
-    : 'min-h-screen bg-bg-app flex flex-col items-center justify-center p-4';
+    : 'min-h-dvh bg-bg-app flex flex-col items-center justify-center p-4';
 
   return (
     <div className={wrapper}>

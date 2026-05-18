@@ -27,7 +27,7 @@ export function Modal({ open, onClose, title, children, footer, size = 'md' }: M
   return (
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4">
+        <div className="fixed inset-0 z-[400] flex items-end sm:items-center justify-center p-4">
           {/* Overlay */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -38,6 +38,9 @@ export function Modal({ open, onClose, title, children, footer, size = 'md' }: M
           />
           {/* Box */}
           <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={title ? 'modal-title' : undefined}
             initial={{ opacity: 0, y: 20, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.96 }}
@@ -46,9 +49,10 @@ export function Modal({ open, onClose, title, children, footer, size = 'md' }: M
           >
             {title && (
               <div className="flex items-center justify-between mb-4 pb-4 border-b border-border">
-                <h3 className="text-base font-bold text-heading">{title}</h3>
+                <h3 id="modal-title" className="text-base font-bold text-heading">{title}</h3>
                 <button
                   onClick={onClose}
+                  aria-label="Close"
                   className="p-1.5 rounded-lg text-muted hover:text-heading hover:bg-bg-app transition-colors"
                 >
                   <X className="w-4 h-4" />

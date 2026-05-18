@@ -131,13 +131,13 @@ const INSPIRATION_CITIES: Array<{
   { city: 'Big Temple',       emoji: '🛕', hook: 'UNESCO · Chola masterpiece',    grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', imgId: '1603766806347-54cdf3745953', exploreTarget: 'Brihadeeswarar Temple'                  },
   { city: 'Royal Palace',     emoji: '🏰', hook: 'Maratha history & art',         grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-active))', imgId: '1523544261025-3159599b1fc3', exploreTarget: 'Thanjavur Maratha Palace Royal Museum'   },
   { city: 'Saraswathi Mahal', emoji: '📚', hook: '60,000 rare manuscripts',       grad: 'linear-gradient(135deg,var(--color-brand),#3B82F6)', imgId: '1568045919115-f2dacbaa1899', exploreTarget: 'Saraswathi Mahal Library'                },
-  { city: 'Darasuram',        emoji: '🪔', hook: 'Airavatesvara Temple',          grad: 'linear-gradient(135deg,#92400E,#B45309)', imgId: '1717701669787-82a23250cfe0', exploreTarget: 'Airavatesvara Temple Darasuram'          },
+  { city: 'Darasuram',        emoji: '🪔', hook: 'Airavatesvara Temple',          grad: 'linear-gradient(135deg,var(--color-food-dark),var(--color-food))', imgId: '1717701669787-82a23250cfe0', exploreTarget: 'Airavatesvara Temple Darasuram'          },
   { city: 'Gangaikonda',      emoji: '🏛️', hook: 'Rajendra Chola · Quiet UNESCO', grad: 'linear-gradient(135deg,#44403C,#78716C)', imgId: '1603766806347-54cdf3745953', exploreTarget: 'Gangaikonda Cholapuram'                  },
   { city: 'Rajarajan Mandapam', emoji: '👑', hook: 'Chola tribute · Big Temple',  grad: 'linear-gradient(135deg,#78350F,#92400E)', imgId: '1693134322630-8c3510d215f6', exploreTarget: 'Rajarajan Manimandapam'                 },
   // ── Nearby cities (coming soon) ───────────────────────────────────────────
   { city: 'Kumbakonam',       emoji: '🌊', hook: 'Temple tanks · 18 sacred ghats', grad: 'linear-gradient(135deg,#0369A1,#0284C7)', imgId: '1671095149873-c982e19e4240', comingSoon: true },
   { city: 'Trichy',           emoji: '🏯', hook: 'Rock Fort · Srirangam',          grad: 'linear-gradient(135deg,#7C3AED,#6D28D9)', imgId: '1751163053686-7016e8b99099', comingSoon: true },
-  { city: 'Madurai',          emoji: '🕌', hook: 'Meenakshi Amman · Silk bazaars', grad: 'linear-gradient(135deg,#B45309,#D97706)', imgId: '1677434654722-69e7ba88b4ef', comingSoon: true },
+  { city: 'Madurai',          emoji: '🕌', hook: 'Meenakshi Amman · Silk bazaars', grad: 'linear-gradient(135deg,var(--color-food-dark),var(--color-food))', imgId: '1677434654722-69e7ba88b4ef', comingSoon: true },
   { city: 'Chidambaram',      emoji: '🪷', hook: 'Nataraja Temple · Cosmic dance', grad: 'linear-gradient(135deg,#065F46,#059669)', imgId: '1625807161536-27903f2200fa', comingSoon: true },
 ];
 
@@ -702,8 +702,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                     {tagsLoading && <span className="ml-1.5 inline-block w-2.5 h-2.5 border border-muted border-t-transparent rounded-full animate-spin align-middle" />}
                   </label>
                   {hotelTags.length > 0 && (
-                    <span className="text-xs font-semibold px-1.5 py-0.5 rounded"
-                      style={{ background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }}>
+                    <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-brand-softer text-brand">
                       {hotelTags.length}/2
                     </span>
                   )}
@@ -712,8 +711,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
 
               {/* Location toast */}
               {locationToast && (
-                <div className="mb-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5"
-                  style={{ background: 'var(--color-brand-softer)', color: 'var(--color-brand)', border: '1px solid var(--color-brand-soft)' }}>
+                <div className="mb-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 bg-brand-softer text-brand border border-brand-soft">
                   <MapPin className="w-3 h-3 shrink-0" />
                   {locationToast}
                 </div>
@@ -757,14 +755,13 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                                 setTimeout(() => setLocationToast(''), 3000);
                               }
                             }}
-                            className="px-3 py-2 rounded-lg border-2 text-xs font-medium transition-all"
-                            style={
+                            className={`px-3 py-2 rounded-lg border-2 text-xs font-medium transition-all ${
                               isSelected
-                                ? { borderColor: 'var(--color-brand)', background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
+                                ? 'border-brand bg-brand-softer text-brand'
                                 : isMaxed
-                                  ? { borderColor: 'var(--color-border)', background: 'var(--color-bg-app)', color: 'var(--color-border-medium)', cursor: 'not-allowed' }
-                                  : { borderColor: 'var(--color-border)', background: '#fff', color: 'var(--color-muted)' }
-                            }
+                                  ? 'border-border bg-bg-app text-border-medium cursor-not-allowed'
+                                  : 'border-border bg-white text-muted'
+                            }`}
                           >
                             {tag}
                           </button>
@@ -1244,7 +1241,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         })()}
 
         {/* Header — shown on all tabs */}
-        <div className="px-4 py-3 flex items-center gap-3 border-b border-border" style={{ background: '#F9FAFB' }}>
+        <div className="px-4 py-3 flex items-center gap-3 border-b border-border bg-bg-app">
           <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: meta.accent }}>
             <span style={{ color: '#fff' }}>{meta.icon}</span>
           </div>
@@ -1306,7 +1303,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         <p className="text-xs font-normal text-muted mb-2 flex items-center gap-1.5">
           <Search className="w-3 h-3" /> People also search for
         </p>
-        <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-none">
+        <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 no-scrollbar">
           {POPULAR_QUERIES.map((q, i) => (
             <button
               key={i}
@@ -1440,7 +1437,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
           </div>
           <span className="text-xs text-muted shrink-0 flex items-center gap-0.5">Swipe <ChevronRight className="w-3 h-3" /></span>
         </div>
-        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none -mx-4 px-4">
+        <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar -mx-4 px-4">
           {INSPIRATION_CITIES.map(c => (
             <button
               key={c.city}
@@ -1492,7 +1489,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
           </div>
           <span className="text-xs text-muted shrink-0 flex items-center gap-0.5">Swipe <ChevronRight className="w-3 h-3" /></span>
         </div>
-        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none -mx-4 px-4">
+        <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar -mx-4 px-4">
           {POPULAR_DESTINATIONS.map(c => (
             <motion.button
               key={c.city}
@@ -1543,7 +1540,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               type="button"
               whileTap={{ scale: 0.95 }}
               onClick={() => { const ov = TRENDING_OVERRIDES[topic] ?? { tab: activeTab }; onBentoAction ? onBentoAction(ov.tab ?? activeTab, ov) : triggerSearch(ov); }}
-              className="text-xs font-medium px-3 py-1.5 rounded-lg border border-border bg-white text-body hover:border-brand hover:text-brand hover:bg-brand-softer active:scale-95 active:bg-brand-softer transition-all duration-150 select-none"
+              className="text-xs font-medium px-3 py-1.5 rounded-lg border border-border bg-white text-body hover:border-brand hover:text-brand hover:bg-brand-softer motion-safe:active:scale-95 active:bg-brand-softer transition-all duration-150 select-none"
             >
               {topic}
             </motion.button>

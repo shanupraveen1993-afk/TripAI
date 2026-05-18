@@ -27,7 +27,7 @@ export function Input({ label, helper, error, icon, iconRight, className = '', i
         <input
           id={inputId}
           className={[
-            'w-full bg-surface border rounded-lg text-sm text-body',
+            'w-full bg-surface border rounded-lg text-base text-body',
             'placeholder:text-placeholder transition-colors duration-150',
             'focus:outline-none focus:ring-2',
             error

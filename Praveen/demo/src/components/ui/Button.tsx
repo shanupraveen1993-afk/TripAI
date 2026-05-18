@@ -48,7 +48,7 @@ export function Button({
       disabled={disabled || loading}
       className={[
         'inline-flex items-center justify-center font-semibold uppercase tracking-[0.04em] transition-all duration-150',
-        'outline-none active:scale-95',
+        'outline-none motion-safe:active:scale-95',
         'disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100',
         pill ? 'rounded-full' : 'rounded-lg',
         variantClasses[variant],

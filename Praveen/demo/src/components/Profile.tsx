@@ -76,7 +76,7 @@ export function Profile({ user, tripCount, aiCount, onLogout, onSavedPlaces }: P
 
       {/* Progress to next badge */}
       {tripCount < 10 && (
-        <div className="bg-surface border border-card-border rounded-2xl p-4">
+        <div className="bg-surface border border-card-border rounded-xl p-4">
           <div className="flex justify-between text-xs font-bold text-muted mb-2">
             <span>Progress to {tripCount >= 3 ? 'Expert' : 'Explorer'}</span>
             <span className="text-brand">{tripCount}/{tripCount >= 3 ? 10 : 3} trips</span>
@@ -93,7 +93,7 @@ export function Profile({ user, tripCount, aiCount, onLogout, onSavedPlaces }: P
       )}
 
       {/* Menu */}
-      <div className="bg-surface border border-card-border rounded-2xl overflow-hidden">
+      <div className="bg-surface border border-card-border rounded-xl overflow-hidden">
         {MENU_ITEMS.map((item, i) => (
           <button
             key={item.label}

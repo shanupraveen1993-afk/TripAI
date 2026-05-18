@@ -65,10 +65,10 @@ function CityPosterSlider({ onCityClick }: { onCityClick?: (city: string, emoji:
             key={i}
             type="button"
             onClick={() => onCityClick?.(p.city, p.emoji)}
-            className={`bg-gradient-to-br ${p.gradient} rounded-2xl flex-shrink-0 w-36 h-44 relative overflow-hidden flex flex-col justify-end p-3 shadow-lg cursor-pointer hover:scale-[1.05] transition-transform duration-200 focus:outline-none`}
+            className={`bg-gradient-to-br ${p.gradient} rounded-xl flex-shrink-0 w-36 h-44 relative overflow-hidden flex flex-col justify-end p-3 shadow-lg cursor-pointer hover:scale-[1.05] transition-transform duration-200 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none`}
           >
-            <img src={uImg(p.imgId, 144, 176)} alt={p.city} className="absolute inset-0 w-full h-full object-cover" loading="eager" />
-            <span className="absolute top-3 right-3 text-2xl z-10">{p.emoji}</span>
+            <img src={uImg(p.imgId, 144, 176)} alt={p.city} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+            <span className="absolute top-3 right-3 text-2xl z-10" aria-hidden="true">{p.emoji}</span>
             <div className="absolute inset-0 bg-gradient-to-t from-black/75 to-black/20 rounded-2xl" />
             <p className="relative z-10 text-white font-display font-black text-sm leading-tight">{p.city}</p>
           </button>
@@ -124,7 +124,7 @@ function HeroPhotoPanel({ active, setActive }: { active: number; setActive: (i: 
       ))}
       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" style={{ zIndex: 2 }} />
       <div className="absolute top-5 left-5 bg-white/15 backdrop-blur-md border border-white/25 text-white text-xs font-bold px-3.5 py-1.5 rounded-full" style={{ zIndex: 3 }}>{d.badge}</div>
-      <div className="absolute top-4 right-5 text-5xl drop-shadow-lg select-none" style={{ zIndex: 3 }}>{d.emoji}</div>
+      <div className="absolute top-4 right-5 text-5xl drop-shadow-lg select-none" style={{ zIndex: 3 }} aria-hidden="true">{d.emoji}</div>
       <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col gap-4" style={{ zIndex: 3 }}>
         <AnimatePresence mode="wait">
           <motion.div key={active} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.3 }}>
@@ -152,7 +152,10 @@ function HeroPhotoPanel({ active, setActive }: { active: number; setActive: (i: 
             <button key={i} onClick={() => setActive(i)}
               aria-label={`View ${d.city}`}
               aria-current={i === active ? 'true' : undefined}
-              className={`rounded-full transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 ${i === active ? 'w-7 h-2 bg-white' : 'w-2 h-2 bg-white/30 hover:bg-white/60'}`} />
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+            >
+              <span className={`block rounded-full transition-all duration-300 ${i === active ? 'w-7 h-2 bg-white' : 'w-2 h-2 bg-white/30 hover:bg-white/60'}`} />
+            </button>
           ))}
         </div>
       </div>
@@ -190,7 +193,7 @@ function TestimonialCarousel() {
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             exit={{ opacity: 0, y: -16, filter: 'blur(4px)' }}
             transition={{ duration: 0.4, ease: 'easeOut' }}
-            className="rounded-2xl p-7 border border-border bg-surface shadow-[var(--shadow-xs)]"
+            className="rounded-xl p-7 border border-border bg-surface shadow-[var(--shadow-xs)]"
           >
             <Quote className="w-8 h-8 mb-4 text-brand/55" />
             <p className="text-base leading-relaxed italic mb-5 text-body">"{t.text}"</p>
@@ -206,13 +209,12 @@ function TestimonialCarousel() {
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <div className="inline-flex items-center gap-1.5 border rounded-lg px-3 py-1.5"
-                  style={{ background: 'var(--color-brand-softer)', borderColor: 'var(--color-brand-soft)' }}>
+                <div className="inline-flex items-center gap-1.5 border rounded-lg px-3 py-1.5 bg-brand-softer border-brand-soft">
                   <CheckCircle className="w-3.5 h-3.5 text-brand" />
                   <span className="text-xs font-bold text-brand">{t.highlight}</span>
                 </div>
                 <div className="flex gap-0.5">
-                  {Array.from({ length: t.stars }).map((_, j) => <Star key={j} className="w-3.5 h-3.5 fill-warning text-warning" />)}
+                  {Array.from({ length: t.stars }).map((_, j) => <Star key={j} className="w-3.5 h-3.5 fill-warning-strong text-warning-strong" />)}
                 </div>
               </div>
             </div>
@@ -226,13 +228,10 @@ function TestimonialCarousel() {
           <button key={i} onClick={() => setActive(i)}
             aria-label={`View review from ${t.name}`}
             aria-current={i === active ? 'true' : undefined}
-            className="rounded-full transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-border/60"
-            style={{
-              width: i === active ? '28px' : '8px',
-              height: '8px',
-              background: i === active ? 'var(--color-brand)' : 'var(--color-border-medium)',
-            }}
-          />
+            className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-border/60"
+          >
+            <span className={`block rounded-full transition-all duration-300 h-2 ${i === active ? 'w-7 bg-brand' : 'w-2 bg-border-medium'}`} />
+          </button>
         ))}
       </div>
       <p className="text-center text-xs mt-3 text-muted">
@@ -255,16 +254,7 @@ const HOW = [
 
 function HotelScene() {
   return (
-    <svg viewBox="0 0 100 100" className="w-24 h-24" xmlns="http://www.w3.org/2000/svg">
-      <style>{`
-        @keyframes hw-blink{0%,100%{opacity:1}50%{opacity:.12}}
-        .hw1{animation:hw-blink 2.3s ease-in-out infinite}
-        .hw2{animation:hw-blink 2.3s ease-in-out infinite .38s}
-        .hw3{animation:hw-blink 2.3s ease-in-out infinite .76s}
-        .hw4{animation:hw-blink 2.3s ease-in-out infinite 1.14s}
-        .hw5{animation:hw-blink 2.3s ease-in-out infinite 1.52s}
-        .hw6{animation:hw-blink 2.3s ease-in-out infinite 1.9s}
-      `}</style>
+    <svg viewBox="0 0 100 100" className="w-24 h-24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
       <ellipse cx="50" cy="94" rx="26" ry="3" fill="rgba(96,165,250,.25)"/>
       <rect x="22" y="28" width="56" height="62" rx="2" fill="rgba(28,100,242,.22)" stroke="rgba(96,165,250,.75)" strokeWidth="1.5"/>
       <rect x="30" y="18" width="40" height="12" rx="1" fill="rgba(28,100,242,.30)" stroke="rgba(96,165,250,.60)" strokeWidth="1"/>
@@ -286,13 +276,7 @@ function HotelScene() {
 
 function FoodScene() {
   return (
-    <svg viewBox="0 0 100 100" className="w-24 h-24" xmlns="http://www.w3.org/2000/svg">
-      <style>{`
-        @keyframes fs-rise{0%{transform:translateY(0) scaleX(1);opacity:.9}100%{transform:translateY(-22px) scaleX(1.25);opacity:0}}
-        .fs1{animation:fs-rise 2.1s ease-out infinite}
-        .fs2{animation:fs-rise 2.1s ease-out infinite .68s}
-        .fs3{animation:fs-rise 2.1s ease-out infinite 1.36s}
-      `}</style>
+    <svg viewBox="0 0 100 100" className="w-24 h-24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
       <ellipse cx="50" cy="90" rx="20" ry="2.5" fill="rgba(96,165,250,.30)"/>
       <path className="fs1" d="M37 46 Q39 39 37 32" stroke="rgba(147,197,253,.90)" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
       <path className="fs2" d="M50 43 Q52 36 50 29" stroke="rgba(147,197,253,.90)" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
@@ -309,15 +293,7 @@ function FoodScene() {
 
 function ItinScene() {
   return (
-    <svg viewBox="0 0 100 100" className="w-24 h-24" xmlns="http://www.w3.org/2000/svg">
-      <style>{`
-        @keyframes it-draw{0%{stroke-dashoffset:230}100%{stroke-dashoffset:0}}
-        @keyframes it-pin{0%,25%{transform:translateY(-14px);opacity:0}40%{transform:translateY(2px);opacity:1}50%{transform:translateY(-1px)}60%,100%{transform:translateY(0);opacity:1}}
-        .ir{animation:it-draw 3.6s ease-in-out infinite}
-        .ip1{animation:it-pin 3.6s ease-in-out infinite}
-        .ip2{animation:it-pin 3.6s ease-in-out infinite 1.1s}
-        .ip3{animation:it-pin 3.6s ease-in-out infinite 2.2s}
-      `}</style>
+    <svg viewBox="0 0 100 100" className="w-24 h-24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
       <rect x="12" y="18" width="76" height="64" rx="4" fill="rgba(28,100,242,.18)" stroke="rgba(96,165,250,.45)" strokeWidth="1"/>
       <line x1="12" y1="37" x2="88" y2="37" stroke="rgba(96,165,250,.22)" strokeWidth=".5"/>
       <line x1="12" y1="56" x2="88" y2="56" stroke="rgba(96,165,250,.22)" strokeWidth=".5"/>
@@ -337,15 +313,7 @@ function ItinScene() {
 
 function ExploreScene() {
   return (
-    <svg viewBox="0 0 100 100" className="w-24 h-24" xmlns="http://www.w3.org/2000/svg">
-      <style>{`
-        @keyframes ex-spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-        @keyframes ex-pulse{0%,100%{opacity:.6;r:36}50%{opacity:.15;r:40}}
-        @keyframes ex-pulse2{0%,100%{opacity:.7;r:27}50%{opacity:.2;r:31}}
-        .en{transform-origin:50px 50px;animation:ex-spin 9s linear infinite}
-        .er1{animation:ex-pulse 2.6s ease-in-out infinite}
-        .er2{animation:ex-pulse2 2.6s ease-in-out infinite .7s}
-      `}</style>
+    <svg viewBox="0 0 100 100" className="w-24 h-24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
       <circle className="er1" cx="50" cy="50" r="36" stroke="rgba(96,165,250,.55)" strokeWidth="1" fill="none"/>
       <circle className="er2" cx="50" cy="50" r="27" stroke="rgba(96,165,250,.65)" strokeWidth="1" fill="none"/>
       <circle cx="50" cy="50" r="22" fill="rgba(28,100,242,.20)" stroke="rgba(96,165,250,.80)" strokeWidth="1.5"/>
@@ -386,9 +354,13 @@ function TiltCard({ label, desc, glow, illustration, onClick, animDelay = 0 }: {
     <div style={{ perspective: '1000px' }} className="h-full">
       <motion.div
         ref={ref}
+        role="button"
+        tabIndex={0}
+        aria-label={label}
         onMouseMove={onMove}
         onMouseLeave={() => { mx.set(0); my.set(0); }}
         onClick={onClick}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(); } }}
         style={{
           rotateX, rotateY,
           transformStyle: 'preserve-3d',
@@ -401,7 +373,7 @@ function TiltCard({ label, desc, glow, illustration, onClick, animDelay = 0 }: {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: animDelay }}
         viewport={{ once: true, amount: 0.2 }}
-        className="cursor-pointer relative group rounded-2xl border border-white/10 p-7 flex flex-col items-center text-center gap-4 select-none h-full"
+        className="cursor-pointer relative group rounded-2xl border border-white/10 p-7 flex flex-col items-center text-center gap-4 select-none h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
       >
         {/* Top glow on hover */}
         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-2xl"
@@ -438,10 +410,10 @@ function TiltCard({ label, desc, glow, illustration, onClick, animDelay = 0 }: {
 
 /* ── Category metadata ────────────────────────────────────────────────── */
 const CATEGORIES: { label: Tab; desc: string; glow: string; illustration: React.ReactNode }[] = [
-  { label: 'Hotels',    glow: 'var(--color-brand)', illustration: <HotelScene />,   desc: 'Not 150 unfiltered options. AI-ranked picks by budget, area, and what you care about — applied before you see a single result.' },
-  { label: 'Food',      glow: 'var(--color-brand)', illustration: <FoodScene />,    desc: 'Worth the queue or skip it? Diet, vibe, and distance — filtered before you open another app.' },
-  { label: 'Itinerary', glow: 'var(--color-brand)', illustration: <ItinScene />,    desc: 'Your whole day, no backtracking. Stops sequenced around your hotel — so you\'re not zigzagging across the city like a tourist.' },
-  { label: 'Explore',   glow: 'var(--color-brand)', illustration: <ExploreScene />, desc: 'Brihadeeswarar to Airavatesvara. Entry times, dress code, crowd patterns — so you don\'t figure it out after the 2km walk.' },
+  { label: 'Hotels',    glow: 'var(--color-brand)',     illustration: <HotelScene />,   desc: 'Not 150 unfiltered options. AI-ranked picks by budget, area, and what you care about — applied before you see a single result.' },
+  { label: 'Food',      glow: 'var(--color-food)',      illustration: <FoodScene />,    desc: 'Worth the queue or skip it? Diet, vibe, and distance — filtered before you open another app.' },
+  { label: 'Itinerary', glow: 'var(--color-itinerary)', illustration: <ItinScene />,    desc: 'Your whole day, no backtracking. Stops sequenced around your hotel — so you\'re not zigzagging across the city like a tourist.' },
+  { label: 'Explore',   glow: 'var(--color-explore)',   illustration: <ExploreScene />, desc: 'Brihadeeswarar to Airavatesvara. Entry times, dress code, crowd patterns — so you don\'t figure it out after the 2km walk.' },
 ];
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -500,10 +472,10 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
   };
 
   return (
-    <div className="min-h-screen flex flex-col overflow-x-hidden bg-bg-app">
+    <div className="min-h-dvh flex flex-col overflow-x-hidden bg-bg-app">
 
-      {/* ── Navbar ─────────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-40 border-b"
+      {/* ── Navbar ─────────────────────────────────────────────────────── */}
+      <header className="sticky top-0 z-[200] border-b"
         style={{ background: 'rgba(249,250,251,0.92)', backdropFilter: 'blur(20px)', borderColor: 'rgba(0,0,0,0.07)', boxShadow: '0 1px 12px rgba(28,100,242,0.06)' }}>
         <div className="max-w-screen-xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -522,6 +494,9 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
           </div>
         </div>
       </header>
+
+      {/* ── Main content ───────────────────────────────────────────── */}
+      <main>
 
       {/* ── Hero ───────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-darkest" style={{ backgroundImage: 'radial-gradient(ellipse 80% 50% at 50% 0%, rgba(28,100,242,0.20) 0%, transparent 70%)' }}>
@@ -580,12 +555,14 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
               <div className="space-y-3 max-w-[440px]">
                 <div className="relative">
                   <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-brand pointer-events-none" />
+                  <label htmlFor="hero-search" className="sr-only">Search city</label>
                   <input
+                    id="hero-search"
                     type="text"
                     value={demoSearch}
                     onChange={e => setDemoSearch(e.target.value)}
                     placeholder="City — try Thanjavur"
-                    className="w-full pl-11 pr-4 py-4 rounded-2xl text-sm text-heading placeholder:text-muted outline-none transition-all duration-300 focus:ring-2 focus:ring-brand/30"
+                    className="w-full pl-11 pr-4 py-4 rounded-2xl text-base text-heading placeholder:text-muted outline-none transition-all duration-300 focus:ring-2 focus:ring-brand/30"
                     style={{
                       background: 'rgba(255,255,255,0.97)',
                       border: '1.5px solid rgba(255,255,255,1)',
@@ -594,14 +571,14 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
                     onKeyDown={e => e.key === 'Enter' && handleCtaClick()}
                   />
                 </div>
-                <Button onClick={handleCtaClick} size="lg" className="w-full justify-center py-4 text-base rounded-2xl">
+                <Button onClick={handleCtaClick} size="lg" className="w-full justify-center py-4 text-base">
                   Show me the best <ArrowRight className="w-4 h-4" />
                 </Button>
               </div>
 
               {/* Trust row */}
               <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm" style={{ color: 'var(--color-on-dark-body)' }}>
-                <span className="flex items-center gap-1.5"><Star className="w-4 h-4 fill-warning text-warning shrink-0" />Live Google ratings</span>
+                <span className="flex items-center gap-1.5"><Star className="w-4 h-4 fill-warning-strong text-warning-strong shrink-0" />Live Google ratings</span>
                 <span className="flex items-center gap-1.5"><Zap className="w-4 h-4 text-brand-border shrink-0" />Under 10 seconds</span>
                 <span className="flex items-center gap-1.5"><span className="text-base leading-none shrink-0">🇮🇳</span>Built for India</span>
               </div>
@@ -751,6 +728,8 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
         </div>
       </footer>
 
+      </main>
+
       {/* ── Auth modal ─────────────────────────────────────────────── */}
       <Modal open={authOpen} onClose={() => setAuthOpen(false)} title="Let's get you started" size="sm">
         <AuthForm onSuccess={handleAuthSuccess} asModal />
@@ -764,11 +743,14 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-5"
+            className="fixed inset-0 z-[400] flex items-center justify-center p-5"
             style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}
             onClick={() => setCityNotice(null)}
           >
             <motion.div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="city-notice-title"
               initial={{ opacity: 0, scale: 0.92, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.92, y: 20 }}
@@ -779,12 +761,13 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
             >
               <button
                 onClick={() => setCityNotice(null)}
+                aria-label="Close"
                 className="absolute top-3 right-3 p-1 rounded-lg text-white/40 hover:text-white/80 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
-              <span className="text-4xl block mb-3">{cityNotice.emoji}</span>
-              <h3 className="text-white font-display font-bold text-xl mb-2">
+              <span className="text-4xl block mb-3" aria-hidden="true">{cityNotice.emoji}</span>
+              <h3 id="city-notice-title" className="text-white font-display font-bold text-xl mb-2">
                 {cityNotice.city} isn't live yet
               </h3>
               <p className="text-sm leading-relaxed mb-5" style={{ color: 'var(--color-on-dark-body)' }}>

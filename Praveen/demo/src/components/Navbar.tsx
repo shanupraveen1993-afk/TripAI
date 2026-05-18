@@ -74,7 +74,9 @@ function CitySearch({ value, onChange, onPick }: {
   return (
     <div className="flex items-center gap-1.5 pl-2.5 pr-3 py-1.5 rounded-full bg-brand-softer ring-1 ring-brand-border shrink-0">
       <MapPin className="w-3.5 h-3.5 text-brand shrink-0" />
+      <label htmlFor="city-search-input" className="sr-only">Search city</label>
       <input
+        id="city-search-input"
         type="text"
         value={draft}
         onChange={e => setDraft(e.target.value)}
@@ -83,7 +85,7 @@ function CitySearch({ value, onChange, onPick }: {
         onKeyDown={handleKeyDown}
         autoFocus
         placeholder="City name…"
-        className="bg-transparent text-sm font-semibold text-heading outline-none min-w-0 w-28 sm:w-36"
+        className="bg-transparent text-base font-semibold text-heading outline-none min-w-0 w-28 sm:w-36"
       />
       {isDirty && !isThanjavur && (
         <span className="text-xs font-medium text-warning-strong whitespace-nowrap shrink-0">Thanjavur only</span>
@@ -102,12 +104,13 @@ export function Navbar({ section, onSectionChange, onLogout, userName, searchLoc
   return (
     <>
       {/* ── Top navbar ─────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-40 border-b" style={{ background: 'rgba(249,250,251,0.88)', backdropFilter: 'blur(20px)', borderColor: 'rgba(0,0,0,0.07)', boxShadow: '0 1px 12px rgba(28,100,242,0.06)', paddingTop: 'env(safe-area-inset-top)' }}>
+      <header className="sticky top-0 z-[200] border-b" style={{ background: 'rgba(249,250,251,0.88)', backdropFilter: 'blur(20px)', borderColor: 'rgba(0,0,0,0.07)', boxShadow: '0 1px 12px rgba(28,100,242,0.06)', paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="w-full max-w-[920px] mx-auto px-4 h-14 flex items-center gap-3">
 
           {/* Brand */}
           <button
             onClick={() => onSectionChange('home')}
+            aria-label="Go to home"
             className="flex items-center gap-2 shrink-0"
           >
             <div className="w-8 h-8 bg-brand rounded-lg flex items-center justify-center">
@@ -132,6 +135,9 @@ export function Navbar({ section, onSectionChange, onLogout, userName, searchLoc
           <div className="shrink-0 relative">
             <button
               onClick={() => setProfileOpen(!profileOpen)}
+              aria-label="Open user menu"
+              aria-haspopup="menu"
+              aria-expanded={profileOpen}
               className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-lg border border-border hover:bg-bg-app transition-colors"
             >
               <div className="w-7 h-7 bg-brand rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0">
@@ -144,14 +150,16 @@ export function Navbar({ section, onSectionChange, onLogout, userName, searchLoc
             </button>
 
             {profileOpen && (
-              <div className="absolute right-0 top-full mt-2 w-44 bg-surface border border-border rounded-2xl overflow-hidden z-50" style={{ boxShadow: 'var(--shadow-m)' }}>
+              <div role="menu" className="absolute right-0 top-full mt-2 w-44 bg-surface border border-border rounded-xl overflow-hidden z-[100]" style={{ boxShadow: 'var(--shadow-m)' }}>
                 <button
+                  role="menuitem"
                   onClick={() => { onSectionChange('history'); setProfileOpen(false); }}
                   className="flex items-center gap-2.5 w-full px-4 py-3 text-sm text-body hover:bg-bg-app transition-colors"
                 >
                   <History className="w-4 h-4" /> Saved Trips
                 </button>
                 <button
+                  role="menuitem"
                   onClick={() => { onSectionChange('profile'); setProfileOpen(false); }}
                   className="flex items-center gap-2.5 w-full px-4 py-3 text-sm text-body hover:bg-bg-app transition-colors"
                 >
@@ -159,6 +167,7 @@ export function Navbar({ section, onSectionChange, onLogout, userName, searchLoc
                 </button>
                 <div className="border-t border-border" />
                 <button
+                  role="menuitem"
                   onClick={() => { setProfileOpen(false); onLogout(); }}
                   className="flex items-center gap-2.5 w-full px-4 py-3 text-sm text-danger hover:bg-danger-soft transition-colors"
                 >

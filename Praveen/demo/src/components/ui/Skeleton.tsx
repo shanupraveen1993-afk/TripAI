@@ -8,7 +8,7 @@ function SkeletonBlock({ className = '' }: { className?: string }) {
 
 export function PlaceCardSkeleton() {
   return (
-    <div className="bg-surface border border-card-border rounded-xl p-5 space-y-4">
+    <div className="bg-surface border border-card-border rounded-xl px-3 pt-2.5 pb-5 space-y-4">
       <SkeletonBlock className="h-40 w-full rounded-lg" />
       <div className="space-y-2">
         <SkeletonBlock className="h-4 w-3/4" />

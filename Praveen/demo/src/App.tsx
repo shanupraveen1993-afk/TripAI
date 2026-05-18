@@ -36,7 +36,7 @@ function LocationDetectionToast({ phase }: { phase: 'locating' | 'found' | 'done
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 16, scale: 0.95 }}
           transition={{ type: 'spring', stiffness: 340, damping: 28 }}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-2.5 px-4 py-2.5 rounded-full shadow-lg pointer-events-none"
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[600] flex items-center gap-2.5 px-4 py-2.5 rounded-full shadow-lg pointer-events-none"
           style={{
             background: 'var(--color-itinerary-soft)',
             border: '1px solid var(--color-itinerary-medium)',
@@ -698,9 +698,9 @@ export default function App() {
   // Browse mode: user came from a category click without signing in
   if (appScreen === 'browse') {
     return (
-      <div className="min-h-screen overflow-x-hidden" style={{ background: 'linear-gradient(145deg, var(--color-brand-softer) 0%, var(--color-bg-app) 45%, var(--color-itinerary-soft) 100%)' }}>
+      <div className="min-h-dvh overflow-x-hidden" style={{ background: 'linear-gradient(145deg, var(--color-brand-softer) 0%, var(--color-bg-app) 45%, var(--color-itinerary-soft) 100%)' }}>
         {/* Browse header with universal location bar */}
-        <header className="sticky top-0 z-40 border-b" style={{ background: 'rgba(249,250,251,0.88)', backdropFilter: 'blur(20px)', borderColor: 'rgba(0,0,0,0.07)', boxShadow: '0 1px 12px rgba(28,100,242,0.06)' }}>
+        <header className="sticky top-0 z-[200] border-b" style={{ background: 'rgba(249,250,251,0.88)', backdropFilter: 'blur(20px)', borderColor: 'rgba(0,0,0,0.07)', boxShadow: '0 1px 12px rgba(28,100,242,0.06)' }}>
           <div className="w-full max-w-[920px] mx-auto px-4 h-14 grid items-center gap-3" style={{ gridTemplateColumns: 'auto 1fr auto' }}>
             {/* Logo */}
             <button
@@ -723,7 +723,7 @@ export default function App() {
                 value={searchLocation}
                 onChange={e => setSearchLocation(e.target.value)}
                 placeholder="Search city…"
-                className="w-full pl-8 pr-8 py-2 border border-border rounded-lg text-sm bg-bg-app focus:outline-none focus:ring-2 focus:ring-brand-soft focus:border-brand transition-colors"
+                className="w-full pl-8 pr-8 py-2 border border-border rounded-lg text-base bg-bg-app focus:outline-none focus:ring-2 focus:ring-brand-soft focus:border-brand transition-colors"
                 onKeyDown={e => {
                   if (e.key === 'Enter') {
                     const v = searchLocation.trim();
@@ -778,11 +778,14 @@ export default function App() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-5"
+              className="fixed inset-0 z-[400] flex items-center justify-center p-5"
               style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}
               onClick={dismissCityNotice}
             >
               <motion.div
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="city-notice-title-browse"
                 initial={{ opacity: 0, scale: 0.92, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.92, y: 20 }}
@@ -791,11 +794,11 @@ export default function App() {
                 style={{ background: 'rgba(10,14,30,0.98)', border: '1px solid rgba(255,255,255,0.10)', boxShadow: '0 24px 80px rgba(0,0,0,0.7)' }}
                 onClick={e => e.stopPropagation()}
               >
-                <button onClick={dismissCityNotice} className="absolute top-3 right-3 p-1 rounded-lg text-white/40 hover:text-white/80 transition-colors">
+                <button onClick={dismissCityNotice} aria-label="Close" className="absolute top-3 right-3 p-1 rounded-lg text-white/40 hover:text-white/80 transition-colors">
                   <X className="w-4 h-4" />
                 </button>
-                <p className="text-4xl mb-3">📍</p>
-                <h3 className="text-white font-display font-semibold text-xl mb-2">{nonThanjavurNotice} isn't live yet</h3>
+                <MapPin className="w-8 h-8 text-brand mb-3" aria-hidden="true" />
+                <h3 id="city-notice-title-browse" className="text-white font-display font-semibold text-xl mb-2">{nonThanjavurNotice} isn't live yet</h3>
                 <p className="text-sm leading-relaxed mb-5" style={{ color: 'rgba(255,255,255,0.65)' }}>
                   TripAI is fully live in <span className="font-semibold" style={{ color: 'var(--color-warning)' }}>Thanjavur</span> — hotels, restaurants, and landmarks AI-ranked in seconds. {nonThanjavurNotice} is next on our roadmap.
                 </p>
@@ -813,7 +816,7 @@ export default function App() {
 
   // Authenticated app
   return (
-    <div className="min-h-screen overflow-x-hidden" style={{ background: 'linear-gradient(145deg, var(--color-brand-softer) 0%, var(--color-bg-app) 45%, var(--color-itinerary-soft) 100%)' }}>
+    <div className="min-h-dvh overflow-x-hidden" style={{ background: 'linear-gradient(145deg, var(--color-brand-softer) 0%, var(--color-bg-app) 45%, var(--color-itinerary-soft) 100%)' }}>
       <Navbar
         section={mainSection}
         onSectionChange={s => { setMainSection(s); if (s === 'home') setContent('dashboard'); }}
@@ -842,11 +845,14 @@ export default function App() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-5"
+            className="fixed inset-0 z-[400] flex items-center justify-center p-5"
             style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}
             onClick={dismissCityNotice}
           >
             <motion.div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="city-notice-title-app"
               initial={{ opacity: 0, scale: 0.92, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.92, y: 20 }}
@@ -855,11 +861,11 @@ export default function App() {
               style={{ background: 'rgba(10,14,30,0.98)', border: '1px solid rgba(255,255,255,0.10)', boxShadow: '0 24px 80px rgba(0,0,0,0.7)' }}
               onClick={e => e.stopPropagation()}
             >
-              <button onClick={dismissCityNotice} className="absolute top-3 right-3 p-1 rounded-lg text-white/40 hover:text-white/80 transition-colors">
+              <button onClick={dismissCityNotice} aria-label="Close" className="absolute top-3 right-3 p-1 rounded-lg text-white/40 hover:text-white/80 transition-colors">
                 <X className="w-4 h-4" />
               </button>
-              <p className="text-4xl mb-3">📍</p>
-              <h3 className="text-white font-display font-semibold text-xl mb-2">{nonThanjavurNotice} isn't live yet</h3>
+              <MapPin className="w-8 h-8 text-brand mb-3" aria-hidden="true" />
+              <h3 id="city-notice-title-app" className="text-white font-display font-semibold text-xl mb-2">{nonThanjavurNotice} isn't live yet</h3>
               <p className="text-sm leading-relaxed mb-5" style={{ color: 'rgba(255,255,255,0.65)' }}>
                 TripAI is fully live in <span className="font-semibold" style={{ color: 'var(--color-warning)' }}>Thanjavur</span> — hotels, restaurants, and landmarks AI-ranked in seconds. {nonThanjavurNotice} is next on our roadmap.
               </p>

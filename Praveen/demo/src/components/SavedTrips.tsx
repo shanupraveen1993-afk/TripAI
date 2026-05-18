@@ -32,10 +32,10 @@ const TAB_ICONS: Record<Tab, React.ReactNode> = {
 };
 
 const TAB_COLORS: Record<Tab, string> = {
-  Hotels:    'bg-accent-soft text-accent border-accent/20',
-  Food:      'bg-warning-soft text-warning border-warning-medium/30',
-  Itinerary: 'bg-success-soft text-success border-success-medium/30',
-  Explore:   'bg-vibe-soft text-vibe border-vibe/20',
+  Hotels:    'bg-brand-softer text-brand border-brand-soft/30',
+  Food:      'bg-food-soft text-food border-food-border',
+  Itinerary: 'bg-itinerary-soft text-itinerary border-itinerary-medium',
+  Explore:   'bg-explore-soft text-explore border-explore-medium',
 };
 
 function TripCard({ trip, onDelete, onView }: { trip: SavedTrip; onDelete: () => void; onView: () => void }) {
@@ -45,7 +45,7 @@ function TripCard({ trip, onDelete, onView }: { trip: SavedTrip; onDelete: () =>
       initial={{ opacity: 0, scale: 0.97 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95, height: 0 }}
-      className="bg-surface border border-card-border rounded-2xl p-4 flex gap-4 items-start hover:border-brand transition-colors group"
+      className="bg-surface border border-card-border rounded-xl p-4 flex gap-4 items-start hover:border-brand transition-colors group"
     >
       {/* Icon */}
       <div className={`w-11 h-11 rounded-lg flex items-center justify-center border shrink-0 ${TAB_COLORS[trip.tab]}`}>

@@ -12,22 +12,14 @@ interface CityLockScreenProps {
 export function CityLockScreen({ destination, onBack, onTryThanjavur }: CityLockScreenProps) {
   return (
     <div
-      className="w-full relative overflow-hidden flex flex-col items-center justify-center min-h-[92vh] px-5 py-12"
+      className="w-full relative overflow-hidden flex flex-col items-center justify-center min-h-[92dvh] px-5 py-12"
       style={{ background: 'linear-gradient(160deg,#06080F 0%,#0B0F1E 50%,#100816 100%)' }}
     >
-      <style>{`
-        @keyframes cl-ring  { 0%,100%{transform:scale(1);opacity:.18} 50%{transform:scale(1.08);opacity:.32} }
-        @keyframes cl-ring2 { 0%,100%{transform:scale(1);opacity:.10} 50%{transform:scale(1.12);opacity:.22} }
-        @keyframes cl-ring3 { 0%,100%{transform:scale(1);opacity:.06} 50%{transform:scale(1.18);opacity:.14} }
-        @keyframes cl-scan  { 0%{top:-4px;opacity:0} 10%{opacity:.6} 90%{opacity:.2} 100%{top:100%;opacity:0} }
-        @keyframes cl-float { 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-8px)} }
-        @keyframes cl-dot   { 0%,100%{opacity:.15} 50%{opacity:.55} }
-      `}</style>
-
-      {/* Back button */}
+      {/* Back button — min 44px touch target */}
       <button
         onClick={onBack}
-        className="absolute top-4 left-4 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors z-20"
+        aria-label="Go back"
+        className="absolute top-4 left-4 flex items-center gap-1.5 px-3 min-h-[44px] rounded-lg text-xs font-semibold transition-colors z-20 active:opacity-70"
         style={{
           background: 'rgba(255,255,255,0.07)',
           border: '1px solid rgba(255,255,255,0.12)',
@@ -46,9 +38,8 @@ export function CityLockScreen({ destination, onBack, onTryThanjavur }: CityLock
       }} />
 
       {/* Scan line */}
-      <div className="absolute left-0 right-0 h-[2px] pointer-events-none z-10" style={{
+      <div className="cl-scan absolute left-0 right-0 h-[2px] pointer-events-none z-10" style={{
         background: 'linear-gradient(90deg, transparent, rgba(28,100,242,0.5), transparent)',
-        animation: 'cl-scan 4s ease-in-out infinite',
       }} />
 
       {/* Ambient orbs */}
@@ -60,10 +51,10 @@ export function CityLockScreen({ destination, onBack, onTryThanjavur }: CityLock
       }} />
 
       {/* Concentric rings */}
-      <div className="relative flex items-center justify-center mb-8" style={{ animation: 'cl-float 4s ease-in-out infinite' }}>
-        <div className="absolute rounded-full" style={{ width: 200, height: 200, border: '1px solid rgba(28,100,242,0.20)', animation: 'cl-ring3 3.6s ease-in-out infinite 0.8s' }} />
-        <div className="absolute rounded-full" style={{ width: 148, height: 148, border: '1px solid rgba(28,100,242,0.30)', animation: 'cl-ring2 3.6s ease-in-out infinite 0.4s' }} />
-        <div className="absolute rounded-full" style={{ width: 104, height: 104, border: '2px solid rgba(28,100,242,0.40)', animation: 'cl-ring 3.6s ease-in-out infinite' }} />
+      <div className="cl-float relative flex items-center justify-center mb-8">
+        <div className="cl-ring3 absolute rounded-full" style={{ width: 200, height: 200, border: '1px solid rgba(28,100,242,0.20)' }} />
+        <div className="cl-ring2 absolute rounded-full" style={{ width: 148, height: 148, border: '1px solid rgba(28,100,242,0.30)' }} />
+        <div className="cl-ring  absolute rounded-full" style={{ width: 104, height: 104, border: '2px solid rgba(28,100,242,0.40)' }} />
         <div className="absolute w-16 h-16 rounded-full" style={{ background: 'radial-gradient(circle, rgba(28,100,242,0.35), transparent 70%)', filter: 'blur(12px)' }} />
       </div>
 
@@ -86,7 +77,7 @@ export function CityLockScreen({ destination, onBack, onTryThanjavur }: CityLock
         className="flex items-center gap-2 px-4 py-1.5 rounded-full mb-8 text-xs font-normal"
         style={{ background: 'rgba(250,202,21,0.10)', border: '1px solid rgba(250,202,21,0.30)', color: 'rgba(250,202,21,0.90)' }}
       >
-        <span>🇮🇳</span>
+        <span aria-hidden="true">🇮🇳</span>
         <span>#MadeInIndia · All Cities Coming Soon</span>
       </div>
 
@@ -95,7 +86,7 @@ export function CityLockScreen({ destination, onBack, onTryThanjavur }: CityLock
         whileHover={{ scale: 1.03 }}
         whileTap={{ scale: 0.97 }}
         style={{ boxShadow: '0 0 32px rgba(28,100,242,0.45), 0 0 8px rgba(28,100,242,0.3)' }}
-        className="rounded-2xl"
+        className="rounded-lg"
       >
         <Button
           variant="brand"
@@ -103,7 +94,7 @@ export function CityLockScreen({ destination, onBack, onTryThanjavur }: CityLock
           icon={<Sparkles className="w-4 h-4" />}
           iconRight={<ChevronRight className="w-4 h-4" />}
           onClick={onTryThanjavur}
-          className="rounded-2xl px-8"
+          className="rounded-lg px-8"
         >
           Try Thanjavur
         </Button>

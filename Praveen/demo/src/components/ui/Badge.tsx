@@ -14,7 +14,7 @@ const variantClasses: Record<BadgeVariant, string> = {
   brand:   'bg-brand-softer text-brand border border-brand-soft/30',
   success: 'bg-success-soft text-success border border-success-medium/30',
   danger:  'bg-danger-soft text-danger border border-danger-medium/30',
-  warning: 'bg-warning-soft text-warning border border-warning-medium/30',
+  warning: 'bg-warning-soft text-warning-strong border border-warning-medium/30',
   neutral: 'bg-bg-app text-muted border border-border',
   accent:  'bg-accent-soft text-accent border border-accent/20',
 };

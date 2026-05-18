@@ -16,14 +16,26 @@ const paddingClasses = {
 };
 
 export function Card({ children, className = '', hover = false, padding = 'md', onClick }: CardProps) {
+  const interactive = Boolean(onClick);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (interactive && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      onClick?.();
+    }
+  };
+
   return (
     <div
       onClick={onClick}
+      onKeyDown={handleKeyDown}
+      role={interactive ? 'button' : undefined}
+      tabIndex={interactive ? 0 : undefined}
       className={[
-        'bg-surface border border-card-border rounded-2xl shadow-sm',
+        'bg-surface border border-card-border rounded-xl shadow-sm',
         paddingClasses[padding],
         hover ? 'card-hover cursor-pointer' : '',
-        onClick ? 'cursor-pointer' : '',
+        interactive ? 'cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-soft' : '',
         className,
       ].join(' ')}
     >
