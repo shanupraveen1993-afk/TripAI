@@ -964,6 +964,36 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
 }) {
   void onRegenerate;
   const [expandedStops, setExpandedStops] = useState<Set<number>>(new Set());
+  const [activeIdx, setActiveIdx]         = useState(0);
+  const timelineScrollRef = useRef<HTMLDivElement>(null);
+  const nodeRefs          = useRef<(HTMLButtonElement | null)[]>([]);
+
+  // Track which stop card is in view
+  useEffect(() => {
+    const observers: IntersectionObserver[] = [];
+    stops.forEach((_, idx) => {
+      const el = document.getElementById(`itin-stop-${idx}`);
+      if (!el) return;
+      const obs = new IntersectionObserver(
+        ([entry]) => { if (entry.isIntersecting) setActiveIdx(idx); },
+        { threshold: 0.25, rootMargin: '0px 0px -50% 0px' },
+      );
+      obs.observe(el);
+      observers.push(obs);
+    });
+    return () => observers.forEach(o => o.disconnect());
+  }, [stops.length]);
+
+  // Slide timeline to keep active node + next node visible
+  useEffect(() => {
+    const container = timelineScrollRef.current;
+    const node      = nodeRefs.current[activeIdx];
+    if (!container || !node) return;
+    const cRect = container.getBoundingClientRect();
+    const nRect = node.getBoundingClientRect();
+    const target = container.scrollLeft + nRect.left - cRect.left - cRect.width / 2 + nRect.width / 2;
+    container.scrollTo({ left: Math.max(0, target), behavior: 'smooth' });
+  }, [activeIdx]);
 
   const displayStops = stops;
 
@@ -988,8 +1018,8 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
   return (
     <div>
 
-      {/* ── Day progress strip ────────────────────────────────── */}
-      <div className="mb-4 rounded-xl bg-surface border border-card-border shadow-sm overflow-hidden">
+      {/* ── Day progress strip — sticky ──────────────────────── */}
+      <div className="sticky top-0 z-40 mb-4 rounded-xl bg-surface border border-card-border shadow-sm overflow-hidden">
         {/* Single compact header row */}
         <div className="px-4 py-2.5 border-b border-border/60 flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5 min-w-0">
@@ -1007,32 +1037,46 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
         </div>
 
         {/* Timeline — scrollable, number + time only */}
-        <div className="overflow-x-auto no-scrollbar px-4 py-4">
+        <div ref={timelineScrollRef} className="overflow-x-auto no-scrollbar px-4 py-4">
           <div className="flex items-center" style={{ minWidth: `${stops.length * 56 + (stops.length - 1) * 52}px` }}>
             {stops.map((stop, idx) => {
-              const isLast = idx === stops.length - 1;
+              const isLast    = idx === stops.length - 1;
+              const isActive  = idx === activeIdx;
+              const isPast    = idx < activeIdx;
               const travelMin = stop.travelToNext?.match(/\d+\s*min/)?.[0] ?? '';
               return (
                 <React.Fragment key={idx}>
                   {/* Stop node: circle + time */}
                   <button
+                    ref={el => { nodeRefs.current[idx] = el; }}
                     type="button"
                     onClick={() => document.getElementById(`itin-stop-${idx}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-                    className="flex flex-col items-center gap-1.5 shrink-0 focus:outline-none group"
-                    style={{ width: 56 }}
+                    className="flex flex-col items-center gap-1.5 shrink-0 focus:outline-none group transition-opacity duration-300"
+                    style={{ width: 56, opacity: isActive ? 1 : isPast ? 0.45 : 0.6 }}
                   >
                     <div
-                      className="w-10 h-10 rounded-full flex items-center justify-center font-black text-base shadow-sm ring-2 ring-white transition-transform group-hover:scale-110 group-active:scale-95"
-                      style={{ background: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-active))', color: '#fff' }}
+                      className="w-10 h-10 rounded-full flex items-center justify-center font-black text-base ring-2 ring-white transition-all duration-300 group-hover:scale-110 group-active:scale-95"
+                      style={{
+                        background: isActive
+                          ? 'linear-gradient(135deg,var(--color-brand),var(--color-brand-active))'
+                          : isPast
+                          ? 'var(--color-brand-soft)'
+                          : 'var(--color-border)',
+                        color: isActive ? '#fff' : isPast ? 'var(--color-brand)' : 'var(--color-muted)',
+                        boxShadow: isActive ? '0 0 0 3px var(--color-brand-soft)' : 'none',
+                        transform: isActive ? 'scale(1.15)' : 'scale(1)',
+                      }}
                     >
                       {idx + 1}
                     </div>
-                    <span className="text-[10px] font-semibold text-muted whitespace-nowrap">{stop.time}</span>
+                    <span className={`text-[10px] font-semibold whitespace-nowrap transition-colors duration-300 ${isActive ? 'text-brand font-bold' : 'text-muted'}`}>
+                      {stop.time}
+                    </span>
                   </button>
 
                   {/* Connector: line + travel time */}
                   {!isLast && (
-                    <div className="flex-1 flex flex-col items-center gap-1" style={{ minWidth: 52 }}>
+                    <div className="flex-1 flex flex-col items-center gap-1" style={{ minWidth: 52, opacity: idx < activeIdx ? 0.4 : 1 }}>
                       {travelMin && (
                         <span className="text-[10px] font-bold whitespace-nowrap px-1.5 py-0.5 rounded-full"
                           style={{ background: TRAFFIC_LINE_BG[stop.currentTraffic] + '20', color: TRAFFIC_LINE_BG[stop.currentTraffic] }}>
