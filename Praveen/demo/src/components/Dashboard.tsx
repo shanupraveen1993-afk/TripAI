@@ -1030,7 +1030,6 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                   >
                     <span className="text-xs font-semibold uppercase tracking-wide">{t}</span>
                     <span className="text-xs opacity-60">{meta[t].places} places</span>
-                    <span className="text-[10px] opacity-50">{meta[t].time}</span>
                   </button>
                 );
               })}
