@@ -20,117 +20,117 @@ const THANJAVUR_PRESET: Record<string, Array<{
     { label: 'Brihadeeswarar Temple',
       aliases: ['brihadeeswarar','big temple','brihadeeswara','peruvudaiyar'],
       travelToNext: '5 min walk',
-      reachNote: 'Starting point — arrive before 7 AM for sunrise puja.',
+      reachNote: 'Starting point — arrive before 7 AM for sunrise puja. Traffic is nonexistent at this hour.',
       currentTraffic: 'Light', yesterdayTraffic: 'Light',
-      trafficNote: 'Light traffic early morning — easy access, minimal crowd.',
+      trafficNote: 'Light traffic early morning — minimal crowd, peaceful walkthrough.',
       entryFee: 'Free entry', duration: '2 hrs', crowdLevel: 'Low',
-      highlights: ['Vimana (tower) — tallest of its era at 66m', 'Nandi statue — monolithic bull at the entrance', 'Inner sanctum Shivalingam — 6–12:30 PM session'],
-      tip: 'Enter from East Gopuram gate. Stand inside the courtyard by 7:10 AM to see the morning puja — the granite shadow of the 66m vimana never falls outside the temple walls at any time of day.' },
+      highlights: ['Vimana (tower) — tallest of its era at 66m', 'Nandi statue — monolithic bull at entrance', 'Morning puja — 7 AM sanctum lighting ceremony'],
+      tip: 'Enter from East Gopuram gate by 7:10 AM for the morning puja. The granite shadow of the 66m vimana never falls outside the temple walls — stand in the courtyard to witness this.' },
     { label: 'Thanjavur Palace',
       aliases: ['thanjavur palace','maratha palace','royal museum','nayak palace'],
       travelToNext: '2 min walk',
-      reachNote: '400m walk south from Big Temple main exit.',
+      reachNote: 'Short walk south of Big Temple — follow the main road to Palace Road entrance.',
       currentTraffic: 'Light', yesterdayTraffic: 'Light',
-      trafficNote: 'Light traffic — short walk inside the heritage zone.',
-      entryFee: '₹50 / adult', duration: '1 hr', crowdLevel: 'Low',
-      highlights: ['Durbar Hall — ceiling art and royal paintings', 'Bell Tower (5th floor) — panoramic city view', 'Saraswathi Mahal entrance — adjoining complex'],
-      tip: 'Climb to the Bell Tower 5th floor for the best aerial view of Big Temple and the city. Opens 9 AM — arrive early before tour groups.' },
+      trafficNote: 'Light morning traffic — street crowd builds from 10 AM.',
+      entryFee: '₹50 / adult', duration: '1.5 hrs', crowdLevel: 'Low',
+      highlights: ['Durbar Hall — Maratha ceiling art and royal portraits', 'Bell Tower (5th floor) — panoramic city view', 'Museum — ivory throne, royal weapons collection'],
+      tip: 'Climb to the Bell Tower 5th floor for the best aerial view of Big Temple. Arrive before 10 AM before tour groups fill the Hall.' },
     { label: 'Saraswathi Mahal Library',
       aliases: ['saraswathi mahal','saraswati mahal','palm leaf','manuscript'],
-      travelToNext: '2 min walk',
-      reachNote: 'Same Palace complex — follow the interior corridor west.',
+      travelToNext: '12 min · Auto (~₹80)',
+      reachNote: 'Same Palace complex — follow the interior corridor west from the Durbar Hall.',
       currentTraffic: 'Light', yesterdayTraffic: 'Light',
-      trafficNote: 'No traffic — same complex, 2-min internal walk.',
+      trafficNote: 'No traffic — same complex interior walk.',
       entryFee: '₹20 / adult', duration: '45 min', crowdLevel: 'Low',
-      highlights: ['Palm-leaf manuscript gallery — 49,000+ manuscripts', 'Rare illustrated texts on botany and astrology', 'Closed on Wednesdays — plan accordingly'],
-      tip: 'Ask the guide to show the illustrated manuscript section — botanical drawings from the 17th century are the real highlight, not just the palm-leaf texts.' },
-    { label: 'Thanjavur Art Gallery',
-      aliases: ['art gallery','thanjavur art','tanjore art','chola bronze'],
-      travelToNext: '10 min auto ~₹60',
-      reachNote: 'Same Palace complex — east wing, 2-min walk from library.',
-      currentTraffic: 'Moderate', yesterdayTraffic: 'Light',
-      trafficNote: 'Moderate traffic by midday on the auto route.',
-      entryFee: '₹30 / adult', duration: '45 min', crowdLevel: 'Low',
-      highlights: ['Nataraja bronze — centrepiece 11th-century Chola casting', 'Chola bronze collection — 80+ sculptures', 'Stone sculpture gallery — Pallava to Nayak period'],
-      tip: 'Stand directly in front of the Nataraja bronze — the hand positions correspond to the five acts of Shiva. Gallery attendant can explain the iconography.' },
+      highlights: ['49,000+ manuscripts — palm leaf, paper, and cloth', 'Illustrated Ramayana manuscripts — 17th century', 'Botanical drawings — rare illustrated texts'],
+      tip: 'Ask the guide for the illustrated manuscript section — the 17th-century botanical drawings are the real highlight. Closes Wednesday and at 5:30 PM.' },
+    { label: 'Rajarajan Manimandapam',
+      aliases: ['rajarajan','manimandapam','rajaraja statue','manimandapam park'],
+      travelToNext: '10 min · Auto (~₹60)',
+      reachNote: '~2.8 km by auto from Palace complex — near the north gate of Brihadeeswarar Temple.',
+      currentTraffic: 'Light', yesterdayTraffic: 'Light',
+      trafficNote: 'Light midday traffic — park is quiet and uncrowded.',
+      entryFee: 'Free entry', duration: '30 min', crowdLevel: 'Low',
+      highlights: ['Rajaraja I statue — commemorating the Chola king who built the Big Temple', 'Memorial hall — Chola dynasty historical panels', 'Best vantage for full Big Temple gopuram photography'],
+      tip: 'Stand at the Manimandapam entrance facing south for the cleanest unobstructed photo of the Big Temple gopuram. Best midday light for photography from this angle.' },
     { label: 'Sivaganga Fort',
-      aliases: ['sivaganga','sivaganga fort','sivaganga park'],
+      aliases: ['sivaganga','sivaganga fort','sivaganga park','sivagangai'],
       travelToNext: null,
-      reachNote: 'Auto from Art Gallery (~10 min, ₹60).',
+      reachNote: '~1.5 km by auto from Manimandapam (~10 min, ₹60).',
       currentTraffic: 'Moderate', yesterdayTraffic: 'Light',
       trafficNote: 'Last stop of the day.',
       entryFee: 'Free entry', duration: '45 min', crowdLevel: 'Low',
-      highlights: ['Fort ramparts — photography-friendly with city skyline', 'Sivaganga tank — peaceful waterfront walk', 'Open ruins — uncrowded all day'],
-      tip: 'Walk the fort ramparts for the best unobstructed view of the Big Temple gopuram from a distance. Best photography light in the afternoon.' },
+      highlights: ['Fort ramparts — best unobstructed view of Big Temple gopuram', 'Sivaganga tank — peaceful waterfront walk', 'Open ruins — uncrowded, ideal for photography'],
+      tip: 'Walk the full fort rampart perimeter for the best view of the Big Temple gopuram from a distance. The tank reflection and warm stone make this Thanjavur\'s best photography spot.' },
   ],
   '14:00': [
+    { label: 'Brihadeeswarar Temple',
+      aliases: ['brihadeeswarar','big temple','brihadeeswara','peruvudaiyar'],
+      travelToNext: '8 min · Auto (~₹60)',
+      reachNote: 'Starting point — outer complex open all day; inner sanctum reopens 4 PM for evening session.',
+      currentTraffic: 'Heavy', yesterdayTraffic: 'Moderate',
+      trafficNote: 'Heavy afternoon traffic on approach roads — auto is faster than walking in midday heat.',
+      entryFee: 'Free entry', duration: '1 hr', crowdLevel: 'High',
+      highlights: ['Outer gopuram — photography best in afternoon light', 'Nandi statue — striking in afternoon shadow', 'Courtyard walk — 66m vimana at close range'],
+      tip: 'Visit the outer courtyard first — the inner sanctum opens at 4 PM. Arrive at 2 PM to explore without the evening rush. Carry water; the courtyard is open to the sky.' },
     { label: 'Thanjavur Palace',
       aliases: ['thanjavur palace','maratha palace','royal museum','nayak palace'],
       travelToNext: '2 min walk',
-      reachNote: 'Starting point — Palace opens 9 AM, afternoon light best for Durbar Hall ceiling art.',
+      reachNote: '8 min auto from Big Temple — Palace entrance on Palace Road.',
       currentTraffic: 'Moderate', yesterdayTraffic: 'Moderate',
-      trafficNote: 'Moderate afternoon traffic — short internal walk.',
+      trafficNote: 'Moderate afternoon traffic — steady crowd of history enthusiasts.',
       entryFee: '₹50 / adult', duration: '1 hr', crowdLevel: 'Moderate',
-      highlights: ['Durbar Hall — ceiling art and royal paintings', 'Bell Tower (5th floor) — panoramic city view', 'Museum collection — Maratha-era artefacts'],
-      tip: 'Climb to the Bell Tower 5th floor for the best aerial view of Big Temple. Crowd is lighter 2–4 PM compared to mornings.' },
-    { label: 'Thanjavur Art Gallery',
-      aliases: ['art gallery','thanjavur art','tanjore art','chola bronze'],
-      travelToNext: '10 min auto ~₹60',
-      reachNote: 'Same Palace complex — east wing, 2-min walk.',
-      currentTraffic: 'Moderate', yesterdayTraffic: 'Moderate',
-      trafficNote: 'Moderate traffic — auto is faster in afternoon heat.',
-      entryFee: '₹30 / adult', duration: '45 min', crowdLevel: 'Low',
-      highlights: ['Nataraja bronze — centrepiece Chola casting', 'Chola bronze collection — 80+ sculptures', 'Stone sculpture gallery — Pallava to Nayak period'],
-      tip: 'Gallery closes 5 PM — arrive by 4:15 PM to see the full bronze collection without rushing.' },
-    { label: 'Sivaganga Fort',
-      aliases: ['sivaganga','sivaganga fort','sivaganga park'],
+      highlights: ['Durbar Hall — ceiling art and Maratha royal portraits', 'Bell Tower — panoramic city view', 'Museum — ivory throne, royal artefacts'],
+      tip: 'Afternoon crowd at the Bell Tower is lighter than morning. Gallery closes at 5 PM — arrive by 3:15 PM to allow time for both Palace and Library.' },
+    { label: 'Saraswathi Mahal Library',
+      aliases: ['saraswathi mahal','saraswati mahal','palm leaf','manuscript'],
       travelToNext: null,
-      reachNote: 'Auto from Art Gallery (~10 min, ₹60).',
-      currentTraffic: 'Heavy', yesterdayTraffic: 'Moderate',
-      trafficNote: 'Last stop of the day.',
-      entryFee: 'Free entry', duration: '45 min', crowdLevel: 'Low',
-      highlights: ['Fort ramparts — photography-friendly', 'Sivaganga tank — peaceful evening walk', 'Open ruins — uncrowded all day'],
-      tip: 'Walk the ramparts for a sunset view of the Big Temple gopuram — best golden-hour photography spot in Thanjavur.' },
+      reachNote: 'Same Palace complex — 2-min walk through the interior corridor from the Durbar Hall.',
+      currentTraffic: 'Light', yesterdayTraffic: 'Light',
+      trafficNote: 'Last stop of the afternoon — quiet corridors, sparse crowd.',
+      entryFee: '₹20 / adult', duration: '45 min', crowdLevel: 'Low',
+      highlights: ['49,000+ manuscripts on palm leaf and cloth', 'Illustrated Ramayana texts — 17th century', 'Botanical drawings — rare illustrated collection'],
+      tip: 'Closes at 5:30 PM — arrive by 4:30 PM at the latest. The illustrated manuscript gallery is the real highlight; ask the attendant to show the botanical drawing collection.' },
   ],
   '17:00': [
     { label: 'Brihadeeswarar Temple',
       aliases: ['brihadeeswarar','big temple','brihadeeswara','peruvudaiyar'],
-      travelToNext: '1 min walk',
-      reachNote: 'Starting point — inner sanctum reopens 4 PM for evening puja.',
+      travelToNext: '20 min · Auto (~₹120)',
+      reachNote: 'Starting point — inner sanctum reopens 4 PM for evening puja. Most atmospheric visit of the day.',
       currentTraffic: 'Heavy', yesterdayTraffic: 'Heavy',
-      trafficNote: 'Heavy evening crowd 5–7 PM — arrive early for puja viewing.',
+      trafficNote: 'Heavy evening crowd 5–7 PM — temple at its most atmospheric with pilgrims and devotees.',
       entryFee: 'Free entry', duration: '1.5 hrs', crowdLevel: 'High',
-      highlights: ['Evening puja — sanctum lit with oil lamps from 4 PM', 'Outer gopuram lit at dusk — best photography', 'Nandi statue — dramatic in evening light'],
-      tip: 'Position yourself near the East Gopuram inner corridor by 5:30 PM — the evening lamp-lighting ceremony inside the outer sanctum is the highlight of the evening visit.' },
-    { label: 'Rajarajan Manimandapam',
-      aliases: ['rajarajan','manimandapam','rajaraja statue'],
+      highlights: ['Evening puja — sanctum lit with oil lamps from 6 PM', 'Outer gopuram floodlit at dusk — best photography', 'Nadaswaram music fills the courtyard at lamp-lighting'],
+      tip: 'Arrive at 5 PM and position yourself near the East Gopuram inner corridor by 6 PM. The evening lamp-lighting is the spiritual centrepiece. Leave by 6:30 PM for the drive south.' },
+    { label: 'Punnainallur Mariamman Kovil',
+      aliases: ['punnainallur','mariamman','punnainallur mariamman','mariamman kovil','shri mariamman'],
       travelToNext: null,
-      reachNote: 'Adjacent to Big Temple — same compound, no travel needed.',
-      currentTraffic: 'Heavy', yesterdayTraffic: 'Heavy',
-      trafficNote: 'Last stop of the day.',
-      entryFee: 'Free entry', duration: '20 min', crowdLevel: 'Moderate',
-      highlights: ['Rajaraja I statue — commemorating the temple builder', 'Memorial hall — historical panels about the Chola dynasty', 'Good vantage point for Big Temple gopuram photos'],
-      tip: 'Stand at the Manimandapam entrance for the cleanest full-height photo of the Big Temple gopuram — no obstructions at this angle.' },
+      reachNote: '~7 km south of Big Temple — 20 min auto (~₹120). Highway approach is smooth; final 500m near temple gates can be congested on auspicious days.',
+      currentTraffic: 'Moderate', yesterdayTraffic: 'Light',
+      trafficNote: 'Moderate devotional crowd in the evening — manageable outside festival days.',
+      entryFee: 'Free entry', duration: '1 hr', crowdLevel: 'Moderate',
+      highlights: ['Mariamman deity — powerful Shakti pilgrimage site', 'Temple tank — serene evening atmosphere', 'Evening aarti — 7 PM ritual lamp lighting'],
+      tip: 'Arrive before 7:30 PM for the evening aarti. The temple is most atmospheric at dusk when the lamps are lit around the tank. Crowd is steady but not overwhelming outside Tamil festival days.' },
   ],
   '16:00': [
     { label: 'Brihadeeswarar Temple',
       aliases: ['brihadeeswarar','big temple','brihadeeswara','peruvudaiyar'],
-      travelToNext: '1 min walk',
-      reachNote: 'Starting point — inner sanctum reopens 4 PM for evening puja.',
+      travelToNext: '20 min · Auto (~₹120)',
+      reachNote: 'Starting point — inner sanctum reopens 4 PM for evening puja. Most atmospheric visit of the day.',
       currentTraffic: 'Heavy', yesterdayTraffic: 'Heavy',
-      trafficNote: 'Heavy evening crowd 5–7 PM — arrive early for puja viewing.',
+      trafficNote: 'Heavy evening crowd 5–7 PM — temple at its most atmospheric with pilgrims and devotees.',
       entryFee: 'Free entry', duration: '1.5 hrs', crowdLevel: 'High',
-      highlights: ['Evening puja — sanctum lit with oil lamps from 4 PM', 'Outer gopuram lit at dusk — best photography', 'Nandi statue — dramatic in evening light'],
-      tip: 'Position yourself near the East Gopuram inner corridor by 5:30 PM — the evening lamp-lighting ceremony inside the outer sanctum is the highlight of the evening visit.' },
-    { label: 'Rajarajan Manimandapam',
-      aliases: ['rajarajan','manimandapam','rajaraja statue'],
+      highlights: ['Evening puja — sanctum lit with oil lamps from 6 PM', 'Outer gopuram floodlit at dusk — best photography', 'Nadaswaram music fills the courtyard at lamp-lighting'],
+      tip: 'Arrive at 5 PM and position yourself near the East Gopuram inner corridor by 6 PM. The evening lamp-lighting is the spiritual centrepiece. Leave by 6:30 PM for the drive south.' },
+    { label: 'Punnainallur Mariamman Kovil',
+      aliases: ['punnainallur','mariamman','punnainallur mariamman','mariamman kovil','shri mariamman'],
       travelToNext: null,
-      reachNote: 'Adjacent to Big Temple — same compound, no travel needed.',
-      currentTraffic: 'Heavy', yesterdayTraffic: 'Heavy',
-      trafficNote: 'Last stop of the day.',
-      entryFee: 'Free entry', duration: '20 min', crowdLevel: 'Moderate',
-      highlights: ['Rajaraja I statue — commemorating the temple builder', 'Memorial hall — historical panels about the Chola dynasty', 'Good vantage point for Big Temple gopuram photos'],
-      tip: 'Stand at the Manimandapam entrance for the cleanest full-height photo of the Big Temple gopuram — no obstructions at this angle.' },
+      reachNote: '~7 km south of Big Temple — 20 min auto (~₹120). Highway approach is smooth; final 500m near temple gates can be congested on auspicious days.',
+      currentTraffic: 'Moderate', yesterdayTraffic: 'Light',
+      trafficNote: 'Moderate devotional crowd in the evening — manageable outside festival days.',
+      entryFee: 'Free entry', duration: '1 hr', crowdLevel: 'Moderate',
+      highlights: ['Mariamman deity — powerful Shakti pilgrimage site', 'Temple tank — serene evening atmosphere', 'Evening aarti — 7 PM ritual lamp lighting'],
+      tip: 'Arrive before 7:30 PM for the evening aarti. The temple is most atmospheric at dusk when the lamps are lit around the tank. Crowd is steady but not overwhelming outside Tamil festival days.' },
   ],
 };
 
@@ -170,6 +170,7 @@ const FIELD_MASK = [
   'places.userRatingCount',
   'places.reviews',
   'places.priceLevel',
+  'places.priceRange',
   'places.regularOpeningHours',
   'places.currentOpeningHours',
   'places.types',
@@ -1142,13 +1143,24 @@ const DEFAULT_CENTER = { latitude: 10.787, longitude: 79.1378 };
 
 function mapPriceLevel(level: string): string {
   const map: Record<string, string> = {
-    PRICE_LEVEL_FREE:          'Free',
-    PRICE_LEVEL_INEXPENSIVE:   '₹',
-    PRICE_LEVEL_MODERATE:      '₹₹',
-    PRICE_LEVEL_EXPENSIVE:     '₹₹₹',
-    PRICE_LEVEL_VERY_EXPENSIVE:'₹₹₹₹',
+    PRICE_LEVEL_FREE:           'Free',
+    PRICE_LEVEL_INEXPENSIVE:    'Under ₹200',
+    PRICE_LEVEL_MODERATE:       '₹200–500',
+    PRICE_LEVEL_EXPENSIVE:      '₹500–1200',
+    PRICE_LEVEL_VERY_EXPENSIVE: '₹1200+',
   };
   return map[level] ?? '₹₹';
+}
+
+function extractPriceRange(place: any): string | null {
+  const pr = place.priceRange;
+  if (!pr) return null;
+  const start = pr.startPrice?.units ?? pr.lowerBound?.units;
+  const end   = pr.endPrice?.units   ?? pr.upperBound?.units;
+  if (start && end)   return `₹${start}–₹${end}`;
+  if (start)          return `From ₹${start}`;
+  if (end)            return `Up to ₹${end}`;
+  return null;
 }
 
 const COLORS = ['bg-amber-600','bg-green-600','bg-blue-600','bg-purple-600','bg-rose-600','bg-teal-600'];
@@ -1385,6 +1397,43 @@ function extractCautionNote(reviews: any[]): string | null {
   return found.length === 1
     ? `Some visitors mention ${found[0]}`
     : `Watch for: ${found.join(', ')}`;
+}
+
+// Scans ALL reviews (any star) for timing / crowd sentences — e.g. "fills up by 1 PM"
+function extractWhenToVisit(reviews: any[]): string | null {
+  const timingKws = ['fills up', 'fill up', 'arrive before', 'arrive by', 'reach by', 'come before',
+    'come early', 'peak hour', 'rush hour', 'best time', 'lunch only', 'closes at', 'closed on',
+    'open till', 'opens at', 'morning visit', 'avoid afternoon', 'book in advance', 'gets crowded',
+    'no seats', 'wait for', 'queue', 'packed by'];
+  const byRating = [...reviews].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+  for (const r of byRating) {
+    const sentences = (r.text?.text ?? '').split(/(?<=[.!?])\s+/);
+    for (const s of sentences) {
+      const low = s.toLowerCase();
+      if (timingKws.some(k => low.includes(k)) && s.trim().length > 15 && s.trim().length < 130) {
+        return s.trim().replace(/^[^a-zA-Z₹0-9]+/, '');
+      }
+    }
+  }
+  return null;
+}
+
+// Scans reviews for specific dish / item recommendations
+function extractMustTry(reviews: any[]): string | null {
+  const mustKws = ['order the', 'try the', 'must try', 'must-try', 'signature', 'speciality',
+    'specialty', 'best dish', 'best item', 'famous for', 'known for', 'go for the',
+    'highly recommend', 'don\'t miss', 'standout', 'highlight', 'star of'];
+  const byRating = [...reviews].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+  for (const r of byRating) {
+    const sentences = (r.text?.text ?? '').split(/(?<=[.!?])\s+/);
+    for (const s of sentences) {
+      const low = s.toLowerCase();
+      if (mustKws.some(k => low.includes(k)) && s.trim().length > 10 && s.trim().length < 110) {
+        return s.trim().replace(/^[^a-zA-Z₹0-9]+/, '');
+      }
+    }
+  }
+  return null;
 }
 
 // Recent sentiment: 2–3 factual bullets combining recent review stats + tag/keyword facts.
@@ -2918,7 +2967,9 @@ Rank by: (1) matchedTags.length DESC, (2) confirmedTags.length DESC, (3) rating 
   "whyOverOthers": "<max 30 words — compare against the other candidates in this list; cite specific numbers or unique features>",
   "bestFor": "<10 words — describe the ideal visitor type>",
   "caveat": "<one specific drawback from reviews, or null>",
-  "insiderTip": "<max 20 words — one concrete actionable tip: best time to visit, what to order/request, local trick, or hidden detail from reviews>"
+  "insiderTip": "<max 20 words — one concrete actionable tip: best time to visit, what to order/request, local trick, or hidden detail from reviews>",
+  "whenToVisit": "<max 15 words — timing or crowd tip extracted from actual review text, e.g. 'Arrives full by 12:45 PM — come before noon on weekdays', or null>",
+  "mustTry": "<max 15 words — specific dish or item name + price if mentioned in reviews, e.g. 'Pongal Virunthu thali ₹349 — includes soup, halwa and curd', or null>"
 }]
 
 QUALITY RULES:
@@ -2929,6 +2980,8 @@ QUALITY RULES:
 - whyOverOthers: compare specifically against others in this list — cite tag match count, rating, review volume, or unique feature
 - caveat: real drawbacks from 1-3★ reviews only — or null. Never fabricate.
 - insiderTip: derive from review text patterns — e.g. "arrive before 11am", "ask for window seat", "order the thali not the buffet". If nothing specific, return null.
+- whenToVisit: extract ONLY from actual review text — timing, crowd level, day/hour. Must be factual. Return null if not mentioned.
+- mustTry: extract ONLY from actual review text — a specific named dish or item. Include price if reviewer mentioned it. Return null if no specific item is mentioned.
 - ZERO RESULTS IS NOT ACCEPTABLE — always return at minimum the top places by rating if nothing else matches
 
 Return ONLY valid JSON array. No markdown. No explanation text.`;
@@ -3063,20 +3116,120 @@ FOOD & MEAL TIMING:
 `;
 
 // Gemini itinerary for non-Thanjavur cities — Gemini picks and orders stops
+// ─── Distance Matrix ─────────────────────────────────────────────────────────
+interface LegDistance { distanceKm: number; durationMins: number; }
+
+async function batchDistanceMatrix(
+  coords: Array<{ lat: number; lng: number } | null>,
+  mode: 'driving' | 'walking' | 'transit',
+  apiKey: string,
+): Promise<Array<LegDistance | null>> {
+  const N = coords.length;
+  if (N < 2 || !apiKey) return Array(N - 1).fill(null);
+  const origins = coords.slice(0, N - 1);
+  const dests   = coords.slice(1);
+  const origStr = origins.map(c => c ? `${c.lat},${c.lng}` : '0,0').join('|');
+  const destStr = dests.map(c => c ? `${c.lat},${c.lng}` : '0,0').join('|');
+  const url = `https://maps.googleapis.com/maps/api/distancematrix/json`
+    + `?origins=${encodeURIComponent(origStr)}`
+    + `&destinations=${encodeURIComponent(destStr)}`
+    + `&mode=${mode}&key=${apiKey}`;
+  try {
+    const resp = await fetch(url);
+    const data = await resp.json() as any;
+    if (data.status !== 'OK') return Array(N - 1).fill(null);
+    return origins.map((_, i) => {
+      const el = data.rows?.[i]?.elements?.[i];
+      if (!el || el.status !== 'OK') return null;
+      return {
+        distanceKm:   +(el.distance.value / 1000).toFixed(1),
+        durationMins: Math.ceil(el.duration.value / 60),
+      };
+    });
+  } catch {
+    return Array(N - 1).fill(null);
+  }
+}
+
+// ─── Gemini: 3 full-day plan variants ────────────────────────────────────────
+interface PlanVariantStop {
+  stop: string; time: string; duration: string; departBy?: string;
+  tip: string; crowdLevel: string; currentTraffic: string; yesterdayTraffic: string;
+  trafficNote: string; entryFee: string | null; highlights: string[];
+  reachNote: string; cautionNote?: string; avoidNote?: string; travelToNext?: string;
+}
+interface PlanVariant { planId: 'A'|'B'|'C'; name: string; theme: string; stops: PlanVariantStop[]; }
+
+async function geminiThreePlans(places: any[], city: string): Promise<PlanVariant[]> {
+  if (!GEMINI_KEY || places.length === 0) return [];
+  const topPlaces = places.slice(0, 12).map((p: any) => ({
+    name:    p.displayName?.text ?? '',
+    address: p.formattedAddress ?? '',
+    rating:  p.rating ?? 0,
+    types:   (p.types ?? []).slice(0, 3).join(', '),
+  }));
+
+  const prompt = `You are an expert trip planner for ${city}. Generate 3 different full-day itinerary options starting at 7:00 AM and ending by 1:00 PM.
+
+AVAILABLE PLACES (use names exactly as given):
+${JSON.stringify(topPlaces)}
+
+Plan A "Complete Heritage" — 5 stops: all major cultural highlights, packed itinerary.
+Plan B "Balanced Day" — 4 stops: top sites + one hidden gem, comfortable pace.
+Plan C "Essentials Only" — 3 stops: top 3 must-sees, ideal for families or seniors.
+
+RULES: Start 7:00 AM, end by 1:00 PM. Minimize travel distance. Each plan uses a DISTINCT set of stops (no repeats across plans where possible). entryFee realistic. crowdLevel at 7 AM is "Low" for outdoor sites. currentTraffic at 7 AM is "Light".
+
+For each stop return this exact JSON:
+{
+  "stop": "name exactly as given",
+  "time": "7:00 AM",
+  "duration": "2 hrs",
+  "departBy": "9:00 AM",
+  "tip": "specific actionable tip max 18 words naming a section, feature, or crowd insight",
+  "crowdLevel": "Low|Moderate|High",
+  "currentTraffic": "Light|Moderate|Heavy",
+  "yesterdayTraffic": "Light|Moderate|Heavy",
+  "trafficNote": "one traffic sentence",
+  "entryFee": "Free entry or ₹XX / adult",
+  "highlights": ["feature 1", "feature 2", "feature 3"],
+  "reachNote": "how to reach from previous stop; first stop: 'Starting point'",
+  "cautionNote": "15-word crowd or safety tip",
+  "avoidNote": "15-word specific thing to avoid"
+}
+
+Return JSON array of exactly 3 plan objects:
+[{"planId":"A","name":"...","theme":"...","stops":[...]},{"planId":"B",...},{"planId":"C",...}]
+
+Return ONLY valid JSON. No markdown. No explanation.`;
+
+  try {
+    const resp = await fetch(
+      `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,
+      { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) },
+    );
+    const data   = await resp.json() as any;
+    const raw    = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '[]';
+    const parsed = JSON.parse(raw.replace(/```json|```/g, '').trim());
+    return Array.isArray(parsed) ? (parsed as PlanVariant[]).slice(0, 3) : [];
+  } catch {
+    return [];
+  }
+}
+
 async function geminiItinerary(places: any[], startTime = '07:00', stopCount = 5, city = 'Thanjavur'): Promise<any[]> {
   if (!GEMINI_KEY || places.length === 0) return [];
 
   const SLOT_TIMES: Record<string, string[]> = {
-    '07:00': ['7:00 AM',  '9:00 AM',  '11:00 AM', '1:00 PM', '3:00 PM'],
-    '12:00': ['2:00 PM',  '3:30 PM',  '5:00 PM'],
-    '14:00': ['2:00 PM',  '3:30 PM',  '5:00 PM'],
-    '16:00': ['5:00 PM',  '6:30 PM'],
-    '17:00': ['5:00 PM',  '6:30 PM'],
+    '07:00': ['7:00 AM',  '9:15 AM',  '10:45 AM', '11:45 AM', '12:30 PM'],
+    '14:00': ['2:00 PM',  '3:15 PM',  '4:30 PM'],
+    '16:00': ['5:00 PM',  '7:00 PM'],
+    '17:00': ['5:00 PM',  '7:00 PM'],
   };
   const SLOT_DEPART: Record<string, Array<string | undefined>> = {
-    '07:00': ['9:00 AM',  '11:00 AM', '1:00 PM',  '3:00 PM', undefined],
-    '12:00': ['3:30 PM',  '5:00 PM',  undefined],
-    '14:00': ['3:30 PM',  '5:00 PM',  undefined],
+    '07:00': ['9:00 AM',  '10:45 AM', '11:30 AM', '12:15 PM', undefined],
+    '14:00': ['3:00 PM',  '4:15 PM',  undefined],
     '16:00': ['6:30 PM',  undefined],
     '17:00': ['6:30 PM',  undefined],
   };
@@ -3322,6 +3475,113 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
   }
 
+  // ── Full Day Plan — 3 Gemini variants + real Distance Matrix distances ────
+  if (tab === 'FullDayPlan') {
+    const fdCity   = ((req.body?.city as string) ?? 'Thanjavur').trim();
+    const fdState  = getCityState(fdCity);
+    const fdCenter = getCityCenter(fdCity);
+    const rawMode  = (req.body?.travelMode as string) ?? 'driving';
+    const travelMode = (['driving','walking','transit'].includes(rawMode) ? rawMode : 'driving') as 'driving'|'walking'|'transit';
+
+    try {
+      const rawPlaces = await fetchPlaces(
+        `top tourist attractions historical monuments in ${fdCity} ${fdState}`,
+        0, 20, { center: fdCenter, withPhotos: true },
+      );
+
+      const variants = await geminiThreePlans(rawPlaces, fdCity);
+      if (variants.length === 0) return res.status(500).json({ error: 'Could not generate plans' });
+
+      const matchPlace = (stopName: string) => {
+        const sn = stopName.toLowerCase();
+        return rawPlaces.find((p: any) => {
+          const pn = (p.displayName?.text ?? '').toLowerCase();
+          return pn.includes(sn.split(' ')[0]) || sn.includes(pn.split(' ')[0]) ||
+                 pn.split(' ').some((w: string) => w.length > 4 && sn.includes(w));
+        });
+      };
+
+      const enriched = await Promise.all(variants.map(async (plan) => {
+        // Coordinates for each stop (for Distance Matrix)
+        const coords = plan.stops.map((s) => {
+          const m = matchPlace(s.stop);
+          if (m?.location) return { lat: m.location.latitude as number, lng: m.location.longitude as number };
+          return null;
+        });
+
+        const legs = await batchDistanceMatrix(coords, travelMode, PLACES_KEY);
+
+        const modeLabel = travelMode === 'walking' ? 'Walk' : travelMode === 'transit' ? 'Bus' : 'Auto';
+        const validT = (v: unknown) => ['Light','Moderate','Heavy'].includes(v as string) ? v as string : 'Light';
+        const validC = (v: unknown) => ['Low','Moderate','High'].includes(v as string) ? v as string : 'Moderate';
+
+        const stops = plan.stops.map((s, idx) => {
+          const raw = matchPlace(s.stop);
+          const leg = legs[idx] ?? null;
+          const isLast = idx === plan.stops.length - 1;
+
+          const travelToNext = isLast ? undefined
+            : leg ? `${leg.distanceKm} km · ${leg.durationMins} min · ${modeLabel}`
+            : (s.travelToNext ?? undefined);
+
+          const reviews = sortReviewsForDisplay(filterReviewsForDisplay(raw?.reviews ?? []))
+            .slice(0, 3)
+            .map((r: any) => ({
+              text:     r.text?.text ?? '',
+              author:   r.authorAttribution?.displayName ?? 'Visitor',
+              location: fdState,
+              stars:    r.rating ?? 5,
+              ago:      r.relativePublishTimeDescription ?? 'Recently',
+            }));
+
+          return {
+            stop:             s.stop,
+            time:             s.time,
+            duration:         s.duration,
+            tip:              s.tip,
+            trafficNote:      s.trafficNote,
+            currentTraffic:   validT(s.currentTraffic),
+            yesterdayTraffic: validT(s.yesterdayTraffic),
+            crowdLevel:       validC(s.crowdLevel),
+            entryFee:         s.entryFee ?? null,
+            highlights:       Array.isArray(s.highlights) ? s.highlights.slice(0, 3) : [],
+            reachNote:        s.reachNote ?? '',
+            ...(s.departBy     ? { departBy:    s.departBy }    : {}),
+            ...(s.cautionNote  ? { cautionNote: s.cautionNote } : {}),
+            ...(s.avoidNote    ? { avoidNote:   s.avoidNote }   : {}),
+            ...(travelToNext   ? { travelToNext }               : {}),
+            ...(leg && !isLast ? { distanceKm: leg.distanceKm, drivingMins: leg.durationMins } : {}),
+            photoRef: raw?.photos?.[0]?.name ?? null,
+            reviews,
+          };
+        });
+
+        const totalKm   = legs.reduce((s, l) => s + (l?.distanceKm ?? 0), 0);
+        const travelMin = legs.reduce((s, l) => s + (l?.durationMins ?? 0), 0);
+        const visitMin  = plan.stops.reduce((s, st) => {
+          const m = st.duration.match(/(\d+(?:\.\d+)?)\s*hr/);
+          return s + (m ? parseFloat(m[1]) * 60 : 60);
+        }, 0);
+
+        return {
+          planId:   plan.planId,
+          name:     plan.name,
+          theme:    plan.theme,
+          stopCount: stops.length,
+          totalKm:  +totalKm.toFixed(1),
+          totalDistanceStr: totalKm > 0 ? `${totalKm.toFixed(1)} km` : null,
+          estimatedHrs: `${((travelMin + visitMin) / 60).toFixed(1)} hrs`,
+          stops,
+        };
+      }));
+
+      return res.json({ plans: enriched });
+    } catch (err) {
+      console.error('[/api/plan FullDayPlan]', err);
+      return res.status(500).json({ error: 'Failed to generate full day plans' });
+    }
+  }
+
   // ── Itinerary ─────────────────────────────────────────────────────────────
   if (tab === 'Itinerary') {
     const rawStartTime = (req.body?.startTime  ?? '07:00') as string;
@@ -3337,18 +3597,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const itinCenter   = getCityCenter(itinCity);
 
     const SLOT_TIMES: Record<string, string[]> = {
-      '07:00': ['7:00 AM',  '9:00 AM',  '11:00 AM', '1:00 PM', '3:00 PM'],
-      '14:00': ['2:00 PM',  '3:30 PM',  '5:00 PM'],
-      '12:00': ['2:00 PM',  '3:30 PM',  '5:00 PM'],
-      '17:00': ['5:00 PM',  '6:30 PM'],
-      '16:00': ['5:00 PM',  '6:30 PM'],
+      '07:00': ['7:00 AM',  '9:15 AM',  '10:45 AM', '11:45 AM', '12:30 PM'],
+      '14:00': ['2:00 PM',  '3:15 PM',  '4:30 PM'],
+      '16:00': ['5:00 PM',  '7:00 PM'],
+      '17:00': ['5:00 PM',  '7:00 PM'],
     };
     const SLOT_DEPART: Record<string, Array<string | undefined>> = {
-      '07:00': ['9:00 AM',  '11:00 AM', '1:00 PM',  '3:00 PM', undefined],
-      '14:00': ['3:30 PM',  '5:00 PM',  undefined],
-      '12:00': ['3:30 PM',  '5:00 PM',  undefined],
-      '17:00': ['6:30 PM',  undefined],
+      '07:00': ['9:00 AM',  '10:45 AM', '11:30 AM', '12:15 PM', undefined],
+      '14:00': ['3:00 PM',  '4:15 PM',  undefined],
       '16:00': ['6:30 PM',  undefined],
+      '17:00': ['6:30 PM',  undefined],
     };
     const slotTimes  = SLOT_TIMES[startTime]  ?? SLOT_TIMES['07:00'];
     const slotDepart = SLOT_DEPART[startTime] ?? SLOT_DEPART['07:00'];
@@ -3851,6 +4109,7 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
           rating,
           reviewCount,
           priceLevel:  priceStr,
+          priceRange:  extractPriceRange(p) ?? undefined,
           openNow:     p.regularOpeningHours?.openNow ?? true,
           tags:        (p.types ?? []).slice(0, 5).map((t: string) =>
                          t.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())
@@ -3870,6 +4129,8 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
           trendReason:        ai.trendReason  || trendReasonFB,
           recentRatings:      recent5.map((r: any) => r.rating ?? 0).filter((n: number) => n > 0),
           cautionNote:        extractCautionNote(p.reviews ?? []),
+          whenToVisit:        ai.whenToVisit  || extractWhenToVisit(p.reviews ?? []) || undefined,
+          mustTry:            ai.mustTry      || extractMustTry(p.reviews ?? [])     || undefined,
           recentSentiment:    buildRecentSentiment(p.reviews ?? [], tEvid, mTags, rating, reviewCount, tSnip),
           reviews:            uiReviews,
           photoColor:         COLORS[globalIdx % COLORS.length],
@@ -3880,7 +4141,7 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
             whyOverOthers: ai.whyOverOthers || whyOverOthersFB,
             dataPoints,
             bestFor: ai.bestFor || `Visitors wanting ${priceStr} stay — ${reviewCount.toLocaleString()} reviews confirm ${rating}★`,
-            ...(ai.caveat ? { caveat: ai.caveat } : {}),
+            ...(ai.caveat     ? { caveat:     ai.caveat     } : {}),
             ...(ai.insiderTip ? { insiderTip: ai.insiderTip } : {}),
           },
         };
@@ -4096,6 +4357,7 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
         rating,
         reviewCount,
         priceLevel:  priceStr,
+        priceRange:  extractPriceRange(p) ?? undefined,
         openNow:     p.regularOpeningHours?.openNow ?? true,
         tags:        (p.types ?? []).slice(0, 5).map((t: string) =>
                        t.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())
@@ -4115,6 +4377,8 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
         trendVerdict:    ai.trendVerdict ?? 'stable',
         trendReason:     ai.trendReason  || trendReasonFB,
         cautionNote:     extractCautionNote(p.reviews ?? []),
+        whenToVisit:     ai.whenToVisit  || extractWhenToVisit(p.reviews ?? []) || undefined,
+        mustTry:         ai.mustTry      || extractMustTry(p.reviews ?? [])     || undefined,
         recentSentiment: buildRecentSentiment(p.reviews ?? [], {}, p._matchedTags ?? [], rating, reviewCount),
         reviews:         uiReviews,
         photoColor:      COLORS[globalIdx % COLORS.length],

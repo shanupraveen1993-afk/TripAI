@@ -8,6 +8,7 @@ import { Dashboard, DashboardFilters } from './components/Dashboard';
 import { CityLockScreen } from './components/CityLockScreen';
 import { ResultsView } from './components/ResultsView';
 import { SavedTrips, SavedTrip } from './components/SavedTrips';
+import { FullDayPlanPicker } from './components/FullDayPlanPicker';
 import { Profile } from './components/Profile';
 import { Modal } from './components/ui/Modal';
 import { AuthForm } from './components/AuthForm';
@@ -26,8 +27,8 @@ const SLOT_MOCK: Record<string, typeof MOCK_ITINERARY> = {
   Evening:   MOCK_ITINERARY_EVENING,
 };
 import {
-  fetchPlan, fetchItinerary, fetchExploreGuide,
-  PlanResult, PlanResponse, ExploreGuide, LiveItineraryStop,
+  fetchPlan, fetchItinerary, fetchExploreGuide, fetchFullDayPlans,
+  PlanResult, PlanResponse, ExploreGuide, LiveItineraryStop, FullDayPlanOption,
 } from './api/client';
 
 type AppScreen = 'landing' | 'browse' | 'app';
@@ -46,24 +47,24 @@ function LocationDetectionToast({ phase }: { phase: 'locating' | 'found' | 'done
           transition={{ type: 'spring', stiffness: 340, damping: 28 }}
           className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[600] flex items-center gap-2.5 px-4 py-2.5 rounded-full shadow-lg pointer-events-none"
           style={{
-            background: 'var(--color-itinerary-soft)',
-            border: '1px solid var(--color-itinerary-medium)',
-            boxShadow: '0 8px 32px rgba(124,58,237,0.18)',
+            background: 'var(--color-brand-softer)',
+            border: '1px solid var(--color-brand-medium)',
+            boxShadow: '0 8px 32px rgba(28,100,242,0.18)',
           }}
         >
           {phase === 'locating' ? (
             <>
-              <span className="w-3.5 h-3.5 rounded-full border-2 border-itinerary border-t-transparent animate-spin shrink-0" />
-              <span className="text-xs font-semibold text-itinerary whitespace-nowrap">Detecting your location…</span>
+              <span className="w-3.5 h-3.5 rounded-full border-2 border-brand border-t-transparent animate-spin shrink-0" />
+              <span className="text-xs font-semibold text-brand whitespace-nowrap">Detecting your location…</span>
             </>
           ) : (
             <>
               <motion.span initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: 'spring', stiffness: 400, damping: 20 }} className="shrink-0">
-                <MapPin className="w-3.5 h-3.5 text-itinerary" />
+                <MapPin className="w-3.5 h-3.5 text-brand" />
               </motion.span>
-              <span className="text-xs font-semibold whitespace-nowrap text-itinerary">Thanjavur detected</span>
+              <span className="text-xs font-semibold whitespace-nowrap text-brand">Thanjavur detected</span>
               <motion.span initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.1, type: 'spring', stiffness: 400, damping: 20 }}
-                className="text-xs font-bold px-1.5 py-0.5 rounded-full" style={{ background: 'var(--color-itinerary)', color: '#fff' }}>
+                className="text-xs font-bold px-1.5 py-0.5 rounded-full" style={{ background: 'var(--color-brand)', color: '#fff' }}>
                 ✓
               </motion.span>
             </>
@@ -112,6 +113,7 @@ export default function App() {
   const [backContext, setBackContext] = useState<'dashboard' | 'itinerary-results'>('dashboard');
   const [itinStopCount, setItinStopCount] = useState(5);
   const [nonThanjavurNotice, setNonThanjavurNotice] = useState<string | null>(null);
+  const [fullDayPlans, setFullDayPlans] = useState<FullDayPlanOption[] | null>(null);
 
   const dismissCityNotice = () => {
     setNonThanjavurNotice(null);
@@ -249,24 +251,36 @@ export default function App() {
     setLiveResults(null);
     setLiveExplore(null);
     setLiveItinerary(null);
+    setFullDayPlans(null);
     setApiError(false);
     try {
       if (filters.tab === 'Explore') {
         // Explore always uses preset data — no API call needed
+      } else if (filters.tab === 'Itinerary' && filters.startTime === 'Full Day') {
+        triggerLocationToast();
+        const city = filters.destination || searchLocation || 'Thanjavur';
+        const plans = await fetchFullDayPlans(city, 'driving');
+        if (plans.length > 0) {
+          setFullDayPlans(plans);
+          setItinStopCount(plans[0]?.stopCount ?? 5);
+        } else {
+          setApiError(true);
+          setFullDayPlans(null);
+        }
       } else if (filters.tab === 'Itinerary') {
         triggerLocationToast();
         const timeSlot = filters.startTime || 'Morning';
         const slotStopMap: Record<string, number> = { Morning: 5, Afternoon: 3, Evening: 2 };
         setItinStopCount(slotStopMap[timeSlot] ?? 5);
         const ITIN_TIMES: Record<string, string[]> = {
-          Morning:   ['7:00 AM', '9:00 AM', '11:00 AM', '1:00 PM', '3:00 PM'],
-          Afternoon: ['2:00 PM', '3:30 PM', '5:00 PM'],
-          Evening:   ['5:00 PM', '6:30 PM'],
+          Morning:   ['7:00 AM',  '9:15 AM',  '10:45 AM', '11:45 AM', '12:30 PM'],
+          Afternoon: ['2:00 PM',  '3:15 PM',  '4:30 PM'],
+          Evening:   ['5:00 PM',  '7:00 PM'],
         };
         const ITIN_DEPART: Record<string, Array<string|undefined>> = {
-          Morning:   ['9:00 AM', '11:00 AM', '1:00 PM', '3:00 PM', undefined],
-          Afternoon: ['3:30 PM', '4:50 PM', undefined],
-          Evening:   ['6:00 PM', undefined],
+          Morning:   ['9:00 AM',  '10:45 AM', '11:30 AM', '12:15 PM', undefined],
+          Afternoon: ['3:00 PM',  '4:15 PM',  undefined],
+          Evening:   ['6:30 PM',  undefined],
         };
         const applySlotTimes = (arr: typeof MOCK_ITINERARY) =>
           arr.map((s, i) => ({ ...s, time: ITIN_TIMES[timeSlot]?.[i] ?? s.time, departBy: ITIN_DEPART[timeSlot]?.[i] }));
@@ -364,8 +378,8 @@ export default function App() {
         setLiveResults((filtered.length > 0 ? filtered : MOCK_FOOD).slice(0, 10) as unknown as PlanResult[]);
       } else if (filters.tab === 'Itinerary') {
         const ts = filters.startTime || 'Morning';
-        const times: Record<string, string[]> = { Morning: ['7:00 AM','9:00 AM','11:00 AM','1:00 PM','3:00 PM'], Afternoon: ['2:00 PM','3:30 PM','5:00 PM'], Evening: ['5:00 PM','6:30 PM'] };
-        const depts: Record<string, Array<string|undefined>> = { Morning: ['9:00 AM','11:00 AM','1:00 PM','3:00 PM',undefined], Afternoon: ['3:30 PM','4:50 PM',undefined], Evening: ['6:00 PM',undefined] };
+        const times: Record<string, string[]> = { Morning: ['7:00 AM','9:15 AM','10:45 AM','11:45 AM','12:30 PM'], Afternoon: ['2:00 PM','3:15 PM','4:30 PM'], Evening: ['5:00 PM','7:00 PM'] };
+        const depts: Record<string, Array<string|undefined>> = { Morning: ['9:00 AM','10:45 AM','11:30 AM','12:15 PM',undefined], Afternoon: ['3:00 PM','4:15 PM',undefined], Evening: ['6:30 PM',undefined] };
         const preset = SLOT_MOCK[ts] ?? MOCK_ITINERARY;
         setLiveItinerary(preset.map((s, i) => ({ ...s, time: times[ts]?.[i] ?? s.time, departBy: depts[ts]?.[i] })));
       }
@@ -498,8 +512,8 @@ export default function App() {
 
     if (tab === 'Itinerary') {
       const ts = overrides.startTime ?? 'Morning';
-      const times: Record<string, string[]> = { Morning: ['7:00 AM','9:00 AM','11:00 AM','1:00 PM','3:00 PM'], Afternoon: ['2:00 PM','3:30 PM','5:00 PM'], Evening: ['5:00 PM','6:30 PM'] };
-      const depts: Record<string, Array<string|undefined>> = { Morning: ['9:00 AM','11:00 AM','1:00 PM','3:00 PM',undefined], Afternoon: ['3:30 PM','4:50 PM',undefined], Evening: ['6:00 PM',undefined] };
+      const times: Record<string, string[]> = { Morning: ['7:00 AM','9:15 AM','10:45 AM','11:45 AM','12:30 PM'], Afternoon: ['2:00 PM','3:15 PM','4:30 PM'], Evening: ['5:00 PM','7:00 PM'] };
+      const depts: Record<string, Array<string|undefined>> = { Morning: ['9:00 AM','10:45 AM','11:30 AM','12:15 PM',undefined], Afternoon: ['3:00 PM','4:15 PM',undefined], Evening: ['6:30 PM',undefined] };
       const preset = SLOT_MOCK[ts] ?? MOCK_ITINERARY;
       setItinStopCount(preset.length);
       setLiveItinerary(preset.map((s, i) => ({ ...s, time: times[ts]?.[i] ?? s.time, departBy: depts[ts]?.[i] })));
@@ -630,7 +644,23 @@ export default function App() {
           </motion.div>
         )}
 
-        {contentScreen === 'results' && (
+        {contentScreen === 'results' && activeTab === 'Itinerary' && fullDayPlans !== null && (
+          <motion.div key="fullday-picker" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>
+            <FullDayPlanPicker
+              city={lastSearchFilters?.destination || searchLocation || 'Thanjavur'}
+              plans={fullDayPlans}
+              onBack={() => { setInitialTab('Itinerary'); setContent('dashboard'); }}
+              onPick={(plan) => {
+                setFullDayPlans(null);
+                setLiveItinerary(plan.stops as any);
+                setItinStopCount(plan.stopCount);
+                setItineraryGenCount(c => c + 1);
+              }}
+            />
+          </motion.div>
+        )}
+
+        {contentScreen === 'results' && !(activeTab === 'Itinerary' && fullDayPlans !== null) && (
           <motion.div key="results" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>
             <ResultsView
               tab={activeTab}
@@ -711,7 +741,7 @@ export default function App() {
   // Browse mode: user came from a category click without signing in
   if (appScreen === 'browse') {
     return (
-      <div className="min-h-dvh overflow-x-hidden" style={{ background: 'linear-gradient(145deg, var(--color-brand-softer) 0%, var(--color-bg-app) 45%, var(--color-itinerary-soft) 100%)' }}>
+      <div className="min-h-dvh overflow-x-hidden" style={{ background: 'linear-gradient(145deg, var(--color-brand-softer) 0%, var(--color-bg-app) 45%, var(--color-brand-softer) 100%)' }}>
         {/* Browse header with universal location bar */}
         <header className="sticky top-0 z-[200] border-b" style={{ background: 'rgba(249,250,251,0.88)', backdropFilter: 'blur(20px)', borderColor: 'rgba(0,0,0,0.07)', boxShadow: '0 1px 12px rgba(28,100,242,0.06)' }}>
           <div className="w-full max-w-[920px] mx-auto px-4 h-14 grid items-center gap-3" style={{ gridTemplateColumns: 'auto 1fr auto' }}>
@@ -829,7 +859,7 @@ export default function App() {
 
   // Authenticated app
   return (
-    <div className="min-h-dvh overflow-x-hidden" style={{ background: 'linear-gradient(145deg, var(--color-brand-softer) 0%, var(--color-bg-app) 45%, var(--color-itinerary-soft) 100%)' }}>
+    <div className="min-h-dvh overflow-x-hidden" style={{ background: 'linear-gradient(145deg, var(--color-brand-softer) 0%, var(--color-bg-app) 45%, var(--color-brand-softer) 100%)' }}>
       <Navbar
         section={mainSection}
         onSectionChange={s => { setMainSection(s); if (s === 'home') setContent('dashboard'); }}

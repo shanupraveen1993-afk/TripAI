@@ -45,9 +45,9 @@ const TAB_META: Record<Tab, {
   Food: {
     icon:        <Utensils     className="w-4 h-4" />,
     bigIcon:     <Utensils     className="w-6 h-6" />,
-    accent:      'var(--color-food)',
-    accentBg:    'var(--color-food-soft)',
-    accentBorder:'var(--color-food)',
+    accent:      'var(--color-brand)',
+    accentBg:    'var(--color-brand-softer)',
+    accentBorder:'var(--color-brand)',
     accentSoft:  'rgba(217,119,6,0.08)',
     label:       'Food',
     headline:    'Best eats',
@@ -57,9 +57,9 @@ const TAB_META: Record<Tab, {
   Itinerary: {
     icon:        <Route        className="w-4 h-4" />,
     bigIcon:     <Route        className="w-6 h-6" />,
-    accent:      'var(--color-itinerary)',
-    accentBg:    'var(--color-itinerary-soft)',
-    accentBorder:'var(--color-itinerary)',
+    accent:      'var(--color-brand)',
+    accentBg:    'var(--color-brand-softer)',
+    accentBorder:'var(--color-brand)',
     accentSoft:  'rgba(124,58,237,0.08)',
     label:       'Itinerary',
     headline:    'Day planned',
@@ -69,9 +69,9 @@ const TAB_META: Record<Tab, {
   Explore: {
     icon:        <Compass className="w-4 h-4" />,
     bigIcon:     <Compass className="w-6 h-6" />,
-    accent:      'var(--color-explore)',
-    accentBg:    'var(--color-explore-soft)',
-    accentBorder:'var(--color-explore)',
+    accent:      'var(--color-brand)',
+    accentBg:    'var(--color-brand-softer)',
+    accentBorder:'var(--color-brand)',
     accentSoft:  'rgba(5,150,105,0.08)',
     label:       'Explore',
     headline:    'Explore spots',
@@ -131,13 +131,13 @@ const INSPIRATION_CITIES: Array<{
   { city: 'Big Temple',       emoji: '🛕', hook: 'UNESCO · Chola masterpiece',    grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))', imgId: '1603766806347-54cdf3745953', exploreTarget: 'Brihadeeswarar Temple'                  },
   { city: 'Royal Palace',     emoji: '🏰', hook: 'Maratha history & art',         grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-active))', imgId: '1523544261025-3159599b1fc3', exploreTarget: 'Thanjavur Maratha Palace Royal Museum'   },
   { city: 'Saraswathi Mahal', emoji: '📚', hook: '60,000 rare manuscripts',       grad: 'linear-gradient(135deg,var(--color-brand),#3B82F6)', imgId: '1568045919115-f2dacbaa1899', exploreTarget: 'Saraswathi Mahal Library'                },
-  { city: 'Darasuram',        emoji: '🪔', hook: 'Airavatesvara Temple',          grad: 'linear-gradient(135deg,var(--color-food-dark),var(--color-food))', imgId: '1717701669787-82a23250cfe0', exploreTarget: 'Airavatesvara Temple Darasuram'          },
+  { city: 'Darasuram',        emoji: '🪔', hook: 'Airavatesvara Temple',          grad: 'linear-gradient(135deg,var(--color-brand-active),var(--color-brand))', imgId: '1717701669787-82a23250cfe0', exploreTarget: 'Airavatesvara Temple Darasuram'          },
   { city: 'Gangaikonda',      emoji: '🏛️', hook: 'Rajendra Chola · Quiet UNESCO', grad: 'linear-gradient(135deg,#44403C,#78716C)', imgId: '1603766806347-54cdf3745953', exploreTarget: 'Gangaikonda Cholapuram'                  },
   { city: 'Rajarajan Mandapam', emoji: '👑', hook: 'Chola tribute · Big Temple',  grad: 'linear-gradient(135deg,#78350F,#92400E)', imgId: '1693134322630-8c3510d215f6', exploreTarget: 'Rajarajan Manimandapam'                 },
   // ── Nearby cities (coming soon) ───────────────────────────────────────────
   { city: 'Kumbakonam',       emoji: '🌊', hook: 'Temple tanks · 18 sacred ghats', grad: 'linear-gradient(135deg,#0369A1,#0284C7)', imgId: '1671095149873-c982e19e4240', comingSoon: true },
   { city: 'Trichy',           emoji: '🏯', hook: 'Rock Fort · Srirangam',          grad: 'linear-gradient(135deg,#7C3AED,#6D28D9)', imgId: '1751163053686-7016e8b99099', comingSoon: true },
-  { city: 'Madurai',          emoji: '🕌', hook: 'Meenakshi Amman · Silk bazaars', grad: 'linear-gradient(135deg,var(--color-food-dark),var(--color-food))', imgId: '1677434654722-69e7ba88b4ef', comingSoon: true },
+  { city: 'Madurai',          emoji: '🕌', hook: 'Meenakshi Amman · Silk bazaars', grad: 'linear-gradient(135deg,var(--color-brand-active),var(--color-brand))', imgId: '1677434654722-69e7ba88b4ef', comingSoon: true },
   { city: 'Chidambaram',      emoji: '🪷', hook: 'Nataraja Temple · Cosmic dance', grad: 'linear-gradient(135deg,#065F46,#059669)', imgId: '1625807161536-27903f2200fa', comingSoon: true },
 ];
 
@@ -177,9 +177,9 @@ const THANJAVUR_ACTIONS: Array<{
   overrides: QuickOverride;
 }> = [
   { tab: 'Hotels',    label: 'Stay near Big Temple', desc: 'Top-rated · Walking distance', emoji: '🛕', imgId: '1566915682737-3e97a7eed93b', grad: 'linear-gradient(135deg,#1e3a8a,#1d4ed8)', overrides: { tab: 'Hotels',    hotelTag: 'Near Big Temple', usePreset: true } },
-  { tab: 'Food',      label: 'Thanjavur thali',      desc: 'Authentic Chola cuisine',      emoji: '🍛', imgId: '1711153419402-336ee48f2138', grad: 'linear-gradient(135deg,#92400e,#d97706)', overrides: { tab: 'Food',      foodTag: 'Mess & Meals',    usePreset: true } },
+  { tab: 'Food',      label: 'Thanjavur thali',      desc: 'Authentic Chola cuisine',      emoji: '🍛', imgId: '1711153419402-336ee48f2138', grad: 'linear-gradient(135deg,var(--color-brand-active),var(--color-brand))', overrides: { tab: 'Food',      foodTag: 'Mess & Meals',    usePreset: true } },
   { tab: 'Itinerary', label: '1-day plan',           desc: 'AI routed · Full day',         emoji: '🗺️', imgId: '1603766806347-54cdf3745953', grad: 'linear-gradient(135deg,#065f46,#059669)', overrides: { tab: 'Itinerary', startTime: 'Morning',      usePreset: true } },
-  { tab: 'Explore',   label: 'Brihadeeswarar',       desc: 'UNESCO · Chola masterpiece',   emoji: '🏛️', imgId: '1693134322630-8c3510d215f6', grad: 'linear-gradient(135deg,#4c1d95,#7c3aed)', overrides: { tab: 'Explore',   exploreTarget: 'Brihadeeswarar Temple' } },
+  { tab: 'Explore',   label: 'Brihadeeswarar',       desc: 'UNESCO · Chola masterpiece',   emoji: '🏛️', imgId: '1693134322630-8c3510d215f6', grad: 'linear-gradient(135deg,var(--color-brand-active),var(--color-brand))', overrides: { tab: 'Explore',   exploreTarget: 'Brihadeeswarar Temple' } },
 ];
 
 /* ── Quick search override type ─────────────────────────────────────── */
@@ -223,9 +223,9 @@ const POPULAR_QUERIES: { label: string; overrides: QuickOverride }[] = [
 /* ── Tab accent gradients for SMART_PICKS ───────────────────────────── */
 const TAB_GRAD: Record<Tab, string> = {
   Hotels:    'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))',
-  Food:      'linear-gradient(135deg,#92400e,var(--color-food))',
-  Itinerary: 'linear-gradient(135deg,#4c1d95,var(--color-itinerary))',
-  Explore:   'linear-gradient(135deg,#065f46,var(--color-explore))',
+  Food:      'linear-gradient(135deg,var(--color-brand-active),var(--color-brand))',
+  Itinerary: 'linear-gradient(135deg,var(--color-brand-active),var(--color-brand))',
+  Explore:   'linear-gradient(135deg,var(--color-brand-active),var(--color-brand))',
 };
 
 const SMART_PICKS: Record<string, SmartPick[]> = {
@@ -440,9 +440,9 @@ function CategorySelector({ active, onChange }: { active: Tab; onChange: (t: Tab
         const isActive = active === tab;
         const activeClass =
           tab === 'Hotels'    ? 'bg-brand text-white shadow-[var(--shadow-xs)]' :
-          tab === 'Food'      ? 'bg-food text-white shadow-[var(--shadow-xs)]' :
-          tab === 'Itinerary' ? 'bg-itinerary text-white shadow-[var(--shadow-xs)]' :
-                                'bg-explore text-white shadow-[var(--shadow-xs)]';
+          tab === 'Food'      ? 'bg-brand text-white shadow-[var(--shadow-xs)]' :
+          tab === 'Itinerary' ? 'bg-brand text-white shadow-[var(--shadow-xs)]' :
+                                'bg-brand text-white shadow-[var(--shadow-xs)]';
         return (
           <motion.button
             key={tab}
@@ -1003,11 +1003,30 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             <LocationBar value={startPoint} onChange={setStartPoint} placeholder="e.g. Railway Station, Hotel name…" autoDetect={isThanjavur(destination)} mockResolvedLocation="Thanjavur" />
           </div>
 
-          {/* Time slot — Morning / Afternoon / Evening + mandatory validation */}
+          {/* Full Day Plan — primary CTA */}
+          <button
+            type="button"
+            onClick={() => { setStartTime('Full Day'); setShowTimeError(false); }}
+            className="w-full flex items-center justify-between px-4 py-3.5 rounded-xl border-2 transition-all"
+            style={startTime === 'Full Day'
+              ? { borderColor: 'var(--color-brand)', background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
+              : { borderColor: 'var(--color-border)', background: 'var(--color-surface)', color: 'var(--color-body)' }
+            }
+          >
+            <div className="flex flex-col items-start gap-0.5">
+              <span className="text-sm font-bold leading-none" style={startTime === 'Full Day' ? { color: 'var(--color-brand)' } : { color: 'var(--color-heading)' }}>
+                Full Day Plan
+              </span>
+              <span className="text-xs opacity-60">7 AM – 1 PM · 3 options · real distances</span>
+            </div>
+            <span className="text-xs font-bold px-2 py-1 rounded-full" style={{ background: 'var(--color-brand)', color: '#fff', opacity: startTime === 'Full Day' ? 1 : 0.7 }}>
+              AI
+            </span>
+          </button>
+
+          {/* Quick slots — Morning / Afternoon / Evening */}
           <div>
-            <label className="block text-xs font-semibold text-heading mb-1">
-              Time Slot <span className="text-danger">*</span>
-            </label>
+            <label className="block text-xs font-semibold text-muted mb-1">Or pick a slot</label>
             <div className="flex gap-1.5">
               {(['Morning', 'Afternoon', 'Evening'] as const).map(t => {
                 const stops: Record<string, number> = { Morning: 5, Afternoon: 3, Evening: 2 };
@@ -1016,10 +1035,10 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                     key={t}
                     type="button"
                     onClick={() => { setStartTime(t); setShowTimeError(false); }}
-                    className="flex-1 flex flex-col items-center gap-0.5 py-3 min-h-[44px] rounded-lg border-2 transition-all"
+                    className="flex-1 flex flex-col items-center gap-0.5 py-2.5 min-h-[44px] rounded-lg border-2 transition-all"
                     style={startTime === t
                       ? { borderColor: 'var(--color-brand)',  background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
-                      : showTimeError
+                      : showTimeError && startTime !== 'Full Day'
                         ? { borderColor: 'var(--color-danger)', background: 'var(--color-danger-soft)', color: 'var(--color-muted)' }
                         : { borderColor: 'var(--color-border)', background: 'var(--color-surface)',     color: 'var(--color-muted)' }
                     }
@@ -1031,14 +1050,14 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               })}
             </div>
             <AnimatePresence>
-              {showTimeError && (
+              {showTimeError && !startTime && (
                 <motion.p
                   initial={{ opacity: 0, y: -4 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -4 }}
                   className="text-xs text-danger font-bold mt-1.5 flex items-center gap-1"
                 >
-                  <AlertTriangle className="w-3.5 h-3.5 shrink-0" /> Please select a time slot to continue
+                  <AlertTriangle className="w-3.5 h-3.5 shrink-0" /> Please select a plan type to continue
                 </motion.p>
               )}
             </AnimatePresence>
