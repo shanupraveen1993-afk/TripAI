@@ -14,9 +14,17 @@ import { AuthForm } from './components/AuthForm';
 import { Button } from './components/ui/Button';
 import { Tab } from './components/ui/Tabs';
 import {
-  MOCK_HOTELS, MOCK_FOOD, MOCK_ITINERARY, MOCK_EXPLORE, EXPLORE_PRESETS,
+  MOCK_HOTELS, MOCK_FOOD, MOCK_ITINERARY,
+  MOCK_ITINERARY_AFTERNOON, MOCK_ITINERARY_EVENING,
+  MOCK_EXPLORE, EXPLORE_PRESETS,
   PlaceResult,
 } from './mock/data';
+
+const SLOT_MOCK: Record<string, typeof MOCK_ITINERARY> = {
+  Morning:   MOCK_ITINERARY,
+  Afternoon: MOCK_ITINERARY_AFTERNOON,
+  Evening:   MOCK_ITINERARY_EVENING,
+};
 import {
   fetchPlan, fetchItinerary, fetchExploreGuide,
   PlanResult, PlanResponse, ExploreGuide, LiveItineraryStop,
@@ -257,8 +265,8 @@ export default function App() {
         };
         const ITIN_DEPART: Record<string, Array<string|undefined>> = {
           Morning:   ['9:00 AM', '11:00 AM', '1:00 PM', '3:00 PM', undefined],
-          Afternoon: ['3:30 PM', '5:00 PM', undefined],
-          Evening:   ['6:30 PM', undefined],
+          Afternoon: ['3:30 PM', '4:50 PM', undefined],
+          Evening:   ['6:00 PM', undefined],
         };
         const applySlotTimes = (arr: typeof MOCK_ITINERARY) =>
           arr.map((s, i) => ({ ...s, time: ITIN_TIMES[timeSlot]?.[i] ?? s.time, departBy: ITIN_DEPART[timeSlot]?.[i] }));
@@ -274,7 +282,7 @@ export default function App() {
           setItinStopCount(stops.length);
           setItineraryGenCount(c => c + 1);
         } else {
-          setLiveItinerary(applySlotTimes(MOCK_ITINERARY.slice(0, slotStopMap[timeSlot] ?? 5)));
+          setLiveItinerary(applySlotTimes(SLOT_MOCK[timeSlot] ?? MOCK_ITINERARY.slice(0, slotStopMap[timeSlot] ?? 5)));
           setApiError(true);
         }
       } else {
@@ -356,10 +364,10 @@ export default function App() {
         setLiveResults((filtered.length > 0 ? filtered : MOCK_FOOD).slice(0, 10) as unknown as PlanResult[]);
       } else if (filters.tab === 'Itinerary') {
         const ts = filters.startTime || 'Morning';
-        const sc = ({ Morning: 5, Afternoon: 3, Evening: 2 } as Record<string, number>)[ts] ?? 5;
-        const times = ({ Morning: ['7:00 AM','9:00 AM','11:00 AM','1:00 PM','3:00 PM'], Afternoon: ['2:00 PM','3:30 PM','5:00 PM'], Evening: ['5:00 PM','6:30 PM'] } as Record<string, string[]>)[ts] ?? [];
-        const depts = ({ Morning: ['9:00 AM','11:00 AM','1:00 PM','3:00 PM',undefined], Afternoon: ['3:30 PM','5:00 PM',undefined], Evening: ['6:30 PM',undefined] } as Record<string, Array<string|undefined>>)[ts] ?? [];
-        setLiveItinerary(MOCK_ITINERARY.slice(0, sc).map((s, i) => ({ ...s, time: times[i] ?? s.time, departBy: depts[i] })));
+        const times: Record<string, string[]> = { Morning: ['7:00 AM','9:00 AM','11:00 AM','1:00 PM','3:00 PM'], Afternoon: ['2:00 PM','3:30 PM','5:00 PM'], Evening: ['5:00 PM','6:30 PM'] };
+        const depts: Record<string, Array<string|undefined>> = { Morning: ['9:00 AM','11:00 AM','1:00 PM','3:00 PM',undefined], Afternoon: ['3:30 PM','4:50 PM',undefined], Evening: ['6:00 PM',undefined] };
+        const preset = SLOT_MOCK[ts] ?? MOCK_ITINERARY;
+        setLiveItinerary(preset.map((s, i) => ({ ...s, time: times[ts]?.[i] ?? s.time, departBy: depts[ts]?.[i] })));
       }
       setApiError(true);
     }
@@ -490,11 +498,11 @@ export default function App() {
 
     if (tab === 'Itinerary') {
       const ts = overrides.startTime ?? 'Morning';
-      const sc = ({ Morning: 5, Afternoon: 3, Evening: 2 } as Record<string, number>)[ts] ?? 5;
-      const times = ({ Morning: ['7:00 AM','9:00 AM','11:00 AM','1:00 PM','3:00 PM'], Afternoon: ['2:00 PM','3:30 PM','5:00 PM'], Evening: ['5:00 PM','6:30 PM'] } as Record<string, string[]>)[ts] ?? [];
-      const depts = ({ Morning: ['9:00 AM','11:00 AM','1:00 PM','3:00 PM',undefined], Afternoon: ['3:30 PM','5:00 PM',undefined], Evening: ['6:30 PM',undefined] } as Record<string, Array<string|undefined>>)[ts] ?? [];
-      setItinStopCount(sc);
-      setLiveItinerary(MOCK_ITINERARY.slice(0, sc).map((s, i) => ({ ...s, time: times[i] ?? s.time, departBy: depts[i] })));
+      const times: Record<string, string[]> = { Morning: ['7:00 AM','9:00 AM','11:00 AM','1:00 PM','3:00 PM'], Afternoon: ['2:00 PM','3:30 PM','5:00 PM'], Evening: ['5:00 PM','6:30 PM'] };
+      const depts: Record<string, Array<string|undefined>> = { Morning: ['9:00 AM','11:00 AM','1:00 PM','3:00 PM',undefined], Afternoon: ['3:30 PM','4:50 PM',undefined], Evening: ['6:00 PM',undefined] };
+      const preset = SLOT_MOCK[ts] ?? MOCK_ITINERARY;
+      setItinStopCount(preset.length);
+      setLiveItinerary(preset.map((s, i) => ({ ...s, time: times[ts]?.[i] ?? s.time, departBy: depts[ts]?.[i] })));
       triggerLocationToast();
       setContent('results');
       return;

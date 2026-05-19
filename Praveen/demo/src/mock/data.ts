@@ -24,7 +24,8 @@ export interface PlaceResult {
   lng?: number | null;
   rating: number;
   reviewCount: number;
-  priceLevel: '₹' | '₹₹' | '₹₹₹' | '₹₹₹₹' | 'Free';
+  priceLevel: '₹' | '₹₹' | '₹₹₹' | '₹₹₹₹' | 'Free' | 'Under ₹200' | '₹200–500' | '₹500–1200' | '₹1200+';
+  priceRange?: string;
   openNow: boolean;
   tags: string[];
   reviewSummary?:      string;
@@ -97,6 +98,7 @@ export const MOCK_HOTELS: PlaceResult[] = [
     rating: 4.2,
     reviewCount: 1850,
     priceLevel: '₹₹',
+    priceRange: '₹1,500–3,500/night',
     openNow: true,
     tags: ['Heritage', 'Temple Nearby', 'AC Rooms', 'Veg Kitchen', 'Parking'],
     reviewSummary: 'A well-established Thanjavur hotel rated highly for its proximity to the Big Temple and reliable service. Guests frequently praise the clean rooms and helpful staff who assist with temple visit timings.',
@@ -129,6 +131,7 @@ export const MOCK_HOTELS: PlaceResult[] = [
     rating: 4.0,
     reviewCount: 1240,
     priceLevel: '₹₹',
+    priceRange: '₹1,500–4,000/night',
     openNow: true,
     tags: ['Pool', 'Business', 'Family', 'AC Rooms', 'WiFi', 'Parking'],
     reviewSummary: 'A popular choice for business and family travellers with a swimming pool and spacious rooms. The multi-cuisine restaurant is praised for accommodating both vegetarian and non-vegetarian guests, and the conference facilities are well-rated.',
@@ -161,6 +164,7 @@ export const MOCK_HOTELS: PlaceResult[] = [
     rating: 3.8,
     reviewCount: 720,
     priceLevel: '₹',
+    priceRange: '₹700–1,200/night',
     openNow: true,
     tags: ['Temple Nearby', 'Parking', 'AC Rooms', 'Value for Money'],
     reviewSummary: 'Operated by Tamil Nadu Tourism Development Corporation, this government-run hotel sits closest to the Big Temple. Reviewers value the unbeatable price and central location, acknowledging the older but functional rooms.',
@@ -193,6 +197,7 @@ export const MOCK_HOTELS: PlaceResult[] = [
     rating: 3.9,
     reviewCount: 480,
     priceLevel: '₹',
+    priceRange: '₹800–1,500/night',
     openNow: true,
     tags: ['River View', 'Quiet & Peaceful', 'Parking', 'Family'],
     reviewSummary: 'A serene riverside resort on the Vennar river bank, popular with families seeking a peaceful stay away from the city centre. Guests mention the pleasant river-facing rooms and calm atmosphere as standout features.',
@@ -225,6 +230,7 @@ export const MOCK_HOTELS: PlaceResult[] = [
     rating: 3.7,
     reviewCount: 340,
     priceLevel: '₹',
+    priceRange: '₹600–1,000/night',
     openNow: true,
     tags: ['Good Amenities', 'WiFi', 'Near Railway Station', 'AC Rooms', 'Business'],
     reviewSummary: 'A no-frills hotel near the NH-67 highway, convenient for road travellers and bus arrivals. Reviews highlight fast WiFi and comfortable AC rooms at competitive Thanjavur prices, making it a practical transit stay.',
@@ -260,6 +266,7 @@ export const MOCK_FOOD: PlaceResult[] = [
     rating: 4.5,
     reviewCount: 1900,
     priceLevel: '₹',
+    priceRange: '₹80–130/head',
     openNow: true,
     tags: ['Pure Veg', 'Thali', 'South Indian', 'Banana Leaf', 'Mess & Meals'],
     reviewSummary: 'A trusted Thanjavur mess known for its traditional South Indian thali served on banana leaf. Locals and pilgrims alike rely on it for an affordable, filling meal. Sambar, rasam, kootu, and unlimited rice are consistently praised.',
@@ -292,6 +299,7 @@ export const MOCK_FOOD: PlaceResult[] = [
     rating: 4.3,
     reviewCount: 4200,
     priceLevel: '₹₹',
+    priceRange: '₹150–300/head',
     openNow: true,
     tags: ['Biryani', 'South Indian', 'Non-Veg', 'Tiffin'],
     reviewSummary: 'Thanjavur\'s most-reviewed restaurant, famous for Ambur-style biryani and generous non-veg rice specials. The bold spice profile and value portions have earned it a devoted following across the region.',
@@ -324,6 +332,7 @@ export const MOCK_FOOD: PlaceResult[] = [
     rating: 4.5,
     reviewCount: 1600,
     priceLevel: '₹',
+    priceRange: '₹60–120/head',
     openNow: true,
     tags: ['Thali', 'South Indian', 'Pure Veg', 'Heritage', 'Banana Leaf'],
     reviewSummary: 'Specialising in Chola-era recipes, Chola Mess serves dishes like paal paniyaram, koozh, and traditional rice specials visitors cannot find elsewhere in Thanjavur. A genuinely unique heritage food experience.',
@@ -356,6 +365,7 @@ export const MOCK_FOOD: PlaceResult[] = [
     rating: 4.4,
     reviewCount: 920,
     priceLevel: '₹₹',
+    priceRange: '₹150–250/head',
     openNow: true,
     tags: ['Cafe & Snacks', 'Filter Coffee', 'Bakery', 'South Indian', 'Snacks'],
     reviewSummary: 'The go-to café for Thanjavur\'s best filter coffee, freshly baked goods, and light meals. The decoction filter coffee is ranked as the finest in the city by reviewers, and the AC interior is a welcome break between temple visits.',
@@ -388,6 +398,7 @@ export const MOCK_FOOD: PlaceResult[] = [
     rating: 4.5,
     reviewCount: 3100,
     priceLevel: '₹₹',
+    priceRange: '₹200–350/head',
     openNow: true,
     tags: ['Chettinad', 'Non-Veg', 'South Indian', 'Mutton Kuzhambu', 'Pepper Chicken'],
     reviewSummary: 'The definitive Chettinad restaurant in Thanjavur — famed for bold, aromatic curries made with freshly ground kalpasi, marathi mokku, and star anise. Reviewers single out the Chettinad mutton kuzhambu and pepper chicken as unmatched anywhere in the district.',
@@ -420,6 +431,7 @@ export const MOCK_FOOD: PlaceResult[] = [
     rating: 4.1,
     reviewCount: 1450,
     priceLevel: '₹',
+    priceRange: '₹80–180/head',
     openNow: true,
     tags: ['South Indian', 'Tiffin', 'Filter Coffee', 'Non-Veg', 'Quick'],
     reviewSummary: 'A reliable local favourite near the Thanjavur bus stand serving both veg and non-veg South Indian meals. The chicken curry and parotta combination is the signature dish, and the morning tiffin attracts early risers.',
@@ -514,6 +526,84 @@ export const MOCK_ITINERARY: ItineraryStop[] = [
     duration: '60 min',
     highlights: ['22-carat gold foil', 'Live artisans', 'Original paintings'],
     reachNote: '12 min by auto from Art Gallery. Ask for Thalavaiyal Salai.',
+  },
+];
+
+// ── Afternoon preset (3 places, 2 PM – 6 PM) ─────────────────────────────────
+// Route: Palace → Art Gallery → Sivaganga Fort
+// All within central Thanjavur; first two are walkable within the palace complex.
+export const MOCK_ITINERARY_AFTERNOON: ItineraryStop[] = [
+  {
+    stop: 'Thanjavur Maratha Palace & Durbar Hall',
+    time: '2:00 PM',
+    trafficNote: 'Light — afternoon is the quietest slot, before the closing-time crowd',
+    tip: 'Start with the Durbar Hall — Maratha-era portraits, royal weapons, and ivory throne are unmatched. Climb the 58m Bell Tower for a panoramic view of the Big Temple. Museum ticket covers Palace, Durbar Hall, and Bell Tower — allow 90 min.',
+    currentTraffic: 'Light',
+    yesterdayTraffic: 'Light',
+    crowdLevel: 'Low',
+    duration: '90 min',
+    entryFee: '₹50',
+    highlights: ['Bell Tower panorama', 'Durbar Hall', 'Ivory throne'],
+    travelToNext: '2 min · Walk (within palace complex)',
+    departBy: '3:30 PM',
+  },
+  {
+    stop: 'Thanjavur Art Gallery — Chola Bronze Sculptures',
+    time: '3:30 PM',
+    trafficNote: 'Light — afternoons are the quietest slot in the gallery',
+    tip: 'One of India\'s finest Chola bronze collections — 11th-century Nataraja, Ardhanarishvara, and Shiva in Gallery 3. The 9th–12th century bronzes are extraordinary. Combined ticket with Palace covers entry. Gallery closes at 6 PM.',
+    currentTraffic: 'Light',
+    yesterdayTraffic: 'Light',
+    crowdLevel: 'Low',
+    duration: '60 min',
+    entryFee: '₹50 (combo)',
+    highlights: ['Nataraja bronze', '9th–12th century art', 'Chola collection'],
+    travelToNext: '8 min · Auto (~₹60)',
+    departBy: '4:50 PM',
+  },
+  {
+    stop: 'Sivaganga Fort',
+    time: '5:00 PM',
+    trafficNote: 'Light — you will likely have the fort to yourself',
+    tip: 'Arrive at 5 PM for the golden-hour light on the ramparts and Sivaganga tank. The tank reflection and warm orange stone are Thanjavur\'s best photography spot. Walk the full perimeter clockwise; visit the small Shiva shrine inside. Free entry.',
+    currentTraffic: 'Light',
+    yesterdayTraffic: 'Light',
+    crowdLevel: 'Low',
+    duration: '60 min',
+    entryFee: 'Free',
+    highlights: ['Golden-hour photography', 'Sivaganga tank reflection', 'Fort ramparts'],
+  },
+];
+
+// ── Evening preset (2 places, 5 PM – 9 PM) ───────────────────────────────────
+// Route: Sivaganga Fort (golden hour) → Brihadeeswarar Temple (evening puja)
+// Travel: 8 min auto (~₹60) — these are distinct sites 1.3 km apart.
+export const MOCK_ITINERARY_EVENING: ItineraryStop[] = [
+  {
+    stop: 'Sivaganga Fort',
+    time: '5:00 PM',
+    trafficNote: 'Light — peaceful before evening temple crowd builds',
+    tip: 'The golden-hour light turns the fort\'s laterite stone deep amber. Walk the full rampart perimeter for the best tank reflection shot. The small Shiva shrine inside is actively worshipped — arrive early before light fades.',
+    currentTraffic: 'Heavy',
+    yesterdayTraffic: 'Moderate',
+    crowdLevel: 'Low',
+    duration: '60 min',
+    entryFee: 'Free',
+    highlights: ['Golden-hour photography', 'Tank reflection', 'Rampart walk'],
+    travelToNext: '10 min · Auto (~₹60)',
+    departBy: '6:00 PM',
+  },
+  {
+    stop: 'Brihadeeswarar Temple (Big Temple)',
+    time: '6:30 PM',
+    trafficNote: 'Heavy — evening puja draws the largest devotee crowd of the day',
+    tip: 'Position yourself near the East Gopuram inner corridor by 6:30 PM — the evening lamp-lighting ceremony inside the outer sanctum is the highlight of the visit. Nadaswaram fills the courtyard as oil lamps are lit around the vimana. Outer gopuram glows amber at dusk — best photography from the east gate.',
+    currentTraffic: 'Heavy',
+    yesterdayTraffic: 'Moderate',
+    crowdLevel: 'High',
+    duration: '90 min',
+    entryFee: 'Free',
+    highlights: ['Evening puja', 'Lamp-lighting ceremony', 'Nadaswaram music'],
   },
 ];
 
@@ -646,14 +736,14 @@ export const MOCK_EXPLORE_GANGAIKONDA: ExploreResult = {
 export const MOCK_EXPLORE_RAJARAJAN: ExploreResult = {
   id: 'e7',
   name: 'Rajarajan Manimandapam',
-  address: 'Adjacent to Brihadeeswarar Temple, Membalam Road, Thanjavur',
+  address: 'Rajarajan Manimandapam Road, Thanjavur — approximately 2.8 km from Brihadeeswarar Temple by road',
   rating: 4.3,
   openNow: true,
   openingHours: 'Open daily during temple hours',
   status: 'Open',
-  insight: 'A memorial pavilion dedicated to Rajaraja I, the Chola emperor who commissioned Brihadeeswarar Temple. Located immediately adjacent to the Big Temple complex, making it an easy addition to any temple visit. The mandapam houses a statue of Rajaraja I and provides historical context for one of medieval India\'s greatest rulers and patrons of art and architecture. A quiet, reflective space that is often overlooked by visitors focused solely on the main temple.',
-  flow: '1. Visit as part of your Brihadeeswarar Temple trip — the mandapam is adjacent to the main temple complex.\n2. After completing your pradakshina (circumambulation) of the main temple, look for the memorial pavilion on the grounds.\n3. The statue of Rajaraja I is the centrepiece — take a moment to understand the scale of his architectural legacy visible right behind you.\n4. The surrounding gardens offer a calm spot to rest before or after the main temple visit.',
-  preparation: 'Entry: Free, included with the Brihadeeswarar Temple visit. No separate ticketing or special timings. Best visited as part of the main temple experience rather than as a standalone destination. The space is small but historically significant — a moment of quiet reflection on the legacy of Rajaraja Chola I.',
+  insight: 'A memorial pavilion and statue dedicated to Rajaraja I, the Chola emperor who commissioned Brihadeeswarar Temple. Located approximately 2.8 km from the Big Temple by road — plan a separate auto ride rather than combining it as a quick walk. The mandapam houses an imposing statue of Rajaraja I and provides historical context for one of medieval India\'s greatest rulers. A quiet, reflective space rarely crowded.',
+  flow: '1. Travel from the Big Temple area by auto (~12 min, ~₹80) — the road route goes around the outer temple complex.\n2. The statue of Rajaraja I is the centrepiece — take a moment to understand the scale of his architectural legacy.\n3. The surrounding gardens offer a calm spot to rest.\n4. Return by auto to the city centre or continue to your next destination.',
+  preparation: 'Entry: Free. Best combined with an auto circuit rather than as a walk from the temple — the road distance is approximately 2.8 km. Allow 15–20 minutes including travel each way. There are no ticketing queues or entry restrictions.',
   tags: ['Historical Memorial', 'Rajaraja Chola', 'Adjacent to Big Temple', 'Free Entry', 'Quick Visit'],
   reviews: [
     { text: 'A touching tribute to the man who built one of the world\'s greatest temples. Easy to combine with the main Brihadeeswarar visit and adds important historical context.', author: 'Priya K.', location: 'Mumbai', stars: 4, ago: '1 week ago' },
