@@ -1524,45 +1524,45 @@ function StopInfoTabs({
   crowd: { bg: string; text: string; dot: string } | null;
 }) {
   return (
-    <div className="space-y-2">
+    <div className="-mx-3.5 space-y-px">
       {/* Timing & Crowd */}
-      <div className="px-3 py-3 bg-brand-softer rounded-lg">
+      <div className="px-3.5 py-3 bg-brand-softer">
         <div className="flex items-center gap-2 mb-2">
-          <div className="w-6 h-6 rounded-lg bg-brand-soft flex items-center justify-center shrink-0">
-            <Clock className="w-3.5 h-3.5 text-brand" />
+          <div className="w-5 h-5 rounded-md bg-brand-soft flex items-center justify-center shrink-0">
+            <Clock className="w-3 h-3 text-brand" />
           </div>
           <span className="text-xs font-bold uppercase tracking-wide text-brand">Timing &amp; Crowd</span>
         </div>
-        <div className="flex flex-col gap-1.5 text-xs text-body">
-          <div className="flex items-center gap-1.5">
-            <span aria-hidden="true" className="text-muted">🕐</span>
+        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-body">
+          <span className="flex items-center gap-1">
+            <span aria-hidden="true">🕐</span>
             <span className="font-semibold">{stop.time}</span>
             {stop.departBy && <span className="text-muted">→ {stop.departBy}</span>}
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span aria-hidden="true" className="text-muted">⏱</span>
+          </span>
+          <span className="flex items-center gap-1">
+            <span aria-hidden="true">⏱</span>
             <span className="font-semibold">{stop.duration ?? '1–2 hrs'}</span>
-          </div>
+          </span>
           {stop.entryFee && (
-            <div className="flex items-center gap-1.5">
-              <span aria-hidden="true" className="text-muted">🎟</span>
+            <span className="flex items-center gap-1">
+              <span aria-hidden="true">🎟</span>
               <span className="font-semibold">{stop.entryFee}</span>
-            </div>
+            </span>
           )}
           {crowd && stop.crowdLevel && (
-            <div className={`flex items-center gap-1.5 font-semibold px-2 py-1 rounded-lg mt-0.5 ${crowd.bg} ${crowd.text}`}>
+            <span className={`flex items-center gap-1 font-semibold px-2 py-0.5 rounded-full ${crowd.bg} ${crowd.text}`}>
               <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${crowd.dot}`} />
               {stop.crowdLevel} crowd
-            </div>
+            </span>
           )}
         </div>
       </div>
 
       {/* Good to Know */}
-      <div className="px-3 py-3 bg-warning-soft rounded-lg">
+      <div className="px-3.5 py-3 bg-warning-soft">
         <div className="flex items-center gap-2 mb-1.5">
-          <div className="w-6 h-6 rounded-lg bg-warning-soft flex items-center justify-center shrink-0">
-            <Info className="w-3.5 h-3.5 text-warning-strong" />
+          <div className="w-5 h-5 rounded-md bg-warning-soft flex items-center justify-center shrink-0">
+            <Info className="w-3 h-3 text-warning-strong" />
           </div>
           <span className="text-xs font-bold uppercase tracking-wide text-warning-strong">Good to Know</span>
         </div>
