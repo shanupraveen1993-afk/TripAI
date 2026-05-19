@@ -1523,62 +1523,47 @@ function StopInfoTabs({
   stop: any;
   crowd: { bg: string; text: string; dot: string } | null;
 }) {
-  const [active, setActive] = useState<'timing' | 'info'>('timing');
   return (
     <div className="space-y-2">
-      {/* Pill tab bar */}
-      <div className="rounded-lg p-1 flex gap-1 bg-bg-app" style={{ boxShadow: 'var(--shadow-m)' }}>
-        {(['timing', 'info'] as const).map(t => (
-          <button
-            key={t}
-            type="button"
-            onClick={() => setActive(t)}
-            className={[
-              'flex-1 flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg transition-all duration-200 text-[10px] font-bold uppercase tracking-wide',
-              active === t ? 'bg-brand text-white shadow-[var(--shadow-xs)]' : 'bg-transparent text-muted hover:text-heading hover:bg-border/30',
-            ].join(' ')}
-          >
-            {t === 'timing'
-              ? <><Clock className="w-3 h-3" /> Timing &amp; Crowd</>
-              : <><Info  className="w-3 h-3" /> Good to Know</>}
-          </button>
-        ))}
+      {/* Timing & Crowd */}
+      <div className="rounded-lg border bg-brand-softer border-brand-medium overflow-hidden">
+        <div className="flex items-center gap-1.5 px-3 py-2 bg-brand text-white text-[10px] font-bold uppercase tracking-wide">
+          <Clock className="w-3 h-3" /> Timing &amp; Crowd
+        </div>
+        <div className="px-3 pb-3 pt-2 flex flex-col gap-1.5 text-xs text-body">
+          <div className="flex items-center gap-1.5">
+            <span aria-hidden="true" className="text-muted">🕐</span>
+            <span className="font-semibold">{stop.time}</span>
+            {stop.departBy && <span className="text-muted">→ {stop.departBy}</span>}
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span aria-hidden="true" className="text-muted">⏱</span>
+            <span className="font-semibold">{stop.duration ?? '1–2 hrs'}</span>
+          </div>
+          {stop.entryFee && (
+            <div className="flex items-center gap-1.5">
+              <span aria-hidden="true" className="text-muted">🎟</span>
+              <span className="font-semibold">{stop.entryFee}</span>
+            </div>
+          )}
+          {crowd && stop.crowdLevel && (
+            <div className={`flex items-center gap-1.5 font-semibold px-2 py-1 rounded-lg mt-0.5 ${crowd.bg} ${crowd.text}`}>
+              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${crowd.dot}`} />
+              {stop.crowdLevel} crowd
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Panel content */}
-      {active === 'timing' ? (
-        <div className="rounded-lg p-3 flex flex-col gap-2 border bg-brand-softer border-brand-medium">
-          <div className="flex flex-col gap-1.5 text-xs text-body">
-            <div className="flex items-center gap-1.5">
-              <span aria-hidden="true" className="text-muted">🕐</span>
-              <span className="font-semibold">{stop.time}</span>
-              {stop.departBy && <span className="text-muted">→ {stop.departBy}</span>}
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span aria-hidden="true" className="text-muted">⏱</span>
-              <span className="font-semibold">{stop.duration ?? '1–2 hrs'}</span>
-            </div>
-            {stop.entryFee && (
-              <div className="flex items-center gap-1.5">
-                <span aria-hidden="true" className="text-muted">🎟</span>
-                <span className="font-semibold">{stop.entryFee}</span>
-              </div>
-            )}
-            {crowd && stop.crowdLevel && (
-              <div className={`flex items-center gap-1.5 font-semibold px-2 py-1 rounded-lg mt-0.5 ${crowd.bg} ${crowd.text}`}>
-                <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${crowd.dot}`} />
-                {stop.crowdLevel} crowd
-              </div>
-            )}
-          </div>
+      {/* Good to Know */}
+      <div className="rounded-lg border bg-warning-soft border-warning-medium overflow-hidden">
+        <div className="flex items-center gap-1.5 px-3 py-2 bg-brand text-white text-[10px] font-bold uppercase tracking-wide">
+          <Info className="w-3 h-3" /> Good to Know
         </div>
-      ) : (
-        <div className="rounded-lg p-3 border bg-warning-soft border-warning-medium">
-          <p className="text-xs leading-snug text-body">
-            {stop.cautionNote || stop.reachNote || 'Plan to arrive a few minutes before your scheduled time.'}
-          </p>
-        </div>
-      )}
+        <p className="px-3 pb-3 pt-2 text-xs leading-snug text-body">
+          {stop.cautionNote || stop.reachNote || 'Plan to arrive a few minutes before your scheduled time.'}
+        </p>
+      </div>
     </div>
   );
 }
