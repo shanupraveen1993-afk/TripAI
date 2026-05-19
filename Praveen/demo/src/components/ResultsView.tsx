@@ -1526,11 +1526,14 @@ function StopInfoTabs({
   return (
     <div className="space-y-2">
       {/* Timing & Crowd */}
-      <div className="rounded-lg border bg-brand-softer border-brand-medium overflow-hidden">
-        <div className="flex items-center gap-1.5 px-3 py-2 bg-brand text-white text-[10px] font-bold uppercase tracking-wide">
-          <Clock className="w-3 h-3" /> Timing &amp; Crowd
+      <div className="px-3 py-3 bg-brand-softer rounded-lg">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="w-6 h-6 rounded-lg bg-brand-soft flex items-center justify-center shrink-0">
+            <Clock className="w-3.5 h-3.5 text-brand" />
+          </div>
+          <span className="text-xs font-bold uppercase tracking-wide text-brand">Timing &amp; Crowd</span>
         </div>
-        <div className="px-3 pb-3 pt-2 flex flex-col gap-1.5 text-xs text-body">
+        <div className="flex flex-col gap-1.5 text-xs text-body">
           <div className="flex items-center gap-1.5">
             <span aria-hidden="true" className="text-muted">🕐</span>
             <span className="font-semibold">{stop.time}</span>
@@ -1556,11 +1559,14 @@ function StopInfoTabs({
       </div>
 
       {/* Good to Know */}
-      <div className="rounded-lg border bg-warning-soft border-warning-medium overflow-hidden">
-        <div className="flex items-center gap-1.5 px-3 py-2 bg-brand text-white text-[10px] font-bold uppercase tracking-wide">
-          <Info className="w-3 h-3" /> Good to Know
+      <div className="px-3 py-3 bg-warning-soft rounded-lg">
+        <div className="flex items-center gap-2 mb-1.5">
+          <div className="w-6 h-6 rounded-lg bg-warning-soft flex items-center justify-center shrink-0">
+            <Info className="w-3.5 h-3.5 text-warning-strong" />
+          </div>
+          <span className="text-xs font-bold uppercase tracking-wide text-warning-strong">Good to Know</span>
         </div>
-        <p className="px-3 pb-3 pt-2 text-xs leading-snug text-body">
+        <p className="text-xs text-body leading-relaxed">
           {stop.cautionNote || stop.reachNote || 'Plan to arrive a few minutes before your scheduled time.'}
         </p>
       </div>
