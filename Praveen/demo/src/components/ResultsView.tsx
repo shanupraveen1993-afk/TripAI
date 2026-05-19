@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  ArrowLeft, Star, MapPin, Clock, Navigation, Share2, Compass,
+  ArrowLeft, ArrowRight, Star, MapPin, Clock, Navigation, Share2, Compass,
   ChevronRight, ChevronDown, Sparkles, Info, RefreshCw, Bookmark, BookmarkCheck,
   Utensils, CheckCircle, AlertTriangle, RotateCcw, Hotel, Route,
   ImageIcon, ExternalLink, Map, X, Lightbulb, DollarSign, Flame, TrendingUp, ThumbsUp,
@@ -25,6 +25,7 @@ type ItineraryStop = {
 import { fetchPhoto } from '../api/client';
 import { useToast } from './ui/Toast';
 import { PlaceCardSkeleton } from './ui/Skeleton';
+import { STOPS } from '../itineraryPreset';
 
 interface ResultsViewProps {
   tab: Tab;
@@ -162,8 +163,8 @@ function PlacePhoto({ color, name, photoRef, autoLoad }: { color: string; name: 
 }
 
 const AVATAR_COLORS = [
-  'var(--color-brand)', 'var(--color-itinerary)', 'var(--color-explore)',
-  'var(--color-food)', 'var(--color-danger)', '#0891B2',
+  'var(--color-brand)', 'var(--color-brand-strong)', '#0891B2',
+  'var(--color-success)', 'var(--color-danger)', '#6366F1',
 ];
 
 function ReviewCard({ review, idx, keywords = [] }: { review: ReviewItem; idx: number; keywords?: string[] }) {
@@ -375,13 +376,13 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
   );
 
   // Competitor-style coloured rating badge (Booking.com / Goibibo pattern)
-  const ratingColor = place.rating >= 4.5 ? 'var(--color-success-strong)' : place.rating >= 4.0 ? 'var(--color-brand)' : place.rating >= 3.5 ? 'var(--color-food)' : 'var(--color-danger-strong)';
+  const ratingColor = place.rating >= 4.5 ? 'var(--color-success-strong)' : place.rating >= 4.0 ? 'var(--color-brand)' : place.rating >= 3.5 ? 'var(--color-warning-strong)' : 'var(--color-danger-strong)';
   const ratingLabel = place.rating >= 4.5 ? 'Excellent' : place.rating >= 4.0 ? 'Very Good' : place.rating >= 3.5 ? 'Good' : 'Fair';
   const recentRatingsArr = place.recentRatings ?? [];
   const recentAvgMain = recentRatingsArr.length > 0
     ? +(recentRatingsArr.reduce((s: number, r: number) => s + r, 0) / recentRatingsArr.length).toFixed(1)
     : null;
-  const trendColorMain = place.trendVerdict === 'improving' ? 'var(--color-success-strong)' : place.trendVerdict === 'declining' ? 'var(--color-food-dark)' : 'var(--color-muted)';
+  const trendColorMain = place.trendVerdict === 'improving' ? 'var(--color-success-strong)' : place.trendVerdict === 'declining' ? 'var(--color-warning-strong)' : 'var(--color-muted)';
   const trendLabelMain = place.trendVerdict === 'improving' ? '↑ Rising' : place.trendVerdict === 'declining' ? '↓ Slipping' : '— Consistent';
   const confirmed   = place.confirmedTags ?? [];
   const matched     = place.matchedTags   ?? [];
@@ -488,7 +489,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                 : `Recent visitors steady — no major shifts.`;
               return (
                 <div className={`rounded-lg px-2 py-1.5 border ${isUp ? 'bg-success-soft border-success-medium/40' : isDown ? 'bg-warning-soft border-warning-medium/40' : 'bg-brand-softer border-brand-soft'}`}>
-                  <p className={`text-xs font-bold leading-none mb-0.5 ${isUp ? 'text-success-strong' : isDown ? 'text-food' : 'text-brand'}`}>{verdict}</p>
+                  <p className={`text-xs font-bold leading-none mb-0.5 ${isUp ? 'text-success-strong' : isDown ? 'text-warning-strong' : 'text-brand'}`}>{verdict}</p>
                   <p className="text-xs leading-snug text-body">{sentimentMsg}</p>
                 </div>
               );
@@ -652,7 +653,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               : `Recent visitors are steady — no major shifts in guest experience.`;
             return (
               <div className={`rounded-lg px-2.5 py-2 border ${isUp ? 'bg-success-soft border-success-medium/40' : isDown ? 'bg-warning-soft border-warning-medium/40' : 'bg-brand-softer border-brand-soft'}`}>
-                <p className={`text-xs font-bold leading-none mb-1 ${isUp ? 'text-success-strong' : isDown ? 'text-food' : 'text-brand'}`}>{verdict}</p>
+                <p className={`text-xs font-bold leading-none mb-1 ${isUp ? 'text-success-strong' : isDown ? 'text-warning-strong' : 'text-brand'}`}>{verdict}</p>
                 <p className="text-xs leading-snug text-body">{sentimentMsg}</p>
               </div>
             );
@@ -788,9 +789,9 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                 <div className="px-3 py-3 bg-warning-soft">
                   <div className="flex items-center gap-2 mb-1.5">
                     <div className="w-6 h-6 rounded-lg bg-warning-soft flex items-center justify-center shrink-0">
-                      <AlertTriangle className="w-3.5 h-3.5 text-food" />
+                      <AlertTriangle className="w-3.5 h-3.5 text-warning-strong" />
                     </div>
-                    <span className="text-xs font-bold uppercase tracking-wide text-food">What to Be Aware Of</span>
+                    <span className="text-xs font-bold uppercase tracking-wide text-warning-strong">What to Be Aware Of</span>
                   </div>
                   <p className="text-xs text-body leading-relaxed">
                     {place.aiDetail?.caveat || (place as any).cautionNote}
@@ -878,12 +879,12 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
 
               {/* ── CARD 5: Insider Tip (if available) ── */}
               {place.aiDetail?.insiderTip && (
-                <div className="px-3 py-3 bg-itinerary-soft">
+                <div className="px-3 py-3 bg-brand-softer">
                   <div className="flex items-center gap-2 mb-2">
-                    <div className="w-6 h-6 rounded-lg bg-itinerary/15 flex items-center justify-center shrink-0">
-                      <Lightbulb className="w-3.5 h-3.5 text-itinerary" />
+                    <div className="w-6 h-6 rounded-lg bg-brand/10 flex items-center justify-center shrink-0">
+                      <Lightbulb className="w-3.5 h-3.5 text-brand" />
                     </div>
-                    <span className="text-xs font-bold uppercase tracking-wide text-itinerary">Insider Tip</span>
+                    <span className="text-xs font-bold uppercase tracking-wide text-brand">Insider Tip</span>
                   </div>
                   <p className="text-xs text-body leading-relaxed">{place.aiDetail.insiderTip}</p>
                 </div>
@@ -1091,12 +1092,20 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-black/25" />
 
-                  {/* Top: stop# + time + duration */}
+                  {/* Top: stop# + time + duration + explore arrow */}
                   <div className="absolute top-3 left-3 right-3 flex items-start justify-between z-10">
                     <span className="bg-white text-xs font-black px-2.5 py-1 rounded-full shadow-sm leading-none text-brand">
-                      Stop {idx + 1}
+                      Place {idx + 1}
                     </span>
                     <div className="flex flex-col items-end gap-1">
+                      <button
+                        type="button"
+                        aria-label={`Explore ${stop.stop}`}
+                        onClick={() => onExploreStop?.(stop.stop)}
+                        className="bg-white/20 backdrop-blur-sm hover:bg-white/35 transition-colors rounded-full p-1 leading-none"
+                      >
+                        <ArrowRight className="w-3.5 h-3.5 text-white" />
+                      </button>
                       <span className="bg-black/55 backdrop-blur-sm text-white text-xs font-bold px-2 py-0.5 rounded-full leading-none">
                         {stop.time}
                       </span>
@@ -1155,13 +1164,6 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
-                      onClick={() => onExploreStop?.(stop.stop)}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold text-brand border border-brand/30 bg-brand-softer hover:bg-brand-soft transition-colors"
-                    >
-                      <Compass className="w-3.5 h-3.5" /> Explore Place
-                    </button>
-                    <button
-                      type="button"
                       onClick={() => toggleStop(idx)}
                       className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold border transition-colors"
                       style={isExpanded
@@ -1172,6 +1174,30 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                       Know More
                       <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
                     </button>
+                    {(() => {
+                      const coords = resolveStopCoords(stop.stop);
+                      const prevCoords = idx > 0 ? resolveStopCoords(displayStops[idx - 1].stop) : null;
+                      const isFirst = idx === 0;
+                      const url = coords
+                        ? isFirst
+                          ? `https://maps.google.com/maps?daddr=${coords.lat},${coords.lng}`
+                          : prevCoords
+                            ? `https://maps.google.com/maps?saddr=${prevCoords.lat},${prevCoords.lng}&daddr=${coords.lat},${coords.lng}`
+                            : `https://maps.google.com/maps?daddr=${coords.lat},${coords.lng}`
+                        : null;
+                      return (
+                        <button
+                          type="button"
+                          onClick={() => url && window.open(url, '_blank', 'noopener')}
+                          disabled={!url}
+                          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold text-white transition-colors disabled:opacity-40"
+                          style={{ background: 'var(--color-brand)' }}
+                        >
+                          <Navigation className="w-3.5 h-3.5" />
+                          {isFirst ? 'Start Here' : 'Get Directions'}
+                        </button>
+                      );
+                    })()}
                   </div>
                 </div>
 
@@ -1222,7 +1248,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
 
                         {/* Card 2: Good to Know */}
                         <div className="rounded-lg p-3 flex flex-col gap-2 border bg-warning-soft border-warning-medium">
-                          <span className="text-xs font-semibold flex items-center gap-1 text-food-dark">
+                          <span className="text-xs font-semibold flex items-center gap-1 text-muted">
                             <Info className="w-3 h-3" /> Good to Know
                           </span>
                           <p className="text-xs leading-snug text-body">
@@ -1393,7 +1419,7 @@ function ExploreView({ place, visitTime = 'Morning' }: { place: ExploreResult; v
             onClick={() => setActiveTab(t)}
             className={`flex-1 py-2 text-xs font-bold rounded-lg transition-colors ${
               activeTab === t
-                ? 'bg-explore text-white shadow-sm'
+                ? 'bg-brand text-white shadow-sm'
                 : 'text-muted hover:text-heading hover:bg-border/30'
             }`}
           >
@@ -1436,7 +1462,7 @@ function ExploreView({ place, visitTime = 'Morning' }: { place: ExploreResult; v
             {place.tags.length > 0 && (
               <div className="flex flex-wrap gap-1.5">
                 {place.tags.map(t => (
-                  <span key={t} className="text-xs font-semibold bg-explore-soft text-explore px-2.5 py-1 rounded-full border border-explore-medium/40">
+                  <span key={t} className="text-xs font-semibold bg-brand-softer text-brand px-2.5 py-1 rounded-full border border-brand-medium/40">
                     {t}
                   </span>
                 ))}
@@ -1451,12 +1477,12 @@ function ExploreView({ place, visitTime = 'Morning' }: { place: ExploreResult; v
 
             {/* Best Time */}
             {(place as any).bestTime && (
-              <div className="flex items-start gap-3 p-3 rounded-lg border bg-explore-soft border-explore-medium/40">
-                <div className="w-7 h-7 rounded-lg bg-explore/15 flex items-center justify-center shrink-0">
-                  <Clock className="w-3.5 h-3.5 text-explore" />
+              <div className="flex items-start gap-3 p-3 rounded-lg border bg-brand-softer border-brand-medium/40">
+                <div className="w-7 h-7 rounded-lg bg-brand/10 flex items-center justify-center shrink-0">
+                  <Clock className="w-3.5 h-3.5 text-brand" />
                 </div>
                 <div>
-                  <span className="text-xs font-bold text-explore block mb-0.5">Best Time to Visit</span>
+                  <span className="text-xs font-bold text-brand block mb-0.5">Best Time to Visit</span>
                   <p className="text-xs leading-snug text-body">{(place as any).bestTime}</p>
                 </div>
               </div>
@@ -1477,11 +1503,11 @@ function ExploreView({ place, visitTime = 'Morning' }: { place: ExploreResult; v
             <div className="rounded-lg border border-warning-medium bg-warning-soft p-3">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-6 h-6 rounded-md bg-warning/15 flex items-center justify-center shrink-0">
-                  <Info className="w-3 h-3 text-food-dark" />
+                  <Info className="w-3 h-3 text-muted" />
                 </div>
-                <span className="text-xs font-bold text-food-dark">Good to Know</span>
+                <span className="text-xs font-bold text-muted">Good to Know</span>
               </div>
-              <p className="text-xs text-food-dark leading-relaxed">{place.preparation}</p>
+              <p className="text-xs text-body leading-relaxed">{place.preparation}</p>
             </div>
 
             {/* Avoid These */}
@@ -1510,7 +1536,7 @@ function ExploreView({ place, visitTime = 'Morning' }: { place: ExploreResult; v
                 <div className="flex items-center gap-2 mb-1">
                   <Star className="w-3 h-3 fill-warning-strong text-warning-strong" />
                   <span className="text-xs font-semibold text-heading">What visitors say</span>
-                  <span className="ml-auto text-xs font-semibold text-explore bg-explore-soft px-2 py-0.5 rounded-full border border-explore-medium/40">{visitTime}</span>
+                  <span className="ml-auto text-xs font-semibold text-brand bg-brand-softer px-2 py-0.5 rounded-full border border-brand-medium/40">{visitTime}</span>
                 </div>
                 {sortedReviews.map((r, i) => (
                   <ReviewCard key={i} review={r} idx={i} keywords={timeKeywords} />
@@ -1535,6 +1561,16 @@ function isPureVegPlace(p: PlaceResult): boolean {
   const name = p.name.toLowerCase();
   const tags = p.tags.join(' ').toLowerCase();
   return PURE_VEG_NAME_SIGNALS.some(s => name.includes(s) || tags.includes(s));
+}
+
+function resolveStopCoords(stopName: string): { lat: number; lng: number } | null {
+  const lower = stopName.toLowerCase();
+  for (const stop of Object.values(STOPS)) {
+    if (lower.includes(stop.label.toLowerCase()) || stop.aliases.some(a => lower.includes(a))) {
+      return { lat: stop.lat, lng: stop.lng };
+    }
+  }
+  return null;
 }
 
 export function ResultsView({
@@ -1581,7 +1617,7 @@ export function ResultsView({
 
       {/* Pure Veg active indicator — shown when filter is on */}
       {tab === 'Food' && pureVegFilter && (
-        <div className="flex items-center gap-2 px-3 py-2 rounded-lg mb-3 bg-explore-soft border border-explore">
+        <div className="flex items-center gap-2 px-3 py-2 rounded-lg mb-3 bg-brand-softer border border-brand-medium">
           <span role="img" aria-label="Active" className="text-sm leading-none">🟢</span>
           <span className="text-xs font-bold text-brand">Pure Veg — non-veg places are dimmed</span>
         </div>
@@ -1737,8 +1773,8 @@ export function ResultsView({
             animate={{ opacity: 1, y: 0 }}
             className="flex flex-col items-center text-center py-16 px-6 gap-5"
           >
-            <div className="w-14 h-14 rounded-2xl flex items-center justify-center border bg-explore-soft border-explore-medium/40">
-              <Compass className="w-7 h-7 text-explore" />
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center border bg-brand-softer border-brand-medium/40">
+              <Compass className="w-7 h-7 text-brand" />
             </div>
             <div className="space-y-1.5 max-w-xs">
               <p className="font-display font-semibold text-sm text-heading">Guide unavailable</p>
@@ -1748,7 +1784,7 @@ export function ResultsView({
             </div>
             <button
               onClick={onBack}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-lg border-2 border-explore text-explore text-sm font-bold hover:bg-explore hover:text-white transition-all"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg border-2 border-brand text-brand text-sm font-bold hover:bg-brand hover:text-white transition-all"
             >
               <ArrowLeft className="w-4 h-4" /> Pick another spot
             </button>
