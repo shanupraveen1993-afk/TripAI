@@ -1003,61 +1003,47 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             <LocationBar value={startPoint} onChange={setStartPoint} placeholder="e.g. Railway Station, Hotel name…" autoDetect={isThanjavur(destination)} mockResolvedLocation="Thanjavur" />
           </div>
 
-          {/* Full Day Plan — primary CTA */}
-          <button
-            type="button"
-            onClick={() => { setStartTime('Full Day'); setShowTimeError(false); }}
-            className="w-full flex items-center justify-between px-4 py-3.5 rounded-xl border-2 transition-all"
-            style={startTime === 'Full Day'
-              ? { borderColor: 'var(--color-brand)', background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
-              : { borderColor: 'var(--color-border)', background: 'var(--color-surface)', color: 'var(--color-body)' }
-            }
-          >
-            <div className="flex flex-col items-start gap-0.5">
-              <span className="text-sm font-bold leading-none" style={startTime === 'Full Day' ? { color: 'var(--color-brand)' } : { color: 'var(--color-heading)' }}>
-                Full Day Plan
-              </span>
-              <span className="text-xs opacity-60">7 AM – 1 PM · 3 options · real distances</span>
-            </div>
-            <span className="text-xs font-bold px-2 py-1 rounded-full" style={{ background: 'var(--color-brand)', color: '#fff', opacity: startTime === 'Full Day' ? 1 : 0.7 }}>
-              AI
-            </span>
-          </button>
-
-          {/* Quick slots — Morning / Afternoon / Evening */}
+          {/* Time slot — Morning / Afternoon / Evening */}
           <div>
-            <label className="block text-xs font-semibold text-muted mb-1">Or pick a slot</label>
+            <label className="block text-xs font-semibold text-heading mb-1">
+              Time Slot <span className="text-danger">*</span>
+            </label>
             <div className="flex gap-1.5">
               {(['Morning', 'Afternoon', 'Evening'] as const).map(t => {
-                const stops: Record<string, number> = { Morning: 5, Afternoon: 3, Evening: 2 };
+                const meta: Record<string, { places: number; time: string }> = {
+                  Morning:   { places: 10, time: '7 AM – 8 PM' },
+                  Afternoon: { places: 4,  time: '2 PM – 7 PM' },
+                  Evening:   { places: 2,  time: '5 PM – 8 PM' },
+                };
                 return (
                   <button
                     key={t}
                     type="button"
                     onClick={() => { setStartTime(t); setShowTimeError(false); }}
-                    className="flex-1 flex flex-col items-center gap-0.5 py-2.5 min-h-[44px] rounded-lg border-2 transition-all"
+                    className="flex-1 flex flex-col items-center gap-0.5 py-3 min-h-[44px] rounded-lg border-2 transition-all"
                     style={startTime === t
                       ? { borderColor: 'var(--color-brand)',  background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
-                      : showTimeError && startTime !== 'Full Day'
+                      : showTimeError
                         ? { borderColor: 'var(--color-danger)', background: 'var(--color-danger-soft)', color: 'var(--color-muted)' }
                         : { borderColor: 'var(--color-border)', background: 'var(--color-surface)',     color: 'var(--color-muted)' }
                     }
                   >
                     <span className="text-xs font-semibold uppercase tracking-wide">{t}</span>
-                    <span className="text-xs opacity-60">{stops[t]} places</span>
+                    <span className="text-xs opacity-60">{meta[t].places} places</span>
+                    <span className="text-[10px] opacity-50">{meta[t].time}</span>
                   </button>
                 );
               })}
             </div>
             <AnimatePresence>
-              {showTimeError && !startTime && (
+              {showTimeError && (
                 <motion.p
                   initial={{ opacity: 0, y: -4 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -4 }}
                   className="text-xs text-danger font-bold mt-1.5 flex items-center gap-1"
                 >
-                  <AlertTriangle className="w-3.5 h-3.5 shrink-0" /> Please select a plan type to continue
+                  <AlertTriangle className="w-3.5 h-3.5 shrink-0" /> Please select a time slot to continue
                 </motion.p>
               )}
             </AnimatePresence>

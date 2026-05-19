@@ -8,7 +8,6 @@ import { Dashboard, DashboardFilters } from './components/Dashboard';
 import { CityLockScreen } from './components/CityLockScreen';
 import { ResultsView } from './components/ResultsView';
 import { SavedTrips, SavedTrip } from './components/SavedTrips';
-import { FullDayPlanPicker } from './components/FullDayPlanPicker';
 import { Profile } from './components/Profile';
 import { Modal } from './components/ui/Modal';
 import { AuthForm } from './components/AuthForm';
@@ -27,8 +26,8 @@ const SLOT_MOCK: Record<string, typeof MOCK_ITINERARY> = {
   Evening:   MOCK_ITINERARY_EVENING,
 };
 import {
-  fetchPlan, fetchItinerary, fetchExploreGuide, fetchFullDayPlans,
-  PlanResult, PlanResponse, ExploreGuide, LiveItineraryStop, FullDayPlanOption,
+  fetchPlan, fetchItinerary, fetchExploreGuide,
+  PlanResult, PlanResponse, ExploreGuide, LiveItineraryStop,
 } from './api/client';
 
 type AppScreen = 'landing' | 'browse' | 'app';
@@ -113,7 +112,6 @@ export default function App() {
   const [backContext, setBackContext] = useState<'dashboard' | 'itinerary-results'>('dashboard');
   const [itinStopCount, setItinStopCount] = useState(5);
   const [nonThanjavurNotice, setNonThanjavurNotice] = useState<string | null>(null);
-  const [fullDayPlans, setFullDayPlans] = useState<FullDayPlanOption[] | null>(null);
 
   const dismissCityNotice = () => {
     setNonThanjavurNotice(null);
@@ -251,36 +249,24 @@ export default function App() {
     setLiveResults(null);
     setLiveExplore(null);
     setLiveItinerary(null);
-    setFullDayPlans(null);
     setApiError(false);
     try {
       if (filters.tab === 'Explore') {
         // Explore always uses preset data — no API call needed
-      } else if (filters.tab === 'Itinerary' && filters.startTime === 'Full Day') {
-        triggerLocationToast();
-        const city = filters.destination || searchLocation || 'Thanjavur';
-        const plans = await fetchFullDayPlans(city, 'driving');
-        if (plans.length > 0) {
-          setFullDayPlans(plans);
-          setItinStopCount(plans[0]?.stopCount ?? 5);
-        } else {
-          setApiError(true);
-          setFullDayPlans(null);
-        }
       } else if (filters.tab === 'Itinerary') {
         triggerLocationToast();
         const timeSlot = filters.startTime || 'Morning';
-        const slotStopMap: Record<string, number> = { Morning: 5, Afternoon: 3, Evening: 2 };
-        setItinStopCount(slotStopMap[timeSlot] ?? 5);
+        const slotStopMap: Record<string, number> = { Morning: 10, Afternoon: 4, Evening: 2 };
+        setItinStopCount(slotStopMap[timeSlot] ?? 10);
         const ITIN_TIMES: Record<string, string[]> = {
-          Morning:   ['7:00 AM',  '9:15 AM',  '10:45 AM', '11:45 AM', '12:30 PM'],
-          Afternoon: ['2:00 PM',  '3:15 PM',  '4:30 PM'],
-          Evening:   ['5:00 PM',  '7:00 PM'],
+          Morning:   ['7:00 AM','9:15 AM','10:45 AM','11:45 AM','12:30 PM','1:30 PM','2:45 PM','3:45 PM','5:00 PM','7:00 PM'],
+          Afternoon: ['2:00 PM','3:15 PM','4:30 PM','5:30 PM'],
+          Evening:   ['5:00 PM','7:00 PM'],
         };
         const ITIN_DEPART: Record<string, Array<string|undefined>> = {
-          Morning:   ['9:00 AM',  '10:45 AM', '11:30 AM', '12:15 PM', undefined],
-          Afternoon: ['3:00 PM',  '4:15 PM',  undefined],
-          Evening:   ['6:30 PM',  undefined],
+          Morning:   ['9:00 AM','10:45 AM','11:30 AM','12:15 PM','1:15 PM','2:30 PM','3:30 PM','4:15 PM','6:30 PM',undefined],
+          Afternoon: ['3:00 PM','4:15 PM','5:15 PM',undefined],
+          Evening:   ['6:30 PM',undefined],
         };
         const applySlotTimes = (arr: typeof MOCK_ITINERARY) =>
           arr.map((s, i) => ({ ...s, time: ITIN_TIMES[timeSlot]?.[i] ?? s.time, departBy: ITIN_DEPART[timeSlot]?.[i] }));
@@ -644,23 +630,7 @@ export default function App() {
           </motion.div>
         )}
 
-        {contentScreen === 'results' && activeTab === 'Itinerary' && fullDayPlans !== null && (
-          <motion.div key="fullday-picker" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>
-            <FullDayPlanPicker
-              city={lastSearchFilters?.destination || searchLocation || 'Thanjavur'}
-              plans={fullDayPlans}
-              onBack={() => { setInitialTab('Itinerary'); setContent('dashboard'); }}
-              onPick={(plan) => {
-                setFullDayPlans(null);
-                setLiveItinerary(plan.stops as any);
-                setItinStopCount(plan.stopCount);
-                setItineraryGenCount(c => c + 1);
-              }}
-            />
-          </motion.div>
-        )}
-
-        {contentScreen === 'results' && !(activeTab === 'Itinerary' && fullDayPlans !== null) && (
+        {contentScreen === 'results' && (
           <motion.div key="results" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>
             <ResultsView
               tab={activeTab}

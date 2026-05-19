@@ -31,7 +31,7 @@ const toastClasses: Record<ToastType, string> = {
   success: 'border-success-medium/40 bg-success-soft',
   error:   'border-danger-medium/40 bg-danger-soft',
   info:    'border-accent/20 bg-accent-soft',
-  warning: 'border-warning-medium bg-warning-soft',
+  warning: 'border-warning-medium/40 bg-warning-soft',
 };
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
@@ -53,9 +53,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           {toasts.map(t => (
             <motion.div
               key={t.id}
-              initial={{ opacity: 0, y: 20, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 20, scale: 0.95 }}
+              initial={{ opacity: 0, x: 80, scale: 0.9 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: 80 }}
               transition={{ type: 'spring', damping: 20, stiffness: 300 }}
               className={`pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-xl border shadow-lg text-sm font-medium max-w-xs ${toastClasses[t.type]}`}
             >

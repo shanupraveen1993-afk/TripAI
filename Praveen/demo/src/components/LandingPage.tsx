@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'motion/react';
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useReducedMotion } from 'motion/react';
 import {
   Compass, Search, MapPin, Star, Sparkles, ArrowRight,
   Shield, Globe, CheckCircle, Zap, Quote, X,
@@ -21,15 +21,16 @@ interface LandingPageProps {
 
 /* ── City rotator — controlled, driven by shared heroActive index ─────── */
 function CityRotator({ city }: { city: string }) {
+  const prefersReducedMotion = useReducedMotion();
   return (
     <span className="block h-[1.15em] relative overflow-hidden">
       <AnimatePresence mode="sync">
         <motion.span
           key={city}
-          initial={{ opacity: 0, y: '60%', filter: 'blur(4px)' }}
-          animate={{ opacity: 1, y: '0%', filter: 'blur(0px)' }}
-          exit={{ opacity: 0, y: '-60%', filter: 'blur(4px)' }}
-          transition={{ duration: 0.35, ease: 'easeInOut' }}
+          initial={{ opacity: 0, y: prefersReducedMotion ? '0%' : '60%', filter: prefersReducedMotion ? undefined : 'blur(4px)' }}
+          animate={{ opacity: 1, y: '0%', filter: prefersReducedMotion ? undefined : 'blur(0px)' }}
+          exit={{ opacity: 0, y: prefersReducedMotion ? '0%' : '-60%', filter: prefersReducedMotion ? undefined : 'blur(4px)' }}
+          transition={{ duration: prefersReducedMotion ? 0.15 : 0.35, ease: 'easeInOut' }}
           className="gradient-text-hero absolute left-0 top-0 whitespace-nowrap"
         >
           {city}
@@ -67,7 +68,7 @@ function CityPosterSlider({ onCityClick }: { onCityClick?: (city: string, emoji:
             onClick={() => onCityClick?.(p.city, p.emoji)}
             className={`bg-gradient-to-br ${p.gradient} rounded-xl flex-shrink-0 w-36 h-44 relative overflow-hidden flex flex-col justify-end p-3 shadow-lg cursor-pointer hover:scale-[1.05] transition-transform duration-200 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none`}
           >
-            <img src={uImg(p.imgId, 144, 176)} alt={p.city} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+            <img src={uImg(p.imgId, 144, 176)} alt={p.city} width={144} height={176} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
             <span className="absolute top-3 right-3 text-2xl z-10" aria-hidden="true">{p.emoji}</span>
             <div className="absolute inset-0 bg-gradient-to-t from-black/75 to-black/20 rounded-2xl" />
             <p className="relative z-10 text-white font-display font-black text-sm leading-tight">{p.city}</p>
@@ -92,12 +93,13 @@ export const HERO_DESTINATIONS = [
 
 /* ── Hero photo panel — controlled by shared heroActive index ─────────── */
 function HeroPhotoPanel({ active, setActive }: { active: number; setActive: (i: number) => void }) {
+  const prefersReducedMotion = useReducedMotion();
   const d = HERO_DESTINATIONS[active];
   return (
     <motion.div
       initial={{ opacity: 0, x: 40 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: 0.3, duration: 0.7, ease: 'easeOut' }}
+      transition={{ delay: 0.3, duration: 0.4, ease: 'easeOut' }}
       className="relative w-full rounded-2xl overflow-hidden h-[260px] md:h-[560px]"
       style={{ boxShadow: '0 0 60px rgba(59,130,246,0.18), 0 30px 60px rgba(0,0,0,0.6)' }}
     >
@@ -112,11 +114,11 @@ function HeroPhotoPanel({ active, setActive }: { active: number; setActive: (i: 
           className="absolute inset-0 w-full h-full object-cover"
           initial={{ opacity: 0, scale: 1 }}
           animate={i === active
-            ? { opacity: 1, scale: 1.08 }
+            ? { opacity: 1, scale: prefersReducedMotion ? 1 : 1.08 }
             : { opacity: 0, scale: 1 }
           }
           transition={i === active
-            ? { opacity: { duration: 0.6, ease: 'easeOut' }, scale: { duration: 6, ease: 'easeOut' } }
+            ? { opacity: { duration: 0.6, ease: 'easeOut' }, scale: prefersReducedMotion ? { duration: 0 } : { duration: 6, ease: 'easeOut' } }
             : { opacity: { duration: 0.5, ease: 'easeOut' }, scale: { duration: 0.5, ease: 'easeOut' } }
           }
           style={{ willChange: 'opacity, transform', zIndex: i === active ? 1 : 0 }}
@@ -178,10 +180,12 @@ const TESTIMONIALS = [
 
 function TestimonialCarousel() {
   const [active, setActive] = useState(0);
+  const prefersReducedMotion = useReducedMotion();
   useEffect(() => {
+    if (prefersReducedMotion) return;
     const id = setInterval(() => setActive(i => (i + 1) % TESTIMONIALS.length), 3800);
     return () => clearInterval(id);
-  }, []);
+  }, [prefersReducedMotion]);
   const t = TESTIMONIALS[active];
   return (
     <div className="max-w-2xl mx-auto">
@@ -189,9 +193,9 @@ function TestimonialCarousel() {
         <AnimatePresence mode="wait">
           <motion.div
             key={active}
-            initial={{ opacity: 0, y: 16, filter: 'blur(4px)' }}
-            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-            exit={{ opacity: 0, y: -16, filter: 'blur(4px)' }}
+            initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 16, filter: prefersReducedMotion ? undefined : 'blur(4px)' }}
+            animate={{ opacity: 1, y: 0, filter: prefersReducedMotion ? undefined : 'blur(0px)' }}
+            exit={{ opacity: 0, y: prefersReducedMotion ? 0 : -16, filter: prefersReducedMotion ? undefined : 'blur(4px)' }}
             transition={{ duration: 0.4, ease: 'easeOut' }}
             className="rounded-xl p-7 border border-border bg-surface shadow-[var(--shadow-xs)]"
           >
@@ -364,7 +368,7 @@ function TiltCard({ label, desc, glow, illustration, onClick, animDelay = 0 }: {
         style={{
           rotateX, rotateY,
           transformStyle: 'preserve-3d',
-          background: '#141E33',
+          background: 'var(--color-darkest)',
           boxShadow: '0 0 0 1px rgba(255,255,255,0.10), 0 16px 48px rgba(0,0,0,0.50)',
         }}
         whileHover={{ scale: 1.03 }}
@@ -376,11 +380,11 @@ function TiltCard({ label, desc, glow, illustration, onClick, animDelay = 0 }: {
         className="cursor-pointer relative group rounded-2xl border border-white/10 p-7 flex flex-col items-center text-center gap-4 select-none h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
       >
         {/* Top glow on hover */}
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-2xl"
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none rounded-2xl"
           style={{ background: `radial-gradient(ellipse at 50% -10%, ${glow}22 0%, transparent 65%)` }} />
 
         {/* Top edge line */}
-        <div className="absolute top-0 left-[18%] right-[18%] h-px opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        <div className="absolute top-0 left-[18%] right-[18%] h-px opacity-0 group-hover:opacity-100 transition-opacity duration-150"
           style={{ background: `linear-gradient(90deg, transparent, ${glow}, transparent)` }} />
 
         {/* Illustration */}
@@ -411,9 +415,9 @@ function TiltCard({ label, desc, glow, illustration, onClick, animDelay = 0 }: {
 /* ── Category metadata ────────────────────────────────────────────────── */
 const CATEGORIES: { label: Tab; desc: string; glow: string; illustration: React.ReactNode }[] = [
   { label: 'Hotels',    glow: 'var(--color-brand)',     illustration: <HotelScene />,   desc: 'Not 150 unfiltered options. AI-ranked picks by budget, area, and what you care about — applied before you see a single result.' },
-  { label: 'Food',      glow: 'var(--color-food)',      illustration: <FoodScene />,    desc: 'Worth the queue or skip it? Diet, vibe, and distance — filtered before you open another app.' },
-  { label: 'Itinerary', glow: 'var(--color-itinerary)', illustration: <ItinScene />,    desc: 'Your whole day, no backtracking. Stops sequenced around your hotel — so you\'re not zigzagging across the city like a tourist.' },
-  { label: 'Explore',   glow: 'var(--color-explore)',   illustration: <ExploreScene />, desc: 'Brihadeeswarar to Airavatesvara. Entry times, dress code, crowd patterns — so you don\'t figure it out after the 2km walk.' },
+  { label: 'Food',      glow: 'var(--color-brand)',      illustration: <FoodScene />,    desc: 'Worth the queue or skip it? Diet, vibe, and distance — filtered before you open another app.' },
+  { label: 'Itinerary', glow: 'var(--color-brand)', illustration: <ItinScene />,    desc: 'Your whole day, no backtracking. Stops sequenced around your hotel — so you\'re not zigzagging across the city like a tourist.' },
+  { label: 'Explore',   glow: 'var(--color-brand)',   illustration: <ExploreScene />, desc: 'Brihadeeswarar to Airavatesvara. Entry times, dress code, crowd patterns — so you don\'t figure it out after the 2km walk.' },
 ];
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -427,19 +431,23 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
   const [pendingTab, setPendingTab] = useState<Tab | null>(null);
   const [demoSearch, setDemoSearch] = useState('');
   const [cityNotice, setCityNotice] = useState<{ city: string; emoji: string } | null>(null);
+  const [cityInputError, setCityInputError] = useState<string | null>(null);
   const pendingDestRef = useRef<string>('');
+
+  const prefersReducedMotion = useReducedMotion();
 
   /* ── Single shared timer — drives both CityRotator (left) and
      HeroPhotoPanel (right) so they always show the same city ── */
   const [heroActive, setHeroActive] = useState(0);
   const [heroTab,   setHeroTab]   = useState<Tab>('Hotels');
   useEffect(() => {
+    if (prefersReducedMotion) return;
     const id = setInterval(
       () => setHeroActive(i => (i + 1) % HERO_DESTINATIONS.length),
       3800,
     );
     return () => clearInterval(id);
-  }, []);
+  }, [prefersReducedMotion]);
 
   const handleCategoryClick = (tab: Tab) => { onTabSelect(tab, demoSearch || undefined); };
 
@@ -456,9 +464,11 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
   const handleCtaClick = () => {
     const dest = demoSearch.trim();
     if (dest && !isThanjavurDest(dest)) {
+      setCityInputError(`Only Thanjavur is live right now — try searching "Thanjavur"`);
       onNonThanjavurCity?.(dest);
       return;
     }
+    setCityInputError(null);
     if (isLoggedIn) { onTabSelect(heroTab, dest || undefined); return; }
     pendingDestRef.current = dest;
     setPendingTab(null);
@@ -524,11 +534,11 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
               </div>
 
               {/* Headline — short + direct */}
-              <h1 className="text-4xl md:text-5xl font-display font-bold text-white leading-[1.1] tracking-tight">
+              <h1 className="text-4xl md:text-5xl font-display font-black text-white leading-[1.1] tracking-tight">
                 <span className="block">Find the best in</span>
                 <CityRotator city={HERO_DESTINATIONS[heroActive].city} />
               </h1>
-              <p className="text-base leading-snug" style={{ color: 'var(--color-on-dark-body)' }}>
+              <p className="text-base leading-relaxed" style={{ color: 'var(--color-on-dark-body)' }}>
                 AI-ranked results with the reason behind every pick — in 10 seconds.
               </p>
 
@@ -539,7 +549,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
                     key={tab}
                     type="button"
                     onClick={() => setHeroTab(tab)}
-                    className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                    className={`px-4 min-h-[44px] rounded-xl text-sm font-semibold transition-all duration-200 ${
                       heroTab === tab
                         ? 'bg-brand text-white'
                         : 'text-white/65 hover:text-white hover:bg-white/10'
@@ -560,17 +570,40 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
                     id="hero-search"
                     type="text"
                     value={demoSearch}
-                    onChange={e => setDemoSearch(e.target.value)}
+                    onChange={e => { setDemoSearch(e.target.value); if (cityInputError) setCityInputError(null); }}
+                    onBlur={() => {
+                      const v = demoSearch.trim();
+                      if (v && !isThanjavurDest(v)) setCityInputError(`Only Thanjavur is live right now — try "Thanjavur"`);
+                    }}
                     placeholder="City — try Thanjavur"
-                    className="w-full pl-11 pr-4 py-4 rounded-2xl text-base text-heading placeholder:text-muted outline-none transition-all duration-300 focus:ring-2 focus:ring-brand/30"
+                    aria-describedby={cityInputError ? 'city-error' : undefined}
+                    aria-invalid={!!cityInputError}
+                    className="w-full pl-11 pr-4 py-4 rounded-2xl text-base text-heading placeholder:text-muted outline-none transition-all duration-300 focus-visible:ring-2 focus-visible:ring-brand/30"
                     style={{
                       background: 'rgba(255,255,255,0.97)',
-                      border: '1.5px solid rgba(255,255,255,1)',
-                      boxShadow: '0 4px 24px rgba(0,0,0,0.18)',
+                      border: cityInputError ? '1.5px solid #F05252' : '1.5px solid rgba(255,255,255,1)',
+                      boxShadow: cityInputError ? '0 4px 24px rgba(240,82,82,0.18)' : '0 4px 24px rgba(0,0,0,0.18)',
                     }}
                     onKeyDown={e => e.key === 'Enter' && handleCtaClick()}
                   />
                 </div>
+                <AnimatePresence>
+                  {cityInputError && (
+                    <motion.p
+                      id="city-error"
+                      role="alert"
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      transition={{ duration: 0.18 }}
+                      className="flex items-center gap-1.5 text-xs font-medium"
+                      style={{ color: '#F05252' }}
+                    >
+                      <X className="w-3.5 h-3.5 shrink-0" />
+                      {cityInputError}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
                 <Button onClick={handleCtaClick} size="lg" className="w-full justify-center py-4 text-base">
                   Show me the best <ArrowRight className="w-4 h-4" />
                 </Button>
@@ -580,7 +613,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
               <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm" style={{ color: 'var(--color-on-dark-body)' }}>
                 <span className="flex items-center gap-1.5"><Star className="w-4 h-4 fill-warning-strong text-warning-strong shrink-0" />Live Google ratings</span>
                 <span className="flex items-center gap-1.5"><Zap className="w-4 h-4 text-brand-border shrink-0" />Under 10 seconds</span>
-                <span className="flex items-center gap-1.5"><span className="text-base leading-none shrink-0">🇮🇳</span>Built for India</span>
+                <span className="flex items-center gap-1.5"><span className="text-base leading-none shrink-0" aria-hidden="true">🇮🇳</span>Built for India</span>
               </div>
             </motion.div>
 
@@ -709,7 +742,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
               <Compass className="w-4 h-4 text-brand-border" />
               <span className="font-display font-bold text-white">TripAI</span>
               <span className="text-xs px-2 py-0.5 rounded-full ml-1" style={{ background: 'rgba(28,100,242,0.15)', color: 'var(--color-brand-light)', border: '1px solid rgba(28,100,242,0.25)' }}>
-                🇮🇳 India's AI travel ranker
+                <span aria-hidden="true">🇮🇳</span> India's AI travel ranker
               </span>
             </div>
             <p className="text-xs" style={{ color: 'var(--color-on-dark-muted)' }}>
@@ -719,8 +752,8 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
           {/* Bottom row — links + copyright */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
             <div className="flex items-center gap-5 text-xs" style={{ color: 'var(--color-on-dark-muted)' }}>
-              <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+              <a href="/privacy" className="hover:text-white transition-colors">Privacy Policy</a>
+              <a href="/terms" className="hover:text-white transition-colors">Terms of Service</a>
               <a href="https://x.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Twitter / X</a>
             </div>
             <p className="text-xs" style={{ color: 'var(--color-on-dark-muted)' }}>© 2026 TripAI · All rights reserved</p>
@@ -762,7 +795,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
               <button
                 onClick={() => setCityNotice(null)}
                 aria-label="Close"
-                className="absolute top-3 right-3 p-1 rounded-lg text-white/40 hover:text-white/80 transition-colors"
+                className="absolute top-3 right-3 p-2.5 rounded-lg text-white/40 hover:text-white/80 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
               >
                 <X className="w-4 h-4" />
               </button>

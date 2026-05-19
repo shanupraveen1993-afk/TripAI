@@ -12,14 +12,14 @@ interface CityLockScreenProps {
 export function CityLockScreen({ destination, onBack, onTryThanjavur }: CityLockScreenProps) {
   return (
     <div
-      className="w-full relative overflow-hidden flex flex-col items-center justify-center min-h-[92dvh] px-5 py-12"
+      className="w-full relative overflow-hidden flex flex-col items-center justify-center min-h-[calc(100dvh-57px)] px-5 py-12"
       style={{ background: 'linear-gradient(160deg,#06080F 0%,#0B0F1E 50%,#100816 100%)' }}
     >
       {/* Back button — min 44px touch target */}
       <button
         onClick={onBack}
         aria-label="Go back"
-        className="absolute top-4 left-4 flex items-center gap-1.5 px-3 min-h-[44px] rounded-lg text-xs font-semibold transition-colors z-20 active:opacity-70"
+        className="absolute top-4 left-4 flex items-center gap-1.5 px-3 min-h-[44px] rounded-lg text-xs font-semibold transition-colors z-20 motion-safe:active:opacity-70"
         style={{
           background: 'rgba(255,255,255,0.07)',
           border: '1px solid rgba(255,255,255,0.12)',
@@ -38,7 +38,7 @@ export function CityLockScreen({ destination, onBack, onTryThanjavur }: CityLock
       }} />
 
       {/* Scan line */}
-      <div className="cl-scan absolute left-0 right-0 h-[2px] pointer-events-none z-10" style={{
+      <div aria-hidden="true" className="absolute left-0 right-0 h-[2px] pointer-events-none z-10" style={{
         background: 'linear-gradient(90deg, transparent, rgba(28,100,242,0.5), transparent)',
       }} />
 
@@ -51,11 +51,11 @@ export function CityLockScreen({ destination, onBack, onTryThanjavur }: CityLock
       }} />
 
       {/* Concentric rings */}
-      <div className="cl-float relative flex items-center justify-center mb-8">
-        <div className="cl-ring3 absolute rounded-full" style={{ width: 200, height: 200, border: '1px solid rgba(28,100,242,0.20)' }} />
-        <div className="cl-ring2 absolute rounded-full" style={{ width: 148, height: 148, border: '1px solid rgba(28,100,242,0.30)' }} />
-        <div className="cl-ring  absolute rounded-full" style={{ width: 104, height: 104, border: '2px solid rgba(28,100,242,0.40)' }} />
-        <div className="absolute w-16 h-16 rounded-full" style={{ background: 'radial-gradient(circle, rgba(28,100,242,0.35), transparent 70%)', filter: 'blur(12px)' }} />
+      <div aria-hidden="true" className="cl-float relative flex items-center justify-center mb-8">
+        <div aria-hidden="true" className="cl-ring absolute rounded-full" style={{ width: 200, height: 200, border: '1px solid rgba(28,100,242,0.20)' }} />
+        <div aria-hidden="true" className="cl-ring absolute rounded-full" style={{ width: 148, height: 148, border: '1px solid rgba(28,100,242,0.30)' }} />
+        <div aria-hidden="true" className="cl-ring  absolute rounded-full" style={{ width: 104, height: 104, border: '2px solid rgba(28,100,242,0.40)' }} />
+        <div aria-hidden="true" className="absolute w-16 h-16 rounded-full" style={{ background: 'radial-gradient(circle, rgba(28,100,242,0.35), transparent 70%)', filter: 'blur(12px)' }} />
       </div>
 
       {/* Notice card */}
@@ -67,7 +67,7 @@ export function CityLockScreen({ destination, onBack, onTryThanjavur }: CityLock
           We're live in{' '}
           <span className="font-semibold" style={{ color: 'var(--color-warning)' }}>Thanjavur</span>{' '}
           — every hotel, restaurant, and landmark AI-ranked and ready.{' '}
-          <span className="font-medium" style={{ color: 'rgba(255,255,255,0.85)' }}>{destination}</span>{' '}
+          <span role="heading" aria-level={1} className="font-medium" style={{ color: 'rgba(255,255,255,0.85)' }}>{destination}</span>{' '}
           is on our roadmap. Try what's live now while we get there.
         </p>
       </div>
@@ -109,9 +109,9 @@ export function CityLockScreen({ destination, onBack, onTryThanjavur }: CityLock
         { top: '45%', left: '4%',  delay: '2s',   size: 2 },
         { top: '55%', left: '94%', delay: '1.2s', size: 2 },
       ].map((d, i) => (
-        <div key={i} className="absolute rounded-full pointer-events-none" style={{
+        <div key={i} aria-hidden="true" className="cl-dot absolute rounded-full pointer-events-none" style={{
           top: d.top, left: d.left, width: d.size, height: d.size,
-          background: 'var(--color-brand)', animation: `cl-dot 2.5s ease-in-out infinite ${d.delay}`,
+          background: 'var(--color-brand)',
         }} />
       ))}
     </div>

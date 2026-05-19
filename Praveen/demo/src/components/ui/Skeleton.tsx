@@ -8,17 +8,27 @@ function SkeletonBlock({ className = '' }: { className?: string }) {
 
 export function PlaceCardSkeleton() {
   return (
-    <div className="bg-surface border border-card-border rounded-xl px-3 pt-2.5 pb-5 space-y-4">
-      <SkeletonBlock className="h-40 w-full rounded-lg" />
-      <div className="space-y-2">
+    <div className="bg-surface border border-card-border rounded-xl overflow-hidden">
+      {/* Photo banner */}
+      <SkeletonBlock className="h-40 w-full rounded-none" />
+      {/* Info rows */}
+      <div className="px-5 py-5 space-y-2">
         <SkeletonBlock className="h-4 w-3/4" />
         <SkeletonBlock className="h-3 w-1/2" />
+        <div className="flex gap-2 pt-0.5">
+          <SkeletonBlock className="h-5 w-12 rounded-full" />
+          <SkeletonBlock className="h-5 w-16 rounded-full" />
+        </div>
       </div>
-      <div className="flex gap-2">
-        <SkeletonBlock className="h-5 w-12" />
-        <SkeletonBlock className="h-5 w-16" />
+      {/* CTA row */}
+      <div className="flex gap-2 px-3 py-2.5">
+        <SkeletonBlock className="h-9 w-16 rounded-lg" />
+        <SkeletonBlock className="h-9 flex-1 rounded-lg" />
       </div>
-      <SkeletonBlock className="h-16 w-full rounded-lg" />
+      {/* Detailed Analysis row */}
+      <div className="border-t border-border">
+        <SkeletonBlock className="h-9 w-full rounded-none" />
+      </div>
     </div>
   );
 }

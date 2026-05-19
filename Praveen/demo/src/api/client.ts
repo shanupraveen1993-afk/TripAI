@@ -121,7 +121,7 @@ export async function fetchItinerary(
   startPoint?: string,
 ): Promise<LiveItineraryStop[]> {
   const timeMap: Record<string, string> = { Morning: '07:00', Afternoon: '14:00', Evening: '17:00' };
-  const stopMap: Record<string, number> = { Morning: 5, Afternoon: 3, Evening: 2 };
+  const stopMap: Record<string, number> = { Morning: 10, Afternoon: 4, Evening: 2 };
   const startTime = timeMap[timeSlot] ?? '07:00';
   const stopCount = stopMap[timeSlot] ?? 5;
   const r = await fetchWithTimeout('/api/plan', {
@@ -143,36 +143,6 @@ export async function fetchExploreGuide(exploreTarget: string, timeSlot = 'Morni
   if (!r.ok) return null;
   const data = await r.json() as { exploreResult?: ExploreGuide };
   return data.exploreResult ?? null;
-}
-
-export interface FullDayStop extends LiveItineraryStop {
-  distanceKm?:  number;
-  drivingMins?: number;
-}
-
-export interface FullDayPlanOption {
-  planId:           'A' | 'B' | 'C';
-  name:             string;
-  theme:            string;
-  stopCount:        number;
-  totalKm:          number;
-  totalDistanceStr: string | null;
-  estimatedHrs:     string;
-  stops:            FullDayStop[];
-}
-
-export async function fetchFullDayPlans(
-  city: string,
-  travelMode: 'driving' | 'walking' | 'transit' = 'driving',
-): Promise<FullDayPlanOption[]> {
-  const r = await fetchWithTimeout('/api/plan', {
-    method:  'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body:    JSON.stringify({ tab: 'FullDayPlan', city, travelMode }),
-  });
-  if (!r.ok) throw new Error(`API error ${r.status}`);
-  const data = await r.json() as { plans: FullDayPlanOption[] };
-  return data.plans ?? [];
 }
 
 export interface CityTagsResult {

@@ -15,11 +15,11 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses: Record<Variant, string> = {
-  brand: 'bg-brand hover:bg-brand-strong text-white shadow-sm focus:ring-4 focus:ring-brand-soft',
-  ghost:   'bg-transparent hover:bg-bg-app text-body focus:ring-2 focus:ring-border-medium',
-  outline: 'bg-transparent border border-border hover:bg-bg-app text-heading focus:ring-2 focus:ring-border-medium',
-  danger:  'bg-danger hover:bg-danger-strong text-white shadow-sm focus:ring-4 focus:ring-danger-medium',
-  success: 'bg-success hover:bg-success-strong text-white shadow-sm focus:ring-4 focus:ring-success-medium',
+  brand: 'bg-brand hover:bg-brand-strong text-white shadow-sm focus-visible:ring-4 focus-visible:ring-brand-soft',
+  ghost:   'bg-transparent hover:bg-bg-app text-body focus-visible:ring-2 focus-visible:ring-brand-soft',
+  outline: 'bg-transparent border border-border hover:bg-bg-app text-heading focus-visible:ring-2 focus-visible:ring-brand-soft',
+  danger:  'bg-danger hover:bg-danger-strong text-white shadow-sm focus-visible:ring-4 focus-visible:ring-danger-medium',
+  success: 'bg-success hover:bg-success-strong text-white shadow-sm focus-visible:ring-4 focus-visible:ring-success-medium',
 };
 
 const sizeClasses: Record<Size, string> = {
@@ -47,7 +47,7 @@ export function Button({
     <button
       disabled={disabled || loading}
       className={[
-        'inline-flex items-center justify-center font-semibold uppercase tracking-[0.04em] transition-all duration-150',
+        'inline-flex items-center justify-center font-semibold transition-all duration-150',
         'outline-none motion-safe:active:scale-95',
         'disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100',
         pill ? 'rounded-full' : 'rounded-lg',
@@ -59,7 +59,7 @@ export function Button({
       {...props}
     >
       {loading ? (
-        <Loader2 className="w-4 h-4 animate-spin shrink-0" />
+        <Loader2 role="status" aria-label="Loading" className="w-4 h-4 animate-spin shrink-0" />
       ) : icon ? (
         <span className="shrink-0">{icon}</span>
       ) : null}
