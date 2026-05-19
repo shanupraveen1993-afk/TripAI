@@ -990,70 +990,52 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
 
       {/* ── Day progress strip ────────────────────────────────── */}
       <div className="mb-4 rounded-xl bg-surface border border-card-border shadow-sm overflow-hidden">
-        {/* Header */}
-        <div className="px-4 pt-3.5 pb-2.5 border-b border-border/60">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <Route className="w-3.5 h-3.5 text-brand" />
-              <span className="text-sm font-semibold text-heading">Day Plan</span>
-              <span className="text-xs text-muted font-medium">· {stops.length} places</span>
-            </div>
-            <div className="flex items-center gap-1 text-xs font-bold text-body">
-              <Clock className="w-3 h-3 text-muted" />
-              <span>{stops[0]?.time}</span>
-              <span className="text-muted">–</span>
-              <span>{stops[stops.length - 1]?.departBy ?? stops[stops.length - 1]?.time}</span>
-            </div>
+        {/* Single compact header row */}
+        <div className="px-4 py-2.5 border-b border-border/60 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <Route className="w-3.5 h-3.5 text-brand shrink-0" />
+            <span className="text-sm font-bold text-heading whitespace-nowrap">Day Plan</span>
+            <span className="text-xs text-muted whitespace-nowrap">· {stops.length} stops</span>
           </div>
-          {/* Context row: weather + crowd */}
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-border bg-bg-app">
-              <span className="text-sm leading-none">{wx.emoji}</span>
-              <span className="text-xs font-semibold text-body">{wx.temp}</span>
-              <span className="text-xs text-muted">{wx.label}</span>
-            </div>
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border"
-              style={{ background: crowdStyle.bg, borderColor: crowdStyle.dot + '40' }}>
-              <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: crowdStyle.dot }} />
-              <span className="text-xs font-semibold" style={{ color: crowdStyle.text }}>{worstCrowd} crowd</span>
-            </div>
+          <div className="flex items-center gap-2 shrink-0 text-xs">
+            <span>{wx.emoji} <span className="font-semibold text-body">{wx.temp}</span></span>
+            <span className="w-px h-3 bg-border" />
+            <span className="font-semibold" style={{ color: crowdStyle.text }}>{worstCrowd} crowd</span>
+            <span className="w-px h-3 bg-border" />
+            <span className="font-bold text-brand">{stops[0]?.time} – {stops[stops.length - 1]?.time}</span>
           </div>
         </div>
 
-        {/* Timeline row — scrollable */}
+        {/* Timeline — scrollable, number + time only */}
         <div className="overflow-x-auto no-scrollbar px-4 py-4">
-          <div className="flex items-start" style={{ minWidth: `${stops.length * 100 + 60}px` }}>
+          <div className="flex items-center" style={{ minWidth: `${stops.length * 56 + (stops.length - 1) * 52}px` }}>
             {stops.map((stop, idx) => {
               const isLast = idx === stops.length - 1;
               const travelMin = stop.travelToNext?.match(/\d+\s*min/)?.[0] ?? '';
               return (
                 <React.Fragment key={idx}>
-                  {/* Stop node */}
+                  {/* Stop node: circle + time */}
                   <button
                     type="button"
                     onClick={() => document.getElementById(`itin-stop-${idx}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-                    className="flex flex-col items-center gap-1 shrink-0 focus:outline-none group"
-                    style={{ width: 72 }}
+                    className="flex flex-col items-center gap-1.5 shrink-0 focus:outline-none group"
+                    style={{ width: 56 }}
                   >
                     <div
-                      className="w-9 h-9 rounded-full flex items-center justify-center font-black text-[15px] shadow ring-2 ring-white transition-transform group-hover:scale-110"
+                      className="w-10 h-10 rounded-full flex items-center justify-center font-black text-base shadow-sm ring-2 ring-white transition-transform group-hover:scale-110 group-active:scale-95"
                       style={{ background: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-active))', color: '#fff' }}
                     >
                       {idx + 1}
                     </div>
-                    <span className="text-xs font-bold text-heading text-center leading-tight w-full px-1"
-                      style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', minHeight: 26 }}>
-                      {stopShortName(stop.stop)}
-                    </span>
-                    <span className="text-xs font-medium text-muted whitespace-nowrap">{stop.time}</span>
+                    <span className="text-[10px] font-semibold text-muted whitespace-nowrap">{stop.time}</span>
                   </button>
 
-                  {/* Connector */}
+                  {/* Connector: line + travel time */}
                   {!isLast && (
-                    <div className="flex-1 flex flex-col items-center justify-center gap-1 mx-1" style={{ paddingTop: 10 }}>
+                    <div className="flex-1 flex flex-col items-center gap-1" style={{ minWidth: 52 }}>
                       {travelMin && (
-                        <span className="text-xs font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap"
-                          style={{ background: TRAFFIC_LINE_BG[stop.currentTraffic] + '22', color: TRAFFIC_LINE_BG[stop.currentTraffic] }}>
+                        <span className="text-[10px] font-bold whitespace-nowrap px-1.5 py-0.5 rounded-full"
+                          style={{ background: TRAFFIC_LINE_BG[stop.currentTraffic] + '20', color: TRAFFIC_LINE_BG[stop.currentTraffic] }}>
                           {travelMin}
                         </span>
                       )}
