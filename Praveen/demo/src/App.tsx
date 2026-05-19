@@ -196,13 +196,18 @@ export default function App() {
     }
   };
 
-  const handleLogout = () => {
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
+
+  const handleLogout = () => setLogoutConfirmOpen(true);
+
+  const confirmLogout = () => {
     try { localStorage.removeItem('tripai_user'); } catch {}
     setUser(null);
     setAppScreen('landing');
     setMainSection('home');
     setContent('dashboard');
     setInitialTab(undefined);
+    setLogoutConfirmOpen(false);
   };
 
   // ── Tab selection from landing page categories ──────────────────────────
@@ -877,6 +882,23 @@ export default function App() {
         )}
       </AnimatePresence>
       {activeTab === 'Itinerary' && <LocationDetectionToast phase={locationPhase} />}
+
+      {/* Logout confirmation */}
+      <Modal
+        open={logoutConfirmOpen}
+        onClose={() => setLogoutConfirmOpen(false)}
+        title="Sign out?"
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setLogoutConfirmOpen(false)}>Cancel</Button>
+            <Button variant="danger" onClick={confirmLogout}>Sign out</Button>
+          </>
+        }
+      >
+        <p className="text-sm text-muted leading-relaxed">
+          You'll be taken back to the home screen. Your saved trips are stored locally and will still be here when you sign back in.
+        </p>
+      </Modal>
     </div>
   );
 }

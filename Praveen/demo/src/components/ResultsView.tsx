@@ -4,7 +4,7 @@ import {
   ArrowLeft, Star, MapPin, Clock, Navigation, Share2, Compass,
   ChevronRight, ChevronDown, Sparkles, Info, RefreshCw, Bookmark, BookmarkCheck,
   Utensils, CheckCircle, AlertTriangle, RotateCcw, Hotel, Route,
-  ImageIcon, ExternalLink, Map, X, Lightbulb, DollarSign, Flame,
+  ImageIcon, ExternalLink, Map, X, Lightbulb, DollarSign, Flame, TrendingUp, ThumbsUp,
 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Badge } from './ui/Badge';
@@ -138,16 +138,17 @@ function PlacePhoto({ color, name, photoRef, autoLoad }: { color: string; name: 
   return (
     <div className={`w-full h-full ${color} flex items-center justify-center overflow-hidden relative`}>
       {loading && (
-        <span className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin absolute" />
+        <span role="status" aria-label="Loading photo" className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin absolute" />
       )}
-      <span className="text-2xl font-display font-black text-white/70 uppercase tracking-widest drop-shadow">
+      <span className="text-2xl font-black text-white/70 uppercase tracking-widest drop-shadow">
         {name.charAt(0)}
       </span>
       {photoRef && !autoLoad && (
         <button
           onClick={loadPhoto}
           disabled={loading}
-          className="absolute bottom-2 right-2 flex items-center gap-1 bg-white/80 hover:bg-white text-xs font-semibold px-2 py-1 rounded-lg shadow transition-all"
+          aria-label="Load photo"
+          className="absolute bottom-2 right-2 flex items-center gap-1 bg-white/80 hover:bg-white text-xs font-semibold px-2 py-1 rounded-lg shadow transition-all min-h-[44px]"
         >
           {loading
             ? <span className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
@@ -355,12 +356,12 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
         <a href={place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`}
           target="_blank" rel="noopener noreferrer"
           className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-brand text-white hover:bg-brand/90 transition-colors active:scale-[0.97] shadow-sm">
-          <ExternalLink className="w-3 h-3" />Book
+          <ExternalLink className="w-3.5 h-3.5" />Book
         </a>
         <a href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
           target="_blank" rel="noopener noreferrer"
           className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold border border-border text-muted hover:border-brand hover:text-brand transition-colors active:scale-[0.97]">
-          <Map className="w-3 h-3" />Map
+          <Map className="w-3.5 h-3.5" />Map
         </a>
       </>)}
       {tab === 'Food' && (
@@ -397,136 +398,168 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
     >
 
       {/* ══ MOBILE CARD LAYOUT (< sm) ══ */}
-      <div className="sm:hidden">
+      <div className="sm:hidden flex flex-col">
 
-        {/* Full-width banner photo with overlaid badges */}
-        <div className="relative w-full h-[160px] overflow-hidden">
-          <PlacePhoto
-            color={place.photoColor}
-            name={place.name}
-            photoRef={rank === 1 ? (place.photoRef ?? null) : null}
-            autoLoad={rank === 1}
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent pointer-events-none" />
-          {rank === 1 && (
-            <span className="absolute top-2.5 left-2.5 flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold text-white bg-accent/90">
-              <Sparkles className="w-2.5 h-2.5" />AI Top Pick
-            </span>
-          )}
-          {rank === 2 && (
-            <span className="absolute top-2.5 left-2.5 flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold text-white bg-success/90">
-              <DollarSign className="w-2.5 h-2.5" />Best Value
-            </span>
-          )}
-          {rank === 3 && (
-            <span className="absolute top-2.5 left-2.5 flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold text-white bg-food/90">
-              <Star className="w-2.5 h-2.5" />Highly Rated
-            </span>
-          )}
-          {rank === 4 && (
-            <span className="absolute top-2.5 left-2.5 flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold text-white bg-danger/90">
-              <Flame className="w-2.5 h-2.5" />Popular Pick
-            </span>
-          )}
-          <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1.5">
-            <span className="text-white text-sm font-black px-2 py-0.5 rounded-full shadow" style={{ background: ratingColor }}>{place.rating}</span>
-            <span className="text-white text-xs font-semibold drop-shadow">{ratingLabel}</span>
-          </div>
-          {distLabel && (
-            <span className="absolute bottom-2.5 right-2.5 text-white/90 text-xs font-medium drop-shadow">{distLabel}</span>
-          )}
-        </div>
+        {/* Row 1: Photo + Info — tap anywhere to expand */}
+        <div className="flex min-h-[110px] cursor-pointer" onClick={() => setExpanded(v => !v)}>
 
-        {/* Info */}
-        <div className="px-3 pt-2.5 pb-1 flex flex-col gap-1.5">
-          <h3 className="font-display font-bold text-lg text-heading leading-snug">{place.name}</h3>
-          <div className="flex items-center gap-1 flex-wrap">
-            <div className="flex gap-0.5">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} className={`w-3.5 h-3.5 ${i < Math.floor(place.rating) ? 'fill-warning-strong text-warning-strong' : i < place.rating ? 'fill-warning-medium text-warning-medium' : 'text-border'}`} />
-              ))}
+          {/* Col 1: Photo */}
+          <div className="w-[90px] shrink-0 relative">
+            <div className="absolute inset-0">
+              <PlacePhoto
+                color={place.photoColor}
+                name={place.name}
+                photoRef={place.photoRef ?? null}
+                autoLoad={rank === 1}
+              />
             </div>
-            <span className="text-xs text-muted ml-0.5">({place.reviewCount.toLocaleString()})</span>
-            {recentAvgMain !== null && (
-              <>
-                <span className="text-xs text-placeholder">·</span>
-                <span className="text-xs font-medium" style={{ color: trendColorMain }}>{recentAvgMain}★ recent</span>
-                <span className="text-xs text-placeholder">·</span>
-                <span className="text-xs font-medium" style={{ color: trendColorMain }}>{trendLabelMain}</span>
-              </>
-            )}
+            <button
+              onClick={(e) => { e.stopPropagation(); toggleBookmark(); }}
+              aria-label={bookmarked ? 'Remove from saved' : 'Save this place'}
+              className="absolute top-1.5 left-1.5 w-6 h-6 flex items-center justify-center rounded-full bg-black/50 z-10 active:scale-90 transition-transform"
+            >
+              {bookmarked
+                ? <BookmarkCheck className="w-3.5 h-3.5 text-white" />
+                : <Bookmark className="w-3.5 h-3.5 text-white" />
+              }
+            </button>
+            <span className={`absolute top-1.5 right-1.5 flex items-center gap-0.5 px-1 py-0.5 rounded-full text-xs font-semibold leading-none ${place.openNow ? 'bg-success/90 text-white' : 'bg-black/60 text-white/80'}`}>
+              <span className={`w-1 h-1 rounded-full shrink-0 ${place.openNow ? 'bg-white' : 'bg-white/60'}`} />
+              {place.openNow ? 'Open' : 'Closed'}
+            </span>
           </div>
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <Badge variant={place.openNow ? 'success' : 'danger'} dot pill>{place.openNow ? 'Open' : 'Closed'}</Badge>
-            <Badge variant="neutral" pill>{place.priceLevel}</Badge>
-            {selectedTags.length > 0 && place.matchScore !== undefined && (
-              <span className={`px-1.5 py-0.5 rounded-full text-xs font-semibold ${
-                place.matchScore >= 80 ? 'bg-success-soft text-success-strong'
-                  : place.matchScore >= 55 ? 'bg-brand-softer text-brand'
-                  : 'bg-bg-app text-muted'
-              }`}>
-                {place.matchScore}% match
-              </span>
-            )}
-          </div>
-          {(confirmed.length > 0 || unconfirmed.length > 0) && (
-            <div className="flex gap-1 flex-wrap">
-              {confirmed.slice(0, 2).map(t => (
-                <span key={t} className="flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs font-medium border bg-success-soft border-success-medium text-success-strong">
-                  <CheckCircle className="w-2.5 h-2.5" />{t}
+
+          {/* Col 2: Info */}
+          <div className="flex-1 min-w-0 px-2.5 py-2 flex flex-col gap-1">
+            <div className="flex items-baseline gap-1 flex-wrap">
+              <h3 className="font-display font-bold text-sm text-heading leading-snug line-clamp-1" title={place.name}>{place.name}</h3>
+              {selectedTags.length > 0 && place.matchScore !== undefined && (
+                <span className={`text-xs font-bold shrink-0 ${place.matchScore >= 80 ? 'text-success-strong' : place.matchScore >= 55 ? 'text-brand' : 'text-muted'}`}>
+                  {place.matchScore}% match
                 </span>
-              ))}
-              {unconfirmed.slice(0, 1).map(t => (
-                <span key={t} className="flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs font-medium border bg-bg-app border-border-medium text-muted">
-                  ~{t}
-                </span>
-              ))}
+              )}
             </div>
-          )}
-          {place.aiDetail?.whyOverOthers && (
-            <div className="flex items-start gap-1.5">
-              <Sparkles className="w-3 h-3 text-brand shrink-0 mt-0.5" />
-              <p className="text-xs text-brand font-medium leading-snug line-clamp-2">{highlightKeywords(place.aiDetail.whyOverOthers, reviewKeywords)}</p>
+            <div className="flex items-center gap-0.5">
+              <div className="flex gap-0.5">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star key={i} className={`w-3 h-3 ${i < Math.floor(place.rating) ? 'fill-warning-strong text-warning-strong' : i < place.rating ? 'fill-warning-medium text-warning-medium' : 'text-border'}`} />
+                ))}
+              </div>
+              <span className="text-xs text-muted ml-0.5">(<span className="tabular-nums">{place.reviewCount.toLocaleString()}</span>)</span>
             </div>
-          )}
-          {place.aiDetail?.insiderTip && (
-            <div className="flex items-start gap-1.5">
-              <Lightbulb className="w-3 h-3 shrink-0 mt-0.5 text-brand" />
-              <p className="text-xs leading-snug line-clamp-1 text-brand">{place.aiDetail.insiderTip}</p>
-            </div>
-          )}
+            {(confirmed.length > 0 || unconfirmed.length > 0) && (
+              <div className="flex gap-1 flex-wrap">
+                {confirmed.slice(0, 2).map((t, i) => (
+                  <span key={t} className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-medium border ${
+                    i === 0
+                      ? 'bg-success text-white border-success'
+                      : 'bg-success-soft border-success-medium text-success-strong'
+                  }`}>
+                    <CheckCircle className="w-2 h-2" />{t}
+                  </span>
+                ))}
+                {unconfirmed.slice(0, 1).map(t => (
+                  <span key={t} className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-medium border bg-bg-app border-border-medium text-muted">~{t}</span>
+                ))}
+              </div>
+            )}
+            {/* Latest Sentiment mini */}
+            {(() => {
+              function agoToDaysCo(ago: string): number {
+                const m = ago.match(/(\d+)\s+(day|week|month)/);
+                if (!m) return 0;
+                const n = parseInt(m[1], 10);
+                return m[2] === 'day' ? n : m[2] === 'week' ? n * 7 : n * 30;
+              }
+              const sorted2 = [...place.reviews].sort((a, b) => agoToDaysCo(a.ago) - agoToDaysCo(b.ago));
+              const last15 = sorted2.slice(0, 15);
+              if (last15.length === 0 && !place.trendReason) return null;
+              const posCount = last15.filter(r => r.stars >= 4).length;
+              const negCount = last15.filter(r => r.stars <= 2).length;
+              const isUp = place.trendVerdict === 'improving';
+              const isDown = place.trendVerdict === 'declining';
+              const verdict = isUp ? 'Guests Love It' : isDown ? 'Mixed Feedback' : 'Reliable Pick';
+              const sentimentMsg = place.trendReason
+                ? place.trendReason
+                : isUp
+                ? `${posCount} of last ${last15.length} reviews are 4★+`
+                : isDown
+                ? `${negCount} of last ${last15.length} flag concerns`
+                : `Recent visitors steady — no major shifts.`;
+              return (
+                <div className={`rounded-lg px-2 py-1.5 border ${isUp ? 'bg-success-soft border-success-medium/40' : isDown ? 'bg-warning-soft border-warning-medium/40' : 'bg-brand-softer border-brand-soft'}`}>
+                  <p className={`text-xs font-bold leading-none mb-0.5 ${isUp ? 'text-success-strong' : isDown ? 'text-food' : 'text-brand'}`}>{verdict}</p>
+                  <p className="text-xs leading-snug text-body">{sentimentMsg}</p>
+                </div>
+              );
+            })()}
+          </div>
         </div>
 
-        {/* CTA */}
-        <div className="flex gap-2 px-3 py-2.5">
-          <a href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
-            target="_blank" rel="noopener noreferrer"
-            className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg text-xs font-bold border border-border text-body active:scale-[0.97]">
-            <Map className="w-4 h-4 shrink-0" />Map
-          </a>
-          {tab === 'Hotels' && (
-            <a href={place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`}
-              target="_blank" rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-sm font-bold bg-brand text-white active:scale-[0.97] shadow-sm">
-              <ExternalLink className="w-4 h-4 shrink-0" />Book Now
-            </a>
-          )}
-          {tab === 'Food' && (
-            <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
-              target="_blank" rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-sm font-bold bg-success text-white active:scale-[0.97] shadow-sm">
-              <Navigation className="w-4 h-4 shrink-0" />Directions
-            </a>
-          )}
-        </div>
+        {/* Row 2: Full-width CTA buttons */}
+        {(() => {
+          const ctaLockedM = selectedTags.length === 0;
+          return (
+            <div className="border-t border-border">
+              {ctaLockedM ? (
+                <div className="flex flex-col gap-1.5 px-3 py-2">
+                  <div className="flex gap-2">
+                    {tab === 'Hotels' && (
+                      <button
+                        onClick={() => toast('Select a filter tag above to unlock Map & Booking', 'info')}
+                        className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold border border-border text-muted bg-bg-app active:scale-[0.97]"
+                      >
+                        <Map className="w-3.5 h-3.5 shrink-0" />Map
+                      </button>
+                    )}
+                    <button
+                      onClick={() => toast('Select a filter tag above to unlock Map & Booking', 'info')}
+                      className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold active:scale-[0.97] ${tab === 'Hotels' ? 'bg-brand/25 text-brand/70' : 'bg-success/25 text-success/70'}`}
+                    >
+                      {tab === 'Hotels' ? <><ExternalLink className="w-3.5 h-3.5 shrink-0" />Book Now</> : <><Navigation className="w-3.5 h-3.5 shrink-0" />Directions</>}
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-brand-softer border border-brand-soft/40">
+                    <Info className="w-3 h-3 text-brand shrink-0" />
+                    <p className="text-xs text-brand font-semibold">Select a tag or filter to unlock</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex gap-2 px-3 py-2">
+                  {tab === 'Hotels' && (
+                    <a href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
+                      target="_blank" rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold border border-border text-body active:scale-[0.97]">
+                      <Map className="w-3.5 h-3.5 shrink-0" />Map
+                    </a>
+                  )}
+                  {tab === 'Hotels' && (
+                    <a href={place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`}
+                      target="_blank" rel="noopener noreferrer"
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold bg-brand text-white active:scale-[0.97] shadow-sm">
+                      <ExternalLink className="w-3.5 h-3.5 shrink-0" />Book Now
+                    </a>
+                  )}
+                  {tab === 'Food' && (
+                    <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
+                      target="_blank" rel="noopener noreferrer"
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold bg-success text-white active:scale-[0.97] shadow-sm">
+                      <Navigation className="w-3.5 h-3.5 shrink-0" />Directions
+                    </a>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })()}
 
-        {/* Detailed Analysis toggle */}
+        {/* Row 3: Detailed Analysis toggle */}
         <div className="border-t border-border">
           <button onClick={() => setExpanded(v => !v)}
-            className="w-full flex items-center justify-center gap-1.5 py-2.5 text-xs font-semibold text-brand active:scale-[0.97]">
-            <Sparkles className="w-3.5 h-3.5 shrink-0" />
+            className="w-full flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-brand active:scale-[0.97] min-h-[44px]">
+            <Sparkles className="w-3 h-3 shrink-0" />
             Detailed Analysis
-            <ChevronDown className={`w-3.5 h-3.5 shrink-0 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`w-3 h-3 shrink-0 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
           </button>
         </div>
 
@@ -541,57 +574,44 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             <PlacePhoto
               color={place.photoColor}
               name={place.name}
-              photoRef={rank === 1 ? (place.photoRef ?? null) : null}
+              photoRef={place.photoRef ?? null}
               autoLoad={rank === 1}
             />
           </div>
-          {rank === 1 && <span className="absolute top-2 left-2 flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs font-semibold text-white bg-accent/90"><Sparkles className="w-2.5 h-2.5" />Top Pick</span>}
-          {rank === 2 && <span className="absolute top-2 left-2 flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs font-semibold text-white bg-success/90"><DollarSign className="w-2.5 h-2.5" />Best Value</span>}
-          {rank === 3 && <span className="absolute top-2 left-2 flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs font-semibold text-white bg-food/90"><Star className="w-2.5 h-2.5" />Highly Rated</span>}
-          {rank === 4 && <span className="absolute top-2 left-2 flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs font-semibold text-white bg-danger/90"><Flame className="w-2.5 h-2.5" />Popular</span>}
+          <button
+            onClick={toggleBookmark}
+            aria-label={bookmarked ? 'Remove from saved' : 'Save this place'}
+            className="absolute top-2 left-2 w-7 h-7 flex items-center justify-center rounded-full bg-black/50 z-10 hover:bg-black/70 active:scale-90 transition-all"
+          >
+            {bookmarked
+              ? <BookmarkCheck className="w-4 h-4 text-white" />
+              : <Bookmark className="w-4 h-4 text-white" />
+            }
+          </button>
+          {/* Open/Closed — top right */}
+          <span className={`absolute top-2 right-2 flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-semibold leading-none ${place.openNow ? 'bg-success/90 text-white' : 'bg-black/60 text-white/80'}`}>
+            <span className={`w-1 h-1 rounded-full shrink-0 ${place.openNow ? 'bg-white' : 'bg-white/60'}`} />
+            {place.openNow ? 'Open' : 'Closed'}
+          </span>
         </div>
 
         {/* Col 2: Info */}
         <div className="flex-1 min-w-0 px-2.5 py-2.5 flex flex-col gap-1.5">
-          {rank === 1 && (
-            <span className="flex items-center gap-1 text-xs font-semibold text-brand tracking-wide leading-none">
-              <Sparkles className="w-2.5 h-2.5" /> AI Top Pick
-            </span>
-          )}
-          <h3 className="font-display font-bold text-sm text-heading leading-snug line-clamp-2">{place.name}</h3>
-          <div className="flex items-center gap-1.5">
-            <div className="text-white text-sm font-black px-2.5 py-0.5 rounded-full" style={{ background: ratingColor }}>{place.rating}</div>
-            <span className="text-xs text-muted font-semibold">{ratingLabel}</span>
+          <div className="flex items-baseline gap-1.5 flex-wrap">
+            <h3 className="font-display font-bold text-sm text-heading leading-snug line-clamp-1" title={place.name}>{place.name}</h3>
+            {selectedTags.length > 0 && place.matchScore !== undefined && (
+              <span className={`text-xs font-bold shrink-0 ${place.matchScore >= 80 ? 'text-success-strong' : place.matchScore >= 55 ? 'text-brand' : 'text-muted'}`}>
+                {place.matchScore}% match
+              </span>
+            )}
           </div>
-          <div className="flex items-center gap-1 flex-wrap">
+          <div className="flex items-center gap-0.5">
             <div className="flex gap-0.5">
               {Array.from({ length: 5 }).map((_, i) => (
                 <Star key={i} className={`w-3 h-3 ${i < Math.floor(place.rating) ? 'fill-warning-strong text-warning-strong' : i < place.rating ? 'fill-warning-medium text-warning-medium' : 'text-border'}`} />
               ))}
             </div>
-            <span className="text-xs text-muted">({place.reviewCount.toLocaleString()})</span>
-            {recentAvgMain !== null && (
-              <>
-                <span className="text-xs text-placeholder">·</span>
-                <span className="text-xs font-medium" style={{ color: trendColorMain }}>{recentAvgMain}★ recent</span>
-                <span className="text-xs text-placeholder">·</span>
-                <span className="text-xs font-medium" style={{ color: trendColorMain }}>{trendLabelMain}</span>
-              </>
-            )}
-            {distLabel && <span className="text-xs text-muted shrink-0">· {distLabel}</span>}
-          </div>
-          <div className="flex items-center gap-1 flex-wrap">
-            <Badge variant={place.openNow ? 'success' : 'danger'} dot pill>{place.openNow ? 'Open' : 'Closed'}</Badge>
-            <Badge variant="neutral" pill>{place.priceLevel}</Badge>
-            {selectedTags.length > 0 && place.matchScore !== undefined && (
-              <span className={`px-1.5 py-0.5 rounded-full text-xs font-semibold ${
-                place.matchScore >= 80 ? 'bg-success-soft text-success-strong'
-                  : place.matchScore >= 55 ? 'bg-brand-softer text-brand'
-                  : 'bg-bg-app text-muted'
-              }`}>
-                {place.matchScore}% match
-              </span>
-            )}
+            <span className="text-xs text-muted ml-0.5">(<span className="tabular-nums">{place.reviewCount.toLocaleString()}</span>)</span>
           </div>
           {(confirmed.length > 0 || unconfirmed.length > 0) && (
             <div className="flex gap-1 flex-wrap">
@@ -607,40 +627,98 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               ))}
             </div>
           )}
+          {/* Latest Sentiment mini — inline in L1 card */}
+          {(() => {
+            function agoToDaysCo(ago: string): number {
+              const m = ago.match(/(\d+)\s+(day|week|month)/);
+              if (!m) return 0;
+              const n = parseInt(m[1], 10);
+              return m[2] === 'day' ? n : m[2] === 'week' ? n * 7 : n * 30;
+            }
+            const sorted2 = [...place.reviews].sort((a, b) => agoToDaysCo(a.ago) - agoToDaysCo(b.ago));
+            const last15 = sorted2.slice(0, 15);
+            if (last15.length === 0 && !place.trendReason) return null;
+            const posCount = last15.filter(r => r.stars >= 4).length;
+            const negCount = last15.filter(r => r.stars <= 2).length;
+            const isUp = place.trendVerdict === 'improving';
+            const isDown = place.trendVerdict === 'declining';
+            const verdict = isUp ? 'Guests Love It' : isDown ? 'Mixed Feedback' : 'Reliable Pick';
+            const sentimentMsg = place.trendReason
+              ? place.trendReason
+              : isUp
+              ? `${posCount} of last ${last15.length} reviews are 4★+ — guests consistently happy.`
+              : isDown
+              ? `${negCount} of last ${last15.length} reviews flag concerns — check before booking.`
+              : `Recent visitors are steady — no major shifts in guest experience.`;
+            return (
+              <div className={`rounded-lg px-2.5 py-2 border ${isUp ? 'bg-success-soft border-success-medium/40' : isDown ? 'bg-warning-soft border-warning-medium/40' : 'bg-brand-softer border-brand-soft'}`}>
+                <p className={`text-xs font-bold leading-none mb-1 ${isUp ? 'text-success-strong' : isDown ? 'text-food' : 'text-brand'}`}>{verdict}</p>
+                <p className="text-xs leading-snug text-body">{sentimentMsg}</p>
+              </div>
+            );
+          })()}
         </div>
 
         {/* Col 3: Buttons */}
-        <div className="w-[220px] shrink-0 flex flex-col items-stretch justify-between px-3 py-3">
-          <div className="flex flex-col gap-2">
-            <a href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
-              target="_blank" rel="noopener noreferrer"
-              className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold border border-border text-body hover:border-brand hover:text-brand transition-colors active:scale-[0.97]">
-              <Map className="w-3.5 h-3.5 shrink-0" />Map
-            </a>
-            {tab === 'Hotels' && (
-              <a href={place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`}
-                target="_blank" rel="noopener noreferrer"
-                className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold bg-brand text-white hover:bg-brand/90 transition-colors active:scale-[0.97] shadow-sm">
-                <ExternalLink className="w-3.5 h-3.5 shrink-0" />Book
-              </a>
-            )}
-            {tab === 'Food' && (
-              <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
-                target="_blank" rel="noopener noreferrer"
-                className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold bg-success text-white hover:bg-success-strong transition-colors active:scale-[0.97] shadow-sm">
-                <Navigation className="w-3.5 h-3.5 shrink-0" />Directions
-              </a>
-            )}
-          </div>
-          <button
-            onClick={() => setExpanded(v => !v)}
-            className="flex items-center justify-center gap-1 py-1.5 text-xs font-semibold text-brand hover:text-brand/70 transition-colors active:scale-[0.97]"
-          >
-            <Sparkles className="w-3 h-3 shrink-0" />
-            Detailed Analysis
-            <ChevronDown className={`w-3 h-3 shrink-0 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
-          </button>
-        </div>
+        {(() => {
+          const ctaLocked = selectedTags.length === 0;
+          return (
+            <div className="w-[220px] shrink-0 flex flex-col items-stretch justify-between px-3 py-3">
+              <div className="flex flex-col gap-2">
+                {ctaLocked ? (
+                  <div className="flex flex-col gap-1.5">
+                    <button
+                      onClick={() => toast('Select a filter tag above to unlock Map & Booking', 'info')}
+                      className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold border border-border text-muted bg-bg-app active:scale-[0.97]"
+                    >
+                      <Map className="w-3.5 h-3.5 shrink-0" />Map
+                    </button>
+                    <button
+                      onClick={() => toast('Select a filter tag above to unlock Map & Booking', 'info')}
+                      className={`flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold active:scale-[0.97] ${tab === 'Hotels' ? 'bg-brand/25 text-brand/70' : 'bg-success/25 text-success/70'}`}
+                    >
+                      {tab === 'Hotels' ? <><ExternalLink className="w-3.5 h-3.5 shrink-0" />Book</> : <><Navigation className="w-3.5 h-3.5 shrink-0" />Directions</>}
+                    </button>
+                    <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-brand-softer border border-brand-soft/40">
+                      <Info className="w-2.5 h-2.5 text-brand shrink-0" />
+                      <p className="text-xs text-brand font-semibold leading-snug">Select a tag to unlock</p>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <a href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
+                      target="_blank" rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold border border-border text-body hover:border-brand hover:text-brand transition-colors active:scale-[0.97]">
+                      <Map className="w-3.5 h-3.5 shrink-0" />Map
+                    </a>
+                    {tab === 'Hotels' && (
+                      <a href={place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`}
+                        target="_blank" rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold bg-brand text-white hover:bg-brand/90 transition-colors active:scale-[0.97] shadow-sm">
+                        <ExternalLink className="w-3.5 h-3.5 shrink-0" />Book
+                      </a>
+                    )}
+                    {tab === 'Food' && (
+                      <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
+                        target="_blank" rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold bg-success text-white hover:bg-success-strong transition-colors active:scale-[0.97] shadow-sm">
+                        <Navigation className="w-3.5 h-3.5 shrink-0" />Directions
+                      </a>
+                    )}
+                  </>
+                )}
+              </div>
+              <button
+                onClick={() => setExpanded(v => !v)}
+                className="flex items-center justify-center gap-1 py-1.5 text-xs font-semibold text-brand hover:text-brand/70 transition-colors active:scale-[0.97]"
+              >
+                <Sparkles className="w-3 h-3 shrink-0" />
+                Detailed Analysis
+                <ChevronDown className={`w-3 h-3 shrink-0 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
+              </button>
+            </div>
+          );
+        })()}
 
       </div>
 
@@ -654,131 +732,179 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             transition={{ duration: 0.22, ease: 'easeInOut' }}
             className="overflow-hidden"
           >
-            <div className="border-t border-border p-3 space-y-2.5">
+            <div className="border-t border-border divide-y divide-border">
 
-              {/* ── 1. Top insight ── */}
-              {place.aiDetail?.whyOverOthers && (
-                <p className="text-xs text-body leading-relaxed">
-                  {highlightKeywords(place.aiDetail.whyOverOthers, reviewKeywords)}
-                </p>
-              )}
-
-              {/* ── 2. Be Cautious + Best For cards ── */}
-              <div className="grid grid-cols-2 gap-2">
-                <div className="rounded-lg p-3 flex flex-col gap-1.5 border"
-                  style={{ background: 'var(--color-warning-soft, #fffbeb)', borderColor: 'var(--color-warning-medium, #fcd34d)' }}>
-                  <span className="text-xs font-semibold uppercase tracking-wide flex items-center gap-1 text-amber-700">
-                    <Info className="w-2.5 h-2.5" />Good to Know
-                  </span>
-                  <p className="text-xs text-body leading-relaxed">
-                    {(place as any).cautionNote || place.aiDetail?.caveat || 'Most visitors had a smooth experience here.'}
-                  </p>
-                </div>
-
-                <div className="rounded-lg p-3 flex flex-col gap-1.5 border"
-                  style={{ background: 'var(--color-brand-softer)', border: '1px solid var(--color-food-border)' }}>
-                  <span className="text-xs font-semibold uppercase tracking-wide flex items-center gap-1 text-brand">
-                    <CheckCircle className="w-2.5 h-2.5" />Best For
-                  </span>
-                  <p className="text-xs text-body leading-relaxed">
-                    {place.aiDetail?.bestFor || '—'}
-                  </p>
-                </div>
-              </div>
-
-              {/* ── 3. Recent pulse — consistency + rating trend ── */}
-              {(() => {
-                const ratings = place.recentRatings ?? [];
-                const recentAvg = ratings.length > 0
-                  ? +(ratings.reduce((s: number, r: number) => s + r, 0) / ratings.length).toFixed(1)
-                  : null;
-                const trendColor =
-                  place.trendVerdict === 'improving' ? 'var(--color-success-strong)'
-                  : place.trendVerdict === 'declining' ? 'var(--color-food-dark)'
-                  : 'var(--color-muted)';
-                const trendLabel =
-                  place.trendVerdict === 'improving' ? 'Rising recently'
-                  : place.trendVerdict === 'declining' ? 'Slipping recently'
-                  : 'Consistent lately';
-                const bullets: string[] = (place as any).recentSentiment ?? [];
-                if (recentAvg === null && bullets.length === 0) return null;
-                return (
-                  <div className="rounded-lg border border-border bg-bg-app overflow-hidden divide-y divide-border">
-                    {recentAvg !== null && (
-                      <div className="flex items-center gap-2 px-3 py-2">
-                        <span className="text-sm font-bold" style={{ color: trendColor }}>{recentAvg}★</span>
-                        <span className="text-xs text-muted">recent avg</span>
-                        <span className="text-xs text-placeholder">·</span>
-                        <span className="text-xs text-muted">{place.rating}★ all-time</span>
-                        <span className="ml-auto text-xs font-medium" style={{ color: trendColor }}>{trendLabel}</span>
+              {/* ── CARD 1: Why This Fits ── */}
+              {!!(place.aiDetail?.dataPoints?.length || place.reviewCount) && (
+                <div className="px-3 py-3 bg-brand-softer">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-6 h-6 rounded-lg bg-brand-soft flex items-center justify-center shrink-0">
+                      <CheckCircle className="w-3.5 h-3.5 text-brand" />
+                    </div>
+                    <span className="text-xs font-bold uppercase tracking-wide text-brand">Why This Fits</span>
+                  </div>
+                  <div className="flex flex-col gap-1.5 mb-2">
+                    {(() => {
+                      const pct = place.rating > 0 ? Math.round(((place.rating - 1) / 4) * 100) : null;
+                      return pct !== null ? (
+                        <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-white border border-brand-medium/40">
+                          <ThumbsUp className="w-3.5 h-3.5 text-brand shrink-0" />
+                          <span className="text-xs font-semibold text-heading">
+                            {pct}% of guests rated 4★ or higher
+                          </span>
+                        </div>
+                      ) : null;
+                    })()}
+                    {place.aiDetail?.dataPoints?.[0] && (
+                      <div className="flex items-start gap-2 px-2.5 py-1.5 rounded-lg bg-white border border-brand-medium/40">
+                        <Sparkles className="w-3.5 h-3.5 text-brand shrink-0 mt-0.5" />
+                        <span className="text-xs font-semibold text-heading leading-snug">{place.aiDetail.dataPoints[0]}</span>
                       </div>
                     )}
-                    {bullets.map((b: string, i: number) => (
-                      <div key={i} className="flex items-start gap-2 px-3 py-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-brand shrink-0 mt-1.5" />
-                        <span className="text-xs text-body leading-snug">{b}</span>
-                      </div>
-                    ))}
                   </div>
-                );
-              })()}
+                  {(() => {
+                    const stopWords = new Set(['the','a','an','is','it','was','were','are','for','to','of','in','at','on','and','or','but','with','from','very','good','great','nice','this','that','we','our','my','me','had','has','have','been','be','by','as','so','no','not','all','one','here','there','when','which','who','what','how','more','also','well','just','than','about','up','out','they','their','hotel','room','rooms','stay','place','i']);
+                    const wordCount: Record<string, number> = {};
+                    place.reviews.filter(r => r.stars >= 4).forEach(r => {
+                      r.text.toLowerCase().replace(/[^a-z\s]/g, '').split(/\s+/)
+                        .filter(w => w.length >= 4 && !stopWords.has(w))
+                        .forEach(w => { wordCount[w] = (wordCount[w] || 0) + 1; });
+                    });
+                    const topKws = Object.entries(wordCount).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([w]) => w.charAt(0).toUpperCase() + w.slice(1));
+                    if (topKws.length < 3) return null;
+                    return (
+                      <div className="flex flex-wrap gap-1">
+                        {topKws.map(kw => (
+                          <span key={kw} className="text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-soft text-brand border border-brand-medium/40">{kw}</span>
+                        ))}
+                      </div>
+                    );
+                  })()}
+                </div>
+              )}
 
-              {/* ── 4. Reviews — last 5 months, recent first, highlighted ── */}
+              {/* ── CARD 3: What to Be Aware Of ── */}
+              {(place.aiDetail?.caveat || (place as any).cautionNote) && (
+                <div className="px-3 py-3 bg-warning-soft">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <div className="w-6 h-6 rounded-lg bg-warning-soft flex items-center justify-center shrink-0">
+                      <AlertTriangle className="w-3.5 h-3.5 text-food" />
+                    </div>
+                    <span className="text-xs font-bold uppercase tracking-wide text-food">What to Be Aware Of</span>
+                  </div>
+                  <p className="text-xs text-body leading-relaxed">
+                    {place.aiDetail?.caveat || (place as any).cautionNote}
+                  </p>
+                </div>
+              )}
+
+              {/* ── CARD 4: What Guests Say (tag-matched, highlighted) ── */}
               {(() => {
                 function agoToDays(ago: string): number {
                   const m = ago.match(/(\d+)\s+(day|week|month)/);
                   if (!m) return 0;
                   const n = parseInt(m[1], 10);
-                  if (m[2] === 'day')   return n;
-                  if (m[2] === 'week')  return n * 7;
-                  if (m[2] === 'month') return n * 30;
-                  return 0;
+                  return m[2] === 'day' ? n : m[2] === 'week' ? n * 7 : n * 30;
                 }
-                const recentReviews = place.reviews
-                  .filter(r => r.stars >= 3 && agoToDays(r.ago) <= 150)
-                  .sort((a, b) => agoToDays(a.ago) - agoToDays(b.ago))
-                  .slice(0, 3);
-                if (recentReviews.length === 0) return null;
+                const kws = [...reviewKeywords, ...(place.matchedKeyword ? [place.matchedKeyword] : [])];
+                const candidates = place.reviews
+                  .map(r => ({
+                    r,
+                    days: agoToDays(r.ago),
+                    hits: kws.filter(k => r.text.toLowerCase().includes(k.toLowerCase())).length,
+                  }))
+                  .filter(x => x.r.stars >= 4)
+                  .sort((a, b) => b.hits - a.hits || a.days - b.days);
+
+                // Review 1: best keyword match (any age), 4★+
+                const review1 = candidates[0] ?? null;
+
+                // Review 2: recent (15–60 days) with keyword hit preferred; never pick a zero-hit fallback if a hit exists
+                const others        = candidates.filter(x => x.r !== review1?.r);
+                const withHits      = others.filter(x => x.hits > 0);
+                const recentHit     = withHits.filter(x => x.days >= 15 && x.days <= 150);
+                const anyHit        = withHits;
+                const recentNoHit   = others.filter(x => x.days >= 15 && x.days <= 150);
+                const review2 = (recentHit[0] ?? anyHit[0] ?? recentNoHit[0] ?? others[0]) ?? null;
+
+                const scored = [review1, review2].filter(Boolean) as typeof candidates;
+                if (scored.length === 0) return null;
                 return (
-                  <div className="bg-bg-app border border-border rounded-lg overflow-hidden divide-y divide-border">
-                    {recentReviews.map((r, i) => (
-                      <div key={i} className="px-3 py-2.5 space-y-1">
-                        <div className="flex items-center gap-2">
-                          <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-xs font-black text-white"
-                            style={{ background: AVATAR_COLORS[i % AVATAR_COLORS.length] }}>
-                            {r.author.charAt(0)}
-                          </div>
-                          <span className="text-xs font-semibold text-heading">{r.author}</span>
-                          <span className="text-xs text-muted">· {r.location}</span>
-                          <div className="ml-auto flex items-center gap-1.5 shrink-0">
-                            <div className="flex gap-0.5">
-                              {Array.from({ length: 5 }).map((_, j) => (
-                                <Star key={j} className={`w-2.5 h-2.5 ${j < r.stars ? 'fill-warning-strong text-warning-strong' : 'text-border'}`} />
-                              ))}
-                            </div>
-                            {r.stars === 5 && <span className="text-xs font-medium text-success-strong bg-success-soft px-1.5 py-0.5 rounded-full border border-success-medium/30">✓ Loved it</span>}
-                            {r.stars === 4 && <span className="text-xs font-medium text-warning-strong bg-warning-soft px-1.5 py-0.5 rounded-full border border-warning-medium/40">✓ Liked it</span>}
-                          </div>
-                        </div>
-                        <p className="text-xs text-body leading-relaxed italic line-clamp-3">
-                          "{highlightKeywords(r.text, [...(r.highlight ? [r.highlight] : []), ...reviewKeywords, ...(place.matchedKeyword ? [place.matchedKeyword] : [])])}"
-                        </p>
-                        <p className="text-xs text-muted">{r.ago} · via Google</p>
+                  <div className="px-3 py-3">
+                    <div className="flex items-center justify-between mb-2.5">
+                      <div className="flex items-center gap-1.5">
+                        <Star className="w-3.5 h-3.5 fill-warning-strong text-warning-strong" />
+                        <span className="text-sm font-bold text-heading">{place.rating}★</span>
+                        <span className="text-xs text-muted">(<span className="tabular-nums">{place.reviewCount.toLocaleString()}</span>)</span>
                       </div>
-                    ))}
+                      {place.googleMapsUri && (
+                        <a href={place.googleMapsUri} target="_blank" rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-xs font-bold text-brand flex items-center gap-1 hover:underline">
+                          <ExternalLink className="w-3.5 h-3.5 shrink-0" />Explore all reviews
+                        </a>
+                      )}
+                    </div>
+                    <div className="space-y-2.5">
+                      {scored.map(({ r }, i) => (
+                        <div key={i} className="bg-surface border border-card-border rounded-lg p-2.5 space-y-1.5">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs font-black text-white"
+                              style={{ background: AVATAR_COLORS[i % AVATAR_COLORS.length] }}>
+                              {r.author.charAt(0)}
+                            </div>
+                            <span className="text-xs font-semibold text-heading">{r.author}</span>
+                            <span className="text-xs text-muted">· {r.location}</span>
+                            <div className="ml-auto flex items-center gap-1 shrink-0">
+                              <div className="flex gap-0.5">
+                                {Array.from({ length: 5 }).map((_, j) => (
+                                  <Star key={j} className={`w-2.5 h-2.5 ${j < r.stars ? 'fill-warning-strong text-warning-strong' : 'text-border'}`} />
+                                ))}
+                              </div>
+                              {r.stars === 5 && <span className="text-xs font-semibold text-success-strong bg-success-soft px-1.5 py-0.5 rounded-full border border-success-medium/30">✓ Loved it</span>}
+                              {r.stars === 4 && <span className="text-xs font-semibold text-warning-strong bg-warning-soft px-1.5 py-0.5 rounded-full border border-warning-medium/40">✓ Liked it</span>}
+                            </div>
+                          </div>
+                          <p className="text-xs text-body leading-relaxed line-clamp-3">
+                            "{highlightKeywords(r.text, [...(r.highlight ? [r.highlight] : []), ...kws])}"
+                          </p>
+                          <p className="text-xs text-muted">{r.ago} · via Google</p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 );
               })()}
 
-              {/* All reviews link */}
-              {place.googleMapsUri && (
-                <div className="flex justify-end">
-                  <a href={place.googleMapsUri} target="_blank" rel="noopener noreferrer"
-                    className="text-xs text-muted hover:text-brand transition-colors flex items-center gap-1 font-medium">
-                    All {place.reviewCount.toLocaleString()} reviews <ExternalLink className="w-3 h-3 shrink-0" />
-                  </a>
+              {/* ── CARD 5: Insider Tip (if available) ── */}
+              {place.aiDetail?.insiderTip && (
+                <div className="px-3 py-3 bg-itinerary-soft">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-6 h-6 rounded-lg bg-itinerary/15 flex items-center justify-center shrink-0">
+                      <Lightbulb className="w-3.5 h-3.5 text-itinerary" />
+                    </div>
+                    <span className="text-xs font-bold uppercase tracking-wide text-itinerary">Insider Tip</span>
+                  </div>
+                  <p className="text-xs text-body leading-relaxed">{place.aiDetail.insiderTip}</p>
                 </div>
               )}
+
+              {/* ── Share + Save ── */}
+              <div className="px-3 py-3 border-t border-border flex gap-2">
+                <button
+                  onClick={share}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-muted border border-border rounded-lg hover:border-brand hover:text-brand transition-colors active:scale-[0.97]"
+                >
+                  <Share2 className="w-3.5 h-3.5" />Share
+                </button>
+                <button
+                  onClick={toggleBookmark}
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold rounded-lg border transition-colors active:scale-[0.97] ${bookmarked ? 'bg-brand-softer border-brand-soft text-brand' : 'border-border text-muted hover:border-brand hover:text-brand'}`}
+                >
+                  {bookmarked ? <BookmarkCheck className="w-3.5 h-3.5" /> : <Bookmark className="w-3.5 h-3.5" />}
+                  {bookmarked ? 'Saved' : 'Save'}
+                </button>
+              </div>
 
             </div>
           </motion.div>
@@ -789,7 +915,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
   );
 
   // suppress unused-var warnings for state vars no longer used in JSX
-  void cardCollapsed; void setCardCollapsed; void showNearby; void setShowNearby; void openAiRow; void setOpenAiRow; void bookmarked; void share; void actionButtons; void showAnalysis; void setShowAnalysis;
+  void cardCollapsed; void setCardCollapsed; void showNearby; void setShowNearby; void openAiRow; void setOpenAiRow; void actionButtons; void showAnalysis; void setShowAnalysis;
 }
 
 /* ── Trophy icon (not in lucide default set, use inline) ─────────────── */
@@ -821,13 +947,13 @@ function stopShortName(name: string): string {
 }
 
 /* ── Travel mode parser ──────────────────────────────────────────────── */
-function getTravelMode(leg: string): { emoji: string; bg: string; color: string } {
+function getTravelMode(leg: string): { emoji: React.ReactNode; bg: string; color: string } {
   const l = leg.toLowerCase();
-  if (l.includes('walk'))  return { emoji: '🚶', bg: 'var(--color-success-soft)',  color: 'var(--color-success)' };
-  if (l.includes('metro')) return { emoji: '🚇', bg: 'var(--color-brand-softer)',  color: 'var(--color-brand)' };
-  if (l.includes('bus'))   return { emoji: '🚌', bg: 'var(--color-brand-softer)',  color: 'var(--color-brand)' };
-  if (l.includes('auto'))  return { emoji: '🛺', bg: 'var(--color-brand-softer)',  color: 'var(--color-brand)' };
-  return                          { emoji: '🚗', bg: 'var(--color-brand-softer)',  color: 'var(--color-brand)' };
+  if (l.includes('walk'))  return { emoji: <><span aria-hidden="true">🚶</span><span className="sr-only">Walk</span></>, bg: 'var(--color-success-soft)',  color: 'var(--color-success)' };
+  if (l.includes('metro')) return { emoji: <><span aria-hidden="true">🚇</span><span className="sr-only">Metro</span></>, bg: 'var(--color-brand-softer)',  color: 'var(--color-brand)' };
+  if (l.includes('bus'))   return { emoji: <><span aria-hidden="true">🚌</span><span className="sr-only">Bus</span></>, bg: 'var(--color-brand-softer)',  color: 'var(--color-brand)' };
+  if (l.includes('auto'))  return { emoji: <><span aria-hidden="true">🛺</span><span className="sr-only">Auto</span></>, bg: 'var(--color-brand-softer)',  color: 'var(--color-brand)' };
+  return                          { emoji: <><span aria-hidden="true">🚗</span><span className="sr-only">Car</span></>, bg: 'var(--color-brand-softer)',  color: 'var(--color-brand)' };
 }
 
 function ItineraryView({ stops, onRegenerate, onExploreStop }: {
@@ -869,7 +995,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
             <div className="flex items-center gap-2">
               <Route className="w-3.5 h-3.5 text-brand" />
               <span className="text-sm font-semibold text-heading">Day Plan</span>
-              <span className="text-xs text-muted font-medium">· {stops.length} stops</span>
+              <span className="text-xs text-muted font-medium">· {stops.length} places</span>
             </div>
             <div className="flex items-center gap-1 text-xs font-bold text-body">
               <Clock className="w-3 h-3 text-muted" />
@@ -976,7 +1102,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                       </span>
                       {stop.duration && (
                         <span className="bg-black/55 backdrop-blur-sm text-white/80 text-xs font-semibold px-2 py-0.5 rounded-full leading-none">
-                          ⏱ {stop.duration}
+                          <span aria-hidden="true">⏱</span> {stop.duration}
                         </span>
                       )}
                     </div>
@@ -1014,7 +1140,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                     <div className="flex flex-wrap gap-1.5">
                       {stop.entryFee && (
                         <span className="inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full bg-success-soft text-success border border-success-medium/30">
-                          🎟 {stop.entryFee}
+                          <span aria-hidden="true">🎟</span> {stop.entryFee}
                         </span>
                       )}
                       {stop.highlights?.map(h => (
@@ -1071,17 +1197,17 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                           </span>
                           <div className="flex flex-col gap-1.5 text-xs text-body">
                             <div className="flex items-center gap-1.5">
-                              <span className="text-muted">🕐</span>
+                              <span aria-hidden="true" className="text-muted">🕐</span>
                               <span className="font-semibold">{stop.time}</span>
                               {stop.departBy && <span className="text-muted">→ {stop.departBy}</span>}
                             </div>
                             <div className="flex items-center gap-1.5">
-                              <span className="text-muted">⏱</span>
+                              <span aria-hidden="true" className="text-muted">⏱</span>
                               <span className="font-semibold">{stop.duration ?? '1–2 hrs'}</span>
                             </div>
                             {stop.entryFee && (
                               <div className="flex items-center gap-1.5">
-                                <span className="text-muted">🎟</span>
+                                <span aria-hidden="true" className="text-muted">🎟</span>
                                 <span className="font-semibold">{stop.entryFee}</span>
                               </div>
                             )}
@@ -1122,7 +1248,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                           (stop as any).reviews ?? [];
                         const timeKws = TIME_REVIEW_KEYWORDS['Morning'] ?? [];
                         const displayed = stopReviews
-                          .filter(r => r.stars >= 3 && r.text)
+                          .filter(r => r.stars >= 4 && r.text)
                           .sort((a, b) => scoreReviewForTime(b.text, 'Morning') - scoreReviewForTime(a.text, 'Morning'))
                           .slice(0, 2);
                         if (!displayed.length) return null;
@@ -1148,7 +1274,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                         <div className="flex items-start gap-2 p-2.5 rounded-lg border border-border bg-surface">
                           <Navigation className="w-3.5 h-3.5 text-muted shrink-0 mt-0.5" />
                           <div className="flex-1 min-w-0">
-                            <span className="text-xs font-bold text-body">Next stop: </span>
+                            <span className="text-xs font-bold text-body">Next place: </span>
                             <span className="text-xs text-muted">{stop.travelToNext}</span>
                             {stop.departBy && (
                               <span className="text-xs font-bold ml-1 text-brand">· leave by {stop.departBy}</span>
@@ -1185,7 +1311,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                 <div className="flex items-center gap-3 py-2 px-1">
                   <div className="flex flex-col items-center w-8 shrink-0">
                     <div className="w-px h-3 bg-border" />
-                    <div className="w-8 h-8 rounded-full bg-success/15 border-2 border-success flex items-center justify-center text-sm">🏁</div>
+                    <div className="w-8 h-8 rounded-full bg-success/15 border-2 border-success flex items-center justify-center text-sm"><span aria-hidden="true">🏁</span></div>
                   </div>
                   <span className="text-xs font-bold text-muted">Day complete · {stop.departBy ?? stop.time}</span>
                 </div>
@@ -1199,9 +1325,11 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
   );
 }
 
+const EXPLORE_TABS = ['Overview', 'Plan', 'Reviews'] as const;
+type ExploreTab = typeof EXPLORE_TABS[number];
+
 function ExploreView({ place, visitTime = 'Morning' }: { place: ExploreResult; visitTime?: string }) {
-  const [expanded, setExpanded] = useState(false);
-  // Sort reviews — most time-slot-relevant first
+  const [activeTab, setActiveTab] = useState<ExploreTab>('Overview');
   const sortedReviews = [...place.reviews].sort(
     (a, b) => scoreReviewForTime(b.text, visitTime) - scoreReviewForTime(a.text, visitTime)
   );
@@ -1226,7 +1354,7 @@ function ExploreView({ place, visitTime = 'Morning' }: { place: ExploreResult; v
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
 
       {/* ── Hero photo ──────────────────────────────────────── */}
-      <div className={`${place.photoColor} rounded-2xl h-64 relative overflow-hidden`}>
+      <div className={`${place.photoColor} rounded-2xl h-56 relative overflow-hidden`}>
         {photoUri && (
           <img src={photoUri} alt={`${place.name}, Thanjavur`} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
         )}
@@ -1255,105 +1383,145 @@ function ExploreView({ place, visitTime = 'Morning' }: { place: ExploreResult; v
         </div>
       </div>
 
-      {/* ── AI Insight (full width) ──────────────────────────── */}
-      <div className="rounded-lg p-3.5 border bg-brand-softer border-brand-medium">
-        <div className="flex items-center gap-1.5 mb-2">
-          <Sparkles className="w-3.5 h-3.5 text-brand" />
-          <span className="text-xs font-semibold text-brand">AI Insight</span>
-        </div>
-        <p className="text-xs text-body leading-relaxed">"{place.insight}"</p>
+      {/* ── Tab bar ─────────────────────────────────────────── */}
+      <div className="flex gap-1 bg-bg-app rounded-xl p-1 border border-border" role="tablist">
+        {EXPLORE_TABS.map(t => (
+          <button
+            key={t}
+            role="tab"
+            aria-selected={activeTab === t}
+            onClick={() => setActiveTab(t)}
+            className={`flex-1 py-2 text-xs font-bold rounded-lg transition-colors ${
+              activeTab === t
+                ? 'bg-explore text-white shadow-sm'
+                : 'text-muted hover:text-heading hover:bg-border/30'
+            }`}
+          >
+            {t}
+          </button>
+        ))}
       </div>
 
-      {/* ── Best Time row ────────────────────────────────────── */}
-      {(place as any).bestTime && (
-        <div className="flex items-start gap-2 p-2.5 rounded-lg border bg-explore-soft border-explore-medium">
-          <Clock className="w-3.5 h-3.5 shrink-0 mt-0.5 text-success-strong" />
-          <div>
-            <span className="text-xs font-bold text-success-strong block mb-0.5">Best Time to Visit</span>
-            <p className="text-xs leading-snug text-body">{(place as any).bestTime}</p>
-          </div>
-        </div>
-      )}
+      {/* ── Tab panels ──────────────────────────────────────── */}
+      <AnimatePresence mode="wait">
 
-      {/* ── 2-card: Visit Guide + How to Prepare ────────────── */}
-      <div className="grid grid-cols-2 gap-2">
-        <div className="rounded-lg p-3 flex flex-col gap-2 border bg-success-soft border-success-medium/50">
-          <span className="text-xs font-semibold text-success-strong flex items-center gap-1">
-            <Navigation className="w-3 h-3" /> Visit Guide
-          </span>
-          <p className="text-xs text-body leading-relaxed whitespace-pre-line">{place.flow}</p>
-        </div>
-        <div className="rounded-lg p-3 flex flex-col gap-2 border bg-warning-soft border-warning-medium">
-          <span className="text-xs font-semibold flex items-center gap-1 text-food-dark">
-            <Info className="w-3 h-3" /> Good to Know
-          </span>
-          <p className="text-xs leading-relaxed text-food-dark">{place.preparation}</p>
-        </div>
-      </div>
+        {activeTab === 'Overview' && (
+          <motion.div key="overview" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.15 }} className="space-y-3">
 
-      {/* ── Avoid These ──────────────────────────────────────── */}
-      {(place as any).avoidNote && (
-        <div className="flex items-start gap-2 p-3 rounded-lg border bg-danger-soft border-danger-medium/50">
-          <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-danger-strong" />
-          <div>
-            <span className="text-xs font-bold block mb-0.5 text-danger-strong">Avoid These</span>
-            <p className="text-xs leading-snug text-danger">{(place as any).avoidNote}</p>
-          </div>
-        </div>
-      )}
+            {/* AI Insight */}
+            <div className="rounded-lg p-3.5 border bg-brand-softer border-brand-medium">
+              <div className="flex items-center gap-1.5 mb-2">
+                <Sparkles className="w-3.5 h-3.5 text-brand" />
+                <span className="text-xs font-semibold text-brand">AI Insight</span>
+              </div>
+              <p className="text-xs text-body leading-relaxed">"{place.insight}"</p>
+            </div>
 
-      {/* ── Tags ────────────────────────────────────────────── */}
-      {place.tags.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
-          {place.tags.map(t => (
-            <span key={t} className="text-xs font-semibold bg-bg-app text-muted px-2.5 py-1 rounded-full border border-border">
-              {t}
-            </span>
-          ))}
-        </div>
-      )}
+            {/* Stat pills */}
+            <div className="grid grid-cols-2 gap-2">
+              <div className="rounded-lg border border-border bg-surface p-3 flex flex-col gap-1">
+                <span className="text-xs text-muted font-medium">Google Rating</span>
+                <div className="flex items-center gap-1">
+                  <Star className="w-3.5 h-3.5 fill-warning-strong text-warning-strong" />
+                  <span className="text-base font-black text-heading">{place.rating}</span>
+                </div>
+              </div>
+              <div className="rounded-lg border border-border bg-surface p-3 flex flex-col gap-1">
+                <span className="text-xs text-muted font-medium">Hours</span>
+                <span className="text-xs font-bold text-heading leading-snug">{place.openingHours}</span>
+              </div>
+            </div>
 
-      {/* ── Reviews — most time-relevant first ─────────────── */}
-      {sortedReviews.length > 0 && (
-        <div className="border border-border rounded-lg overflow-hidden">
-          <div className="flex items-center gap-2 px-3 pt-2.5 pb-2 border-b border-border bg-bg-app">
-            <Star className="w-3 h-3 fill-warning-strong text-warning-strong" />
-            <span className="text-xs font-semibold text-heading">What visitors say</span>
-            <span className="ml-auto text-xs font-semibold text-brand bg-brand-softer px-2 py-0.5 rounded-full">{visitTime}</span>
-          </div>
-          <div className="p-3">
-            <ReviewCard review={sortedReviews[0]} idx={0} keywords={timeKeywords} />
-          </div>
-          {sortedReviews.length > 1 && (
-            <>
-              <button
-                onClick={() => setExpanded(!expanded)}
-                className="w-full flex items-center justify-between px-3 py-2 border-t border-border text-xs font-bold text-brand hover:bg-brand-softer transition-colors"
-              >
-                <span>{expanded ? 'Hide reviews' : `See ${sortedReviews.length - 1} more review${sortedReviews.length > 2 ? 's' : ''}`}</span>
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
-              </button>
-              <AnimatePresence>
-                {expanded && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.22, ease: 'easeInOut' }}
-                    className="overflow-hidden"
-                  >
-                    <div className="px-3 pb-3 space-y-2 pt-2">
-                      {sortedReviews.slice(1).map((r, i) => (
-                        <ReviewCard key={i} review={r} idx={i + 1} keywords={timeKeywords} />
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </>
-          )}
-        </div>
-      )}
+            {/* Tags */}
+            {place.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1.5">
+                {place.tags.map(t => (
+                  <span key={t} className="text-xs font-semibold bg-explore-soft text-explore px-2.5 py-1 rounded-full border border-explore-medium/40">
+                    {t}
+                  </span>
+                ))}
+              </div>
+            )}
+
+          </motion.div>
+        )}
+
+        {activeTab === 'Plan' && (
+          <motion.div key="plan" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.15 }} className="space-y-3">
+
+            {/* Best Time */}
+            {(place as any).bestTime && (
+              <div className="flex items-start gap-3 p-3 rounded-lg border bg-explore-soft border-explore-medium/40">
+                <div className="w-7 h-7 rounded-lg bg-explore/15 flex items-center justify-center shrink-0">
+                  <Clock className="w-3.5 h-3.5 text-explore" />
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-explore block mb-0.5">Best Time to Visit</span>
+                  <p className="text-xs leading-snug text-body">{(place as any).bestTime}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Visit Guide */}
+            <div className="rounded-lg border border-success-medium/50 bg-success-soft p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-6 h-6 rounded-md bg-success/15 flex items-center justify-center shrink-0">
+                  <Navigation className="w-3 h-3 text-success-strong" />
+                </div>
+                <span className="text-xs font-bold text-success-strong">Visit Guide</span>
+              </div>
+              <p className="text-xs text-body leading-relaxed whitespace-pre-line">{place.flow}</p>
+            </div>
+
+            {/* Good to Know */}
+            <div className="rounded-lg border border-warning-medium bg-warning-soft p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-6 h-6 rounded-md bg-warning/15 flex items-center justify-center shrink-0">
+                  <Info className="w-3 h-3 text-food-dark" />
+                </div>
+                <span className="text-xs font-bold text-food-dark">Good to Know</span>
+              </div>
+              <p className="text-xs text-food-dark leading-relaxed">{place.preparation}</p>
+            </div>
+
+            {/* Avoid These */}
+            {(place as any).avoidNote && (
+              <div className="flex items-start gap-3 p-3 rounded-lg border bg-danger-soft border-danger-medium/50">
+                <div className="w-7 h-7 rounded-lg bg-danger/15 flex items-center justify-center shrink-0">
+                  <AlertTriangle className="w-3.5 h-3.5 text-danger-strong" />
+                </div>
+                <div>
+                  <span className="text-xs font-bold block mb-0.5 text-danger-strong">Avoid These</span>
+                  <p className="text-xs leading-snug text-danger">{(place as any).avoidNote}</p>
+                </div>
+              </div>
+            )}
+
+          </motion.div>
+        )}
+
+        {activeTab === 'Reviews' && (
+          <motion.div key="reviews" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.15 }} className="space-y-2">
+
+            {sortedReviews.length === 0 ? (
+              <p className="text-xs text-muted text-center py-6">No reviews available yet.</p>
+            ) : (
+              <>
+                <div className="flex items-center gap-2 mb-1">
+                  <Star className="w-3 h-3 fill-warning-strong text-warning-strong" />
+                  <span className="text-xs font-semibold text-heading">What visitors say</span>
+                  <span className="ml-auto text-xs font-semibold text-explore bg-explore-soft px-2 py-0.5 rounded-full border border-explore-medium/40">{visitTime}</span>
+                </div>
+                {sortedReviews.map((r, i) => (
+                  <ReviewCard key={i} review={r} idx={i} keywords={timeKeywords} />
+                ))}
+              </>
+            )}
+
+          </motion.div>
+        )}
+
+      </AnimatePresence>
 
     </motion.div>
   );
@@ -1406,7 +1574,7 @@ export function ResultsView({
           <span className="text-sm font-semibold text-muted group-hover:text-heading transition-colors">Back</span>
         </button>
         <span className="shrink-0 text-xs font-bold text-brand bg-brand-softer border border-brand-soft/30 px-3 py-1.5 rounded-full">
-          {destination} · {tab === 'Explore' ? 'AI guide' : `${count ?? 0} result${(count ?? 0) !== 1 ? 's' : ''}`}
+          {destination} · {tab === 'Explore' ? 'AI guide' : tab === 'Itinerary' ? `${count ?? 0} place${(count ?? 0) !== 1 ? 's' : ''}` : `${count ?? 0} result${(count ?? 0) !== 1 ? 's' : ''}`}
         </span>
       </div>
 
@@ -1414,7 +1582,7 @@ export function ResultsView({
       {/* Pure Veg active indicator — shown when filter is on */}
       {tab === 'Food' && pureVegFilter && (
         <div className="flex items-center gap-2 px-3 py-2 rounded-lg mb-3 bg-explore-soft border border-explore">
-          <span className="text-sm leading-none">🟢</span>
+          <span role="img" aria-label="Active" className="text-sm leading-none">🟢</span>
           <span className="text-xs font-bold text-brand">Pure Veg — non-veg places are dimmed</span>
         </div>
       )}
@@ -1441,7 +1609,7 @@ export function ResultsView({
         </div>
       )}
 
-      {/* Demo mode banner — API failed but we're showing sample fallback data */}
+      {/* Demo mode banner — Hotels/Food API failed, showing sample fallback */}
       {(tab === 'Hotels' || tab === 'Food') && apiError && (results?.length ?? 0) > 0 && (
         <motion.div
           initial={{ opacity: 0, y: -8 }}
@@ -1456,6 +1624,21 @@ export function ResultsView({
         </motion.div>
       )}
 
+      {/* Demo mode banner — Itinerary AI failed, showing sample fallback */}
+      {tab === 'Itinerary' && apiError && (itinerary?.length ?? 0) > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-3 px-4 py-3 rounded-lg bg-warning-soft border border-warning-medium/40 mb-4"
+        >
+          <AlertTriangle className="w-4 h-4 text-warning-strong shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-bold text-warning-strong">Sample itinerary — AI planner unavailable</p>
+            <p className="text-xs text-muted mt-0.5 leading-relaxed">Showing a curated Thanjavur day plan. Configure your API key to generate a personalised live itinerary.</p>
+          </div>
+        </motion.div>
+      )}
+
       {/* Empty state — no results from working API (filters too strict) */}
       {(tab === 'Hotels' || tab === 'Food') && !apiError && (results?.length ?? 0) === 0 && !isLoadingMore && (
         <motion.div
@@ -1464,17 +1647,17 @@ export function ResultsView({
           className="flex flex-col items-center text-center py-16 px-6 gap-5 mb-5"
         >
           <div className="w-14 h-14 rounded-2xl flex items-center justify-center border bg-bg-app border-border">
-            <Info className="w-6 h-6 text-muted" />
+            <Info className="w-8 h-8 text-muted" />
           </div>
           <div className="space-y-1.5 max-w-xs">
-            <p className="font-display font-semibold text-sm text-heading">No results match your filters</p>
+            <p className="font-semibold text-sm text-heading">No results match your filters</p>
             <p className="text-xs text-muted leading-relaxed">
               No places in Thanjavur matched all your selected filters. Try removing the price range, rating, or diet restriction.
             </p>
           </div>
           <button
             onClick={onBack}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg border-2 border-brand text-brand text-sm font-bold hover:bg-brand hover:text-white transition-all"
+            className="flex items-center gap-2 px-4 py-2.5 bg-brand hover:bg-brand-strong text-white text-sm font-semibold rounded-lg transition-colors duration-150"
           >
             <ArrowLeft className="w-4 h-4" /> Adjust filters
           </button>
@@ -1548,7 +1731,41 @@ export function ResultsView({
         ))}
         {tab === 'Itinerary' && itinerary && <ItineraryView stops={itinerary} onRegenerate={onRegenerate} onExploreStop={onExploreStop} />}
         {tab === 'Explore' && explore && <ExploreView place={explore} visitTime={visitTime} />}
+        {tab === 'Explore' && !explore && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col items-center text-center py-16 px-6 gap-5"
+          >
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center border bg-explore-soft border-explore-medium/40">
+              <Compass className="w-7 h-7 text-explore" />
+            </div>
+            <div className="space-y-1.5 max-w-xs">
+              <p className="font-display font-semibold text-sm text-heading">Guide unavailable</p>
+              <p className="text-xs text-muted leading-relaxed">
+                Could not load the explore guide for this location. Try selecting a different spot or check back shortly.
+              </p>
+            </div>
+            <button
+              onClick={onBack}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg border-2 border-explore text-explore text-sm font-bold hover:bg-explore hover:text-white transition-all"
+            >
+              <ArrowLeft className="w-4 h-4" /> Pick another spot
+            </button>
+          </motion.div>
+        )}
       </div>
+
+      {/* End-of-results marker */}
+      {(tab === 'Hotels' || tab === 'Food') && (results?.length ?? 0) > 0 && (
+        <div className="flex items-center gap-3 py-3 mb-4">
+          <div className="flex-1 h-px bg-border" />
+          <span className="text-xs text-muted shrink-0">
+            Showing all {results!.length} result{results!.length !== 1 ? 's' : ''} for {destination}
+          </span>
+          <div className="flex-1 h-px bg-border" />
+        </div>
+      )}
 
       {/* Actions */}
       <div className="flex gap-3">

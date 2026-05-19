@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import {
   Search, ChevronDown, ChevronRight, Sparkles, MapPin, Navigation, X,
-  Hotel, Utensils, Route, Compass, Flame, Clock,
+  Hotel, Utensils, Route, Compass, Flame, Clock, AlertTriangle,
 } from 'lucide-react';
 import { fetchCityTags, fetchAutocomplete, AutocompleteSuggestion, CityTagsResult } from '../api/client';
 import { Tab } from './ui/Tabs';
@@ -63,7 +63,7 @@ const TAB_META: Record<Tab, {
     accentSoft:  'rgba(124,58,237,0.08)',
     label:       'Itinerary',
     headline:    'Day planned',
-    sub:         'Stops · traffic · optimised',
+    sub:         'Places · traffic · optimised',
     trending:    ['Big Temple morning', 'Full day heritage', 'Family outing', 'Couple getaway', '1-day plan', 'Photography walk'],
   },
   Explore: {
@@ -383,6 +383,8 @@ function LocationBar({ value, onChange, placeholder, autoDetect, mockResolvedLoc
 
       <input
         type="text"
+        inputMode="search"
+        autoComplete="off"
         value={detecting ? '' : value}
         onChange={e => !detecting && onChange(e.target.value)}
         placeholder={
@@ -391,7 +393,7 @@ function LocationBar({ value, onChange, placeholder, autoDetect, mockResolvedLoc
           : placeholder
         }
         readOnly={detecting}
-        className={`w-full pl-9 pr-28 py-2 border rounded-lg text-xs focus:outline-none transition-all duration-300 ${
+        className={`w-full pl-9 pr-28 py-2.5 border rounded-lg text-xs focus:outline-none transition-all duration-300 ${
           phase === 'locating'
             ? 'border-brand bg-brand-softer text-brand italic'
             : 'border-border focus:ring-2 focus:ring-brand-soft focus:border-brand'
@@ -405,6 +407,7 @@ function LocationBar({ value, onChange, placeholder, autoDetect, mockResolvedLoc
         disabled={detecting}
         className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center justify-center gap-1 text-xs font-bold px-2 py-1 rounded-md transition-all duration-200 disabled:pointer-events-none"
         style={{ background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }}
+        aria-label="Use current location"
         title="Use current location"
       >
         {phase === 'locating' && <span className="w-3.5 h-3.5 border-[1.5px] border-current border-t-transparent rounded-full animate-spin" />}
@@ -416,7 +419,7 @@ function LocationBar({ value, onChange, placeholder, autoDetect, mockResolvedLoc
       </button>
 
       {!detecting && value && (
-        <button type="button" onClick={() => onChange('')} className="absolute right-28 top-1/2 -translate-y-1/2 text-muted hover:text-heading">
+        <button type="button" onClick={() => onChange('')} aria-label="Clear location" className="absolute right-28 top-1/2 -translate-y-1/2 text-muted hover:text-heading">
           <X className="w-3.5 h-3.5" />
         </button>
       )}
@@ -428,27 +431,35 @@ function LocationBar({ value, onChange, placeholder, autoDetect, mockResolvedLoc
 function CategorySelector({ active, onChange }: { active: Tab; onChange: (t: Tab) => void }) {
   return (
     <div
-      className="rounded-lg p-1 flex gap-1 bg-brand"
+      role="tablist"
+      className="rounded-lg p-1 flex gap-1 bg-bg-app"
       style={{ boxShadow: 'var(--shadow-m)' }}
     >
       {TABS.map(tab => {
         const meta = TAB_META[tab];
         const isActive = active === tab;
+        const activeClass =
+          tab === 'Hotels'    ? 'bg-brand text-white shadow-[var(--shadow-xs)]' :
+          tab === 'Food'      ? 'bg-food text-white shadow-[var(--shadow-xs)]' :
+          tab === 'Itinerary' ? 'bg-itinerary text-white shadow-[var(--shadow-xs)]' :
+                                'bg-explore text-white shadow-[var(--shadow-xs)]';
         return (
           <motion.button
             key={tab}
             type="button"
+            role="tab"
+            aria-selected={isActive}
             onClick={() => onChange(tab)}
             className={[
               'flex-1 flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg transition-all duration-200',
-              isActive ? 'bg-white shadow-[var(--shadow-xs)]' : 'bg-transparent',
+              isActive ? activeClass : 'bg-transparent text-muted hover:text-heading hover:bg-border/30',
             ].join(' ')}
             whileTap={{ scale: 0.96 }}
           >
-            <span className={`flex items-center ${isActive ? 'text-brand' : 'text-white/90'}`}>
+            <span className="flex items-center">
               {meta.icon}
             </span>
-            <span className={`text-xs font-semibold transition-colors duration-200 ${isActive ? 'text-brand' : 'text-white/90'}`}>
+            <span className="text-[10px] font-bold uppercase tracking-wide transition-colors duration-200">
               {meta.label}
             </span>
           </motion.button>
@@ -503,6 +514,7 @@ interface DashboardProps {
 }
 
 export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loading, recentSearches = [], onDestinationSelect, onTabChange, userName = '', onBentoAction }: DashboardProps) {
+  const prefersReducedMotion = useReducedMotion();
   const [activeTab, setActiveTab]           = useState<Tab>(initialTab);
   // Hotels
   const [priceFilter, setPriceFilter]       = useState('Any');
@@ -580,10 +592,14 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
   }, []);
 
   // Dynamic city-specific tags loaded from /api/tags
-  const [hotelTagData, setHotelTagData] = useState<CityTagsResult>({ tags: [] });
-  const [foodTagData,  setFoodTagData]  = useState<CityTagsResult>({ tags: [] });
-  const [tagsLoading,  setTagsLoading]  = useState(false);
-
+  const HOTEL_TAG_FALLBACK: CityTagsResult = {
+    tags: ['Near Big Temple', 'City Centre', 'Near Railway Station', 'Quiet & Peaceful', 'Free Parking', 'Good Amenities', 'Good WiFi', 'Spacious Rooms', 'Swimming Pool', 'In-House Restaurant', 'Budget Stay', 'Premium Stay', 'Highly Rated', 'Heritage Stay', 'Breakfast Included'],
+    segments: {
+      'Location':  ['Near Big Temple', 'City Centre', 'Near Railway Station', 'Quiet & Peaceful', 'Free Parking'],
+      'Rooms':     ['Good Amenities', 'Good WiFi', 'Spacious Rooms', 'Swimming Pool', 'In-House Restaurant'],
+      'Stay Type': ['Budget Stay', 'Premium Stay', 'Highly Rated', 'Heritage Stay', 'Breakfast Included'],
+    },
+  };
   const FOOD_TAG_FALLBACK: CityTagsResult = {
     tags: [
       'South Indian', 'Biryani', 'Chettinad', 'North Indian', 'Mess & Meals',
@@ -596,6 +612,9 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       'Preference':   ['Fresh & Hot', 'Budget Friendly', 'Authentic', 'Lunch Spot', 'Dinner Special'],
     },
   };
+  const [hotelTagData, setHotelTagData] = useState<CityTagsResult>(HOTEL_TAG_FALLBACK);
+  const [foodTagData,  setFoodTagData]  = useState<CityTagsResult>(FOOD_TAG_FALLBACK);
+  const [tagsLoading,  setTagsLoading]  = useState(false);
 
   useEffect(() => {
     if (!destination) return;
@@ -610,14 +629,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       setHotelTagData(ht);
       setFoodTagData(ft.segments ? ft : FOOD_TAG_FALLBACK);
     }).catch(() => {
-      setHotelTagData({
-        tags: ['Near Big Temple', 'City Centre', 'Near Railway Station', 'Quiet & Peaceful', 'Free Parking', 'Good Amenities', 'Good WiFi', 'Spacious Rooms', 'Swimming Pool', 'In-House Restaurant', 'Budget Stay', 'Premium Stay', 'Highly Rated', 'Heritage Stay', 'Breakfast Included'],
-        segments: {
-          'Location':  ['Near Big Temple', 'City Centre', 'Near Railway Station', 'Quiet & Peaceful', 'Free Parking'],
-          'Rooms':     ['Good Amenities', 'Good WiFi', 'Spacious Rooms', 'Swimming Pool', 'In-House Restaurant'],
-          'Stay Type': ['Budget Stay', 'Premium Stay', 'Highly Rated', 'Heritage Stay', 'Breakfast Included'],
-        },
-      });
+      setHotelTagData(HOTEL_TAG_FALLBACK);
       setFoodTagData(FOOD_TAG_FALLBACK);
     }).finally(() => setTagsLoading(false));
   }, [destination]);
@@ -664,6 +676,13 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
 
   const [showExploreError, setShowExploreError] = useState(false);
 
+  // Search is allowed when the user has typed something OR selected a tag
+  const canSearch =
+    activeTab === 'Itinerary' ||
+    activeTab === 'Explore' ||
+    (activeTab === 'Hotels' && (hotelTags.length > 0 || hotelTag.trim() !== '' || searchQuery.trim() !== '')) ||
+    (activeTab === 'Food'   && (foodTags.length  > 0 || foodTag.trim()  !== '' || searchQuery.trim() !== ''));
+
   const handleSearch = () => {
     if (activeTab === 'Itinerary' && !startTime) {
       setShowTimeError(true);
@@ -673,6 +692,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       setShowExploreError(true);
       return;
     }
+    if (!canSearch) return;
     setShowTimeError(false);
     setShowExploreError(false);
     onSearch(buildFilters());
@@ -699,7 +719,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-semibold text-heading">
                     What matters to you?
-                    {tagsLoading && <span className="ml-1.5 inline-block w-2.5 h-2.5 border border-muted border-t-transparent rounded-full animate-spin align-middle" />}
+                    {tagsLoading && <span role="status" aria-label="Loading tags" className="ml-1.5 inline-block w-2.5 h-2.5 border border-muted border-t-transparent rounded-full animate-spin align-middle" />}
                   </label>
                   {hotelTags.length > 0 && (
                     <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-brand-softer text-brand">
@@ -755,12 +775,12 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                                 setTimeout(() => setLocationToast(''), 3000);
                               }
                             }}
-                            className={`px-3 py-2 rounded-lg border-2 text-xs font-medium transition-all ${
+                            className={`px-3 py-1.5 rounded-full border text-xs font-medium transition-all ${
                               isSelected
                                 ? 'border-brand bg-brand-softer text-brand'
                                 : isMaxed
                                   ? 'border-border bg-bg-app text-border-medium cursor-not-allowed'
-                                  : 'border-border bg-white text-muted'
+                                  : 'border-border bg-white text-body'
                             }`}
                           >
                             {tag}
@@ -786,13 +806,13 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                               : prev.length >= 2 ? [...prev.slice(1), tag]
                               : [...prev, tag]
                           )}
-                          className="px-3 py-2 rounded-lg border-2 text-xs font-medium transition-all"
+                          className="px-3 py-1.5 rounded-full border text-xs font-medium transition-all"
                           style={
                             isSelected
                               ? { borderColor: 'var(--color-brand)', background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
                               : isMaxed
                                 ? { borderColor: 'var(--color-border)', background: 'var(--color-bg-app)', color: 'var(--color-border-medium)', cursor: 'not-allowed' }
-                                : { borderColor: 'var(--color-border)', background: '#fff', color: 'var(--color-muted)' }
+                                : { borderColor: 'var(--color-border)', background: 'var(--color-surface)', color: 'var(--color-body)' }
                           }
                         >
                           {tag}
@@ -806,7 +826,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               {/* Clear tags */}
               {hotelTags.length > 0 && (
                 <button type="button" onClick={() => setHotelTags([])}
-                  className="mt-1.5 text-xs font-medium text-muted underline underline-offset-2">
+                  className="mt-1.5 text-xs font-medium text-muted underline underline-offset-2 min-h-[44px]">
                   Clear tags
                 </button>
               )}
@@ -827,7 +847,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               <div className="flex items-center justify-between mb-1.5">
                 <label className="text-sm font-semibold text-heading">
                   What I'm looking for
-                  {tagsLoading && <span className="ml-1.5 inline-block w-2.5 h-2.5 border border-muted border-t-transparent rounded-full animate-spin align-middle" />}
+                  {tagsLoading && <span role="status" aria-label="Loading tags" className="ml-1.5 inline-block w-2.5 h-2.5 border border-muted border-t-transparent rounded-full animate-spin align-middle" />}
                 </label>
                 {foodTags.length > 0 && (
                   <span className="text-xs font-semibold px-1.5 py-0.5 rounded"
@@ -859,14 +879,14 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                                 : prev.length >= 2 ? [...prev.slice(1), tag]
                                 : [...prev, tag]
                             )}
-                            className="px-3 py-2 rounded-lg border-2 text-xs font-medium transition-all"
+                            className="px-3 py-1.5 rounded-full border text-xs font-medium transition-all"
                             style={isVegBlocked
-                              ? { borderColor: '#E5E7EB', background: '#F9FAFB', color: '#D1D5DB', cursor: 'not-allowed', opacity: 0.5 }
+                              ? { borderColor: 'var(--color-border)', background: 'var(--color-bg-app)', color: 'var(--color-border-medium)', cursor: 'not-allowed', opacity: 0.5 }
                               : isSelected
                                 ? { borderColor: 'var(--color-brand)', background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
                                 : isMaxed
                                   ? { borderColor: 'var(--color-border)', background: 'var(--color-bg-app)', color: 'var(--color-border-medium)', cursor: 'not-allowed' }
-                                  : { borderColor: 'var(--color-border)', background: '#fff', color: 'var(--color-muted)' }
+                                  : { borderColor: 'var(--color-border)', background: 'var(--color-surface)', color: 'var(--color-body)' }
                             }
                           >
                             {tag}
@@ -891,12 +911,12 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                               : prev.length >= 2 ? [...prev.slice(1), t]
                               : [...prev, t]
                           )}
-                          className="px-3 py-2 rounded-lg border-2 text-xs font-medium transition-all"
+                          className="px-3 py-1.5 rounded-full border text-xs font-medium transition-all"
                           style={isSelected
                             ? { borderColor: 'var(--color-brand)', background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
                             : isMaxed
                               ? { borderColor: 'var(--color-border)', background: 'var(--color-bg-app)', color: 'var(--color-placeholder)', cursor: 'not-allowed' }
-                              : { borderColor: 'var(--color-border)', background: 'var(--color-surface)',  color: 'var(--color-muted)' }
+                              : { borderColor: 'var(--color-border)', background: 'var(--color-surface)',  color: 'var(--color-body)' }
                           }
                         >
                           {t}
@@ -910,7 +930,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               {/* Clear tags */}
               {foodTags.length > 0 && (
                 <button type="button" onClick={() => setFoodTags([])}
-                  className="mt-1.5 text-xs font-medium text-muted underline underline-offset-2">
+                  className="mt-1.5 text-xs font-medium text-muted underline underline-offset-2 min-h-[44px]">
                   Clear tags
                 </button>
               )}
@@ -951,14 +971,14 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                                 : prev.length >= 2 ? [...prev.slice(1), item]
                                 : [...prev, item]
                             )}
-                            className="px-3 py-1.5 rounded-lg border-2 text-xs font-medium transition-all"
+                            className="px-3 py-1.5 rounded-full border text-xs font-medium transition-all"
                             style={isVegBlocked
-                              ? { borderColor: '#E5E7EB', background: '#F9FAFB', color: '#D1D5DB', cursor: 'not-allowed', opacity: 0.5 }
+                              ? { borderColor: 'var(--color-border)', background: 'var(--color-bg-app)', color: 'var(--color-border-medium)', cursor: 'not-allowed', opacity: 0.5 }
                               : isSelected
                                 ? { borderColor: 'var(--color-brand)', background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
                                 : isMaxed
                                   ? { borderColor: 'var(--color-border)', background: 'var(--color-bg-app)', color: 'var(--color-border-medium)', cursor: 'not-allowed' }
-                                  : { borderColor: 'var(--color-border)', background: '#fff', color: 'var(--color-muted)' }
+                                  : { borderColor: 'var(--color-border)', background: 'var(--color-surface)', color: 'var(--color-body)' }
                             }
                           >
                             {item}
@@ -979,13 +999,13 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       case 'Itinerary': return (
         <div className="space-y-3">
           <div>
-            <label className="block text-xs font-semibold text-heading uppercase tracking-wide mb-1">Starting Location</label>
+            <label className="block text-xs font-semibold text-heading mb-1">Starting Location</label>
             <LocationBar value={startPoint} onChange={setStartPoint} placeholder="e.g. Railway Station, Hotel name…" autoDetect={isThanjavur(destination)} mockResolvedLocation="Thanjavur" />
           </div>
 
           {/* Time slot — Morning / Afternoon / Evening + mandatory validation */}
           <div>
-            <label className="block text-xs font-semibold text-heading uppercase tracking-wide mb-1">
+            <label className="block text-xs font-semibold text-heading mb-1">
               Time Slot <span className="text-danger">*</span>
             </label>
             <div className="flex gap-1.5">
@@ -996,7 +1016,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                     key={t}
                     type="button"
                     onClick={() => { setStartTime(t); setShowTimeError(false); }}
-                    className="flex-1 flex flex-col items-center gap-0.5 py-2 rounded-lg border-2 transition-all"
+                    className="flex-1 flex flex-col items-center gap-0.5 py-3 min-h-[44px] rounded-lg border-2 transition-all"
                     style={startTime === t
                       ? { borderColor: 'var(--color-brand)',  background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
                       : showTimeError
@@ -1005,7 +1025,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                     }
                   >
                     <span className="text-xs font-semibold uppercase tracking-wide">{t}</span>
-                    <span className="text-xs opacity-60">{stops[t]} stops</span>
+                    <span className="text-xs opacity-60">{stops[t]} places</span>
                   </button>
                 );
               })}
@@ -1018,7 +1038,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                   exit={{ opacity: 0, y: -4 }}
                   className="text-xs text-danger font-bold mt-1.5 flex items-center gap-1"
                 >
-                  <span>⚠</span> Please select a time slot to continue
+                  <AlertTriangle className="w-3.5 h-3.5 shrink-0" /> Please select a time slot to continue
                 </motion.p>
               )}
             </AnimatePresence>
@@ -1032,7 +1052,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         <div className="space-y-3">
           {/* Location dropdown */}
           <div>
-            <label className="block text-xs font-semibold text-heading uppercase tracking-wide mb-1">
+            <label className="block text-xs font-semibold text-heading mb-1">
               Top Location in Thanjavur
             </label>
             <div className="relative">
@@ -1053,7 +1073,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             </div>
             {showExploreError && (
               <p className="text-xs text-danger font-bold mt-1.5 flex items-center gap-1">
-                <span>⚠</span> Please select a location to continue
+                <AlertTriangle className="w-3.5 h-3.5 shrink-0" /> Please select a location to continue
               </p>
             )}
           </div>
@@ -1107,8 +1127,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
 
       {/* ── Hero — all tabs (no remount on tab switch, crossfade images) ─── */}
       <div
-        className="relative overflow-hidden rounded-2xl"
-        style={{ minHeight: 220 }}
+        className="relative overflow-hidden rounded-2xl min-h-[220px]"
       >
         {/* Gradient fallback — always underneath */}
         <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg,var(--color-brand-active) 0%,var(--color-brand) 100%)' }} />
@@ -1128,7 +1147,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         {/* Greeting */}
         {firstName && (
           <div className="absolute top-4 left-5 text-white/80 text-xs font-semibold">
-            {greeting}, {firstName} 👋
+            {greeting}, {firstName} <span aria-hidden="true">👋</span>
           </div>
         )}
         {/* Hero text — animate on tab switch */}
@@ -1170,7 +1189,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -4 }}
         transition={{ duration: 0.18, ease: 'easeOut' }}
-        className="rounded-2xl overflow-hidden relative z-10 bg-white"
+        className="rounded-xl overflow-hidden relative z-10 bg-surface"
         style={{ border: '1px solid var(--color-border)' }}
       >
         {/* Search override — Hotels + Food only */}
@@ -1216,19 +1235,19 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                   className="flex-1 bg-transparent text-sm text-heading placeholder-muted outline-none min-w-0"
                 />
                 {searchQuery && (
-                  <button type="button" onClick={() => setSearchQuery('')} className="shrink-0 text-muted hover:text-heading transition-colors">
+                  <button type="button" onClick={() => setSearchQuery('')} className="shrink-0 p-2 -mr-1 text-muted hover:text-heading transition-colors rounded" aria-label="Clear search">
                     <X className="w-3.5 h-3.5" />
                   </button>
                 )}
               </div>
               {showSuggestions && (
-                <div className="absolute left-4 right-4 top-full z-50 mt-0.5 rounded-lg overflow-hidden" style={{ background: '#fff', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-m)' }}>
+                <div className="absolute left-4 right-4 top-full z-50 mt-0.5 rounded-lg overflow-hidden" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-m)' }}>
                   {suggestions.slice(0, 6).map(s => (
                     <button
                       key={s}
                       type="button"
                       onMouseDown={() => { setSearchQuery(s); setSearchFocused(false); }}
-                      className="w-full flex items-center gap-2 px-3 py-2.5 text-left text-sm text-heading hover:bg-blue-50 transition-colors"
+                      className="w-full flex items-center gap-2 px-3 py-2.5 text-left text-sm text-heading hover:bg-brand-softer transition-colors"
                     >
                       <Search className="w-3 h-3 shrink-0 text-muted" />
                       <span>{s}</span>
@@ -1243,11 +1262,11 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         {/* Header — shown on all tabs */}
         <div className="px-4 py-3 flex items-center gap-3 border-b border-border bg-bg-app">
           <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: meta.accent }}>
-            <span style={{ color: '#fff' }}>{meta.icon}</span>
+            <span style={{ color: 'var(--color-surface)' }}>{meta.icon}</span>
           </div>
           <div className="min-w-0 flex-1">
             <p className="font-display font-semibold text-sm text-heading leading-tight">{meta.headline}</p>
-            <p className="text-xs text-muted mt-0.5 truncate">{meta.sub}</p>
+            <p className="text-xs text-muted mt-0.5 truncate" title={meta.sub}>{meta.sub}</p>
           </div>
           {activeTab === 'Food' ? (
             <button
@@ -1258,10 +1277,10 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                 if (next === 'Pure Veg')
                   setFoodTags(prev => prev.filter(t => !NON_VEG_ITEMS.includes(t)));
               }}
-              className="ml-auto shrink-0 text-xs font-bold px-2 py-0.5 rounded-full transition-all"
+              className="ml-auto shrink-0 text-xs font-bold px-3 py-1.5 rounded-full transition-all min-h-[36px] flex items-center"
               style={dietType === 'Pure Veg'
-                ? { background: '#ECFDF5', color: '#059669', border: '1.5px solid #059669' }
-                : { background: '#F9FAFB', color: '#6B7280', border: '1.5px solid #E5E7EB' }}
+                ? { background: 'var(--color-success-soft)', color: 'var(--color-success-strong)', border: '1.5px solid var(--color-success-medium)' }
+                : { background: 'var(--color-bg-app)', color: 'var(--color-muted)', border: '1.5px solid var(--color-border)' }}
             >
               Pure Veg
             </button>
@@ -1275,12 +1294,13 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         </div>
 
         {/* ── CTA inside card ───────────────────────────────────── */}
-        <div className="px-4 pb-4 pt-3 border-t border-border flex justify-center">
+        <div className="px-4 pt-3 pb-5 border-t border-border flex justify-center">
           <Button
             variant="brand"
             size="md"
             onClick={handleSearch}
             loading={loading}
+            disabled={!canSearch}
             icon={<Search className="w-4 h-4" />}
             className="px-10"
           >
@@ -1294,6 +1314,9 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             )}
           </Button>
         </div>
+        {!canSearch && (activeTab === 'Hotels' || activeTab === 'Food') && (
+          <p className="text-xs text-muted text-center mt-1.5">Select a filter tag or enter a search term</p>
+        )}
         {/* sentinel — category bar unsticks once this exits top of viewport */}
         <div ref={ctaSentinelRef} className="h-px" />
       </motion.div>
@@ -1303,13 +1326,13 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         <p className="text-xs font-normal text-muted mb-2 flex items-center gap-1.5">
           <Search className="w-3 h-3" /> People also search for
         </p>
-        <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 no-scrollbar">
+        <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 no-scrollbar [mask-image:linear-gradient(to_right,black_calc(100%-40px),transparent)]">
           {POPULAR_QUERIES.map((q, i) => (
             <button
               key={i}
               type="button"
               onClick={() => onBentoAction ? onBentoAction(q.overrides.tab!, q.overrides) : triggerSearch(q.overrides)}
-              className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-white text-xs font-medium text-body hover:border-brand hover:text-brand transition-colors"
+              className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-surface text-xs font-medium text-body hover:border-brand hover:text-brand transition-colors"
             >
               <Search className="w-3 h-3 text-muted shrink-0" />
               {q.label}
@@ -1330,7 +1353,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                 key={i}
                 type="button"
                 onClick={() => { onDestinationSelect?.(s.destination); triggerSearch({ tab: s.tab, destination: s.destination }); }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-white text-xs font-medium text-body hover:border-brand hover:text-brand transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-surface text-xs font-medium text-body hover:border-brand hover:text-brand transition-colors"
               >
                 <MapPin className="w-3 h-3 text-muted shrink-0" />
                 {s.destination}
@@ -1345,13 +1368,13 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       <div className="flex items-center gap-2 py-1 px-1 relative z-10">
         <div className="flex -space-x-1.5">
           {['var(--color-brand)','var(--color-brand-active)','var(--color-brand-border)'].map((c,i) => (
-            <div key={i} className="w-5 h-5 rounded-full border-2 border-white flex items-center justify-center text-white text-[7px] font-black" style={{ background: c }}>
+            <div key={i} aria-hidden="true" className="w-5 h-5 rounded-full border-2 border-white flex items-center justify-center text-white text-xs font-black" style={{ background: c }}>
               {['K','P','R'][i]}
             </div>
           ))}
         </div>
         <p className="text-xs text-muted">
-          <span className="text-heading font-bold">127 AI trip plans</span> generated today in {destination || 'Thanjavur'}
+          <span className="text-heading font-bold tabular-nums">127 AI trip plans</span> generated today in {destination || 'Thanjavur'}
         </p>
       </div>
 
@@ -1372,15 +1395,16 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             return (
               <motion.button
                 key="bento-hero"
-                whileTap={{ scale: 0.98 }}
+                whileTap={prefersReducedMotion ? {} : { scale: 0.97 }}
                 type="button"
                 onClick={() => onBentoAction ? onBentoAction(item.tab, item.overrides) : triggerSearch(item.overrides)}
                 className="col-span-2 relative overflow-hidden rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand group text-left"
                 style={{ height: 180, background: item.grad }}
               >
                 <img src={uImg(item.imgId, 800, 360)} alt={item.label}
-                  loading="eager" decoding="async"
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  width={800} height={360}
+                  loading="lazy" decoding="async"
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
                 <div className="absolute inset-0 rounded-2xl" style={{ background: TAB_META[item.tab].accent, opacity: 0.2 }} />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent rounded-2xl" />
@@ -1391,7 +1415,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                   <span className="text-white text-xs font-black px-2 py-1 rounded-full" style={{ background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(6px)' }}>⭐ Featured</span>
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
-                  <span className="text-2xl leading-none drop-shadow">{item.emoji}</span>
+                  <span className="text-2xl leading-none drop-shadow" aria-hidden="true">{item.emoji}</span>
                   <p className="text-white font-display font-black text-lg leading-tight mt-1.5 drop-shadow">{item.label}</p>
                   <p className="text-white/70 text-xs mt-0.5">{item.desc}</p>
                 </div>
@@ -1403,15 +1427,16 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
           {THANJAVUR_ACTIONS.slice(1).map(item => (
             <motion.button
               key={item.tab}
-              whileTap={{ scale: 0.96 }}
+              whileTap={prefersReducedMotion ? {} : { scale: 0.97 }}
               type="button"
               onClick={() => onBentoAction ? onBentoAction(item.tab, item.overrides) : triggerSearch(item.overrides)}
               className="relative overflow-hidden rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand group text-left"
               style={{ height: 138, background: item.grad }}
             >
               <img src={uImg(item.imgId, 440, 280)} alt={item.label}
-                loading="eager" decoding="async"
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                width={440} height={280}
+                loading="lazy" decoding="async"
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
               <div className="absolute inset-0 rounded-2xl" style={{ background: TAB_META[item.tab].accent, opacity: 0.25 }} />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent rounded-2xl" />
@@ -1419,7 +1444,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                 <span className="text-white text-xs font-black uppercase tracking-wide px-1.5 py-0.5 rounded-full" style={{ background: TAB_META[item.tab].accent }}>{item.tab}</span>
               </div>
               <div className="absolute bottom-0 left-0 right-0 p-3 z-10">
-                <span className="text-lg leading-none drop-shadow">{item.emoji}</span>
+                <span className="text-lg leading-none drop-shadow" aria-hidden="true">{item.emoji}</span>
                 <p className="text-white font-display font-black text-sm leading-tight mt-1 drop-shadow">{item.label}</p>
                 <p className="text-white/70 text-xs mt-0.5 leading-tight">{item.desc}</p>
               </div>
@@ -1452,7 +1477,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                   src={uImg(c.imgId, 440, 300)}
                   alt={c.city}
                   loading="lazy" decoding="async"
-                  className={`absolute inset-0 w-full h-full object-cover transition-transform duration-500 ${c.comingSoon ? 'opacity-60' : 'group-hover:scale-105'}`}
+                  className={`absolute inset-0 w-full h-full object-cover transition-transform duration-300 ${c.comingSoon ? 'opacity-60' : 'group-hover:scale-105'}`}
                   onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                 />
               )}
@@ -1460,7 +1485,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               <div className="absolute top-3 right-3 z-10">
                 {c.comingSoon ? (
                   <span className="text-xs font-semibold uppercase tracking-wide px-2 py-1 rounded backdrop-blur-sm"
-                    style={{ background: 'rgba(250,202,21,0.18)', border: '1px solid rgba(250,202,21,0.40)', color: '#FCD34D' }}>
+                    style={{ background: 'var(--color-warning-soft)', border: '1px solid var(--color-warning-medium)', color: 'var(--color-warning-strong)' }}>
                     Coming Soon
                   </span>
                 ) : (
@@ -1471,7 +1496,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                 )}
               </div>
               <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
-                <span className="text-2xl leading-none drop-shadow">{c.emoji}</span>
+                <span className="text-2xl leading-none drop-shadow" aria-hidden="true">{c.emoji}</span>
                 <p className="text-white font-display font-black text-base leading-tight mt-1.5 drop-shadow">{c.city}</p>
                 <p className="text-white/75 text-xs mt-0.5 leading-tight">{c.hook}</p>
               </div>
@@ -1493,7 +1518,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
           {POPULAR_DESTINATIONS.map(c => (
             <motion.button
               key={c.city}
-              whileTap={{ scale: 0.97 }}
+              whileTap={prefersReducedMotion ? {} : { scale: 0.97 }}
               type="button"
               onClick={() => onDestinationSelect?.(c.city)}
               className="shrink-0 w-[220px] h-[150px] rounded-2xl overflow-hidden relative focus:outline-none focus-visible:ring-2 focus-visible:ring-brand group"
@@ -1502,7 +1527,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                 src={uImg(c.imgId, 440, 300)}
                 alt={c.city}
                 loading="lazy" decoding="async"
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
               />
               <div className="absolute inset-0" style={{ background: c.grad, opacity: 0.3 }} />
@@ -1538,9 +1563,9 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             <motion.button
               key={topic}
               type="button"
-              whileTap={{ scale: 0.95 }}
+              whileTap={prefersReducedMotion ? {} : { scale: 0.97 }}
               onClick={() => { const ov = TRENDING_OVERRIDES[topic] ?? { tab: activeTab }; onBentoAction ? onBentoAction(ov.tab ?? activeTab, ov) : triggerSearch(ov); }}
-              className="text-xs font-medium px-3 py-1.5 rounded-lg border border-border bg-white text-body hover:border-brand hover:text-brand hover:bg-brand-softer motion-safe:active:scale-95 active:bg-brand-softer transition-all duration-150 select-none"
+              className="text-xs font-medium px-3 py-1.5 rounded-lg border border-border bg-surface text-body hover:border-brand hover:text-brand hover:bg-brand-softer motion-safe:active:scale-[0.97] transition-all duration-150 select-none"
             >
               {topic}
             </motion.button>
