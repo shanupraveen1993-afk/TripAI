@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Compass, ArrowRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
+import { Compass, ArrowRight, MapPin } from 'lucide-react';
 import { Input } from './ui/Input';
 import { Button } from './ui/Button';
 
@@ -22,10 +22,82 @@ function GoogleLogo({ size = 18 }: { size?: number }) {
   );
 }
 
+/* City destinations for the animated background slider */
+const LOGIN_CITIES = [
+  { city: 'Thanjavur',  subtitle: 'Brihadeeswarar Temple',  imgId: '1587474260584-136574528ed5', gradient: 'from-orange-900 via-amber-800 to-yellow-700' },
+  { city: 'Goa',        subtitle: 'Calangute Beach',         imgId: '1512343879784-a960bf40e7f2', gradient: 'from-teal-900 via-cyan-800 to-sky-700' },
+  { city: 'Jaipur',     subtitle: 'Hawa Mahal, Pink City',   imgId: '1477587458883-47145ed94245', gradient: 'from-pink-900 via-rose-800 to-pink-700' },
+  { city: 'Udaipur',    subtitle: 'Lake Pichola Palace',     imgId: '1622018135960-249abd263aeb', gradient: 'from-violet-900 via-purple-800 to-fuchsia-700' },
+  { city: 'Bangalore',  subtitle: 'Garden City',             imgId: '1708782462555-b3af03b4b3d2', gradient: 'from-slate-900 via-slate-800 to-blue-900' },
+  { city: 'Mumbai',     subtitle: 'The City of Dreams',      imgId: '1598434192043-71111c1b3f41', gradient: 'from-indigo-900 via-blue-800 to-sky-800' },
+  { city: 'Hyderabad',  subtitle: 'Charminar & Biryani',     imgId: '1657981630164-769503f3a9a8', gradient: 'from-amber-900 via-yellow-800 to-orange-700' },
+  { city: 'Kolkata',    subtitle: 'City of Joy',             imgId: '1558618666-fcd25c85cd64', gradient: 'from-indigo-900 via-blue-800 to-indigo-700' },
+];
+
+const uImg = (id: string, w = 1200, h = 900) =>
+  `https://images.unsplash.com/photo-${id}?w=${w}&h=${h}&fit=crop&auto=format&q=80`;
+
+function CityBackground({ active }: { active: number }) {
+  const prefersReducedMotion = useReducedMotion();
+  const d = LOGIN_CITIES[active];
+  return (
+    <AnimatePresence mode="sync">
+      <motion.div
+        key={active}
+        className="absolute inset-0"
+        initial={{ opacity: 0, scale: prefersReducedMotion ? 1 : 1.04 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: prefersReducedMotion ? 0.1 : 0.9, ease: 'easeInOut' }}
+      >
+        <img
+          src={uImg(d.imgId)}
+          alt={d.city}
+          className="absolute inset-0 w-full h-full object-cover"
+          loading="eager"
+        />
+        <div className={`absolute inset-0 bg-gradient-to-br ${d.gradient} opacity-60`} />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
+function CityNameSlider({ active }: { active: number }) {
+  const prefersReducedMotion = useReducedMotion();
+  const d = LOGIN_CITIES[active];
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={active}
+        initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: prefersReducedMotion ? 0 : -12 }}
+        transition={{ duration: 0.4, ease: 'easeInOut' }}
+        className="flex items-center gap-1.5"
+      >
+        <MapPin className="w-3.5 h-3.5 text-white/70 shrink-0" />
+        <span className="text-sm font-bold text-white">{d.city}</span>
+        <span className="text-xs text-white/60">· {d.subtitle}</span>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
 export function AuthForm({ onSuccess, onBack, asModal = false }: AuthFormProps) {
-  const [name, setName]       = useState('');
+  const [name, setName]           = useState('');
   const [nameError, setNameError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading]     = useState(false);
+  const [heroActive, setHeroActive] = useState(0);
+
+  useEffect(() => {
+    if (asModal) return;
+    const id = setInterval(
+      () => setHeroActive(i => (i + 1) % LOGIN_CITIES.length),
+      4000,
+    );
+    return () => clearInterval(id);
+  }, [asModal]);
 
   const handleGoogleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,36 +107,15 @@ export function AuthForm({ onSuccess, onBack, asModal = false }: AuthFormProps) 
     }
     setNameError('');
     setLoading(true);
-    /* ── Phase 1 mock ──────────────────────────────────────────────────────
-       Phase 2: replace this block with real Google OAuth token verification.
-       Install @react-oauth/google, wrap app with GoogleOAuthProvider,
-       call useGoogleLogin() here and pass the credential to /api/auth/google.
-    ─────────────────────────────────────────────────────────────────────── */
     await new Promise(r => setTimeout(r, 900));
     setLoading(false);
     onSuccess({ name: name.trim(), email: 'demo@gmail.com' });
   };
 
-  const wrapper = asModal
-    ? 'p-1'
-    : 'min-h-dvh bg-bg-app flex flex-col items-center justify-center p-4';
-
-  return (
-    <div className={wrapper}>
-      <div className="w-full max-w-sm">
-
-        {/* Brand — standalone page only */}
-        {!asModal && (
-          <div className="flex items-center gap-2 mb-8">
-            <div className="w-9 h-9 bg-brand rounded-lg flex items-center justify-center">
-              <Compass className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-display font-bold text-2xl text-heading tracking-tight">
-              Trip<span className="text-brand">AI</span>
-            </span>
-          </div>
-        )}
-
+  /* ── Modal variant — unchanged compact form ── */
+  if (asModal) {
+    return (
+      <div className="p-1 w-full max-w-sm mx-auto">
         <AnimatePresence mode="wait">
           <motion.div
             key="google-auth"
@@ -73,16 +124,10 @@ export function AuthForm({ onSuccess, onBack, asModal = false }: AuthFormProps) 
             exit={{ opacity: 0 }}
           >
             <div className="mb-6">
-              <h1 className="text-2xl font-display font-bold text-heading mb-1">
-                Welcome to TripAI
-              </h1>
-              <p className="text-sm text-muted">
-                Plan smarter trips with real Google data + AI
-              </p>
+              <h1 className="text-2xl font-display font-bold text-heading mb-1">Welcome to TripAI</h1>
+              <p className="text-sm text-muted">Plan smarter trips with real Google data + AI</p>
             </div>
-
             <form onSubmit={handleGoogleSignIn} className="space-y-4">
-              {/* Name field */}
               <Input
                 label="Your name"
                 type="text"
@@ -92,8 +137,112 @@ export function AuthForm({ onSuccess, onBack, asModal = false }: AuthFormProps) 
                 onChange={e => { setName(e.target.value); setNameError(''); }}
                 error={nameError}
               />
+              <Button
+                type="submit"
+                variant="brand"
+                fullWidth
+                loading={loading}
+                icon={!loading ? <GoogleLogo /> : undefined}
+                iconRight={!loading ? <ArrowRight className="w-3.5 h-3.5" /> : undefined}
+                className="justify-between"
+              >
+                {loading ? 'Signing in…' : 'Continue with Google'}
+              </Button>
+            </form>
+            <p className="mt-4 text-xs text-center text-muted">By continuing you agree to our Terms of Service</p>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    );
+  }
 
-              {/* Google Sign-In button */}
+  /* ── Full-page variant — immersive city slider design ── */
+  return (
+    <div className="relative min-h-dvh overflow-hidden flex flex-col">
+
+      {/* ── Animated city photo background ── */}
+      <div className="absolute inset-0">
+        <CityBackground active={heroActive} />
+      </div>
+
+      {/* ── Content layer ── */}
+      <div className="relative z-10 flex flex-col min-h-dvh">
+
+        {/* Top: Brand header */}
+        <div className="px-6 pt-10 pb-4">
+          <div className="flex items-center gap-2">
+            <div className="w-9 h-9 bg-white/15 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/25">
+              <Compass className="w-5 h-5 text-white" />
+            </div>
+            <span className="font-display font-black text-2xl text-white tracking-tight">
+              Trip<span className="text-brand-soft">AI</span>
+            </span>
+          </div>
+        </div>
+
+        {/* Middle: hero city caption */}
+        <div className="flex-1 flex flex-col justify-end px-6 pb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="mb-8"
+          >
+            <p className="text-white/60 text-xs font-semibold uppercase tracking-widest mb-2">
+              AI-planned trips for
+            </p>
+            <CityNameSlider active={heroActive} />
+
+            {/* City dot indicators */}
+            <div className="flex gap-1.5 mt-4">
+              {LOGIN_CITIES.map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => setHeroActive(i)}
+                  className="transition-all duration-300"
+                  aria-label={LOGIN_CITIES[i].city}
+                >
+                  <div
+                    className="rounded-full transition-all duration-300"
+                    style={{
+                      width:  i === heroActive ? 20 : 6,
+                      height: 6,
+                      background: i === heroActive ? 'white' : 'rgba(255,255,255,0.35)',
+                    }}
+                  />
+                </button>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Login card */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35, duration: 0.5 }}
+            className="bg-white/95 backdrop-blur-md rounded-2xl p-6 shadow-2xl"
+            style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.4)' }}
+          >
+            <div className="mb-5">
+              <h1 className="text-xl font-display font-bold text-heading mb-1">
+                Start planning your trip
+              </h1>
+              <p className="text-sm text-muted">
+                Real places · AI ranked · No fluff
+              </p>
+            </div>
+
+            <form onSubmit={handleGoogleSignIn} className="space-y-4">
+              <Input
+                label="Your name"
+                type="text"
+                placeholder="e.g. Praveen"
+                value={name}
+                autoFocus
+                onChange={e => { setName(e.target.value); setNameError(''); }}
+                error={nameError}
+              />
               <Button
                 type="submit"
                 variant="brand"
@@ -111,7 +260,7 @@ export function AuthForm({ onSuccess, onBack, asModal = false }: AuthFormProps) 
               By continuing you agree to our Terms of Service
             </p>
           </motion.div>
-        </AnimatePresence>
+        </div>
       </div>
     </div>
   );

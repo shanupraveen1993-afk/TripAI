@@ -439,7 +439,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               <h3 className="font-display font-bold text-sm text-heading leading-snug line-clamp-1" title={place.name}>{place.name}</h3>
               {selectedTags.length > 0 && place.matchScore !== undefined && (
                 <span className={`text-xs font-bold shrink-0 ${place.matchScore >= 80 ? 'text-success-strong' : place.matchScore >= 55 ? 'text-brand' : 'text-muted'}`}>
-                  {place.matchScore}% match
+                  {place.matchScore}% match score
                 </span>
               )}
             </div>
@@ -447,23 +447,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               <StarRating rating={place.rating} size="xs" />
               <span className="text-xs text-muted ml-0.5">(<span className="tabular-nums">{place.reviewCount.toLocaleString()}</span>)</span>
             </div>
-            {(confirmed.length > 0 || unconfirmed.length > 0) && (
-              <div className="flex gap-1 flex-wrap">
-                {confirmed.slice(0, 2).map((t, i) => (
-                  <span key={t} className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-medium border ${
-                    i === 0
-                      ? 'bg-success text-white border-success'
-                      : 'bg-success-soft border-success-medium text-success-strong'
-                  }`}>
-                    <CheckCircle className="w-2 h-2" />{t}
-                  </span>
-                ))}
-                {unconfirmed.slice(0, 1).map(t => (
-                  <span key={t} className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-medium border bg-bg-app border-border-medium text-muted">~{t}</span>
-                ))}
-              </div>
-            )}
-            {/* Latest Sentiment mini */}
+            {/* Sentiment one-liner — replaces tag chips */}
             {(() => {
               function agoToDaysCo(ago: string): number {
                 const m = ago.match(/(\d+)\s+(day|week|month)/);
@@ -591,7 +575,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             <h3 className="font-display font-bold text-sm text-heading leading-snug line-clamp-1" title={place.name}>{place.name}</h3>
             {selectedTags.length > 0 && place.matchScore !== undefined && (
               <span className={`text-xs font-bold shrink-0 ${place.matchScore >= 80 ? 'text-success-strong' : place.matchScore >= 55 ? 'text-brand' : 'text-muted'}`}>
-                {place.matchScore}% match
+                {place.matchScore}% match score
               </span>
             )}
           </div>
@@ -599,21 +583,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             <StarRating rating={place.rating} size="xs" />
             <span className="text-xs text-muted ml-0.5">(<span className="tabular-nums">{place.reviewCount.toLocaleString()}</span>)</span>
           </div>
-          {(confirmed.length > 0 || unconfirmed.length > 0) && (
-            <div className="flex gap-1 flex-wrap">
-              {confirmed.slice(0, 2).map(t => (
-                <span key={t} className="flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs font-medium border bg-success-soft border-success-medium text-success-strong">
-                  <CheckCircle className="w-2.5 h-2.5" />{t}
-                </span>
-              ))}
-              {unconfirmed.slice(0, 1).map(t => (
-                <span key={t} className="flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs font-medium border bg-bg-app border-border-medium text-muted">
-                  ~{t}
-                </span>
-              ))}
-            </div>
-          )}
-          {/* Latest Sentiment mini — inline in L1 card */}
+          {/* Sentiment one-liner — replaces tag chips */}
           {(() => {
             function agoToDaysCo(ago: string): number {
               const m = ago.match(/(\d+)\s+(day|week|month)/);
@@ -885,7 +855,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                 </button>
                 <button
                   onClick={toggleBookmark}
-                  className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold rounded-lg border transition-colors active:scale-[0.97] ${bookmarked ? 'bg-brand-softer border-brand-soft text-brand' : 'border-border text-muted hover:border-brand hover:text-brand'}`}
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold rounded-lg border transition-colors active:scale-[0.97] ${bookmarked ? 'border-brand-soft text-brand' : 'border-border text-muted hover:border-brand hover:text-brand'}`}
                 >
                   {bookmarked ? <BookmarkCheck className="w-3.5 h-3.5" /> : <Bookmark className="w-3.5 h-3.5" />}
                   {bookmarked ? 'Saved' : 'Save'}
@@ -952,24 +922,28 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
   const [activeIdx, setActiveIdx]         = useState(0);
   const timelineScrollRef = useRef<HTMLDivElement>(null);
   const nodeRefs          = useRef<(HTMLButtonElement | null)[]>([]);
+  const stopCardRefs      = useRef<(HTMLDivElement | null)[]>([]);
 
-  // Track which stop card is in view
+  // Track active stop by finding which card is closest to viewport centre
   useEffect(() => {
-    const observers: IntersectionObserver[] = [];
-    stops.forEach((_, idx) => {
-      const el = document.getElementById(`itin-stop-${idx}`);
-      if (!el) return;
-      const obs = new IntersectionObserver(
-        ([entry]) => { if (entry.isIntersecting) setActiveIdx(idx); },
-        { threshold: 0.25, rootMargin: '0px 0px -50% 0px' },
-      );
-      obs.observe(el);
-      observers.push(obs);
-    });
-    return () => observers.forEach(o => o.disconnect());
+    const handleScroll = () => {
+      const mid = window.scrollY + window.innerHeight * 0.4;
+      let closest = 0;
+      let closestDist = Infinity;
+      stopCardRefs.current.forEach((el, idx) => {
+        if (!el) return;
+        const top = window.scrollY + el.getBoundingClientRect().top;
+        const dist = Math.abs(top - mid);
+        if (dist < closestDist) { closestDist = dist; closest = idx; }
+      });
+      setActiveIdx(closest);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [stops.length]);
 
-  // Slide timeline to keep active node + next node visible
+  // Slide timeline strip to keep active node centred
   useEffect(() => {
     const container = timelineScrollRef.current;
     const node      = nodeRefs.current[activeIdx];
@@ -1013,11 +987,11 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
             <span className="text-xs text-muted whitespace-nowrap">· {stops.length} stops</span>
           </div>
           <div className="flex items-center gap-1.5 shrink-0 text-xs">
-            <span className="hidden sm:inline">{wx.emoji} <span className="font-semibold text-body">{wx.temp}</span></span>
-            <span className="hidden sm:inline w-px h-3 bg-border" />
-            <span className="hidden sm:inline font-semibold" style={{ color: crowdStyle.text }}>{worstCrowd} crowd</span>
-            <span className="hidden sm:inline w-px h-3 bg-border" />
-            <span className="font-bold text-brand">{stops[0]?.time} – {stops[stops.length - 1]?.time}</span>
+            <span>{wx.emoji} <span className="font-semibold text-body">{wx.temp}</span></span>
+            <span className="w-px h-3 bg-border" />
+            <span className="font-semibold" style={{ color: crowdStyle.text }}>{worstCrowd}</span>
+            <span className="w-px h-3 bg-border" />
+            <span className="font-bold text-brand">{stops[0]?.time}–{stops[stops.length - 1]?.time}</span>
           </div>
         </div>
 
@@ -1088,7 +1062,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
           const isExpanded = expandedStops.has(idx);
 
           return (
-            <div key={idx} id={`itin-stop-${idx}`}>
+            <div key={idx} id={`itin-stop-${idx}`} ref={el => { stopCardRefs.current[idx] = el; }}>
               <motion.div
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -1616,7 +1590,7 @@ export function ResultsView({
   return (
     <div className="w-full max-w-[920px] mx-auto px-4 py-4 pb-28 lg:pb-8">
 
-      {/* Top bar — back button + result count */}
+      {/* Top bar — back button + result count + share */}
       <div className="flex items-center justify-between gap-2 mb-5">
         <button
           onClick={onBack}
@@ -1625,9 +1599,27 @@ export function ResultsView({
           <ArrowLeft className="w-4 h-4 text-muted group-hover:text-heading transition-colors" />
           <span className="text-sm font-semibold text-muted group-hover:text-heading transition-colors">Back</span>
         </button>
-        <span className="shrink-0 text-xs font-bold text-brand bg-brand-softer border border-brand-soft/30 px-3 py-1.5 rounded-full">
-          {destination} · {tab === 'Explore' ? 'AI guide' : tab === 'Itinerary' ? `${count ?? 0} place${(count ?? 0) !== 1 ? 's' : ''}` : `${count ?? 0} result${(count ?? 0) !== 1 ? 's' : ''}`}
-        </span>
+        <div className="flex items-center gap-2">
+          {tab === 'Itinerary' && (itinerary?.length ?? 0) > 0 && (
+            <button
+              onClick={() => {
+                if (navigator.share) {
+                  navigator.share({ title: `TripAI — ${destination} Itinerary`, text: `Check out this AI-planned ${destination} day trip!`, url: window.location.href }).catch(() => {});
+                } else {
+                  navigator.clipboard.writeText(window.location.href);
+                  toast('Link copied!', 'success');
+                }
+              }}
+              className="flex items-center justify-center w-8 h-8 rounded-full border border-border text-muted hover:border-brand hover:text-brand transition-colors active:scale-95"
+              aria-label="Share itinerary"
+            >
+              <Share2 className="w-3.5 h-3.5" />
+            </button>
+          )}
+          <span className="shrink-0 text-xs font-bold text-brand bg-brand-softer border border-brand-soft/30 px-3 py-1.5 rounded-full">
+            {destination} · {tab === 'Explore' ? 'AI guide' : tab === 'Itinerary' ? `${count ?? 0} place${(count ?? 0) !== 1 ? 's' : ''}` : `${count ?? 0} result${(count ?? 0) !== 1 ? 's' : ''}`}
+          </span>
+        </div>
       </div>
 
 
@@ -1745,28 +1737,6 @@ export function ResultsView({
       <div className={tab === 'Hotels' || tab === 'Food' ? 'flex flex-col gap-5 mb-5' : 'space-y-4 mb-5'}>
         {(tab === 'Hotels' || tab === 'Food') && results?.map((p, idx) => (
           <React.Fragment key={p.id}>
-            {/* Section headers between result tiers */}
-            {idx === 0 && (
-              <div className="flex items-center gap-2 -mb-2">
-                <Sparkles className="w-3.5 h-3.5 text-brand" />
-                <span className="text-xs font-semibold text-brand">AI Recommended</span>
-                <div className="flex-1 h-px bg-brand/20" />
-              </div>
-            )}
-            {idx === 1 && (
-              <div className="flex items-center gap-2 -mb-2">
-                <Star className="w-3.5 h-3.5 text-warning-strong fill-warning-strong" />
-                <span className="text-xs font-semibold text-warning-strong">Best Options</span>
-                <div className="flex-1 h-px bg-warning-medium" />
-              </div>
-            )}
-            {idx === 3 && (results?.length ?? 0) > 3 && (
-              <div className="flex items-center gap-2 -mb-2">
-                <Info className="w-3.5 h-3.5 text-muted" />
-                <span className="text-xs font-semibold text-muted">Also Consider</span>
-                <div className="flex-1 h-px bg-border" />
-              </div>
-            )}
             <PlaceCard
               place={p}
               tab={tab}

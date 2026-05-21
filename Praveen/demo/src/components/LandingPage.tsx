@@ -338,9 +338,9 @@ function ExploreScene() {
 }
 
 /* ── 3D Tilt card ─────────────────────────────────────────────────────── */
-function TiltCard({ label, desc, glow, illustration, onClick, animDelay = 0 }: {
+function TiltCard({ label, desc, glow, illustration, imgId, onClick, animDelay = 0 }: {
   label: string; desc: string; glow: string;
-  illustration: React.ReactNode; onClick: () => void; animDelay?: number;
+  illustration: React.ReactNode; imgId?: string; onClick: () => void; animDelay?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const mx  = useMotionValue(0);
@@ -380,6 +380,19 @@ function TiltCard({ label, desc, glow, illustration, onClick, animDelay = 0 }: {
         viewport={{ once: true, amount: 0.2 }}
         className="cursor-pointer relative group rounded-2xl border border-white/10 p-7 flex flex-col items-center text-center gap-4 select-none h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
       >
+        {/* Hero photo background */}
+        {imgId && (
+          <img
+            src={uImg(imgId, 400, 520)}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-cover rounded-2xl opacity-30 group-hover:opacity-45 transition-opacity duration-300"
+            loading="lazy"
+          />
+        )}
+        {/* Dark overlay over photo */}
+        <div className="absolute inset-0 rounded-2xl" style={{ background: 'linear-gradient(160deg,rgba(0,0,0,0.55) 0%,rgba(0,0,0,0.72) 100%)' }} />
+
         {/* Top glow on hover */}
         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none rounded-2xl"
           style={{ background: `radial-gradient(ellipse at 50% -10%, ${glow}22 0%, transparent 65%)` }} />
@@ -414,11 +427,11 @@ function TiltCard({ label, desc, glow, illustration, onClick, animDelay = 0 }: {
 }
 
 /* ── Category metadata ────────────────────────────────────────────────── */
-const CATEGORIES: { label: Tab; desc: string; glow: string; illustration: React.ReactNode }[] = [
-  { label: 'Hotels',    glow: 'var(--color-brand)',     illustration: <HotelScene />,   desc: 'Not 150 unfiltered options. AI-ranked picks by budget, area, and what you care about — applied before you see a single result.' },
-  { label: 'Food',      glow: 'var(--color-brand)',      illustration: <FoodScene />,    desc: 'Worth the queue or skip it? Diet, vibe, and distance — filtered before you open another app.' },
-  { label: 'Itinerary', glow: 'var(--color-brand)', illustration: <ItinScene />,    desc: 'Your whole day, no backtracking. Stops sequenced around your hotel — so you\'re not zigzagging across the city like a tourist.' },
-  { label: 'Explore',   glow: 'var(--color-brand)',   illustration: <ExploreScene />, desc: 'Brihadeeswarar to Airavatesvara. Entry times, dress code, crowd patterns — so you don\'t figure it out after the 2km walk.' },
+const CATEGORIES: { label: Tab; desc: string; glow: string; illustration: React.ReactNode; imgId: string }[] = [
+  { label: 'Hotels',    glow: 'var(--color-brand)', imgId: '1566073771259-470f1e0e8c8a', illustration: <HotelScene />,   desc: 'Not 150 unfiltered options. AI-ranked picks by budget, area, and what you care about — applied before you see a single result.' },
+  { label: 'Food',      glow: 'var(--color-brand)', imgId: '1565557623262-b51be4f0f5ab', illustration: <FoodScene />,    desc: 'Worth the queue or skip it? Diet, vibe, and distance — filtered before you open another app.' },
+  { label: 'Itinerary', glow: 'var(--color-brand)', imgId: '1587474260584-136574528ed5', illustration: <ItinScene />,    desc: 'Your whole day, no backtracking. Stops sequenced around your hotel — so you\'re not zigzagging across the city like a tourist.' },
+  { label: 'Explore',   glow: 'var(--color-brand)', imgId: '1622018135960-249abd263aeb', illustration: <ExploreScene />, desc: 'Brihadeeswarar to Airavatesvara. Entry times, dress code, crowd patterns — so you don\'t figure it out after the 2km walk.' },
 ];
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -670,6 +683,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
                 desc={c.desc}
                 glow={c.glow}
                 illustration={c.illustration}
+                imgId={c.imgId}
                 onClick={() => handleCategoryClick(c.label)}
                 animDelay={i * 0.1}
               />
