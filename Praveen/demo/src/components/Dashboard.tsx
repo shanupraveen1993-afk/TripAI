@@ -1350,7 +1350,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             <Clock className="w-3 h-3" /> Recent
           </p>
           <div className="flex flex-wrap gap-1.5">
-            {recentSearches.slice(0, 3).map((s, i) => (
+            {recentSearches.map((s, i) => (
               <button
                 key={i}
                 type="button"
