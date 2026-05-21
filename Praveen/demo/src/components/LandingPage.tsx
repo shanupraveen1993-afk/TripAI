@@ -8,6 +8,7 @@ import { Button } from './ui/Button';
 import { Modal } from './ui/Modal';
 import { AuthForm } from './AuthForm';
 import { Tab } from './ui/Tabs';
+import { isThanjavurCity } from '../utils/city';
 
 const uImg = (id: string, w = 800, h = 560) =>
   `https://images.unsplash.com/photo-${id}?w=${w}&h=${h}&fit=crop&auto=format&q=80`;
@@ -15,7 +16,7 @@ const uImg = (id: string, w = 800, h = 560) =>
 interface LandingPageProps {
   onTabSelect: (tab: Tab, dest?: string) => void;
   isLoggedIn: boolean;
-  onAuthSuccess?: (user: { name: string; email: string; avatar?: string }, dest?: string) => void;
+  onAuthSuccess?: (user: { name: string; email: string; avatar?: string }, dest?: string, tab?: Tab) => void;
   onNonThanjavurCity?: (city: string) => void;
 }
 
@@ -110,7 +111,7 @@ function HeroPhotoPanel({ active, setActive }: { active: number; setActive: (i: 
           key={i}
           src={uImg(dest.imgId, 900, 580)}
           alt={dest.city}
-          loading="eager"
+          loading={i === active ? 'eager' : 'lazy'}
           className="absolute inset-0 w-full h-full object-cover"
           initial={{ opacity: 0, scale: 1 }}
           animate={i === active
@@ -423,9 +424,6 @@ const CATEGORIES: { label: Tab; desc: string; glow: string; illustration: React.
 /* ══════════════════════════════════════════════════════════════════════
    Main component
 ══════════════════════════════════════════════════════════════════════ */
-const isThanjavurDest = (dest: string) =>
-  /thanjavur|tanjore/i.test(dest.trim()) || dest.trim() === '';
-
 export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanjavurCity }: LandingPageProps) {
   const [authOpen, setAuthOpen]     = useState(false);
   const [pendingTab, setPendingTab] = useState<Tab | null>(null);
@@ -463,7 +461,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
 
   const handleCtaClick = () => {
     const dest = demoSearch.trim();
-    if (dest && !isThanjavurDest(dest)) {
+    if (dest && !isThanjavurCity(dest)) {
       setCityInputError(`Only Thanjavur is live right now — try searching "Thanjavur"`);
       onNonThanjavurCity?.(dest);
       return;
@@ -471,14 +469,15 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
     setCityInputError(null);
     if (isLoggedIn) { onTabSelect(heroTab, dest || undefined); return; }
     pendingDestRef.current = dest;
-    setPendingTab(null);
+    setPendingTab(heroTab);
     setAuthOpen(true);
   };
 
   const handleAuthSuccess = (user: { name: string; email: string; avatar?: string }) => {
     setAuthOpen(false);
-    onAuthSuccess?.(user, pendingDestRef.current || undefined);
+    onAuthSuccess?.(user, pendingDestRef.current || undefined, pendingTab ?? undefined);
     pendingDestRef.current = '';
+    setPendingTab(null);
   };
 
   return (
@@ -573,7 +572,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
                     onChange={e => { setDemoSearch(e.target.value); if (cityInputError) setCityInputError(null); }}
                     onBlur={() => {
                       const v = demoSearch.trim();
-                      if (v && !isThanjavurDest(v)) setCityInputError(`Only Thanjavur is live right now — try "Thanjavur"`);
+                      if (v && !isThanjavurCity(v)) setCityInputError(`Only Thanjavur is live right now — try "Thanjavur"`);
                     }}
                     placeholder="City — try Thanjavur"
                     aria-describedby={cityInputError ? 'city-error' : undefined}

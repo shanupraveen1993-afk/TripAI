@@ -33,9 +33,9 @@ const TAB_ICONS: Record<Tab, React.ReactNode> = {
 
 const TAB_COLORS: Record<Tab, string> = {
   Hotels:    'bg-brand-softer text-brand border-brand-soft/30',
-  Food:      'bg-food-soft text-food border-food-border',
-  Itinerary: 'bg-itinerary-soft text-itinerary border-itinerary-medium',
-  Explore:   'bg-explore-soft text-explore border-explore-medium',
+  Food:      'bg-brand-softer text-brand border-brand-medium',
+  Itinerary: 'bg-brand-softer text-brand border-brand-medium',
+  Explore:   'bg-brand-softer text-brand border-brand-medium',
 };
 
 function TripCard({ trip, onDelete, onView }: { trip: SavedTrip; onDelete: () => void; onView: () => void }) {

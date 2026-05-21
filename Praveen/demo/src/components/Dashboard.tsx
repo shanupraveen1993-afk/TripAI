@@ -7,9 +7,7 @@ import {
 import { fetchCityTags, fetchAutocomplete, AutocompleteSuggestion, CityTagsResult } from '../api/client';
 import { Tab } from './ui/Tabs';
 import { Button } from './ui/Button';
-
-const isThanjavur = (dest: string) =>
-  /thanjavur|tanjore|tanjore/i.test(dest.trim()) || dest.trim() === '';
+import { isThanjavurCity } from '../utils/city';
 
 const uImg = (id: string, w = 320, h = 200) =>
   `https://images.unsplash.com/photo-${id}?w=${w}&h=${h}&fit=crop&auto=format&q=80`;
@@ -1000,7 +998,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         <div className="space-y-3">
           <div>
             <label className="block text-xs font-semibold text-heading mb-1">Starting Location</label>
-            <LocationBar value={startPoint} onChange={setStartPoint} placeholder="e.g. Railway Station, Hotel name…" autoDetect={isThanjavur(destination)} mockResolvedLocation="Thanjavur" />
+            <LocationBar value={startPoint} onChange={setStartPoint} placeholder="e.g. Railway Station, Hotel name…" autoDetect={isThanjavurCity(destination)} mockResolvedLocation="Thanjavur" />
           </div>
 
           {/* Time slot — Morning / Afternoon / Evening */}

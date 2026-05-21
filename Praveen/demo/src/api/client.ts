@@ -134,16 +134,6 @@ export async function fetchItinerary(
   return data.itinerary ?? [];
 }
 
-export async function fetchExploreGuide(exploreTarget: string, timeSlot = 'Morning'): Promise<ExploreGuide | null> {
-  const r = await fetch('/api/plan', {
-    method:  'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body:    JSON.stringify({ tab: 'Explore', exploreTarget, timeSlot }),
-  });
-  if (!r.ok) return null;
-  const data = await r.json() as { exploreResult?: ExploreGuide };
-  return data.exploreResult ?? null;
-}
 
 export interface CityTagsResult {
   tags:      string[];

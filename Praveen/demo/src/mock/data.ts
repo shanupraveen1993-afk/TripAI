@@ -45,6 +45,7 @@ export interface PlaceResult {
   reviews: ReviewItem[];
   recentRatings?: number[];
   photoColor: string;
+  cautionNote?: string;
   aiDetail: AiDetail;
 }
 

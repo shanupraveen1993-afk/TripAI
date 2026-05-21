@@ -4,7 +4,7 @@ import {
   ArrowLeft, ArrowRight, Star, MapPin, Clock, Navigation, Share2, Compass,
   ChevronRight, ChevronDown, Sparkles, Info, RefreshCw, Bookmark, BookmarkCheck,
   Utensils, CheckCircle, AlertTriangle, RotateCcw, Hotel, Route,
-  ImageIcon, ExternalLink, Map, X, Lightbulb, DollarSign, Flame, TrendingUp, ThumbsUp,
+  ImageIcon, ExternalLink, Map, X, Lightbulb, DollarSign, Flame, TrendingUp, ThumbsUp, Ticket,
 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Badge } from './ui/Badge';
@@ -20,12 +20,28 @@ type ItineraryStop = {
   duration?: string; crowdLevel?: 'Low' | 'Moderate' | 'High';
   reachNote?: string; entryFee?: string; highlights?: string[];
   cautionNote?: string; avoidNote?: string;
+  photoRef?: string | null;
   reviews?: Array<{ text: string; author: string; location: string; stars: number; ago: string }>;
 } | LiveItineraryStop;
 import { fetchPhoto } from '../api/client';
 import { useToast } from './ui/Toast';
 import { PlaceCardSkeleton } from './ui/Skeleton';
 import { STOPS } from '../itineraryPreset';
+
+function StarRating({ rating, size = 'sm' }: { rating: number; size?: 'sm' | 'xs' }) {
+  const cls = size === 'xs' ? 'w-3 h-3' : 'w-3.5 h-3.5';
+  return (
+    <div className="flex gap-0.5">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Star key={i} className={`${cls} ${
+          i < Math.floor(rating) ? 'fill-warning-strong text-warning-strong'
+          : i < rating ? 'fill-warning-medium text-warning-medium'
+          : 'text-border'
+        }`} />
+      ))}
+    </div>
+  );
+}
 
 interface ResultsViewProps {
   tab: Tab;
@@ -144,20 +160,6 @@ function PlacePhoto({ color, name, photoRef, autoLoad }: { color: string; name: 
       <span className="text-2xl font-black text-white/70 uppercase tracking-widest drop-shadow">
         {name.charAt(0)}
       </span>
-      {photoRef && !autoLoad && (
-        <button
-          onClick={loadPhoto}
-          disabled={loading}
-          aria-label="Load photo"
-          className="absolute bottom-2 right-2 flex items-center gap-1 bg-white/80 hover:bg-white text-xs font-semibold px-2 py-1 rounded-lg shadow transition-all min-h-[44px]"
-        >
-          {loading
-            ? <span className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
-            : <ImageIcon className="w-3 h-3" />
-          }
-          {loading ? 'Loading…' : 'Show Photo'}
-        </button>
-      )}
     </div>
   );
 }
@@ -368,7 +370,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
       {tab === 'Food' && (
         <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
           target="_blank" rel="noopener noreferrer"
-          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-success text-white hover:bg-success-strong transition-colors active:scale-[0.97] shadow-sm">
+          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-brand text-white hover:bg-brand/90 transition-colors active:scale-[0.97] shadow-sm">
           <Navigation className="w-3 h-3" />Directions
         </a>
       )}
@@ -394,15 +396,26 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: animDelay, duration: 0.35, ease: 'easeOut', layout: { duration: 0.28, ease: 'easeInOut' } }}
-      className="bg-surface border border-card-border rounded-xl shadow-sm card-hover overflow-hidden"
+      className="relative bg-surface border border-card-border rounded-xl shadow-sm card-hover overflow-hidden"
       style={dimmed ? { opacity: 0.35, filter: 'grayscale(0.7)', pointerEvents: 'none', transition: 'opacity 0.3s, filter 0.3s' } : undefined}
     >
+      {/* ── Save bookmark — card top-right corner ── */}
+      <button
+        onClick={(e) => { e.stopPropagation(); toggleBookmark(); }}
+        aria-label={bookmarked ? 'Remove from saved' : 'Save this place'}
+        className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full bg-white/90 border border-border shadow-sm z-20 active:scale-90 transition-transform hover:bg-white"
+      >
+        {bookmarked
+          ? <BookmarkCheck className="w-3.5 h-3.5 text-brand" />
+          : <Bookmark className="w-3.5 h-3.5 text-muted" />
+        }
+      </button>
 
       {/* ══ MOBILE CARD LAYOUT (< sm) ══ */}
       <div className="sm:hidden flex flex-col">
 
         {/* Row 1: Photo + Info — tap anywhere to expand */}
-        <div className="flex min-h-[110px] cursor-pointer" onClick={() => setExpanded(v => !v)}>
+        <div className="flex min-h-[120px] cursor-pointer" onClick={() => setExpanded(v => !v)}>
 
           {/* Col 1: Photo */}
           <div className="w-[90px] shrink-0 relative">
@@ -414,16 +427,6 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                 autoLoad={rank === 1}
               />
             </div>
-            <button
-              onClick={(e) => { e.stopPropagation(); toggleBookmark(); }}
-              aria-label={bookmarked ? 'Remove from saved' : 'Save this place'}
-              className="absolute top-1.5 left-1.5 w-6 h-6 flex items-center justify-center rounded-full bg-black/50 z-10 active:scale-90 transition-transform"
-            >
-              {bookmarked
-                ? <BookmarkCheck className="w-3.5 h-3.5 text-white" />
-                : <Bookmark className="w-3.5 h-3.5 text-white" />
-              }
-            </button>
             <span className={`absolute top-1.5 right-1.5 flex items-center gap-0.5 px-1 py-0.5 rounded-full text-xs font-semibold leading-none ${place.openNow ? 'bg-success/90 text-white' : 'bg-black/60 text-white/80'}`}>
               <span className={`w-1 h-1 rounded-full shrink-0 ${place.openNow ? 'bg-white' : 'bg-white/60'}`} />
               {place.openNow ? 'Open' : 'Closed'}
@@ -431,8 +434,8 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           </div>
 
           {/* Col 2: Info */}
-          <div className="flex-1 min-w-0 px-2.5 py-2 flex flex-col gap-1">
-            <div className="flex items-baseline gap-1 flex-wrap">
+          <div className="flex-1 min-w-0 px-3 py-3 flex flex-col gap-1.5">
+            <div className="flex items-baseline gap-1 flex-wrap pr-9">
               <h3 className="font-display font-bold text-sm text-heading leading-snug line-clamp-1" title={place.name}>{place.name}</h3>
               {selectedTags.length > 0 && place.matchScore !== undefined && (
                 <span className={`text-xs font-bold shrink-0 ${place.matchScore >= 80 ? 'text-success-strong' : place.matchScore >= 55 ? 'text-brand' : 'text-muted'}`}>
@@ -441,11 +444,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               )}
             </div>
             <div className="flex items-center gap-0.5">
-              <div className="flex gap-0.5">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className={`w-3 h-3 ${i < Math.floor(place.rating) ? 'fill-warning-strong text-warning-strong' : i < place.rating ? 'fill-warning-medium text-warning-medium' : 'text-border'}`} />
-                ))}
-              </div>
+              <StarRating rating={place.rating} size="xs" />
               <span className="text-xs text-muted ml-0.5">(<span className="tabular-nums">{place.reviewCount.toLocaleString()}</span>)</span>
             </div>
             {(confirmed.length > 0 || unconfirmed.length > 0) && (
@@ -503,7 +502,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           return (
             <div className="border-t border-border">
               {ctaLockedM ? (
-                <div className="flex flex-col gap-1.5 px-3 py-2">
+                <div className="flex flex-col gap-1.5 px-3 py-2.5">
                   <div className="flex gap-2">
                     {tab === 'Hotels' && (
                       <button
@@ -515,7 +514,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                     )}
                     <button
                       onClick={() => toast('Select a filter tag above to unlock Map & Booking', 'info')}
-                      className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold active:scale-[0.97] ${tab === 'Hotels' ? 'bg-brand/25 text-brand/70' : 'bg-success/25 text-success/70'}`}
+                      className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold active:scale-[0.97] ${tab === 'Hotels' ? 'bg-brand/25 text-brand/70' : 'bg-brand/25 text-brand/70'}`}
                     >
                       {tab === 'Hotels' ? <><ExternalLink className="w-3.5 h-3.5 shrink-0" />Book Now</> : <><Navigation className="w-3.5 h-3.5 shrink-0" />Directions</>}
                     </button>
@@ -526,7 +525,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                   </div>
                 </div>
               ) : (
-                <div className="flex gap-2 px-3 py-2">
+                <div className="flex gap-2 px-3 py-2.5">
                   {tab === 'Hotels' && (
                     <a href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
                       target="_blank" rel="noopener noreferrer"
@@ -544,7 +543,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                   {tab === 'Food' && (
                     <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
                       target="_blank" rel="noopener noreferrer"
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold bg-success text-white active:scale-[0.97] shadow-sm">
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold bg-brand text-white active:scale-[0.97] shadow-sm">
                       <Navigation className="w-3.5 h-3.5 shrink-0" />Directions
                     </a>
                   )}
@@ -579,17 +578,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               autoLoad={rank === 1}
             />
           </div>
-          <button
-            onClick={toggleBookmark}
-            aria-label={bookmarked ? 'Remove from saved' : 'Save this place'}
-            className="absolute top-2 left-2 w-7 h-7 flex items-center justify-center rounded-full bg-black/50 z-10 hover:bg-black/70 active:scale-90 transition-all"
-          >
-            {bookmarked
-              ? <BookmarkCheck className="w-4 h-4 text-white" />
-              : <Bookmark className="w-4 h-4 text-white" />
-            }
-          </button>
-          {/* Open/Closed — top right */}
+          {/* Open/Closed — top right of photo */}
           <span className={`absolute top-2 right-2 flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-semibold leading-none ${place.openNow ? 'bg-success/90 text-white' : 'bg-black/60 text-white/80'}`}>
             <span className={`w-1 h-1 rounded-full shrink-0 ${place.openNow ? 'bg-white' : 'bg-white/60'}`} />
             {place.openNow ? 'Open' : 'Closed'}
@@ -607,11 +596,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             )}
           </div>
           <div className="flex items-center gap-0.5">
-            <div className="flex gap-0.5">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} className={`w-3 h-3 ${i < Math.floor(place.rating) ? 'fill-warning-strong text-warning-strong' : i < place.rating ? 'fill-warning-medium text-warning-medium' : 'text-border'}`} />
-              ))}
-            </div>
+            <StarRating rating={place.rating} size="xs" />
             <span className="text-xs text-muted ml-0.5">(<span className="tabular-nums">{place.reviewCount.toLocaleString()}</span>)</span>
           </div>
           {(confirmed.length > 0 || unconfirmed.length > 0) && (
@@ -676,7 +661,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                     </button>
                     <button
                       onClick={() => toast('Select a filter tag above to unlock Map & Booking', 'info')}
-                      className={`flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold active:scale-[0.97] ${tab === 'Hotels' ? 'bg-brand/25 text-brand/70' : 'bg-success/25 text-success/70'}`}
+                      className={`flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold active:scale-[0.97] ${tab === 'Hotels' ? 'bg-brand/25 text-brand/70' : 'bg-brand/25 text-brand/70'}`}
                     >
                       {tab === 'Hotels' ? <><ExternalLink className="w-3.5 h-3.5 shrink-0" />Book</> : <><Navigation className="w-3.5 h-3.5 shrink-0" />Directions</>}
                     </button>
@@ -702,7 +687,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                     {tab === 'Food' && (
                       <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
                         target="_blank" rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold bg-success text-white hover:bg-success-strong transition-colors active:scale-[0.97] shadow-sm">
+                        className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold bg-brand text-white hover:bg-brand/90 transition-colors active:scale-[0.97] shadow-sm">
                         <Navigation className="w-3.5 h-3.5 shrink-0" />Directions
                       </a>
                     )}
@@ -785,7 +770,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               )}
 
               {/* ── CARD 3: What to Be Aware Of ── */}
-              {(place.aiDetail?.caveat || (place as any).cautionNote) && (
+              {(place.aiDetail?.caveat || place.cautionNote) && (
                 <div className="px-3 py-3 bg-warning-soft">
                   <div className="flex items-center gap-2 mb-1.5">
                     <div className="w-6 h-6 rounded-lg bg-warning-soft flex items-center justify-center shrink-0">
@@ -794,7 +779,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                     <span className="text-xs font-bold uppercase tracking-wide text-warning-strong">What to Be Aware Of</span>
                   </div>
                   <p className="text-xs text-body leading-relaxed">
-                    {place.aiDetail?.caveat || (place as any).cautionNote}
+                    {place.aiDetail?.caveat || place.cautionNote}
                   </p>
                 </div>
               )}
@@ -1006,7 +991,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
   const wx = getThanjavurWeather();
   const crowdOrder: Record<string, number> = { Low: 0, Moderate: 1, High: 2 };
   const worstCrowd = stops.reduce<'Low' | 'Moderate' | 'High'>((w, s) => {
-    const sc = (s as any).crowdLevel as 'Low' | 'Moderate' | 'High' | undefined;
+    const sc = s.crowdLevel;
     return sc && crowdOrder[sc] > crowdOrder[w] ? sc : w;
   }, 'Low');
   const crowdStyle = worstCrowd === 'High'
@@ -1019,7 +1004,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
     <div>
 
       {/* ── Day progress strip — sticky ──────────────────────── */}
-      <div className="sticky top-0 z-40 mb-4 rounded-xl bg-surface border border-card-border shadow-sm overflow-hidden">
+      <div className="sticky top-14 z-40 mb-4 rounded-xl bg-surface border border-card-border shadow-sm overflow-hidden">
         {/* Single compact header row */}
         <div className="px-4 py-2.5 border-b border-border/60 flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5 min-w-0">
@@ -1027,11 +1012,11 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
             <span className="text-sm font-bold text-heading whitespace-nowrap">Day Plan</span>
             <span className="text-xs text-muted whitespace-nowrap">· {stops.length} stops</span>
           </div>
-          <div className="flex items-center gap-2 shrink-0 text-xs">
-            <span>{wx.emoji} <span className="font-semibold text-body">{wx.temp}</span></span>
-            <span className="w-px h-3 bg-border" />
-            <span className="font-semibold" style={{ color: crowdStyle.text }}>{worstCrowd} crowd</span>
-            <span className="w-px h-3 bg-border" />
+          <div className="flex items-center gap-1.5 shrink-0 text-xs">
+            <span className="hidden sm:inline">{wx.emoji} <span className="font-semibold text-body">{wx.temp}</span></span>
+            <span className="hidden sm:inline w-px h-3 bg-border" />
+            <span className="hidden sm:inline font-semibold" style={{ color: crowdStyle.text }}>{worstCrowd} crowd</span>
+            <span className="hidden sm:inline w-px h-3 bg-border" />
             <span className="font-bold text-brand">{stops[0]?.time} – {stops[stops.length - 1]?.time}</span>
           </div>
         </div>
@@ -1114,7 +1099,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                 <div className="relative h-[185px]">
                   <ItineraryPhoto
                     stopName={stop.stop}
-                    photoRef={(stop as any).photoRef}
+                    photoRef={stop.photoRef}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-black/25" />
 
@@ -1175,7 +1160,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                     <div className="flex flex-wrap gap-1.5">
                       {stop.entryFee && (
                         <span className="inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full bg-success-soft text-success border border-success-medium/30">
-                          <span aria-hidden="true">🎟</span> {stop.entryFee}
+                          <Ticket className="w-3 h-3 shrink-0" /> {stop.entryFee}
                         </span>
                       )}
                       {stop.highlights?.map(h => (
@@ -1238,12 +1223,12 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                       <StopInfoTabs stop={stop} crowd={crowd} />
 
                       {/* Avoid These — if avoidNote exists */}
-                      {(stop as any).avoidNote && (
+                      {stop.avoidNote && (
                         <div className="flex items-start gap-2 p-2.5 rounded-lg border bg-danger-soft border-danger-medium/50">
                           <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-danger-strong" />
                           <div>
                             <span className="text-xs font-bold block mb-0.5 text-danger-strong">Avoid</span>
-                            <p className="text-xs leading-snug text-danger">{(stop as any).avoidNote}</p>
+                            <p className="text-xs leading-snug text-danger">{stop.avoidNote}</p>
                           </div>
                         </div>
                       )}
@@ -1251,7 +1236,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                       {/* Reviews — time-slot highlighted */}
                       {(() => {
                         const stopReviews: Array<{ text: string; author: string; location: string; stars: number; ago: string }> =
-                          (stop as any).reviews ?? [];
+                          stop.reviews ?? [];
                         const timeKws = TIME_REVIEW_KEYWORDS['Morning'] ?? [];
                         const displayed = stopReviews
                           .filter(r => r.stars >= 4 && r.text)
@@ -1317,7 +1302,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                 <div className="flex items-center gap-3 py-2 px-1">
                   <div className="flex flex-col items-center w-8 shrink-0">
                     <div className="w-px h-3 bg-border" />
-                    <div className="w-8 h-8 rounded-full bg-success/15 border-2 border-success flex items-center justify-center text-sm"><span aria-hidden="true">🏁</span></div>
+                    <div className="w-8 h-8 rounded-full bg-success/15 border-2 border-success flex items-center justify-center"><CheckCircle className="w-4 h-4 text-success-strong" /></div>
                   </div>
                   <span className="text-xs font-bold text-muted">Day complete · {stop.departBy ?? stop.time}</span>
                 </div>
@@ -1331,7 +1316,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
   );
 }
 
-const EXPLORE_TABS = ['Overview', 'Plan', 'Reviews'] as const;
+const EXPLORE_TABS = ['Overview', 'Reviews'] as const;
 type ExploreTab = typeof EXPLORE_TABS[number];
 
 function ExploreView({ place, visitTime = 'Morning' }: { place: ExploreResult; visitTime?: string }) {
@@ -1449,21 +1434,15 @@ function ExploreView({ place, visitTime = 'Morning' }: { place: ExploreResult; v
               </div>
             )}
 
-          </motion.div>
-        )}
-
-        {activeTab === 'Plan' && (
-          <motion.div key="plan" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.15 }} className="space-y-3">
-
             {/* Best Time */}
-            {(place as any).bestTime && (
+            {place.bestTime && (
               <div className="flex items-start gap-3 p-3 rounded-lg border bg-brand-softer border-brand-medium/40">
                 <div className="w-7 h-7 rounded-lg bg-brand/10 flex items-center justify-center shrink-0">
                   <Clock className="w-3.5 h-3.5 text-brand" />
                 </div>
                 <div>
                   <span className="text-xs font-bold text-brand block mb-0.5">Best Time to Visit</span>
-                  <p className="text-xs leading-snug text-body">{(place as any).bestTime}</p>
+                  <p className="text-xs leading-snug text-body">{place.bestTime}</p>
                 </div>
               </div>
             )}
@@ -1491,14 +1470,14 @@ function ExploreView({ place, visitTime = 'Morning' }: { place: ExploreResult; v
             </div>
 
             {/* Avoid These */}
-            {(place as any).avoidNote && (
+            {place.avoidNote && (
               <div className="flex items-start gap-3 p-3 rounded-lg border bg-danger-soft border-danger-medium/50">
                 <div className="w-7 h-7 rounded-lg bg-danger/15 flex items-center justify-center shrink-0">
                   <AlertTriangle className="w-3.5 h-3.5 text-danger-strong" />
                 </div>
                 <div>
                   <span className="text-xs font-bold block mb-0.5 text-danger-strong">Avoid These</span>
-                  <p className="text-xs leading-snug text-danger">{(place as any).avoidNote}</p>
+                  <p className="text-xs leading-snug text-danger">{place.avoidNote}</p>
                 </div>
               </div>
             )}
@@ -1546,7 +1525,7 @@ function isPureVegPlace(p: PlaceResult): boolean {
 function StopInfoTabs({
   stop, crowd,
 }: {
-  stop: any;
+  stop: ItineraryStop | LiveItineraryStop;
   crowd: { bg: string; text: string; dot: string } | null;
 }) {
   return (

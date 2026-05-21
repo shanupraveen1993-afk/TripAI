@@ -26,18 +26,75 @@ const SLOT_MOCK: Record<string, typeof MOCK_ITINERARY> = {
   Evening:   MOCK_ITINERARY_EVENING,
 };
 import {
-  fetchPlan, fetchItinerary, fetchExploreGuide,
-  PlanResult, PlanResponse, ExploreGuide, LiveItineraryStop,
+  fetchPlan, fetchItinerary,
+  PlanResult, LiveItineraryStop,
 } from './api/client';
+import { isThanjavurCity } from './utils/city';
 
 type AppScreen = 'landing' | 'browse' | 'app';
 type ContentScreen = 'dashboard' | 'citylock' | 'loading' | 'results';
+
+/* ── Static skeleton index arrays — defined outside component to avoid realloc ── */
+const ITIN_SKELETONS = Array.from({ length: 5 }, (_, i) => i);
+const PLACE_SKELETONS = Array.from({ length: 3 }, (_, i) => i);
+
+/* ── App background gradient ──────────────────────────────────────────────── */
+const APP_BG_STYLE = {
+  background: 'linear-gradient(145deg, var(--color-brand-softer) 0%, var(--color-bg-app) 45%, var(--color-brand-softer) 100%)',
+} as const;
+
+/* ── Non-Thanjavur city notice modal ─────────────────────────────────────── */
+function CityNoticeModal({ city, onDismiss }: {
+  city: string | null;
+  onDismiss: () => void;
+}) {
+  return (
+    <AnimatePresence>
+      {city && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0 z-[400] flex items-center justify-center p-5"
+          style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}
+          onClick={onDismiss}
+        >
+          <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="city-notice-title"
+            initial={{ opacity: 0, scale: 0.92, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.92, y: 20 }}
+            transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+            className="rounded-2xl p-6 max-w-sm w-full relative"
+            style={{ background: 'rgba(10,14,30,0.98)', border: '1px solid rgba(255,255,255,0.10)', boxShadow: '0 24px 80px rgba(0,0,0,0.7)' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <button onClick={onDismiss} aria-label="Close" className="absolute top-3 right-3 p-1 rounded-lg text-white/40 hover:text-white/80 transition-colors">
+              <X className="w-4 h-4" />
+            </button>
+            <MapPin className="w-8 h-8 text-brand mb-3" aria-hidden="true" />
+            <h3 id="city-notice-title" className="text-white font-display font-semibold text-xl mb-2">{city} isn't live yet</h3>
+            <p className="text-sm leading-relaxed mb-5" style={{ color: 'rgba(255,255,255,0.65)' }}>
+              TripAI is fully live in <span className="font-semibold" style={{ color: 'var(--color-warning)' }}>Thanjavur</span> — hotels, restaurants, and landmarks AI-ranked in seconds. {city} is next on our roadmap.
+            </p>
+            <Button onClick={onDismiss} className="w-full justify-center">
+              Try Thanjavur <ArrowRight className="w-4 h-4" />
+            </Button>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
 
 /* ── Auto location detection toast ──────────────────────────────────────── */
 function LocationDetectionToast({ phase }: { phase: 'locating' | 'found' | 'done' }) {
   return (
     <AnimatePresence>
-      {phase !== 'done' && (
+      {phase === 'found' && (
         <motion.div
           key="loc-toast"
           initial={{ opacity: 0, y: 24, scale: 0.95 }}
@@ -51,23 +108,9 @@ function LocationDetectionToast({ phase }: { phase: 'locating' | 'found' | 'done
             boxShadow: '0 8px 32px rgba(28,100,242,0.18)',
           }}
         >
-          {phase === 'locating' ? (
-            <>
-              <span className="w-3.5 h-3.5 rounded-full border-2 border-brand border-t-transparent animate-spin shrink-0" />
-              <span className="text-xs font-semibold text-brand whitespace-nowrap">Detecting your location…</span>
-            </>
-          ) : (
-            <>
-              <motion.span initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: 'spring', stiffness: 400, damping: 20 }} className="shrink-0">
-                <MapPin className="w-3.5 h-3.5 text-brand" />
-              </motion.span>
-              <span className="text-xs font-semibold whitespace-nowrap text-brand">Thanjavur detected</span>
-              <motion.span initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.1, type: 'spring', stiffness: 400, damping: 20 }}
-                className="text-xs font-bold px-1.5 py-0.5 rounded-full" style={{ background: 'var(--color-brand)', color: '#fff' }}>
-                ✓
-              </motion.span>
-            </>
-          )}
+          <MapPin className="w-3.5 h-3.5 text-brand shrink-0" />
+          <span className="text-xs font-semibold whitespace-nowrap text-brand">Thanjavur detected</span>
+          <span className="text-xs font-bold px-1.5 py-0.5 rounded-full" style={{ background: 'var(--color-brand)', color: '#fff' }}>✓</span>
         </motion.div>
       )}
     </AnimatePresence>
@@ -92,7 +135,6 @@ export default function App() {
   const [contentScreen, setContent]   = useState<ContentScreen>('dashboard');
   const [searchLocation, setSearchLocation] = useState('Thanjavur');
   const [liveResults, setLiveResults]       = useState<PlanResult[] | null>(null);
-  const [liveExplore, setLiveExplore]       = useState<ExploreGuide | null>(null);
   const [liveItinerary, setLiveItinerary]   = useState<LiveItineraryStop[] | null>(null);
   const [apiError, setApiError]             = useState(false);
   const [searchSeed, setSearchSeed]         = useState(0);
@@ -129,11 +171,12 @@ export default function App() {
   const [locationPhase, setLocationPhase] = useState<'locating' | 'found' | 'done'>('done');
 
   const triggerLocationToast = () => {
+    if (localStorage.getItem('tripai_loc_shown')) return;
+    localStorage.setItem('tripai_loc_shown', '1');
     locTimers.current.forEach(clearTimeout);
-    setLocationPhase('locating');
+    setLocationPhase('found');
     locTimers.current = [
-      setTimeout(() => setLocationPhase('found'), 1600),
-      setTimeout(() => setLocationPhase('done'),  3400),
+      setTimeout(() => setLocationPhase('done'), 2400),
     ];
   };
 
@@ -184,11 +227,11 @@ export default function App() {
   const [pendingFilters, setPendingFilters]     = useState<DashboardFilters | null>(null);
 
   // ── Auth (from landing CTA) ─────────────────────────────────────────────
-  const handleAuthSuccess = (u: User, dest?: string) => {
+  const handleAuthSuccess = (u: User, dest?: string, tab?: Tab) => {
     setUser(u);
     if (dest) setSearchLocation(dest);
-    setInitialTab('Hotels');
-    setActiveTab('Hotels');
+    setInitialTab(tab ?? 'Hotels');
+    setActiveTab(tab ?? 'Hotels');
     setContent('dashboard');
     setAppScreen('app');
   };
@@ -232,8 +275,6 @@ export default function App() {
   };
 
   // ── Core search logic ───────────────────────────────────────────────────
-  const isThanjavurCity = (dest: string) =>
-    /thanjavur|tanjore/i.test(dest.trim()) || dest.trim() === '';
 
   const runSearch = async (filters: DashboardFilters, seed: number) => {
     // Non-Thanjavur city → show notice popup, stay on dashboard
@@ -247,7 +288,6 @@ export default function App() {
     setContent('loading');
     setIsSaved(false);
     setLiveResults(null);
-    setLiveExplore(null);
     setLiveItinerary(null);
     setApiError(false);
     try {
@@ -487,7 +527,6 @@ export default function App() {
     });
     setLiveResults(null);
     setLiveItinerary(null);
-    setLiveExplore(null);
     setApiError(false);
     setIsSaved(false);
 
@@ -573,10 +612,10 @@ export default function App() {
         {LOADING_LABELS[activeTab] ?? 'AI is on it…'}
       </p>
       {activeTab === 'Itinerary' ? (
-        Array.from({ length: 5 }).map((_, i) => <ItineraryItemSkeleton key={i} />)
+        ITIN_SKELETONS.map(i => <ItineraryItemSkeleton key={i} />)
       ) : (
         <div className="grid grid-cols-1 gap-5">
-          {Array.from({ length: 3 }).map((_, i) => <PlaceCardSkeleton key={i} />)}
+          {PLACE_SKELETONS.map(i => <PlaceCardSkeleton key={i} />)}
         </div>
       )}
     </div>
@@ -636,8 +675,6 @@ export default function App() {
               tab={activeTab}
               destination="Thanjavur"
               searchArea={searchArea}
-              isFirstItinerary={itineraryGenCount === 1}
-              isLoadingMore={false}
               hotels={activeTab === 'Hotels' ? (liveResults as PlaceResult[] ?? []) : []}
               food={activeTab === 'Food'    ? (liveResults as PlaceResult[] ?? []) : []}
               itinerary={activeTab === 'Itinerary' ? itineraryToDisplay : MOCK_ITINERARY}
@@ -687,7 +724,7 @@ export default function App() {
               }}
               onSave={handleSave}
               saved={isSaved}
-              onSwitchTab={tab => { setInitialTab(tab); setActiveTab(tab); setContent('dashboard'); }}
+              onSwitchTab={tab => { setInitialTab(tab); setActiveTab(tab); setApiError(false); setContent('dashboard'); }}
             />
           </motion.div>
         )}
@@ -711,7 +748,7 @@ export default function App() {
   // Browse mode: user came from a category click without signing in
   if (appScreen === 'browse') {
     return (
-      <div className="min-h-dvh overflow-x-hidden" style={{ background: 'linear-gradient(145deg, var(--color-brand-softer) 0%, var(--color-bg-app) 45%, var(--color-brand-softer) 100%)' }}>
+      <div className="min-h-dvh overflow-x-clip" style={APP_BG_STYLE}>
         {/* Browse header with universal location bar */}
         <header className="sticky top-0 z-[200] border-b" style={{ background: 'rgba(249,250,251,0.88)', backdropFilter: 'blur(20px)', borderColor: 'rgba(0,0,0,0.07)', boxShadow: '0 1px 12px rgba(28,100,242,0.06)' }}>
           <div className="w-full max-w-[920px] mx-auto px-4 h-14 grid items-center gap-3" style={{ gridTemplateColumns: 'auto 1fr auto' }}>
@@ -784,44 +821,7 @@ export default function App() {
         </Modal>
 
         {/* Non-Thanjavur city notice */}
-        <AnimatePresence>
-          {nonThanjavurNotice && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-[400] flex items-center justify-center p-5"
-              style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}
-              onClick={dismissCityNotice}
-            >
-              <motion.div
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby="city-notice-title-browse"
-                initial={{ opacity: 0, scale: 0.92, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.92, y: 20 }}
-                transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-                className="rounded-2xl p-6 max-w-sm w-full relative"
-                style={{ background: 'rgba(10,14,30,0.98)', border: '1px solid rgba(255,255,255,0.10)', boxShadow: '0 24px 80px rgba(0,0,0,0.7)' }}
-                onClick={e => e.stopPropagation()}
-              >
-                <button onClick={dismissCityNotice} aria-label="Close" className="absolute top-3 right-3 p-1 rounded-lg text-white/40 hover:text-white/80 transition-colors">
-                  <X className="w-4 h-4" />
-                </button>
-                <MapPin className="w-8 h-8 text-brand mb-3" aria-hidden="true" />
-                <h3 id="city-notice-title-browse" className="text-white font-display font-semibold text-xl mb-2">{nonThanjavurNotice} isn't live yet</h3>
-                <p className="text-sm leading-relaxed mb-5" style={{ color: 'rgba(255,255,255,0.65)' }}>
-                  TripAI is fully live in <span className="font-semibold" style={{ color: 'var(--color-warning)' }}>Thanjavur</span> — hotels, restaurants, and landmarks AI-ranked in seconds. {nonThanjavurNotice} is next on our roadmap.
-                </p>
-                <Button onClick={dismissCityNotice} className="w-full justify-center">
-                  Try Thanjavur <ArrowRight className="w-4 h-4" />
-                </Button>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <CityNoticeModal city={nonThanjavurNotice} onDismiss={dismissCityNotice} />
       {activeTab === 'Itinerary' && <LocationDetectionToast phase={locationPhase} />}
       </div>
     );
@@ -829,7 +829,7 @@ export default function App() {
 
   // Authenticated app
   return (
-    <div className="min-h-dvh overflow-x-hidden" style={{ background: 'linear-gradient(145deg, var(--color-brand-softer) 0%, var(--color-bg-app) 45%, var(--color-brand-softer) 100%)' }}>
+    <div className="min-h-dvh overflow-x-clip" style={APP_BG_STYLE}>
       <Navbar
         section={mainSection}
         onSectionChange={s => { setMainSection(s); if (s === 'home') setContent('dashboard'); }}
@@ -851,44 +851,7 @@ export default function App() {
       </main>
 
       {/* Non-Thanjavur city notice */}
-      <AnimatePresence>
-        {nonThanjavurNotice && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[400] flex items-center justify-center p-5"
-            style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}
-            onClick={dismissCityNotice}
-          >
-            <motion.div
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="city-notice-title-app"
-              initial={{ opacity: 0, scale: 0.92, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.92, y: 20 }}
-              transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-              className="rounded-2xl p-6 max-w-sm w-full relative"
-              style={{ background: 'rgba(10,14,30,0.98)', border: '1px solid rgba(255,255,255,0.10)', boxShadow: '0 24px 80px rgba(0,0,0,0.7)' }}
-              onClick={e => e.stopPropagation()}
-            >
-              <button onClick={dismissCityNotice} aria-label="Close" className="absolute top-3 right-3 p-1 rounded-lg text-white/40 hover:text-white/80 transition-colors">
-                <X className="w-4 h-4" />
-              </button>
-              <MapPin className="w-8 h-8 text-brand mb-3" aria-hidden="true" />
-              <h3 id="city-notice-title-app" className="text-white font-display font-semibold text-xl mb-2">{nonThanjavurNotice} isn't live yet</h3>
-              <p className="text-sm leading-relaxed mb-5" style={{ color: 'rgba(255,255,255,0.65)' }}>
-                TripAI is fully live in <span className="font-semibold" style={{ color: 'var(--color-warning)' }}>Thanjavur</span> — hotels, restaurants, and landmarks AI-ranked in seconds. {nonThanjavurNotice} is next on our roadmap.
-              </p>
-              <Button onClick={dismissCityNotice} className="w-full justify-center">
-                Try Thanjavur <ArrowRight className="w-4 h-4" />
-              </Button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <CityNoticeModal city={nonThanjavurNotice} onDismiss={dismissCityNotice} />
       {activeTab === 'Itinerary' && <LocationDetectionToast phase={locationPhase} />}
 
       {/* Logout confirmation */}

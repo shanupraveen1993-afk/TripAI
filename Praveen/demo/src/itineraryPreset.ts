@@ -186,9 +186,10 @@ const PRESET_LEGS: Record<string, PresetLeg> = {
     traffic: { Morning: 'Light', Afternoon: 'Moderate', Evening: 'Heavy' },
   },
   'big_temple|punnainallur_temple': {
-    distanceM: 1400, walkMins: null, autoMins: 10, autoFare: 70,
+    distanceM: 7000, walkMins: null, autoMins: 20, autoFare: 120,
     mode: 'auto',
     traffic: { Morning: 'Light', Afternoon: 'Moderate', Evening: 'Moderate' },
+    note: 'Highway route south of city — smooth traffic; final approach to temple may be slow on auspicious days',
   },
   'big_temple|lunch_stop': {
     distanceM: 1200, walkMins: null, autoMins: 12, autoFare: 70,
@@ -207,7 +208,7 @@ const PRESET_LEGS: Record<string, PresetLeg> = {
     traffic: { Morning: 'Light', Afternoon: 'Heavy', Evening: 'Moderate' },
   },
   'palace|punnainallur_temple': {
-    distanceM: 1200, walkMins: null, autoMins: 10, autoFare: 70,
+    distanceM: 7500, walkMins: null, autoMins: 22, autoFare: 130,
     mode: 'auto',
     traffic: { Morning: 'Light', Afternoon: 'Moderate', Evening: 'Moderate' },
   },
@@ -222,7 +223,7 @@ const PRESET_LEGS: Record<string, PresetLeg> = {
     traffic: { Morning: 'Light', Afternoon: 'Heavy', Evening: 'Moderate' },
   },
   'sivaganga_fort|punnainallur_temple': {
-    distanceM: 1600, walkMins: null, autoMins: 12, autoFare: 80,
+    distanceM: 7000, walkMins: null, autoMins: 20, autoFare: 120,
     mode: 'auto',
     traffic: { Morning: 'Light', Afternoon: 'Moderate', Evening: 'Moderate' },
   },
@@ -242,7 +243,7 @@ const PRESET_LEGS: Record<string, PresetLeg> = {
     traffic: { Morning: 'Light', Afternoon: 'Moderate', Evening: 'Moderate' },
   },
   'punnainallur_temple|big_temple': {
-    distanceM: 1400, walkMins: null, autoMins: 10, autoFare: 70,
+    distanceM: 7000, walkMins: null, autoMins: 20, autoFare: 120,
     mode: 'auto',
     traffic: { Morning: 'Light', Afternoon: 'Moderate', Evening: 'Moderate' },
   },
@@ -251,6 +252,17 @@ const PRESET_LEGS: Record<string, PresetLeg> = {
     mode: 'auto',
     traffic: { Morning: 'Light', Afternoon: 'Moderate', Evening: 'Heavy' },
     note: '2.8 km from Big Temple area; palace is a further ~400 m — auto recommended',
+  },
+  'saraswathi_mahal|rajarajan_manimandapam': {
+    distanceM: 2800, walkMins: null, autoMins: 12, autoFare: 80,
+    mode: 'auto',
+    traffic: { Morning: 'Light', Afternoon: 'Moderate', Evening: 'Heavy' },
+    note: 'Auto from Palace complex via outer road — Manimandapam is near Big Temple north gate',
+  },
+  'rajarajan_manimandapam|sivaganga_fort': {
+    distanceM: 1500, walkMins: null, autoMins: 10, autoFare: 60,
+    mode: 'auto',
+    traffic: { Morning: 'Light', Afternoon: 'Moderate', Evening: 'Heavy' },
   },
 
   // ── Long-distance: taxi required ─────────────────────────────────────────
@@ -381,11 +393,11 @@ export function legToReachNote(leg: PresetLeg, toStop: string): string {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const SLOT_PLANS: Record<string, string[]> = {
-  '07:00': ['big_temple', 'palace', 'saraswathi_mahal', 'art_gallery', 'sivaganga_fort'],
-  '14:00': ['palace', 'art_gallery', 'sivaganga_fort'],
-  '12:00': ['palace', 'art_gallery', 'sivaganga_fort'],   // alias
-  '17:00': ['sivaganga_fort', 'big_temple'],
-  '16:00': ['sivaganga_fort', 'big_temple'],              // alias
+  '07:00': ['big_temple', 'palace', 'saraswathi_mahal', 'rajarajan_manimandapam', 'sivaganga_fort'],
+  '14:00': ['big_temple', 'palace', 'saraswathi_mahal'],
+  '12:00': ['big_temple', 'palace', 'saraswathi_mahal'],
+  '17:00': ['big_temple', 'punnainallur_temple'],
+  '16:00': ['big_temple', 'punnainallur_temple'],
 };
 
 // Slot label used to look up traffic in PresetLeg.traffic
