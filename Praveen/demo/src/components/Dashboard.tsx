@@ -391,26 +391,24 @@ function LocationBar({ value, onChange, placeholder, autoDetect, mockResolvedLoc
           : placeholder
         }
         readOnly={detecting}
-        className={`w-full pl-9 pr-28 py-2.5 border rounded-lg text-xs focus:outline-none transition-all duration-300 ${
+        className={`w-full pl-9 pr-28 py-2.5 border rounded-lg text-base focus:outline-none transition-all duration-300 ${
           phase === 'locating'
             ? 'border-brand bg-brand-softer text-brand italic'
             : 'border-border focus:ring-2 focus:ring-brand-soft focus:border-brand'
         }`}
       />
 
-      {/* Current location button */}
+      {/* Current location button — spinner only in left icon slot, button shows text only (L-02) */}
       <button
         type="button"
         onClick={detect}
         disabled={detecting}
         className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center justify-center gap-1 text-xs font-bold px-2 py-1 rounded-md transition-all duration-200 disabled:pointer-events-none"
         style={{ background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }}
-        aria-label="Use current location"
+        aria-label={phase === 'locating' ? 'Locating your position' : 'Use current location'}
         title="Use current location"
       >
-        {phase === 'locating' && <span className="w-3.5 h-3.5 border-[1.5px] border-current border-t-transparent rounded-full animate-spin" />}
-        {phase === 'found'    && <Navigation className="w-3 h-3" />}
-        {phase === 'idle'     && <Navigation className="w-3 h-3" />}
+        {(phase === 'found' || phase === 'idle') && <Navigation className="w-3 h-3" />}
         <span className="ml-0.5 whitespace-nowrap">
           {phase === 'locating' ? 'Locating…' : 'Current location'}
         </span>
@@ -457,7 +455,7 @@ function CategorySelector({ active, onChange }: { active: Tab; onChange: (t: Tab
             <span className="flex items-center">
               {meta.icon}
             </span>
-            <span className="text-[10px] font-bold uppercase tracking-wide transition-colors duration-200">
+            <span className="text-xs font-bold uppercase tracking-wide transition-colors duration-200">
               {meta.label}
             </span>
           </motion.button>
@@ -679,7 +677,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
     activeTab === 'Itinerary' ||
     activeTab === 'Explore' ||
     (activeTab === 'Hotels' && (hotelTags.length > 0 || hotelTag.trim() !== '' || searchQuery.trim() !== '')) ||
-    (activeTab === 'Food'   && (foodTags.length  > 0 || foodTag.trim()  !== '' || searchQuery.trim() !== ''));
+    (activeTab === 'Food'   && (foodTags.length  > 0 || foodTag.trim()  !== '' || searchQuery.trim() !== '' || dietType === 'Pure Veg'));
 
   const handleSearch = () => {
     if (activeTab === 'Itinerary' && !startTime) {
@@ -712,18 +710,19 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
           {/* Hotel keyword tags — multi-select up to 2, segmented */}
           {hotelTagData.tags.length > 0 && (
             <div>
-              {/* Header with counter + subtitle */}
+              {/* Header with counter + clear */}
               <div className="mb-2.5">
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-semibold text-heading">
                     What matters to you?
                     {tagsLoading && <span role="status" aria-label="Loading tags" className="ml-1.5 inline-block w-2.5 h-2.5 border border-muted border-t-transparent rounded-full animate-spin align-middle" />}
                   </label>
-                  {hotelTags.length > 0 && (
-                    <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-brand-softer text-brand">
-                      {hotelTags.length}/2
-                    </span>
-                  )}
+                  {hotelTags.length > 0 ? (
+                    <button type="button" onClick={() => setHotelTags([])}
+                      className="text-xs font-semibold text-brand underline underline-offset-2">
+                      Clear ({hotelTags.length}/2)
+                    </button>
+                  ) : null}
                 </div>
               </div>
 
@@ -821,13 +820,6 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                 )
               }
 
-              {/* Clear tags */}
-              {hotelTags.length > 0 && (
-                <button type="button" onClick={() => setHotelTags([])}
-                  className="mt-1.5 text-xs font-medium text-muted underline underline-offset-2 min-h-[44px]">
-                  Clear tags
-                </button>
-              )}
             </div>
           )}
 
@@ -841,18 +833,18 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
           {/* Segmented food tags — multi-select up to 3, 5×5 from real review data */}
           {foodTagData.tags.length > 0 && (
             <div>
-              {/* Header with counter */}
+              {/* Header with counter + clear */}
               <div className="flex items-center justify-between mb-1.5">
                 <label className="text-sm font-semibold text-heading">
                   What I'm looking for
                   {tagsLoading && <span role="status" aria-label="Loading tags" className="ml-1.5 inline-block w-2.5 h-2.5 border border-muted border-t-transparent rounded-full animate-spin align-middle" />}
                 </label>
-                {foodTags.length > 0 && (
-                  <span className="text-xs font-semibold px-1.5 py-0.5 rounded"
-                    style={{ background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }}>
-                    {foodTags.length}/2
-                  </span>
-                )}
+                {foodTags.length > 0 ? (
+                  <button type="button" onClick={() => setFoodTags([])}
+                    className="text-xs font-semibold text-brand underline underline-offset-2">
+                    Clear ({foodTags.length}/2)
+                  </button>
+                ) : null}
               </div>
 
               {foodTagData.segments && Object.keys(foodTagData.segments).length > 0
@@ -925,13 +917,6 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                 )
               }
 
-              {/* Clear tags */}
-              {foodTags.length > 0 && (
-                <button type="button" onClick={() => setFoodTags([])}
-                  className="mt-1.5 text-xs font-medium text-muted underline underline-offset-2 min-h-[44px]">
-                  Clear tags
-                </button>
-              )}
             </div>
           )}
 
@@ -1106,25 +1091,10 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
   };
   const hero = TAB_HERO[activeTab];
 
-  // Swipe gesture to switch tabs
-  const swipeTouchX = useRef<number | null>(null);
-  const handleTouchStart = (e: React.TouchEvent) => { swipeTouchX.current = e.touches[0].clientX; };
-  const handleTouchEnd   = (e: React.TouchEvent) => {
-    if (swipeTouchX.current === null) return;
-    const delta = e.changedTouches[0].clientX - swipeTouchX.current;
-    if (Math.abs(delta) < 60) return;
-    const idx  = TABS.indexOf(activeTab);
-    if (delta < 0 && idx < TABS.length - 1) setActiveTab(TABS[idx + 1]);
-    if (delta > 0 && idx > 0)               setActiveTab(TABS[idx - 1]);
-    swipeTouchX.current = null;
-  };
-
   return (
     <div
-      className="w-full max-w-[920px] mx-auto pb-24 lg:pb-4 px-4 space-y-3"
+      className="w-full max-w-[920px] mx-auto pb-10 lg:pb-4 px-4 space-y-3"
       style={{ paddingTop: 0 }}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
     >
 
       {/* ── Hero — all tabs (no remount on tab switch, crossfade images) ─── */}
@@ -1134,17 +1104,26 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         {/* Gradient fallback — always underneath */}
         <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg,var(--color-brand-active) 0%,var(--color-brand) 100%)' }} />
         {/* All fetched tab photos kept mounted; opacity crossfade on tab switch */}
-        {(Object.entries(heroPhotos) as [Tab, string][]).map(([tab, uri]) => (
-          <img
-            key={tab}
-            src={uri}
-            alt={tab}
-            draggable={false}
-            decoding="async"
-            className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-500"
-            style={{ opacity: tab === activeTab ? 1 : 0 }}
-          />
-        ))}
+        {/* H-04: descriptive alt text per tab context */}
+        {(Object.entries(heroPhotos) as [Tab, string][]).map(([tab, uri]) => {
+          const ALT_TEXT: Record<Tab, string> = {
+            Hotels:    `Hotel in ${destination || 'Thanjavur'} — exterior or lobby photo`,
+            Food:      `Restaurant dish in ${destination || 'Thanjavur'} — food photo`,
+            Itinerary: `Brihadeeswarar Temple, ${destination || 'Thanjavur'} — landmark photo`,
+            Explore:   `Thanjavur Maratha Palace — heritage site photo`,
+          };
+          return (
+            <img
+              key={tab}
+              src={uri}
+              alt={ALT_TEXT[tab]}
+              draggable={false}
+              decoding="async"
+              className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-500"
+              style={{ opacity: tab === activeTab ? 1 : 0 }}
+            />
+          );
+        })}
         <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.18) 40%, rgba(0,0,0,0.62) 100%)' }} />
         {/* Greeting */}
         {firstName && (
@@ -1176,11 +1155,8 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         </div>
       </div>
 
-      {/* ── Category selector — always sticky below header ── */}
-      <div
-        className="sticky z-30 pb-2 pt-1"
-        style={{ top: 'calc(57px + env(safe-area-inset-top))' }}
-      >
+      {/* ── Category selector ── */}
+      <div className="relative z-20 pb-2 pt-1">
         <CategorySelector active={activeTab} onChange={t => setActiveTab(t)} />
       </div>
 
@@ -1296,7 +1272,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         </div>
 
         {/* ── CTA inside card ───────────────────────────────────── */}
-        <div className="px-4 pt-3 pb-5 border-t border-border flex justify-center">
+        <div className="px-4 pt-3 pb-5 border-t border-border">
           <Button
             variant="brand"
             size="md"
@@ -1304,7 +1280,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             loading={loading}
             disabled={!canSearch}
             icon={<Search className="w-4 h-4" />}
-            className="px-10"
+            className="w-full"
           >
             {loading ? 'AI is on it…' : (
               searchQuery.trim() && activeTab === 'Hotels'  ? `Search "${searchQuery.trim()}"` :
@@ -1385,7 +1361,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         <div className="flex items-center justify-between mb-3">
           <div>
             <h2 className="font-display font-bold text-lg text-heading">Plan your visit</h2>
-            <p className="text-xs text-muted mt-0.5">Tap a card — AI builds your shortlist</p>
+            <p className="text-sm text-muted mt-0.5">Tap a card — AI builds your shortlist</p>
           </div>
         </div>
 
@@ -1460,7 +1436,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         <div className="flex items-center justify-between mb-3">
           <div>
             <h2 className="font-display font-bold text-lg text-heading">Discover Thanjavur</h2>
-            <p className="text-xs text-muted mt-0.5">Must-see landmarks · Opens Explore</p>
+            <p className="text-sm text-muted mt-0.5">Must-see landmarks · Opens Explore</p>
           </div>
           <span className="text-xs text-muted shrink-0 flex items-center gap-0.5">Swipe <ChevronRight className="w-3 h-3" /></span>
         </div>
