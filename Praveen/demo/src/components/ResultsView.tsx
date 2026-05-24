@@ -474,16 +474,13 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
       transition={{ delay: animDelay, duration: 0.35, ease: 'easeOut', layout: { duration: 0.28, ease: 'easeInOut' } }}
       className="relative bg-surface border border-card-border rounded-xl shadow-sm card-hover overflow-hidden"
     >
-      {/* ── Save bookmark — card top-right corner ── */}
+      {/* ── Save bookmark — card top-right corner (mobile only) ── */}
       <button
         onClick={(e) => { e.stopPropagation(); toggleBookmark(); }}
         aria-label={bookmarked ? 'Remove from saved' : 'Save this place'}
-        className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full bg-white/90 border border-border shadow-sm z-20 active:scale-90 transition-transform hover:bg-white"
+        className="sm:hidden absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full bg-white/90 border border-border shadow-sm z-20 active:scale-90 transition-transform hover:bg-white"
       >
-        {bookmarked
-          ? <BookmarkCheck className="w-3.5 h-3.5 text-brand" />
-          : <Bookmark className="w-3.5 h-3.5 text-muted" />
-        }
+        <Bookmark className={`w-3.5 h-3.5 ${bookmarked ? 'fill-brand text-brand' : 'text-muted'}`} />
       </button>
 
       {/* ══ MOBILE CARD LAYOUT (< sm) ══ */}
@@ -650,13 +647,22 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
 
         {/* Col 2: Info */}
         <div className="flex-1 min-w-0 px-2.5 py-2.5 flex flex-col gap-1.5">
-          <div className="flex items-baseline gap-1.5 flex-wrap">
-            <h3 className="font-display font-bold text-sm text-heading leading-snug line-clamp-1" title={place.name}>{place.name}</h3>
-            {selectedTags.length > 0 && place.matchScore !== undefined && (
-              <span className={`text-xs font-bold shrink-0 ${place.matchScore >= 80 ? 'text-success-strong' : place.matchScore >= 55 ? 'text-brand' : 'text-muted'}`}>
-                {place.matchScore}% match
-              </span>
-            )}
+          <div className="flex items-start gap-1.5">
+            <div className="flex items-baseline gap-1.5 flex-wrap flex-1 min-w-0">
+              <h3 className="font-display font-bold text-sm text-heading leading-snug line-clamp-1" title={place.name}>{place.name}</h3>
+              {selectedTags.length > 0 && place.matchScore !== undefined && (
+                <span className={`text-xs font-bold shrink-0 ${place.matchScore >= 80 ? 'text-success-strong' : place.matchScore >= 55 ? 'text-brand' : 'text-muted'}`}>
+                  {place.matchScore}% match
+                </span>
+              )}
+            </div>
+            <button
+              onClick={(e) => { e.stopPropagation(); toggleBookmark(); }}
+              aria-label={bookmarked ? 'Remove from saved' : 'Save this place'}
+              className="shrink-0 w-6 h-6 flex items-center justify-center rounded-full border border-border bg-surface hover:border-brand transition-colors active:scale-90"
+            >
+              <Bookmark className={`w-3 h-3 ${bookmarked ? 'fill-brand text-brand' : 'text-muted'}`} />
+            </button>
           </div>
           <div className="flex items-center gap-0.5">
             <StarRating rating={place.rating} size="xs" />
@@ -949,7 +955,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                   onClick={toggleBookmark}
                   className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold rounded-lg border transition-colors active:scale-[0.97] ${bookmarked ? 'bg-brand border-brand text-white' : 'text-brand border-brand bg-brand-softer hover:bg-brand-soft'}`}
                 >
-                  {bookmarked ? <BookmarkCheck className="w-3.5 h-3.5" /> : <Bookmark className="w-3.5 h-3.5" />}
+                  <Bookmark className={`w-3.5 h-3.5 ${bookmarked ? 'fill-white' : ''}`} />
                   {bookmarked ? 'Saved' : 'Save'}
                 </button>
               </div>
