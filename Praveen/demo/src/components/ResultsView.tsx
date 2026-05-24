@@ -496,7 +496,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                 color={place.photoColor}
                 name={place.name}
                 photoRef={place.photoRef ?? null}
-                autoLoad={rank <= 2}
+                autoLoad={rank <= 6}
               />
             </div>
             <span className={`absolute top-1.5 right-1.5 flex items-center gap-0.5 px-1 py-0.5 rounded-full text-xs font-semibold leading-none ${place.openNow ? 'bg-success/90 text-white' : 'bg-black/60 text-white/80'}`}>
@@ -635,7 +635,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               color={place.photoColor}
               name={place.name}
               photoRef={place.photoRef ?? null}
-              autoLoad={rank <= 2}
+              autoLoad={rank <= 6}
             />
           </div>
           {/* Open/Closed — top right of photo */}
