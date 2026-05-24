@@ -596,14 +596,14 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                   {tab === 'Hotels' && (
                     <a href={place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`}
                       target="_blank" rel="noopener noreferrer"
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold bg-brand text-white active:scale-[0.97] shadow-sm">
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold border border-brand text-brand bg-brand-softer hover:bg-brand-soft transition-colors active:scale-[0.97]">
                       <ExternalLink className="w-3.5 h-3.5 shrink-0" />Book Now
                     </a>
                   )}
                   {tab === 'Food' && (
                     <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
                       target="_blank" rel="noopener noreferrer"
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold bg-brand text-white active:scale-[0.97] shadow-sm">
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold border border-brand text-brand bg-brand-softer hover:bg-brand-soft transition-colors active:scale-[0.97]">
                       <Navigation className="w-3.5 h-3.5 shrink-0" />Directions
                     </a>
                   )}
@@ -737,14 +737,14 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                     {tab === 'Hotels' && (
                       <a href={place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`}
                         target="_blank" rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold bg-brand text-white hover:bg-brand/90 transition-colors active:scale-[0.97] shadow-sm">
+                        className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold border border-brand text-brand bg-brand-softer hover:bg-brand-soft transition-colors active:scale-[0.97]">
                         <ExternalLink className="w-3.5 h-3.5 shrink-0" />Book
                       </a>
                     )}
                     {tab === 'Food' && (
                       <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
                         target="_blank" rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold bg-brand text-white hover:bg-brand/90 transition-colors active:scale-[0.97] shadow-sm">
+                        className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold border border-brand text-brand bg-brand-softer hover:bg-brand-soft transition-colors active:scale-[0.97]">
                         <Navigation className="w-3.5 h-3.5 shrink-0" />Directions
                       </a>
                     )}
