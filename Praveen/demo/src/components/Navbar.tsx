@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MapPin, Home, History, User, Compass, LogOut, ChevronDown } from 'lucide-react';
+import { MapPin, Home, History, User, Compass, LogOut, ChevronDown, ArrowLeft } from 'lucide-react';
 
 export type MainSection = 'home' | 'history' | 'profile';
 
@@ -11,6 +11,9 @@ interface NavbarProps {
   searchLocation: string;
   onSearchChange: (v: string) => void;
   onLocationPick?: (display: string, area: string, lat?: number, lng?: number) => void;
+  showBack?: boolean;
+  onBack?: () => void;
+  backLabel?: string;
 }
 
 const NAV_ITEMS: { id: MainSection; label: string; icon: React.ReactNode }[] = [
@@ -54,6 +57,8 @@ function CitySearch({ value, onChange, onPick }: {
 
   const isDirty     = editing && draft.trim().toLowerCase() !== value.toLowerCase();
   const isThanjavur = draft.trim().toLowerCase() === 'thanjavur';
+  // Only warn after user has typed enough to clearly not be heading for Thanjavur (L-03)
+  const showCityWarning = isDirty && !isThanjavur && draft.trim().length >= 4;
 
   /* ── Idle pill ──────────────────────────────────────────────── */
   if (!editing) {
@@ -87,14 +92,14 @@ function CitySearch({ value, onChange, onPick }: {
         placeholder="City name…"
         className="bg-transparent text-base font-semibold text-heading outline-none min-w-0 w-28 sm:w-36"
       />
-      {isDirty && !isThanjavur && (
+      {showCityWarning && (
         <span className="text-xs font-medium text-warning-strong whitespace-nowrap shrink-0">Thanjavur only</span>
       )}
     </div>
   );
 }
 
-export function Navbar({ section, onSectionChange, onLogout, userName, searchLocation, onSearchChange, onLocationPick }: NavbarProps) {
+export function Navbar({ section, onSectionChange, onLogout, userName, searchLocation, onSearchChange, onLocationPick, showBack, onBack, backLabel }: NavbarProps) {
   const [profileOpen, setProfileOpen] = useState(false);
 
   const handlePick = (display: string, area: string) => {
@@ -103,23 +108,47 @@ export function Navbar({ section, onSectionChange, onLogout, userName, searchLoc
 
   return (
     <>
+      {/* ── Skip to main content — keyboard / screen reader ──────── */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[1000] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-brand focus:text-white focus:font-semibold focus:text-sm focus:shadow-lg"
+      >
+        Skip to main content
+      </a>
+
       {/* ── Top navbar ─────────────────────────────────────────────── */}
       <header className="sticky top-0 z-[200] border-b" style={{ background: 'rgba(249,250,251,0.88)', backdropFilter: 'blur(20px)', borderColor: 'rgba(0,0,0,0.07)', boxShadow: '0 1px 12px rgba(28,100,242,0.06)', paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="w-full max-w-[920px] mx-auto px-4 h-14 flex items-center gap-3">
 
-          {/* Brand */}
-          <button
-            onClick={() => onSectionChange('home')}
-            aria-label="Go to home"
-            className="flex items-center gap-2 shrink-0"
-          >
-            <div className="w-8 h-8 bg-brand rounded-lg flex items-center justify-center">
-              <Compass className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-display font-bold text-xl text-heading tracking-tight hidden sm:block">
-              Trip<span className="text-brand">AI</span>
-            </span>
-          </button>
+          {/* Brand / Back button */}
+          {showBack ? (
+            <button
+              onClick={onBack}
+              aria-label="Go back"
+              className="flex items-center gap-2 shrink-0 group"
+            >
+              {/* min 44×44px touch target — C-02 */}
+              <div className="w-11 h-11 bg-bg-app border border-border rounded-lg flex items-center justify-center group-hover:bg-brand-softer group-hover:border-brand transition-colors">
+                <ArrowLeft className="w-4 h-4 text-heading" />
+              </div>
+              <span className="font-semibold text-sm text-heading hidden sm:block">
+                {backLabel ?? 'Back'}
+              </span>
+            </button>
+          ) : (
+            <button
+              onClick={() => onSectionChange('home')}
+              aria-label="Go to home"
+              className="flex items-center gap-2 shrink-0"
+            >
+              <div className="w-8 h-8 bg-brand rounded-lg flex items-center justify-center">
+                <Compass className="w-4 h-4 text-white" />
+              </div>
+              <span className="font-display font-bold text-xl text-heading tracking-tight hidden sm:block">
+                Trip<span className="text-brand">AI</span>
+              </span>
+            </button>
+          )}
 
           {/* Spacer */}
           <div className="flex-1" />

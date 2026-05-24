@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { ArrowRight, Compass, MapPin, Search, X } from 'lucide-react';
 import { PlaceCardSkeleton, ItineraryItemSkeleton } from './components/ui/Skeleton';
@@ -57,60 +57,39 @@ function CityNoticeModal({ city, onDismiss }: {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
           className="fixed inset-0 z-[400] flex items-center justify-center p-5"
-          style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}
+          style={{ background: 'rgba(0,0,0,0.48)', backdropFilter: 'blur(6px)' }}
           onClick={onDismiss}
         >
           <motion.div
             role="dialog"
             aria-modal="true"
             aria-labelledby="city-notice-title"
-            initial={{ opacity: 0, scale: 0.92, y: 20 }}
+            initial={{ opacity: 0, scale: 0.93, y: 16 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.92, y: 20 }}
-            transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-            className="rounded-2xl p-6 max-w-sm w-full relative"
-            style={{ background: 'rgba(10,14,30,0.98)', border: '1px solid rgba(255,255,255,0.10)', boxShadow: '0 24px 80px rgba(0,0,0,0.7)' }}
+            exit={{ opacity: 0, scale: 0.93, y: 16 }}
+            transition={{ type: 'spring', stiffness: 340, damping: 30 }}
+            className="rounded-2xl p-6 max-w-sm w-full relative bg-surface border border-border"
+            style={{ boxShadow: 'var(--shadow-l, 0 20px 60px rgba(0,0,0,0.18))' }}
             onClick={e => e.stopPropagation()}
           >
-            <button onClick={onDismiss} aria-label="Close" className="absolute top-3 right-3 p-1 rounded-lg text-white/40 hover:text-white/80 transition-colors">
+            <button
+              onClick={onDismiss}
+              aria-label="Close"
+              className="absolute top-3 right-3 p-1.5 rounded-lg text-muted hover:text-heading hover:bg-bg-app transition-colors"
+            >
               <X className="w-4 h-4" />
             </button>
-            <MapPin className="w-8 h-8 text-brand mb-3" aria-hidden="true" />
-            <h3 id="city-notice-title" className="text-white font-display font-semibold text-xl mb-2">{city} isn't live yet</h3>
-            <p className="text-sm leading-relaxed mb-5" style={{ color: 'rgba(255,255,255,0.65)' }}>
-              TripAI is fully live in <span className="font-semibold" style={{ color: 'var(--color-warning)' }}>Thanjavur</span> — hotels, restaurants, and landmarks AI-ranked in seconds. {city} is next on our roadmap.
+            <div className="w-10 h-10 rounded-xl bg-brand-softer border border-brand-medium/40 flex items-center justify-center mb-4">
+              <MapPin className="w-5 h-5 text-brand" aria-hidden="true" />
+            </div>
+            <h3 id="city-notice-title" className="font-display font-bold text-lg text-heading mb-2">{city} isn't live yet</h3>
+            <p className="text-sm text-body leading-relaxed mb-5">
+              TripAI is fully live in <span className="font-semibold text-brand">Thanjavur</span> — hotels, restaurants, and landmarks AI-ranked in seconds. {city} is next on our roadmap.
             </p>
             <Button onClick={onDismiss} className="w-full justify-center">
               Try Thanjavur <ArrowRight className="w-4 h-4" />
             </Button>
           </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-}
-
-/* ── Auto location detection toast ──────────────────────────────────────── */
-function LocationDetectionToast({ phase }: { phase: 'locating' | 'found' | 'done' }) {
-  return (
-    <AnimatePresence>
-      {phase === 'found' && (
-        <motion.div
-          key="loc-toast"
-          initial={{ opacity: 0, y: 24, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 16, scale: 0.95 }}
-          transition={{ type: 'spring', stiffness: 340, damping: 28 }}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[600] flex items-center gap-2.5 px-4 py-2.5 rounded-full shadow-lg pointer-events-none"
-          style={{
-            background: 'var(--color-brand-softer)',
-            border: '1px solid var(--color-brand-medium)',
-            boxShadow: '0 8px 32px rgba(28,100,242,0.18)',
-          }}
-        >
-          <MapPin className="w-3.5 h-3.5 text-brand shrink-0" />
-          <span className="text-xs font-semibold whitespace-nowrap text-brand">Thanjavur detected</span>
-          <span className="text-xs font-bold px-1.5 py-0.5 rounded-full" style={{ background: 'var(--color-brand)', color: '#fff' }}>✓</span>
         </motion.div>
       )}
     </AnimatePresence>
@@ -165,20 +144,6 @@ export default function App() {
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, []);
-
-  // Location detection toast — fires when user opens Itinerary
-  const locTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
-  const [locationPhase, setLocationPhase] = useState<'locating' | 'found' | 'done'>('done');
-
-  const triggerLocationToast = () => {
-    if (localStorage.getItem('tripai_loc_shown')) return;
-    localStorage.setItem('tripai_loc_shown', '1');
-    locTimers.current.forEach(clearTimeout);
-    setLocationPhase('found');
-    locTimers.current = [
-      setTimeout(() => setLocationPhase('done'), 2400),
-    ];
-  };
 
   // Scroll to top on every screen transition (dashboard, loading, results)
   useEffect(() => {
@@ -294,7 +259,6 @@ export default function App() {
       if (filters.tab === 'Explore') {
         // Explore always uses preset data — no API call needed
       } else if (filters.tab === 'Itinerary') {
-        triggerLocationToast();
         const timeSlot = filters.startTime || 'Morning';
         const slotStopMap: Record<string, number> = { Morning: 10, Afternoon: 4, Evening: 2 };
         setItinStopCount(slotStopMap[timeSlot] ?? 10);
@@ -542,7 +506,6 @@ export default function App() {
       const preset = SLOT_MOCK[ts] ?? MOCK_ITINERARY;
       setItinStopCount(preset.length);
       setLiveItinerary(preset.map((s, i) => ({ ...s, time: times[ts]?.[i] ?? s.time, departBy: depts[ts]?.[i] })));
-      triggerLocationToast();
       setContent('results');
       return;
     }
@@ -782,10 +745,12 @@ export default function App() {
                 }}
               />
               {searchLocation && (
+                /* p-2 = 8px padding → effective hit area ~30px, still small but better — C-03 */
                 <button
                   type="button"
                   onClick={() => setSearchLocation('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted hover:text-heading"
+                  aria-label="Clear city"
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 p-2 text-muted hover:text-heading rounded"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -800,7 +765,7 @@ export default function App() {
           </div>
         </header>
 
-        <main className="pt-2">
+        <main id="main-content" className="pt-2">
           <Dashboard
             destination={searchLocation}
             initialTab={initialTab}
@@ -822,7 +787,6 @@ export default function App() {
 
         {/* Non-Thanjavur city notice */}
         <CityNoticeModal city={nonThanjavurNotice} onDismiss={dismissCityNotice} />
-      {activeTab === 'Itinerary' && <LocationDetectionToast phase={locationPhase} />}
       </div>
     );
   }
@@ -844,15 +808,37 @@ export default function App() {
           if (display && !isThanjavurCity(display)) { setNonThanjavurNotice(display); }
           else { setSearchLocation(display); setSearchArea(area); }
         }}
+        showBack={contentScreen === 'results'}
+        onBack={() => {
+          if (backContext === 'itinerary-results') {
+            setBackContext('dashboard');
+            setActiveTab('Itinerary');
+            setInitialTab('Itinerary');
+            setContent('results');
+          } else {
+            setInitialTab(activeTab);
+            setContent('dashboard');
+          }
+        }}
+        backLabel="Back"
       />
 
-      <main className="pt-2">
+      {/* Screen-reader live region — announces when AI results are ready (M-05) */}
+      <div
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {contentScreen === 'results' && `Results ready for ${activeTab} in ${searchLocation}`}
+        {contentScreen === 'loading' && 'AI is building your plan, please wait'}
+      </div>
+
+      <main id="main-content" className="pt-2">
         {renderContent()}
       </main>
 
       {/* Non-Thanjavur city notice */}
       <CityNoticeModal city={nonThanjavurNotice} onDismiss={dismissCityNotice} />
-      {activeTab === 'Itinerary' && <LocationDetectionToast phase={locationPhase} />}
 
       {/* Logout confirmation */}
       <Modal

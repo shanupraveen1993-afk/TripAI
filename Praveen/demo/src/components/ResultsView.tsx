@@ -28,6 +28,74 @@ import { useToast } from './ui/Toast';
 import { PlaceCardSkeleton } from './ui/Skeleton';
 import { STOPS } from '../itineraryPreset';
 
+// ── Tag-aligned verdict maps ──────────────────────────────────────────────
+type TagDefW = { keywords: string[]; verdict: string; negVerdict: string };
+
+const HOTEL_TAG_VERDICTS: Record<string, TagDefW> = {
+  'Near Big Temple':      { keywords: ['temple','brihadeeswarar','big temple','periya kovil'], verdict: 'Prime location near the Big Temple — a consistent highlight in recent reviews', negVerdict: 'Location convenience was flagged as a concern by several recent guests' },
+  'Near Railway Station': { keywords: ['station','railway','train','junction'], verdict: 'Proximity to the railway station was frequently praised in recent feedback', negVerdict: 'Accessibility and station distance were noted as issues in recent reviews' },
+  'City Centre':          { keywords: ['central','centre','center','main road','city center'], verdict: 'Central location — widely appreciated across recent guest feedback', negVerdict: 'Noise and congestion from the central location drew complaints recently' },
+  'Easy Parking':         { keywords: ['parking','car park','vehicle','bike park'], verdict: 'Easy parking and hassle-free access — a common highlight recently', negVerdict: 'Parking difficulties were a recurring complaint in recent guest reviews' },
+  'Walkable Distance':    { keywords: ['walk','walking','walkable','short walk'], verdict: 'Walkable access to key spots — praised consistently by recent visitors', negVerdict: 'Distance to key areas was flagged as inconvenient by recent guests' },
+  'Spacious Rooms':       { keywords: ['spacious','large room','big room','roomy','room size'], verdict: 'Spacious rooms stood out as a recurring highlight in recent feedback', negVerdict: 'Room size and conditions were a common concern in recent reviews' },
+  'Good Amenities':       { keywords: ['amenities','ac','air condition','wifi','wi-fi','hot water'], verdict: 'Well-maintained amenities — praised consistently in recent guest feedback', negVerdict: 'Amenity quality and upkeep were flagged repeatedly in recent reviews' },
+  'In-House Restaurant':  { keywords: ['restaurant','dining','in-house','canteen','food here'], verdict: 'In-house dining was a frequently mentioned plus in recent feedback', negVerdict: 'Food quality and dining experience drew repeated criticism recently' },
+  'Quiet & Peaceful':     { keywords: ['quiet','peaceful','calm','serene','tranquil','silent'], verdict: 'Calm and peaceful atmosphere — consistently appreciated by recent guests', negVerdict: 'Noise and disturbance were common complaints across recent reviews' },
+  'Breakfast Included':   { keywords: ['breakfast','morning meal','complimentary','included breakfast'], verdict: 'Breakfast quality was highlighted as a standout plus in recent reviews', negVerdict: 'Breakfast quality and variety fell short for many recent guests' },
+  'Value for Money':      { keywords: ['value','worth the money','value for money','reasonable price'], verdict: 'Value for money was the most praised aspect in recent guest feedback', negVerdict: 'Pricing relative to quality was a recurring disappointment recently' },
+  'Budget-Friendly':      { keywords: ['budget','cheap','low cost','economical','pocket friendly'], verdict: 'Budget-friendly pricing — consistently called out as a plus recently', negVerdict: 'Value expectations versus actual cost were questioned by recent guests' },
+  'Prompt Service':       { keywords: ['prompt','quick service','fast','responsive','service was'], verdict: 'Prompt and attentive service — noted consistently in recent reviews', negVerdict: 'Slow and inconsistent service was a recurring issue in recent feedback' },
+  'Good Hospitality':     { keywords: ['hospitality','warm','friendly','welcoming','courteous','helpful staff','great staff'], verdict: 'Warm hospitality was the most common theme across recent guest reviews', negVerdict: 'Staff behaviour and hospitality fell below expectations for recent guests' },
+  'Highly Recommended':   { keywords: ['recommend','will come back','must visit','loved it','amazing','best hotel'], verdict: 'Highly recommended and revisit-worthy — the consensus among recent guests', negVerdict: 'Recent feedback highlighted concerns that deter repeat visits' },
+};
+
+const FOOD_TAG_VERDICTS: Record<string, TagDefW> = {
+  'Biryani':         { keywords: ['biryani','biriyani'], verdict: 'Flavorful biryani — consistently praised in recent diner feedback', negVerdict: 'Biryani quality and consistency drew criticism from recent diners' },
+  'South Indian':    { keywords: ['south indian','idly','dosa','vada','pongal'], verdict: 'Authentic South Indian flavors — a recurring positive in recent reviews', negVerdict: 'South Indian dish quality fell short for several recent diners' },
+  'Non-Veg':         { keywords: ['chicken','mutton','fish','prawn','egg','non veg','nonveg'], verdict: 'Rich non-veg options — consistently appreciated in recent feedback', negVerdict: 'Non-veg quality and freshness raised concerns in recent reviews' },
+  'Pure Veg':        { keywords: ['pure veg','vegetarian','only veg','no meat'], verdict: 'Pure vegetarian offerings — frequently praised by recent visitors', negVerdict: 'Vegetarian variety and quality were flagged in recent feedback' },
+  'Tiffin & Snacks': { keywords: ['tiffin','snacks','morning tiffin'], verdict: 'Fresh tiffin and snacks — a consistent crowd-pleaser in recent reviews', negVerdict: 'Tiffin freshness and variety were flagged by several recent visitors' },
+  'Fresh & Hot':     { keywords: ['fresh','piping hot','hot and fresh','just made'], verdict: 'Food served fresh and hot — a consistent strength in recent feedback', negVerdict: 'Freshness and temperature of food were questioned recently' },
+  'Authentic':       { keywords: ['authentic','traditional','original','homestyle','home cooked','real taste'], verdict: 'Authentic traditional taste — praised consistently across recent reviews', negVerdict: 'Lack of authenticity in flavors was a common complaint recently' },
+  'Good Quantity':   { keywords: ['quantity','portion','generous','filling','lot of food'], verdict: 'Generous portions — highlighted as a key strength in recent feedback', negVerdict: 'Portion sizes were considered inadequate by recent diners' },
+  'Spicy':           { keywords: ['spicy','spice','fiery','chilli','chili'], verdict: 'Bold and spicy preparations — a recurring highlight in recent reviews', negVerdict: 'Spice levels were inconsistent or excessive for recent diners' },
+  'Chettinad Style': { keywords: ['chettinad','chettinaad','karaikudi'], verdict: 'Chettinad-style cooking — consistently celebrated in recent guest feedback', negVerdict: 'Chettinad authenticity and preparation were questioned recently' },
+  'Affordable':      { keywords: ['affordable','inexpensive','low price','economical'], verdict: 'Affordable pricing — widely appreciated in recent diner reviews', negVerdict: 'Pricing was seen as inconsistent with food quality by recent visitors' },
+  'Value for Money': { keywords: ['value','worth','reasonable','price was'], verdict: 'Strong value for money — the most common positive in recent feedback', negVerdict: 'Value for money was a recurring disappointment in recent diner reviews' },
+  'Family Dining':   { keywords: ['family','kids','children','group','family friendly'], verdict: 'Top family dining spot — frequently cited in recent guest feedback', negVerdict: 'Family-friendliness and seating were raised as concerns recently' },
+  'Quick Service':   { keywords: ['quick','fast service','prompt','no waiting','served quickly'], verdict: 'Fast and efficient service — consistently praised in recent reviews', negVerdict: 'Wait times and service speed were common issues in recent feedback' },
+  'Highly Rated':    { keywords: ['best','excellent','amazing','must try','highly rated'], verdict: 'Rated among the best in town — the consensus across recent reviews', negVerdict: 'Recent ratings reflect a decline — quality concerns flagged repeatedly' },
+};
+
+function resolveTagVerdictWeb(
+  reviews: { stars: number; text: string; ago: string }[],
+  tab: 'Hotels' | 'Food',
+  isNeg: boolean,
+  agoFn: (ago: string) => number,
+): string {
+  const map = tab === 'Hotels' ? HOTEL_TAG_VERDICTS : FOOD_TAG_VERDICTS;
+  const fallback = isNeg
+    ? (tab === 'Hotels' ? 'Recent feedback highlights areas needing improvement at this property' : 'Recent diners flagged quality concerns — feedback trends downward')
+    : (tab === 'Hotels' ? 'Recent guests consistently loved the stay and recommend this place' : 'A consistently well-rated spot across recent visitor feedback');
+  const relevant = [...reviews]
+    .filter(r => isNeg ? (r.stars <= 3) : (r.stars >= 4))
+    .filter(r => r.text.trim().length > 20)
+    .sort((a, b) => agoFn(a.ago) - agoFn(b.ago))
+    .slice(0, 12);
+  if (relevant.length === 0) return fallback;
+  const tagScores: Record<string, number> = {};
+  for (const r of relevant) {
+    const lower = r.text.toLowerCase();
+    for (const [tag, def] of Object.entries(map)) {
+      const hits = def.keywords.filter(kw => lower.includes(kw)).length;
+      if (hits > 0) tagScores[tag] = (tagScores[tag] ?? 0) + hits;
+    }
+  }
+  const best = Object.entries(tagScores).sort((a, b) => b[1] - a[1])[0];
+  if (!best) return fallback;
+  return isNeg ? map[best[0]].negVerdict : map[best[0]].verdict;
+}
+
 function StarRating({ rating, size = 'sm' }: { rating: number; size?: 'sm' | 'xs' }) {
   const cls = size === 'xs' ? 'w-3 h-3' : 'w-3.5 h-3.5';
   return (
@@ -63,7 +131,6 @@ interface ResultsViewProps {
   isFirstItinerary?: boolean;
   selectedTags?: string[];
   onCancelTag?: (tag: string) => void;
-  pureVegFilter?: boolean;
   visitTime?: string;
 }
 
@@ -281,6 +348,17 @@ const TAG_KEYWORD_MAP: Record<string, string[]> = {
   'Thali/Meals':        ['thali', 'meals', 'banana leaf', 'full meals'],
   'Pure Veg':           ['pure veg', 'veg only', 'vegetarian', 'no non-veg', 'bhavan', 'sattvic'],
   'Non-Veg':            ['chicken', 'mutton', 'fish', 'non-veg', 'prawn', 'crab', 'kozhi', 'meat'],
+  // ── Missing tag aliases (exact filter tag names) ─────────────────────────
+  'Chettinad Style':    ['chettinad', 'nattu kozhi', 'kuzhambu', 'pepper chicken', 'country chicken', 'chettinad style', 'chettinad cuisine'],
+  'Tiffin & Snacks':    ['tiffin', 'tiffin center', 'idli', 'dosa', 'vada', 'pongal', 'upma', 'morning tiffin', 'breakfast', 'snacks'],
+  'Good Quantity':      ['quantity', 'portion', 'generous', 'filling', 'lot of food', 'huge', 'heavy', 'enough food', 'good quantity', 'large portion'],
+  'Spicy':              ['spicy', 'spice', 'hot', 'fiery', 'chilli', 'chili', 'pepper', 'masala', 'pungent'],
+  'Affordable':         ['affordable', 'cheap', 'budget', 'pocket friendly', 'economical', 'low price', 'reasonable', 'worth it', 'good price', 'inexpensive'],
+  'Value for Money':    ['value for money', 'value', 'worth', 'reasonable', 'good price', 'affordable', 'budget friendly', 'cost effective', 'money', 'price'],
+  'Quick Service':      ['quick service', 'fast service', 'prompt', 'quick', 'fast', 'speedy', 'no waiting', 'served quickly', 'efficient', 'responsive'],
+  'Highly Rated':       ['highly rated', 'best', 'excellent', 'outstanding', 'top rated', 'amazing', 'loved', 'must try', 'five star', '5 star', 'highly recommend'],
+  'Walkable Distance':  ['walkable', 'walking distance', 'walk', 'short walk', 'nearby', 'close by', 'few minutes walk', 'convenient location', 'accessible'],
+  'Prompt Service':     ['prompt', 'quick service', 'fast service', 'responsive', 'efficient', 'quick check', 'smooth check', 'hassle free', 'no waiting', 'immediate'],
 };
 
 function expandTagsToKeywords(tags: string[]): string[] {
@@ -314,9 +392,9 @@ function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): nu
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = false, selectedTags = [], refLat, refLng, refLabel, dimmed = false }: {
+function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = false, selectedTags = [], refLat, refLng, refLabel }: {
   place: PlaceResult; tab: Tab; rank?: number; animDelay?: number; defaultCollapsed?: boolean; selectedTags?: string[];
-  refLat?: number; refLng?: number; refLabel?: string; dimmed?: boolean;
+  refLat?: number; refLng?: number; refLabel?: string;
 }) {
   // rank-1 AI Top Pick cards start collapsed to save space; all others start expanded
   const [cardCollapsed, setCardCollapsed] = useState(defaultCollapsed);
@@ -335,9 +413,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
     ? `${distKm < 1 ? `${Math.round(distKm * 1000)}m` : `${distKm.toFixed(1)} km`}`
     : null;
 
-  // Expand tag names → actual words that appear in review text
   const reviewKeywords = expandTagsToKeywords(selectedTags);
-
 
   const share = () => {
     if (navigator.share) {
@@ -397,7 +473,6 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: animDelay, duration: 0.35, ease: 'easeOut', layout: { duration: 0.28, ease: 'easeInOut' } }}
       className="relative bg-surface border border-card-border rounded-xl shadow-sm card-hover overflow-hidden"
-      style={dimmed ? { opacity: 0.35, filter: 'grayscale(0.7)', pointerEvents: 'none', transition: 'opacity 0.3s, filter 0.3s' } : undefined}
     >
       {/* ── Save bookmark — card top-right corner ── */}
       <button
@@ -424,7 +499,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                 color={place.photoColor}
                 name={place.name}
                 photoRef={place.photoRef ?? null}
-                autoLoad={rank === 1}
+                autoLoad={rank <= 2}
               />
             </div>
             <span className={`absolute top-1.5 right-1.5 flex items-center gap-0.5 px-1 py-0.5 rounded-full text-xs font-semibold leading-none ${place.openNow ? 'bg-success/90 text-white' : 'bg-black/60 text-white/80'}`}>
@@ -471,24 +546,12 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                 const n = parseInt(m[1], 10);
                 return m[2] === 'day' ? n : m[2] === 'week' ? n * 7 : n * 30;
               }
-              const sorted2 = [...place.reviews].sort((a, b) => agoToDaysCo(a.ago) - agoToDaysCo(b.ago));
-              const last15 = sorted2.slice(0, 15);
-              if (last15.length === 0 && !place.trendReason) return null;
-              const posCount = last15.filter(r => r.stars >= 4).length;
-              const negCount = last15.filter(r => r.stars <= 2).length;
+              if (place.reviews.length === 0) return null;
               const isUp = place.trendVerdict === 'improving';
               const isDown = place.trendVerdict === 'declining';
-              const verdict = isUp ? 'Guests Love It' : isDown ? 'Mixed Feedback' : 'Reliable Pick';
-              const sentimentMsg = place.trendReason
-                ? place.trendReason
-                : isUp
-                ? `${posCount} of last ${last15.length} reviews are 4★+`
-                : isDown
-                ? `${negCount} of last ${last15.length} flag concerns`
-                : `Recent visitors steady — no major shifts.`;
+              const sentimentMsg = resolveTagVerdictWeb(place.reviews, tab as 'Hotels' | 'Food', isDown, agoToDaysCo);
               return (
                 <div className={`rounded-lg px-2 py-1.5 border ${isUp ? 'bg-success-soft border-success-medium/40' : isDown ? 'bg-warning-soft border-warning-medium/40' : 'bg-brand-softer border-brand-soft'}`}>
-                  <p className={`text-xs font-bold leading-none mb-0.5 ${isUp ? 'text-success-strong' : isDown ? 'text-warning-strong' : 'text-brand'}`}>{verdict}</p>
                   <p className="text-xs leading-snug text-body">{sentimentMsg}</p>
                 </div>
               );
@@ -575,7 +638,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               color={place.photoColor}
               name={place.name}
               photoRef={place.photoRef ?? null}
-              autoLoad={rank === 1}
+              autoLoad={rank <= 2}
             />
           </div>
           {/* Open/Closed — top right of photo */}
@@ -621,24 +684,12 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               const n = parseInt(m[1], 10);
               return m[2] === 'day' ? n : m[2] === 'week' ? n * 7 : n * 30;
             }
-            const sorted2 = [...place.reviews].sort((a, b) => agoToDaysCo(a.ago) - agoToDaysCo(b.ago));
-            const last15 = sorted2.slice(0, 15);
-            if (last15.length === 0 && !place.trendReason) return null;
-            const posCount = last15.filter(r => r.stars >= 4).length;
-            const negCount = last15.filter(r => r.stars <= 2).length;
+            if (place.reviews.length === 0) return null;
             const isUp = place.trendVerdict === 'improving';
             const isDown = place.trendVerdict === 'declining';
-            const verdict = isUp ? 'Guests Love It' : isDown ? 'Mixed Feedback' : 'Reliable Pick';
-            const sentimentMsg = place.trendReason
-              ? place.trendReason
-              : isUp
-              ? `${posCount} of last ${last15.length} reviews are 4★+ — guests consistently happy.`
-              : isDown
-              ? `${negCount} of last ${last15.length} reviews flag concerns — check before booking.`
-              : `Recent visitors are steady — no major shifts in guest experience.`;
+            const sentimentMsg = resolveTagVerdictWeb(place.reviews, tab as 'Hotels' | 'Food', isDown, agoToDaysCo);
             return (
               <div className={`rounded-lg px-2.5 py-2 border ${isUp ? 'bg-success-soft border-success-medium/40' : isDown ? 'bg-warning-soft border-warning-medium/40' : 'bg-brand-softer border-brand-soft'}`}>
-                <p className={`text-xs font-bold leading-none mb-1 ${isUp ? 'text-success-strong' : isDown ? 'text-warning-strong' : 'text-brand'}`}>{verdict}</p>
                 <p className="text-xs leading-snug text-body">{sentimentMsg}</p>
               </div>
             );
@@ -741,12 +792,27 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                         </div>
                       ) : null;
                     })()}
-                    {place.aiDetail?.dataPoints?.[0] && (
-                      <div className="flex items-start gap-2 px-2.5 py-1.5 rounded-lg bg-white border border-brand-medium/40">
-                        <Sparkles className="w-3.5 h-3.5 text-brand shrink-0 mt-0.5" />
-                        <span className="text-xs font-semibold text-heading leading-snug">{place.aiDetail.dataPoints[0]}</span>
-                      </div>
-                    )}
+                    {(() => {
+                      const agoDays = (ago: string) => { const m = ago.match(/(\d+)\s+(day|week|month)/); if (!m) return 0; const n = parseInt(m[1],10); return m[2]==='day'?n:m[2]==='week'?n*7:n*30; };
+                      const sorted15 = [...place.reviews].sort((a, b) => agoDays(a.ago) - agoDays(b.ago)).slice(0, 15);
+                      if (sorted15.length === 0) return null;
+                      const avg = sorted15.reduce((s, r) => s + r.stars, 0) / sorted15.length;
+                      const sw = new Set(['the','a','an','is','it','was','were','are','for','to','of','in','at','on','and','or','but','with','from','by','as','so','no','not','than','about','up','out','i','we','our','my','me','they','their','your','its','who','what','which','this','that','these','those','had','has','have','been','be','said','says','told','does','would','could','should','feel','felt','know','take','took','give','gave','keep','kept','make','made','goes','left','gets','used','done','went','come','came','want','need','will','like','also','very','good','great','nice','well','just','more','also','back','here','there','when','how','even','some','only','over','into','many','much','each','then','them','away','after','before','again','still','every','other','truly','quite','really','highly','time','days','hours','year','years','once','long','soon','hotel','room','rooms','stay','place','floor','check','facility','service','thanjavur','tanjore','chennai','india','tamil','south','north','city','town','street','road','near','biryani','chicken','mutton','meals','lunch','dinner','parota','dosa','idly','idli','rice','curry','sambar','rasam','coffee','mushroom','paneer','masala','gravy','dish','dishes','menu','taste','tasty','flavour','flavor','spicy','vegan','order','ordered','serve','served','visit','visited','restaurant','food','dining']);
+                      const wc: Record<string, number> = {};
+                      place.reviews.filter(r => r.stars >= 4).forEach(r => {
+                        r.text.toLowerCase().replace(/[^a-z\s]/g, '').split(/\s+/)
+                          .filter(w => w.length >= 5 && !sw.has(w))
+                          .forEach(w => { wc[w] = (wc[w] || 0) + 1; });
+                      });
+                      const kw = (Object.entries(wc).sort((a, b) => b[1] - a[1])[0]?.[0] || 'experience');
+                      const lbl = avg >= 4.2 ? `Recent guests loved the ${kw}` : avg >= 3.5 ? `Steady ratings around ${kw}` : `Recent concerns around ${kw}`;
+                      return (
+                        <div className="flex items-start gap-2 px-2.5 py-1.5 rounded-lg bg-white border border-brand-medium/40">
+                          <Star className="w-3.5 h-3.5 text-brand shrink-0 mt-0.5" />
+                          <span className="text-xs font-semibold text-heading leading-snug">{avg.toFixed(1)} avg · {lbl}</span>
+                        </div>
+                      );
+                    })()}
                   </div>
                   {(() => {
                     const stopWords = new Set(['the','a','an','is','it','was','were','are','for','to','of','in','at','on','and','or','but','with','from','very','good','great','nice','this','that','we','our','my','me','had','has','have','been','be','by','as','so','no','not','all','one','here','there','when','which','who','what','how','more','also','well','just','than','about','up','out','they','their','hotel','room','rooms','stay','place','i']);
@@ -802,16 +868,12 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                   .filter(x => x.r.stars >= 4)
                   .sort((a, b) => b.hits - a.hits || a.days - b.days);
 
-                // Review 1: best keyword match (any age), 4★+
                 const review1 = candidates[0] ?? null;
-
-                // Review 2: recent (15–60 days) with keyword hit preferred; never pick a zero-hit fallback if a hit exists
-                const others        = candidates.filter(x => x.r !== review1?.r);
-                const withHits      = others.filter(x => x.hits > 0);
-                const recentHit     = withHits.filter(x => x.days >= 15 && x.days <= 150);
-                const anyHit        = withHits;
-                const recentNoHit   = others.filter(x => x.days >= 15 && x.days <= 150);
-                const review2 = (recentHit[0] ?? anyHit[0] ?? recentNoHit[0] ?? others[0]) ?? null;
+                const others      = candidates.filter(x => x.r !== review1?.r);
+                const withHits    = others.filter(x => x.hits > 0);
+                const recentHit   = withHits.filter(x => x.days >= 15 && x.days <= 150);
+                const recentNoHit = others.filter(x => x.days >= 15 && x.days <= 150);
+                const review2 = (recentHit[0] ?? withHits[0] ?? recentNoHit[0] ?? others[0]) ?? null;
 
                 const scored = [review1, review2].filter(Boolean) as typeof candidates;
                 if (scored.length === 0) return null;
@@ -879,13 +941,13 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               <div className="px-3 py-3 border-t border-border flex gap-2">
                 <button
                   onClick={share}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-muted border border-border rounded-lg hover:border-brand hover:text-brand transition-colors active:scale-[0.97]"
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-brand border border-brand bg-brand-softer rounded-lg hover:bg-brand-soft transition-colors active:scale-[0.97]"
                 >
                   <Share2 className="w-3.5 h-3.5" />Share
                 </button>
                 <button
                   onClick={toggleBookmark}
-                  className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold rounded-lg border transition-colors active:scale-[0.97] ${bookmarked ? 'bg-brand-softer border-brand-soft text-brand' : 'border-border text-muted hover:border-brand hover:text-brand'}`}
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold rounded-lg border transition-colors active:scale-[0.97] ${bookmarked ? 'bg-brand border-brand text-white' : 'text-brand border-brand bg-brand-softer hover:bg-brand-soft'}`}
                 >
                   {bookmarked ? <BookmarkCheck className="w-3.5 h-3.5" /> : <Bookmark className="w-3.5 h-3.5" />}
                   {bookmarked ? 'Saved' : 'Save'}
@@ -1006,8 +1068,8 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
       {/* ── Day progress strip — sticky ──────────────────────── */}
       <div className="sticky top-14 z-40 mb-4 rounded-xl bg-surface border border-card-border shadow-sm overflow-hidden">
         {/* Single compact header row */}
-        <div className="px-4 py-2.5 border-b border-border/60 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5 min-w-0">
+        <div className="px-4 py-3 border-b border-border/60 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 min-w-0">
             <Route className="w-3.5 h-3.5 text-brand shrink-0" />
             <span className="text-sm font-bold text-heading whitespace-nowrap">Day Plan</span>
             <span className="text-xs text-muted whitespace-nowrap">· {stops.length} stops</span>
@@ -1015,15 +1077,15 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
           <div className="flex items-center gap-1.5 shrink-0 text-xs">
             <span className="hidden sm:inline">{wx.emoji} <span className="font-semibold text-body">{wx.temp}</span></span>
             <span className="hidden sm:inline w-px h-3 bg-border" />
-            <span className="hidden sm:inline font-semibold" style={{ color: crowdStyle.text }}>{worstCrowd} crowd</span>
-            <span className="hidden sm:inline w-px h-3 bg-border" />
+            <span className="font-semibold" style={{ color: crowdStyle.text }}>{worstCrowd} crowd</span>
+            <span className="w-px h-3 bg-border" />
             <span className="font-bold text-brand">{stops[0]?.time} – {stops[stops.length - 1]?.time}</span>
           </div>
         </div>
 
         {/* Timeline — scrollable, number + time only */}
         <div ref={timelineScrollRef} className="overflow-x-auto no-scrollbar px-4 py-4">
-          <div className="flex items-center" style={{ minWidth: `${stops.length * 56 + (stops.length - 1) * 52}px` }}>
+          <div className="flex items-center" style={{ minWidth: `${stops.length * 44 + (stops.length - 1) * 44}px` }}>
             {stops.map((stop, idx) => {
               const isLast    = idx === stops.length - 1;
               const isActive  = idx === activeIdx;
@@ -1037,10 +1099,10 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                     type="button"
                     onClick={() => document.getElementById(`itin-stop-${idx}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
                     className="flex flex-col items-center gap-1.5 shrink-0 focus:outline-none group transition-opacity duration-300"
-                    style={{ width: 56, opacity: isActive ? 1 : isPast ? 0.45 : 0.6 }}
+                    style={{ width: 44, opacity: isActive ? 1 : isPast ? 0.45 : 0.6 }}
                   >
                     <div
-                      className="w-10 h-10 rounded-full flex items-center justify-center font-black text-base ring-2 ring-white transition-all duration-300 group-hover:scale-110 group-active:scale-95"
+                      className="w-8 h-8 rounded-full flex items-center justify-center font-black text-sm ring-1 ring-white transition-all duration-300 group-hover:scale-110 group-active:scale-95"
                       style={{
                         background: isActive
                           ? 'linear-gradient(135deg,var(--color-brand),var(--color-brand-active))'
@@ -1061,7 +1123,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
 
                   {/* Connector: line + travel time */}
                   {!isLast && (
-                    <div className="flex-1 flex flex-col items-center gap-1" style={{ minWidth: 52, opacity: idx < activeIdx ? 0.4 : 1 }}>
+                    <div className="flex-1 flex flex-col items-center gap-1" style={{ minWidth: 44, opacity: idx < activeIdx ? 0.4 : 1 }}>
                       {travelMin && (
                         <span className="text-[10px] font-bold whitespace-nowrap px-1.5 py-0.5 rounded-full"
                           style={{ background: TRAFFIC_LINE_BG[stop.currentTraffic] + '20', color: TRAFFIC_LINE_BG[stop.currentTraffic] }}>
@@ -1515,12 +1577,6 @@ function ExploreView({ place, visitTime = 'Morning' }: { place: ExploreResult; v
 // Thanjavur centre — default reference when no area is selected
 const THANJAVUR_CENTER = { lat: 10.787, lng: 79.1378 };
 
-const PURE_VEG_NAME_SIGNALS = ['bhavan', 'bhawan', 'saravana', 'adyar', 'brahmin', 'sweets', 'pure veg', 'veg only'];
-function isPureVegPlace(p: PlaceResult): boolean {
-  const name = p.name.toLowerCase();
-  const tags = p.tags.join(' ').toLowerCase();
-  return PURE_VEG_NAME_SIGNALS.some(s => name.includes(s) || tags.includes(s));
-}
 
 function StopInfoTabs({
   stop, crowd,
@@ -1594,14 +1650,14 @@ export function ResultsView({
   isLoadingMore = false,
   onBack, onRegenerate, onSave, saved = false, onSwitchTab,
   backLabel, onExploreStop, isFirstItinerary = false, selectedTags = [], onCancelTag,
-  pureVegFilter = false, visitTime = 'Morning',
+  visitTime = 'Morning',
 }: ResultsViewProps) {
   const { toast } = useToast();
   const results = tab === 'Hotels' ? hotels : tab === 'Food' ? food : [];
   const refLat   = THANJAVUR_CENTER.lat;
   const refLng   = THANJAVUR_CENTER.lng;
   const refLabel = searchArea || undefined;
-  const count = tab === 'Itinerary' ? itinerary?.length : tab === 'Explore' ? 1 : results?.length;
+
 
   const TAB_ACCENT: Record<string, { accent: string; accentBg: string }> = {
     Hotels:    { accent: 'var(--color-brand)', accentBg: 'var(--color-brand-softer)' },
@@ -1614,30 +1670,8 @@ export function ResultsView({
   const handleSave = () => { onSave(); toast('Plan saved — find it under Trips.', 'success'); };
 
   return (
-    <div className="w-full max-w-[920px] mx-auto px-4 py-4 pb-28 lg:pb-8">
+    <div className="w-full max-w-[920px] mx-auto px-4 pt-2 pb-28 lg:pb-8">
 
-      {/* Top bar — back button + result count */}
-      <div className="flex items-center justify-between gap-2 mb-5">
-        <button
-          onClick={onBack}
-          className="flex items-center gap-2 group"
-        >
-          <ArrowLeft className="w-4 h-4 text-muted group-hover:text-heading transition-colors" />
-          <span className="text-sm font-semibold text-muted group-hover:text-heading transition-colors">Back</span>
-        </button>
-        <span className="shrink-0 text-xs font-bold text-brand bg-brand-softer border border-brand-soft/30 px-3 py-1.5 rounded-full">
-          {destination} · {tab === 'Explore' ? 'AI guide' : tab === 'Itinerary' ? `${count ?? 0} place${(count ?? 0) !== 1 ? 's' : ''}` : `${count ?? 0} result${(count ?? 0) !== 1 ? 's' : ''}`}
-        </span>
-      </div>
-
-
-      {/* Pure Veg active indicator — shown when filter is on */}
-      {tab === 'Food' && pureVegFilter && (
-        <div className="flex items-center gap-2 px-3 py-2 rounded-lg mb-3 bg-brand-softer border border-brand-medium">
-          <span role="img" aria-label="Active" className="text-sm leading-none">🟢</span>
-          <span className="text-xs font-bold text-brand">Pure Veg — non-veg places are dimmed</span>
-        </div>
-      )}
 
       {/* Active tag chips — shown when hotel/food tags are applied */}
       {(tab === 'Hotels' || tab === 'Food') && selectedTags.length > 0 && onCancelTag && (
@@ -1741,32 +1775,10 @@ export function ResultsView({
         </motion.div>
       )}
 
-      {/* Results */}
-      <div className={tab === 'Hotels' || tab === 'Food' ? 'flex flex-col gap-5 mb-5' : 'space-y-4 mb-5'}>
+      {/* Results — M-03: 2-column grid on desktop for better use of space */}
+      <div className={tab === 'Hotels' || tab === 'Food' ? 'grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5 items-start' : 'space-y-4 mb-5'}>
         {(tab === 'Hotels' || tab === 'Food') && results?.map((p, idx) => (
           <React.Fragment key={p.id}>
-            {/* Section headers between result tiers */}
-            {idx === 0 && (
-              <div className="flex items-center gap-2 -mb-2">
-                <Sparkles className="w-3.5 h-3.5 text-brand" />
-                <span className="text-xs font-semibold text-brand">AI Recommended</span>
-                <div className="flex-1 h-px bg-brand/20" />
-              </div>
-            )}
-            {idx === 1 && (
-              <div className="flex items-center gap-2 -mb-2">
-                <Star className="w-3.5 h-3.5 text-warning-strong fill-warning-strong" />
-                <span className="text-xs font-semibold text-warning-strong">Best Options</span>
-                <div className="flex-1 h-px bg-warning-medium" />
-              </div>
-            )}
-            {idx === 3 && (results?.length ?? 0) > 3 && (
-              <div className="flex items-center gap-2 -mb-2">
-                <Info className="w-3.5 h-3.5 text-muted" />
-                <span className="text-xs font-semibold text-muted">Also Consider</span>
-                <div className="flex-1 h-px bg-border" />
-              </div>
-            )}
             <PlaceCard
               place={p}
               tab={tab}
@@ -1777,7 +1789,6 @@ export function ResultsView({
               refLat={refLat}
               refLng={refLng}
               refLabel={refLabel}
-              dimmed={tab === 'Food' && pureVegFilter && !isPureVegPlace(p)}
             />
           </React.Fragment>
         ))}
@@ -1808,16 +1819,6 @@ export function ResultsView({
         )}
       </div>
 
-      {/* End-of-results marker */}
-      {(tab === 'Hotels' || tab === 'Food') && (results?.length ?? 0) > 0 && (
-        <div className="flex items-center gap-3 py-3 mb-4">
-          <div className="flex-1 h-px bg-border" />
-          <span className="text-xs text-muted shrink-0">
-            Showing all {results!.length} result{results!.length !== 1 ? 's' : ''} for {destination}
-          </span>
-          <div className="flex-1 h-px bg-border" />
-        </div>
-      )}
 
       {/* Actions */}
       <div className="flex gap-3">

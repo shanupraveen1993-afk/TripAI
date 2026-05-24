@@ -726,14 +726,6 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                 </div>
               </div>
 
-              {/* Location toast */}
-              {locationToast && (
-                <div className="mb-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 bg-brand-softer text-brand border border-brand-soft">
-                  <MapPin className="w-3 h-3 shrink-0" />
-                  {locationToast}
-                </div>
-              )}
-
               {/* Segmented tag display */}
               {hotelTagData.segments
                 ? Object.entries(hotelTagData.segments).map(([segName, segTags]) => (
@@ -992,18 +984,12 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               Time Slot <span className="text-danger">*</span>
             </label>
             <div className="flex gap-1.5">
-              {(['Morning', 'Afternoon', 'Evening'] as const).map(t => {
-                const meta: Record<string, { places: number; time: string }> = {
-                  Morning:   { places: 10, time: '7 AM – 8 PM' },
-                  Afternoon: { places: 4,  time: '2 PM – 7 PM' },
-                  Evening:   { places: 2,  time: '5 PM – 8 PM' },
-                };
-                return (
+              {(['Morning', 'Afternoon', 'Evening'] as const).map(t => (
                   <button
                     key={t}
                     type="button"
                     onClick={() => { setStartTime(t); setShowTimeError(false); }}
-                    className="flex-1 flex flex-col items-center gap-0.5 py-3 min-h-[44px] rounded-lg border-2 transition-all"
+                    className="flex-1 flex items-center justify-center py-3 min-h-[44px] rounded-lg border-2 transition-all"
                     style={startTime === t
                       ? { borderColor: 'var(--color-brand)',  background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
                       : showTimeError
@@ -1012,10 +998,8 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                     }
                   >
                     <span className="text-xs font-semibold uppercase tracking-wide">{t}</span>
-                    <span className="text-xs opacity-60">{meta[t].places} places</span>
                   </button>
-                );
-              })}
+              ))}
             </div>
             <AnimatePresence>
               {showTimeError && (
@@ -1145,14 +1129,6 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             <p className="text-white/75 text-xs mt-0.5 leading-snug">{hero.sub}</p>
           </motion.div>
         </AnimatePresence>
-        {/* Location pill */}
-        <div className="absolute top-4 right-5">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-white text-xs font-bold"
-            style={{ background: 'rgba(0,0,0,0.32)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.18)' }}>
-            <MapPin className="w-2.5 h-2.5 shrink-0" />
-            {destination || 'Thanjavur'}
-          </div>
-        </div>
       </div>
 
       {/* ── Category selector ── */}

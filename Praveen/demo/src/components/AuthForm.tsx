@@ -103,12 +103,13 @@ export function AuthForm({ onSuccess, onBack, asModal = false }: AuthFormProps) 
                 iconRight={!loading ? <ArrowRight className="w-3.5 h-3.5" /> : undefined}
                 className="justify-between"
               >
-                {loading ? 'Signing in…' : 'Continue with Google'}
+                {loading ? 'Signing in…' : 'Continue (Demo)'}
               </Button>
             </form>
 
+            {/* M-04: clarify demo-only auth so users aren't confused */}
             <p className="mt-4 text-xs text-center text-muted">
-              By continuing you agree to our Terms of Service
+              This is a <span className="font-semibold text-heading">demo</span> — your name is saved locally. Real Google OAuth coming soon.
             </p>
           </motion.div>
         </AnimatePresence>
