@@ -1782,7 +1782,7 @@ export function ResultsView({
       )}
 
       {/* Results — M-03: 2-column grid on desktop for better use of space */}
-      <div className={tab === 'Hotels' || tab === 'Food' ? 'grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5 items-start' : 'space-y-4 mb-5'}>
+      <div className={tab === 'Hotels' || tab === 'Food' ? 'flex flex-col gap-5 mb-5' : 'space-y-4 mb-5'}>
         {(tab === 'Hotels' || tab === 'Food') && results?.map((p, idx) => (
           <React.Fragment key={p.id}>
             <PlaceCard
