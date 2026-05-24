@@ -508,7 +508,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           {/* Col 2: Info */}
           <div className="flex-1 min-w-0 px-3 py-3 flex flex-col gap-1.5">
             <div className="flex items-baseline gap-1 flex-wrap pr-9">
-              <h3 className="font-display font-bold text-sm text-heading leading-snug line-clamp-1" title={place.name}>{place.name}</h3>
+              <h3 className="font-display font-bold text-base text-heading leading-snug line-clamp-1" title={place.name}>{place.name}</h3>
               {selectedTags.length > 0 && place.matchScore !== undefined && (
                 <span className={`text-xs font-bold shrink-0 ${place.matchScore >= 80 ? 'text-success-strong' : place.matchScore >= 55 ? 'text-brand' : 'text-muted'}`}>
                   {place.matchScore}% match
@@ -649,7 +649,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
         <div className="flex-1 min-w-0 px-2.5 py-2.5 flex flex-col gap-1.5">
           <div className="flex items-start gap-1.5">
             <div className="flex items-baseline gap-1.5 flex-wrap flex-1 min-w-0">
-              <h3 className="font-display font-bold text-sm text-heading leading-snug line-clamp-1" title={place.name}>{place.name}</h3>
+              <h3 className="font-display font-bold text-base text-heading leading-snug line-clamp-1" title={place.name}>{place.name}</h3>
               {selectedTags.length > 0 && place.matchScore !== undefined && (
                 <span className={`text-xs font-bold shrink-0 ${place.matchScore >= 80 ? 'text-success-strong' : place.matchScore >= 55 ? 'text-brand' : 'text-muted'}`}>
                   {place.matchScore}% match
@@ -1691,7 +1691,7 @@ export function ResultsView({
               <span>{tag}</span>
               <button
                 onClick={() => onCancelTag(tag)}
-                className="flex items-center justify-center w-4 h-4 rounded-full hover:bg-brand-medium transition-colors"
+                className="flex items-center justify-center w-6 h-6 rounded-full hover:bg-brand-medium transition-colors"
                 aria-label={`Remove ${tag}`}
               >
                 <X className="w-2.5 h-2.5" />
