@@ -426,7 +426,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
 
   const toggleBookmark = () => {
     setBookmarked(v => !v);
-    toast(bookmarked ? `Removed ${place.name}` : `${place.name} saved`, bookmarked ? 'info' : 'success');
+    toast(bookmarked ? `${place.name} removed` : `${place.name} saved`, bookmarked ? 'info' : 'success');
   };
 
   const actionButtons = (
