@@ -681,7 +681,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             <a
               href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
               target="_blank" rel="noopener noreferrer"
-              className="self-start inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold border border-border text-body hover:border-brand hover:text-brand transition-colors active:scale-[0.97]"
+              className="self-start inline-flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-xs font-bold border border-border text-body hover:border-brand hover:text-brand transition-colors active:scale-[0.97]"
             >
               <Map className="w-3 h-3 shrink-0" />Map
             </a>
@@ -722,7 +722,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                 ))}
                 <button
                   onClick={() => setExpanded(v => !v)}
-                  className="w-full flex items-center justify-center gap-1 py-1.5 text-xs font-semibold text-brand hover:text-brand/70 transition-colors active:scale-[0.97]"
+                  className="w-full flex items-center justify-center gap-1 py-2 text-xs font-semibold text-brand hover:text-brand/70 transition-colors active:scale-[0.97]"
                 >
                   <Sparkles className="w-3 h-3 shrink-0" />
                   Detailed Analysis
