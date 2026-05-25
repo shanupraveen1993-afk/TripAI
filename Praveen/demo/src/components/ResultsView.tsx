@@ -549,8 +549,8 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               const isDown = place.trendVerdict === 'declining';
               const sentimentMsg = resolveTagVerdictWeb(place.reviews, tab as 'Hotels' | 'Food', isDown, agoToDaysCo);
               return (
-                <div className={`rounded-lg px-2 py-1.5 border ${isUp ? 'bg-success-soft border-success-medium/40' : isDown ? 'bg-warning-soft border-warning-medium/40' : 'bg-brand-softer border-brand-soft'}`}>
-                  <p className="text-xs leading-snug text-body">{sentimentMsg}</p>
+                <div className={`rounded-lg px-2 py-0.5 border ${isUp ? 'bg-success-soft border-success-medium/40' : isDown ? 'bg-warning-soft border-warning-medium/40' : 'bg-brand-softer border-brand-soft'}`}>
+                  <p className="text-xs leading-snug text-body line-clamp-1">{sentimentMsg}</p>
                 </div>
               );
             })()}
@@ -676,8 +676,8 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             const isDown = place.trendVerdict === 'declining';
             const sentimentMsg = resolveTagVerdictWeb(place.reviews, tab as 'Hotels' | 'Food', isDown, agoToDaysCo);
             return (
-              <div className={`rounded-lg px-2.5 py-2 border ${isUp ? 'bg-success-soft border-success-medium/40' : isDown ? 'bg-warning-soft border-warning-medium/40' : 'bg-brand-softer border-brand-soft'}`}>
-                <p className="text-xs leading-snug text-body">{sentimentMsg}</p>
+              <div className={`rounded-lg px-2.5 py-0.5 border ${isUp ? 'bg-success-soft border-success-medium/40' : isDown ? 'bg-warning-soft border-warning-medium/40' : 'bg-brand-softer border-brand-soft'}`}>
+                <p className="text-xs leading-snug text-body line-clamp-1">{sentimentMsg}</p>
               </div>
             );
           })()}
