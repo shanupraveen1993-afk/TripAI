@@ -429,29 +429,6 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
     toast(bookmarked ? `${place.name} removed` : `${place.name} saved`, bookmarked ? 'info' : 'success');
   };
 
-  const actionButtons = (
-    <div className="flex items-center gap-1.5 shrink-0">
-      {tab === 'Hotels' && (<>
-        <a href={place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`}
-          target="_blank" rel="noopener noreferrer"
-          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-brand text-white hover:bg-brand/90 transition-colors active:scale-[0.97] shadow-sm">
-          <ExternalLink className="w-3.5 h-3.5" />Book
-        </a>
-        <a href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
-          target="_blank" rel="noopener noreferrer"
-          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold border border-border text-muted hover:border-brand hover:text-brand transition-colors active:scale-[0.97]">
-          <Map className="w-3.5 h-3.5" />Map
-        </a>
-      </>)}
-      {tab === 'Food' && (
-        <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
-          target="_blank" rel="noopener noreferrer"
-          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-brand text-white hover:bg-brand/90 transition-colors active:scale-[0.97] shadow-sm">
-          <Navigation className="w-3 h-3" />Directions
-        </a>
-      )}
-    </div>
-  );
 
   // Competitor-style coloured rating badge (Booking.com / Goibibo pattern)
   const ratingColor = place.rating >= 4.5 ? 'var(--color-success-strong)' : place.rating >= 4.0 ? 'var(--color-brand)' : place.rating >= 3.5 ? 'var(--color-warning-strong)' : 'var(--color-danger-strong)';
@@ -474,20 +451,11 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
       transition={{ delay: animDelay, duration: 0.35, ease: 'easeOut', layout: { duration: 0.28, ease: 'easeInOut' } }}
       className="relative bg-surface border border-card-border rounded-xl shadow-sm card-hover overflow-hidden"
     >
-      {/* ── Save bookmark — card top-right corner (mobile only) ── */}
-      <button
-        onClick={(e) => { e.stopPropagation(); toggleBookmark(); }}
-        aria-label={bookmarked ? 'Remove from saved' : 'Save this place'}
-        className="sm:hidden absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full bg-white/90 border border-border shadow-sm z-20 active:scale-90 transition-transform hover:bg-white"
-      >
-        <Bookmark className={`w-3.5 h-3.5 ${bookmarked ? 'fill-brand text-brand' : 'text-muted'}`} />
-      </button>
-
       {/* ══ MOBILE CARD LAYOUT (< sm) ══ */}
       <div className="sm:hidden flex flex-col">
 
-        {/* Row 1: Photo + Info — tap anywhere to expand */}
-        <div className="flex min-h-[120px] cursor-pointer" onClick={() => setExpanded(v => !v)}>
+        {/* Row 1: Photo + Left Info + Right Actions */}
+        <div className="flex min-h-[130px]">
 
           {/* Col 1: Photo */}
           <div className="w-[90px] shrink-0 relative">
@@ -496,7 +464,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                 color={place.photoColor}
                 name={place.name}
                 photoRef={place.photoRef ?? null}
-                autoLoad={rank <= 6}
+                autoLoad={rank <= 2}
               />
             </div>
             <span className={`absolute top-1.5 right-1.5 flex items-center gap-0.5 px-1 py-0.5 rounded-full text-xs font-semibold leading-none ${place.openNow ? 'bg-success/90 text-white' : 'bg-black/60 text-white/80'}`}>
@@ -505,16 +473,20 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             </span>
           </div>
 
-          {/* Col 2: Info */}
-          <div className="flex-1 min-w-0 px-3 py-3 flex flex-col gap-1.5">
-            <div className="flex items-baseline gap-1 flex-wrap pr-9">
-              <h3 className="font-display font-bold text-base text-heading leading-snug line-clamp-1" title={place.name}>{place.name}</h3>
-              {selectedTags.length > 0 && place.matchScore !== undefined && (
-                <span className={`text-xs font-bold shrink-0 ${place.matchScore >= 80 ? 'text-success-strong' : place.matchScore >= 55 ? 'text-brand' : 'text-muted'}`}>
-                  {place.matchScore}% match
-                </span>
-              )}
-            </div>
+          {/* Col 2: Left Info — Name, Address, Rating, Tags, Sentiment */}
+          <div className="flex-1 min-w-0 px-2.5 py-2.5 flex flex-col gap-1.5 cursor-pointer" onClick={() => setExpanded(v => !v)}>
+            <h3 className="font-display font-bold text-base text-heading leading-snug line-clamp-1" title={place.name}>{place.name}</h3>
+            {place.address && (
+              <a
+                href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
+                target="_blank" rel="noopener noreferrer"
+                onClick={e => e.stopPropagation()}
+                className="flex items-start gap-1 text-xs text-muted hover:text-brand transition-colors leading-snug w-fit"
+              >
+                <MapPin className="w-3 h-3 shrink-0 mt-0.5" />
+                <span className="line-clamp-1">{place.address}</span>
+              </a>
+            )}
             <div className="flex items-center gap-0.5">
               <StarRating rating={place.rating} size="xs" />
               <span className="text-xs text-muted ml-0.5">(<span className="tabular-nums">{place.reviewCount.toLocaleString()}</span>)</span>
@@ -535,7 +507,6 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                 ))}
               </div>
             )}
-            {/* Latest Sentiment mini */}
             {(() => {
               function agoToDaysCo(ago: string): number {
                 const m = ago.match(/(\d+)\s+(day|week|month)/);
@@ -554,64 +525,47 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               );
             })()}
           </div>
+
+          {/* Col 3: Right — Match score + Save */}
+          <div className="w-[64px] shrink-0 flex flex-col items-center gap-2 pt-2.5 pb-2 px-1">
+            {place.matchScore !== undefined && (
+              <div className={`flex flex-col items-center justify-center w-11 h-11 rounded-xl border-2 ${
+                place.matchScore >= 80 ? 'border-success bg-success-soft text-success-strong' :
+                place.matchScore >= 55 ? 'border-brand bg-brand-softer text-brand' :
+                'border-border bg-bg-app text-muted'
+              }`}>
+                <span className="text-sm font-black leading-none tabular-nums">{place.matchScore}%</span>
+                <span className="text-[9px] font-semibold leading-none mt-0.5">match</span>
+              </div>
+            )}
+            <button
+              onClick={(e) => { e.stopPropagation(); toggleBookmark(); }}
+              aria-label={bookmarked ? 'Remove from saved' : 'Save this place'}
+              className="w-8 h-8 flex items-center justify-center rounded-full border border-border bg-surface active:scale-90 transition-transform hover:border-brand"
+            >
+              <Bookmark className={`w-3.5 h-3.5 ${bookmarked ? 'fill-brand text-brand' : 'text-muted'}`} />
+            </button>
+          </div>
+
         </div>
 
-        {/* Row 2: Full-width CTA buttons */}
-        {(() => {
-          const ctaLockedM = selectedTags.length === 0;
-          return (
-            <div className="border-t border-border">
-              {ctaLockedM ? (
-                <div className="flex flex-col gap-1.5 px-3 py-2.5">
-                  <div className="flex gap-2">
-                    {tab === 'Hotels' && (
-                      <button
-                        onClick={() => toast('Select a filter tag above to unlock Map & Booking', 'info')}
-                        className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold border border-border text-muted bg-bg-app active:scale-[0.97]"
-                      >
-                        <Map className="w-3.5 h-3.5 shrink-0" />Map
-                      </button>
-                    )}
-                    <button
-                      onClick={() => toast('Select a filter tag above to unlock Map & Booking', 'info')}
-                      className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold active:scale-[0.97] ${tab === 'Hotels' ? 'bg-brand/25 text-brand/70' : 'bg-brand/25 text-brand/70'}`}
-                    >
-                      {tab === 'Hotels' ? <><ExternalLink className="w-3.5 h-3.5 shrink-0" />Book Now</> : <><Navigation className="w-3.5 h-3.5 shrink-0" />Directions</>}
-                    </button>
-                  </div>
-                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-brand-softer border border-brand-soft/40">
-                    <Info className="w-3 h-3 text-brand shrink-0" />
-                    <p className="text-xs text-brand font-semibold">Select a tag or filter to unlock</p>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex gap-2 px-3 py-2.5">
-                  {tab === 'Hotels' && (
-                    <a href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
-                      target="_blank" rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold border border-border text-body active:scale-[0.97]">
-                      <Map className="w-3.5 h-3.5 shrink-0" />Map
-                    </a>
-                  )}
-                  {tab === 'Hotels' && (
-                    <a href={place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`}
-                      target="_blank" rel="noopener noreferrer"
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold border border-brand text-brand bg-brand-softer hover:bg-brand-soft transition-colors active:scale-[0.97]">
-                      <ExternalLink className="w-3.5 h-3.5 shrink-0" />Book Now
-                    </a>
-                  )}
-                  {tab === 'Food' && (
-                    <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
-                      target="_blank" rel="noopener noreferrer"
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold border border-brand text-brand bg-brand-softer hover:bg-brand-soft transition-colors active:scale-[0.97]">
-                      <Navigation className="w-3.5 h-3.5 shrink-0" />Directions
-                    </a>
-                  )}
-                </div>
-              )}
-            </div>
-          );
-        })()}
+        {/* Row 2: Book Now / Directions */}
+        <div className="border-t border-border px-3 py-2.5">
+          {tab === 'Hotels' && (
+            <a href={place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`}
+              target="_blank" rel="noopener noreferrer"
+              className="flex items-center justify-center gap-1.5 w-full py-2 rounded-lg text-sm font-bold border border-brand text-brand bg-brand-softer hover:bg-brand-soft transition-colors active:scale-[0.97]">
+              <ExternalLink className="w-3.5 h-3.5 shrink-0" />Book Now
+            </a>
+          )}
+          {tab === 'Food' && (
+            <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
+              target="_blank" rel="noopener noreferrer"
+              className="flex items-center justify-center gap-1.5 w-full py-2 rounded-lg text-sm font-bold border border-brand text-brand bg-brand-softer hover:bg-brand-soft transition-colors active:scale-[0.97]">
+              <Navigation className="w-3.5 h-3.5 shrink-0" />Directions
+            </a>
+          )}
+        </div>
 
         {/* Row 3: Detailed Analysis toggle */}
         <div className="border-t border-border">
@@ -635,35 +589,28 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               color={place.photoColor}
               name={place.name}
               photoRef={place.photoRef ?? null}
-              autoLoad={rank <= 6}
+              autoLoad={rank <= 2}
             />
           </div>
-          {/* Open/Closed — top right of photo */}
           <span className={`absolute top-2 right-2 flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-semibold leading-none ${place.openNow ? 'bg-success/90 text-white' : 'bg-black/60 text-white/80'}`}>
             <span className={`w-1 h-1 rounded-full shrink-0 ${place.openNow ? 'bg-white' : 'bg-white/60'}`} />
             {place.openNow ? 'Open' : 'Closed'}
           </span>
         </div>
 
-        {/* Col 2: Info */}
+        {/* Col 2: Info — Name, Address, Rating, Tags, Sentiment */}
         <div className="flex-1 min-w-0 px-2.5 py-2.5 flex flex-col gap-1.5">
-          <div className="flex items-start gap-1.5">
-            <div className="flex items-baseline gap-1.5 flex-wrap flex-1 min-w-0">
-              <h3 className="font-display font-bold text-base text-heading leading-snug line-clamp-1" title={place.name}>{place.name}</h3>
-              {selectedTags.length > 0 && place.matchScore !== undefined && (
-                <span className={`text-xs font-bold shrink-0 ${place.matchScore >= 80 ? 'text-success-strong' : place.matchScore >= 55 ? 'text-brand' : 'text-muted'}`}>
-                  {place.matchScore}% match
-                </span>
-              )}
-            </div>
-            <button
-              onClick={(e) => { e.stopPropagation(); toggleBookmark(); }}
-              aria-label={bookmarked ? 'Remove from saved' : 'Save this place'}
-              className="shrink-0 w-6 h-6 flex items-center justify-center rounded-full border border-border bg-surface hover:border-brand transition-colors active:scale-90"
+          <h3 className="font-display font-bold text-base text-heading leading-snug line-clamp-1" title={place.name}>{place.name}</h3>
+          {place.address && (
+            <a
+              href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
+              target="_blank" rel="noopener noreferrer"
+              className="flex items-start gap-1 text-xs text-muted hover:text-brand transition-colors leading-snug w-fit"
             >
-              <Bookmark className={`w-3 h-3 ${bookmarked ? 'fill-brand text-brand' : 'text-muted'}`} />
-            </button>
-          </div>
+              <MapPin className="w-3 h-3 shrink-0 mt-0.5" />
+              <span className="line-clamp-1">{place.address}</span>
+            </a>
+          )}
           <div className="flex items-center gap-0.5">
             <StarRating rating={place.rating} size="xs" />
             <span className="text-xs text-muted ml-0.5">(<span className="tabular-nums">{place.reviewCount.toLocaleString()}</span>)</span>
@@ -682,7 +629,6 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               ))}
             </div>
           )}
-          {/* Latest Sentiment mini — inline in L1 card */}
           {(() => {
             function agoToDaysCo(ago: string): number {
               const m = ago.match(/(\d+)\s+(day|week|month)/);
@@ -702,66 +648,50 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           })()}
         </div>
 
-        {/* Col 3: Buttons */}
-        {(() => {
-          const ctaLocked = selectedTags.length === 0;
-          return (
-            <div className="w-[220px] shrink-0 flex flex-col items-stretch justify-between px-3 py-3">
-              <div className="flex flex-col gap-2">
-                {ctaLocked ? (
-                  <div className="flex flex-col gap-1.5">
-                    <button
-                      onClick={() => toast('Select a filter tag above to unlock Map & Booking', 'info')}
-                      className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold border border-border text-muted bg-bg-app active:scale-[0.97]"
-                    >
-                      <Map className="w-3.5 h-3.5 shrink-0" />Map
-                    </button>
-                    <button
-                      onClick={() => toast('Select a filter tag above to unlock Map & Booking', 'info')}
-                      className={`flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold active:scale-[0.97] ${tab === 'Hotels' ? 'bg-brand/25 text-brand/70' : 'bg-brand/25 text-brand/70'}`}
-                    >
-                      {tab === 'Hotels' ? <><ExternalLink className="w-3.5 h-3.5 shrink-0" />Book</> : <><Navigation className="w-3.5 h-3.5 shrink-0" />Directions</>}
-                    </button>
-                    <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-brand-softer border border-brand-soft/40">
-                      <Info className="w-2.5 h-2.5 text-brand shrink-0" />
-                      <p className="text-xs text-brand font-semibold leading-snug">Select a tag to unlock</p>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <a href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
-                      target="_blank" rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold border border-border text-body hover:border-brand hover:text-brand transition-colors active:scale-[0.97]">
-                      <Map className="w-3.5 h-3.5 shrink-0" />Map
-                    </a>
-                    {tab === 'Hotels' && (
-                      <a href={place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`}
-                        target="_blank" rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold border border-brand text-brand bg-brand-softer hover:bg-brand-soft transition-colors active:scale-[0.97]">
-                        <ExternalLink className="w-3.5 h-3.5 shrink-0" />Book
-                      </a>
-                    )}
-                    {tab === 'Food' && (
-                      <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
-                        target="_blank" rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold border border-brand text-brand bg-brand-softer hover:bg-brand-soft transition-colors active:scale-[0.97]">
-                        <Navigation className="w-3.5 h-3.5 shrink-0" />Directions
-                      </a>
-                    )}
-                  </>
-                )}
+        {/* Col 3: Right — Match score + Save, Book, Analysis */}
+        <div className="w-[160px] shrink-0 flex flex-col items-stretch gap-2 px-3 py-3 border-l border-border">
+          <div className="flex items-center justify-between gap-1.5">
+            {place.matchScore !== undefined ? (
+              <div className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border ${
+                place.matchScore >= 80 ? 'border-success bg-success-soft text-success-strong' :
+                place.matchScore >= 55 ? 'border-brand bg-brand-softer text-brand' :
+                'border-border bg-bg-app text-muted'
+              }`}>
+                <span className="text-sm font-black tabular-nums leading-none">{place.matchScore}%</span>
+                <span className="text-xs font-semibold leading-none">match</span>
               </div>
-              <button
-                onClick={() => setExpanded(v => !v)}
-                className="flex items-center justify-center gap-1 py-1.5 text-xs font-semibold text-brand hover:text-brand/70 transition-colors active:scale-[0.97]"
-              >
-                <Sparkles className="w-3 h-3 shrink-0" />
-                Detailed Analysis
-                <ChevronDown className={`w-3 h-3 shrink-0 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
-              </button>
-            </div>
-          );
-        })()}
+            ) : <div />}
+            <button
+              onClick={(e) => { e.stopPropagation(); toggleBookmark(); }}
+              aria-label={bookmarked ? 'Remove from saved' : 'Save this place'}
+              className="shrink-0 w-7 h-7 flex items-center justify-center rounded-full border border-border bg-surface hover:border-brand transition-colors active:scale-90"
+            >
+              <Bookmark className={`w-3.5 h-3.5 ${bookmarked ? 'fill-brand text-brand' : 'text-muted'}`} />
+            </button>
+          </div>
+          {tab === 'Hotels' && (
+            <a href={place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`}
+              target="_blank" rel="noopener noreferrer"
+              className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold border border-brand text-brand bg-brand-softer hover:bg-brand-soft transition-colors active:scale-[0.97]">
+              <ExternalLink className="w-3.5 h-3.5 shrink-0" />Book Now
+            </a>
+          )}
+          {tab === 'Food' && (
+            <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
+              target="_blank" rel="noopener noreferrer"
+              className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold border border-brand text-brand bg-brand-softer hover:bg-brand-soft transition-colors active:scale-[0.97]">
+              <Navigation className="w-3.5 h-3.5 shrink-0" />Directions
+            </a>
+          )}
+          <button
+            onClick={() => setExpanded(v => !v)}
+            className="mt-auto flex items-center justify-center gap-1 py-1.5 text-xs font-semibold text-brand hover:text-brand/70 transition-colors active:scale-[0.97]"
+          >
+            <Sparkles className="w-3 h-3 shrink-0" />
+            Detailed Analysis
+            <ChevronDown className={`w-3 h-3 shrink-0 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
+          </button>
+        </div>
 
       </div>
 
@@ -969,7 +899,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
   );
 
   // suppress unused-var warnings for state vars no longer used in JSX
-  void cardCollapsed; void setCardCollapsed; void showNearby; void setShowNearby; void openAiRow; void setOpenAiRow; void actionButtons; void showAnalysis; void setShowAnalysis;
+  void cardCollapsed; void setCardCollapsed; void showNearby; void setShowNearby; void openAiRow; void setOpenAiRow; void showAnalysis; void setShowAnalysis;
 }
 
 /* ── Trophy icon (not in lucide default set, use inline) ─────────────── */
