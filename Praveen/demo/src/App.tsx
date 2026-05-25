@@ -310,7 +310,11 @@ export default function App() {
       }
     } catch {
       // API completely failed — fall back to sample data so the demo still works
-      if (filters.tab === 'Hotels') setLiveResults(MOCK_HOTELS.slice(0, 10) as unknown as PlanResult[]);
+      if (filters.tab === 'Hotels') {
+        const q = filters.searchQuery?.toLowerCase();
+        const matched = q ? MOCK_HOTELS.filter(h => h.name.toLowerCase().includes(q)) : MOCK_HOTELS;
+        setLiveResults((matched.length ? matched : MOCK_HOTELS).slice(0, 10) as unknown as PlanResult[]);
+      }
       else if (filters.tab === 'Food') {
         const activeTags = [...(filters.foodTags ?? []), ...(filters.foodTag ? [filters.foodTag] : [])].filter(Boolean);
         // Keywords grounded in real review frequency from top-50 Thanjavur restaurants
@@ -356,7 +360,10 @@ export default function App() {
           'Pure Veg':        ['pure veg', 'veg only', 'vegetarian'],
         };
         let filtered = MOCK_FOOD;
-        if (activeTags.length > 0) {
+        const fq = filters.searchQuery?.toLowerCase();
+        if (fq) {
+          filtered = MOCK_FOOD.filter(item => item.name.toLowerCase().includes(fq));
+        } else if (activeTags.length > 0) {
           filtered = MOCK_FOOD.filter(item => {
             const corpus = [...item.tags, item.name, item.aiNote ?? ''].join(' ').toLowerCase();
             return activeTags.some(tag => {
@@ -378,6 +385,10 @@ export default function App() {
     setAiCount(c => c + 1);
     setContent('results');
     // auto-log to history
+    const activeTags =
+      filters.tab === 'Hotels' ? (filters.hotelTags?.length ? filters.hotelTags : filters.hotelTag ? [filters.hotelTag] : undefined)
+      : filters.tab === 'Food' ? (filters.foodTags?.length  ? filters.foodTags  : filters.foodTag  ? [filters.foodTag]  : undefined)
+      : undefined;
     const historyEntry: SavedTrip = {
       id: `h-${Date.now()}`,
       tab: filters.tab,
@@ -388,6 +399,7 @@ export default function App() {
       budget: filters.budget,
       savedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       type: 'history',
+      tags: activeTags,
     };
     setSavedTrips(prev => [historyEntry, ...prev.slice(0, 49)]);
   };
@@ -473,7 +485,7 @@ export default function App() {
   };
 
   // ── Bento card handler — instant preset for Itinerary/Explore, live API for Hotels/Food ──
-  const handleBentoAction = async (tab: Tab, overrides: { hotelTag?: string; foodTag?: string; dietType?: string; startTime?: string; exploreTarget?: string; usePreset?: boolean }) => {
+  const handleBentoAction = async (tab: Tab, overrides: { hotelTag?: string; foodTag?: string; dietType?: string; startTime?: string; exploreTarget?: string; usePreset?: boolean; searchQuery?: string }) => {
     if (user === null) { setBrowseAuthOpen(true); return; }
     const seed = searchSeed + 1;
     setActiveTab(tab);
@@ -487,7 +499,7 @@ export default function App() {
       dietType: (overrides.dietType ?? 'Any') as 'Any' | 'Veg' | 'Non-Veg' | 'Pure Veg', dineMode: 'Any', mealTime: 'Any',
       itinDate: '', startPoint: '', startTime: overrides.startTime ?? 'Morning',
       exploreTarget: overrides.exploreTarget ?? 'Brihadeeswarar Temple',
-      visitTime: 'Morning', searchQuery: '',
+      visitTime: 'Morning', searchQuery: overrides.searchQuery ?? '',
     });
     setLiveResults(null);
     setLiveItinerary(null);
@@ -514,24 +526,29 @@ export default function App() {
     try {
       const { results } = await fetchPlan(tab, seed, {
         city: searchLocation || 'Thanjavur',
-        hotelTag:  overrides.hotelTag,
-        hotelTags: overrides.hotelTag ? [overrides.hotelTag] : undefined,
-        foodTag:   overrides.foodTag,
-        foodTags:  overrides.foodTag  ? [overrides.foodTag]  : undefined,
-        dietType:  overrides.dietType,
+        hotelTag:    overrides.hotelTag,
+        hotelTags:   overrides.hotelTag ? [overrides.hotelTag] : undefined,
+        foodTag:     overrides.foodTag,
+        foodTags:    overrides.foodTag  ? [overrides.foodTag]  : undefined,
+        dietType:    overrides.dietType,
+        searchQuery: overrides.searchQuery || undefined,
       });
       if (results && results.length > 0) {
         setLiveResults(results);
       } else {
-        setLiveResults(tab === 'Hotels'
-          ? MOCK_HOTELS.slice(0, 10) as unknown as PlanResult[]
-          : MOCK_FOOD.slice(0, 10) as unknown as PlanResult[]);
+        const sq = overrides.searchQuery?.toLowerCase();
+        const fallback = tab === 'Hotels'
+          ? (sq ? MOCK_HOTELS.filter(h => h.name.toLowerCase().includes(sq)) : MOCK_HOTELS)
+          : (sq ? MOCK_FOOD.filter(f => f.name.toLowerCase().includes(sq))   : MOCK_FOOD);
+        setLiveResults((fallback.length ? fallback : (tab === 'Hotels' ? MOCK_HOTELS : MOCK_FOOD)).slice(0, 10) as unknown as PlanResult[]);
         setApiError(true);
       }
     } catch {
-      setLiveResults(tab === 'Hotels'
-        ? MOCK_HOTELS.slice(0, 10) as unknown as PlanResult[]
-        : MOCK_FOOD.slice(0, 10) as unknown as PlanResult[]);
+      const sq = overrides.searchQuery?.toLowerCase();
+      const fallback = tab === 'Hotels'
+        ? (sq ? MOCK_HOTELS.filter(h => h.name.toLowerCase().includes(sq)) : MOCK_HOTELS)
+        : (sq ? MOCK_FOOD.filter(f => f.name.toLowerCase().includes(sq))   : MOCK_FOOD);
+      setLiveResults((fallback.length ? fallback : (tab === 'Hotels' ? MOCK_HOTELS : MOCK_FOOD)).slice(0, 10) as unknown as PlanResult[]);
       setApiError(true);
     }
     setContent('results');
@@ -559,7 +576,7 @@ export default function App() {
   const recentSearches = savedTrips
     .filter(t => t.type === 'history')
     .slice(0, 3)
-    .map(t => ({ destination: t.destination, tab: t.tab }));
+    .map(t => ({ destination: t.destination, tab: t.tab, tag: t.tags?.[0] }));
 
   // ── Render helpers ───────────────────────────────────────────────────────
   const LOADING_LABELS: Record<string, string> = {

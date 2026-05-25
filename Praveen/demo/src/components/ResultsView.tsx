@@ -5,6 +5,7 @@ import {
   ChevronRight, ChevronDown, Sparkles, Info, RefreshCw, Bookmark, BookmarkCheck,
   Utensils, CheckCircle, AlertTriangle, RotateCcw, Hotel, Route,
   ImageIcon, ExternalLink, Map, X, Lightbulb, DollarSign, Flame, TrendingUp, ThumbsUp, Ticket,
+  Sunrise, Sun, Sunset,
 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Badge } from './ui/Badge';
@@ -472,15 +473,15 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: animDelay, duration: 0.35, ease: 'easeOut', layout: { duration: 0.28, ease: 'easeInOut' } }}
-      className="relative bg-surface border border-card-border rounded-xl shadow-sm card-hover overflow-hidden"
+      className="relative bg-surface border border-card-border rounded-xl shadow-md card-hover overflow-hidden"
     >
       {/* ── Save bookmark — card top-right corner (mobile only) ── */}
       <button
         onClick={(e) => { e.stopPropagation(); toggleBookmark(); }}
         aria-label={bookmarked ? 'Remove from saved' : 'Save this place'}
-        className="sm:hidden absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full bg-white/90 border border-border shadow-sm z-20 active:scale-90 transition-transform hover:bg-white"
+        className="sm:hidden absolute top-1.5 right-1.5 w-9 h-9 flex items-center justify-center rounded-full bg-white/90 border border-border shadow-sm z-20 active:scale-90 transition-transform hover:bg-white"
       >
-        <Bookmark className={`w-3.5 h-3.5 ${bookmarked ? 'fill-brand text-brand' : 'text-muted'}`} />
+        <Bookmark className={`w-4 h-4 ${bookmarked ? 'fill-brand text-brand' : 'text-muted'}`} />
       </button>
 
       {/* ══ MOBILE CARD LAYOUT (< sm) ══ */}
@@ -490,16 +491,16 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
         <div className="flex min-h-[120px] cursor-pointer" onClick={() => setExpanded(v => !v)}>
 
           {/* Col 1: Photo */}
-          <div className="w-[90px] shrink-0 relative">
+          <div className="w-[90px] shrink-0 relative self-stretch rounded-lg overflow-hidden">
             <div className="absolute inset-0">
               <PlacePhoto
                 color={place.photoColor}
                 name={place.name}
                 photoRef={place.photoRef ?? null}
-                autoLoad={rank <= 6}
+                autoLoad={rank <= 2}
               />
             </div>
-            <span className={`absolute top-1.5 right-1.5 flex items-center gap-0.5 px-1 py-0.5 rounded-full text-xs font-semibold leading-none ${place.openNow ? 'bg-success/90 text-white' : 'bg-black/60 text-white/80'}`}>
+            <span className={`absolute top-1.5 left-1.5 flex items-center gap-0.5 px-1 py-0.5 rounded-full text-xs font-semibold leading-none ${place.openNow ? 'bg-success/90 text-white' : 'bg-black/60 text-white/80'}`}>
               <span className={`w-1 h-1 rounded-full shrink-0 ${place.openNow ? 'bg-white' : 'bg-white/60'}`} />
               {place.openNow ? 'Open' : 'Closed'}
             </span>
@@ -507,11 +508,11 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
 
           {/* Col 2: Info */}
           <div className="flex-1 min-w-0 px-3 py-3 flex flex-col gap-1.5">
-            <div className="flex items-baseline gap-1 flex-wrap pr-9">
-              <h3 className="font-display font-bold text-base text-heading leading-snug line-clamp-1" title={place.name}>{place.name}</h3>
-              {selectedTags.length > 0 && place.matchScore !== undefined && (
+            <div className="flex items-baseline gap-1.5 flex-wrap pr-9">
+              <h3 className="font-display font-bold text-base text-heading leading-snug tracking-tight line-clamp-1" title={place.name}>{place.name}</h3>
+              {place.matchScore !== undefined && (
                 <span className={`text-xs font-bold shrink-0 ${place.matchScore >= 80 ? 'text-success-strong' : place.matchScore >= 55 ? 'text-brand' : 'text-muted'}`}>
-                  {place.matchScore}% match
+                  {place.matchScore}%
                 </span>
               )}
             </div>
@@ -556,58 +557,47 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           </div>
         </div>
 
-        {/* Row 2: Full-width CTA buttons */}
+        {/* Row 2: Map (small) + Book Now/Directions (big) */}
         {(() => {
           const ctaLockedM = selectedTags.length === 0;
+          const mapsHrefM = place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`;
+          const bookHrefM = place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`;
           return (
-            <div className="border-t border-border">
+            <div className="border-t border-border flex gap-2 px-3 py-2.5">
               {ctaLockedM ? (
-                <div className="flex flex-col gap-1.5 px-3 py-2.5">
-                  <div className="flex gap-2">
-                    {tab === 'Hotels' && (
-                      <button
-                        onClick={() => toast('Select a filter tag above to unlock Map & Booking', 'info')}
-                        className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold border border-border text-muted bg-bg-app active:scale-[0.97]"
-                      >
-                        <Map className="w-3.5 h-3.5 shrink-0" />Map
-                      </button>
-                    )}
-                    <button
-                      onClick={() => toast('Select a filter tag above to unlock Map & Booking', 'info')}
-                      className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold active:scale-[0.97] ${tab === 'Hotels' ? 'bg-brand/25 text-brand/70' : 'bg-brand/25 text-brand/70'}`}
-                    >
-                      {tab === 'Hotels' ? <><ExternalLink className="w-3.5 h-3.5 shrink-0" />Book Now</> : <><Navigation className="w-3.5 h-3.5 shrink-0" />Directions</>}
-                    </button>
-                  </div>
-                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-brand-softer border border-brand-soft/40">
-                    <Info className="w-3 h-3 text-brand shrink-0" />
-                    <p className="text-xs text-brand font-semibold">Select a tag or filter to unlock</p>
-                  </div>
-                </div>
+                <>
+                  <button
+                    onClick={() => toast('Select a filter tag above to unlock', 'info')}
+                    className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold border border-border text-muted bg-bg-app active:scale-[0.97] shrink-0"
+                  >
+                    <Map className="w-3.5 h-3.5 shrink-0" />Map
+                  </button>
+                  <button
+                    onClick={() => toast('Select a filter tag above to unlock', 'info')}
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold bg-brand/25 text-brand/70 active:scale-[0.97]"
+                  >
+                    {tab === 'Hotels' ? <><ExternalLink className="w-3.5 h-3.5 shrink-0" />Book Now</> : <><Navigation className="w-3.5 h-3.5 shrink-0" />Directions</>}
+                  </button>
+                </>
               ) : (
-                <div className="flex gap-2 px-3 py-2.5">
+                <>
+                  <a href={mapsHrefM} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold border border-border text-body active:scale-[0.97] shrink-0">
+                    <Map className="w-3.5 h-3.5 shrink-0" />Map
+                  </a>
                   {tab === 'Hotels' && (
-                    <a href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
-                      target="_blank" rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold border border-border text-body active:scale-[0.97]">
-                      <Map className="w-3.5 h-3.5 shrink-0" />Map
-                    </a>
-                  )}
-                  {tab === 'Hotels' && (
-                    <a href={place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`}
-                      target="_blank" rel="noopener noreferrer"
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold border border-brand text-brand bg-brand-softer hover:bg-brand-soft transition-colors active:scale-[0.97]">
+                    <a href={bookHrefM} target="_blank" rel="noopener noreferrer"
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold bg-brand text-white active:scale-[0.97]">
                       <ExternalLink className="w-3.5 h-3.5 shrink-0" />Book Now
                     </a>
                   )}
                   {tab === 'Food' && (
-                    <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
-                      target="_blank" rel="noopener noreferrer"
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold border border-brand text-brand bg-brand-softer hover:bg-brand-soft transition-colors active:scale-[0.97]">
+                    <a href={mapsHrefM} target="_blank" rel="noopener noreferrer"
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold bg-brand text-white active:scale-[0.97]">
                       <Navigation className="w-3.5 h-3.5 shrink-0" />Directions
                     </a>
                   )}
-                </div>
+                </>
               )}
             </div>
           );
@@ -626,43 +616,34 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
       </div>
 
       {/* ══ DESKTOP CARD LAYOUT (≥ sm) ══ */}
-      <div className="hidden sm:flex min-h-[130px]">
+      <div className="hidden sm:flex min-h-[120px]">
 
-        {/* Col 1: Photo */}
-        <div className="w-[130px] shrink-0 relative">
+        {/* Col 1: Photo — square */}
+        <div className="w-[120px] shrink-0 relative self-stretch">
           <div className="absolute inset-0">
             <PlacePhoto
               color={place.photoColor}
               name={place.name}
               photoRef={place.photoRef ?? null}
-              autoLoad={rank <= 6}
+              autoLoad={rank <= 2}
             />
           </div>
-          {/* Open/Closed — top right of photo */}
-          <span className={`absolute top-2 right-2 flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-semibold leading-none ${place.openNow ? 'bg-success/90 text-white' : 'bg-black/60 text-white/80'}`}>
+          {/* Open/Closed — top left of photo */}
+          <span className={`absolute top-2 left-2 flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-semibold leading-none ${place.openNow ? 'bg-success/90 text-white' : 'bg-black/60 text-white/80'}`}>
             <span className={`w-1 h-1 rounded-full shrink-0 ${place.openNow ? 'bg-white' : 'bg-white/60'}`} />
             {place.openNow ? 'Open' : 'Closed'}
           </span>
         </div>
 
         {/* Col 2: Info */}
-        <div className="flex-1 min-w-0 px-2.5 py-2.5 flex flex-col gap-1.5">
-          <div className="flex items-start gap-1.5">
-            <div className="flex items-baseline gap-1.5 flex-wrap flex-1 min-w-0">
-              <h3 className="font-display font-bold text-base text-heading leading-snug line-clamp-1" title={place.name}>{place.name}</h3>
-              {selectedTags.length > 0 && place.matchScore !== undefined && (
-                <span className={`text-xs font-bold shrink-0 ${place.matchScore >= 80 ? 'text-success-strong' : place.matchScore >= 55 ? 'text-brand' : 'text-muted'}`}>
-                  {place.matchScore}% match
-                </span>
-              )}
-            </div>
-            <button
-              onClick={(e) => { e.stopPropagation(); toggleBookmark(); }}
-              aria-label={bookmarked ? 'Remove from saved' : 'Save this place'}
-              className="shrink-0 w-6 h-6 flex items-center justify-center rounded-full border border-border bg-surface hover:border-brand transition-colors active:scale-90"
-            >
-              <Bookmark className={`w-3 h-3 ${bookmarked ? 'fill-brand text-brand' : 'text-muted'}`} />
-            </button>
+        <div className="flex-1 min-w-0 px-3 py-3 flex flex-col gap-1.5">
+          <div className="flex items-baseline gap-1.5 flex-wrap">
+            <h3 className="font-display font-bold text-base text-heading leading-snug tracking-tight line-clamp-1" title={place.name}>{place.name}</h3>
+            {place.matchScore !== undefined && (
+              <span className={`text-xs font-bold shrink-0 ${place.matchScore >= 80 ? 'text-success-strong' : place.matchScore >= 55 ? 'text-brand' : 'text-muted'}`}>
+                {place.matchScore}% match
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-0.5">
             <StarRating rating={place.rating} size="xs" />
@@ -700,65 +681,64 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               </div>
             );
           })()}
+          {/* Map button — Hotels only, bottom of info col */}
+          {tab === 'Hotels' && (
+            <a
+              href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
+              target="_blank" rel="noopener noreferrer"
+              className="mt-auto self-start inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold border border-border text-body hover:border-brand hover:text-brand transition-colors active:scale-[0.97]"
+            >
+              <Map className="w-3 h-3 shrink-0" />Map
+            </a>
+          )}
         </div>
 
-        {/* Col 3: Buttons */}
+        {/* Col 3: CTAs — save / book / details */}
         {(() => {
           const ctaLocked = selectedTags.length === 0;
+          const bookHref = place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`;
+          const mapsHref = place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`;
           return (
-            <div className="w-[220px] shrink-0 flex flex-col items-stretch justify-between px-3 py-3">
+            <div className="w-[220px] shrink-0 flex flex-col justify-between px-3 py-3">
+              {/* Save — top-right corner */}
+              <div className="flex justify-end">
+                <button
+                  onClick={(e) => { e.stopPropagation(); toggleBookmark(); }}
+                  aria-label={bookmarked ? 'Remove from saved' : 'Save this place'}
+                  className="w-8 h-8 flex items-center justify-center rounded-full border border-border bg-surface hover:border-brand transition-colors active:scale-90"
+                >
+                  <Bookmark className={`w-4 h-4 ${bookmarked ? 'fill-brand text-brand' : 'text-muted'}`} />
+                </button>
+              </div>
+              {/* Book Now + Detailed Analysis — grouped at bottom */}
               <div className="flex flex-col gap-2">
                 {ctaLocked ? (
-                  <div className="flex flex-col gap-1.5">
-                    <button
-                      onClick={() => toast('Select a filter tag above to unlock Map & Booking', 'info')}
-                      className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold border border-border text-muted bg-bg-app active:scale-[0.97]"
-                    >
-                      <Map className="w-3.5 h-3.5 shrink-0" />Map
-                    </button>
-                    <button
-                      onClick={() => toast('Select a filter tag above to unlock Map & Booking', 'info')}
-                      className={`flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold active:scale-[0.97] ${tab === 'Hotels' ? 'bg-brand/25 text-brand/70' : 'bg-brand/25 text-brand/70'}`}
-                    >
-                      {tab === 'Hotels' ? <><ExternalLink className="w-3.5 h-3.5 shrink-0" />Book</> : <><Navigation className="w-3.5 h-3.5 shrink-0" />Directions</>}
-                    </button>
-                    <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-brand-softer border border-brand-soft/40">
-                      <Info className="w-2.5 h-2.5 text-brand shrink-0" />
-                      <p className="text-xs text-brand font-semibold leading-snug">Select a tag to unlock</p>
-                    </div>
-                  </div>
+                  <button
+                    onClick={() => toast('Select a filter tag above to unlock', 'info')}
+                    className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold bg-brand/25 text-brand/70 active:scale-[0.97]"
+                  >
+                    {tab === 'Hotels' ? 'Book Now' : 'Directions'}
+                  </button>
+                ) : tab === 'Hotels' ? (
+                  <a href={bookHref} target="_blank" rel="noopener noreferrer"
+                    className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold bg-brand text-white active:scale-[0.97]">
+                    <ExternalLink className="w-3 h-3 shrink-0" />Book Now
+                  </a>
                 ) : (
-                  <>
-                    <a href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
-                      target="_blank" rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold border border-border text-body hover:border-brand hover:text-brand transition-colors active:scale-[0.97]">
-                      <Map className="w-3.5 h-3.5 shrink-0" />Map
-                    </a>
-                    {tab === 'Hotels' && (
-                      <a href={place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`}
-                        target="_blank" rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold border border-brand text-brand bg-brand-softer hover:bg-brand-soft transition-colors active:scale-[0.97]">
-                        <ExternalLink className="w-3.5 h-3.5 shrink-0" />Book
-                      </a>
-                    )}
-                    {tab === 'Food' && (
-                      <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
-                        target="_blank" rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold border border-brand text-brand bg-brand-softer hover:bg-brand-soft transition-colors active:scale-[0.97]">
-                        <Navigation className="w-3.5 h-3.5 shrink-0" />Directions
-                      </a>
-                    )}
-                  </>
+                  <a href={mapsHref} target="_blank" rel="noopener noreferrer"
+                    className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold bg-brand text-white active:scale-[0.97]">
+                    <Navigation className="w-3 h-3 shrink-0" />Directions
+                  </a>
                 )}
+                <button
+                  onClick={() => setExpanded(v => !v)}
+                  className="w-full flex items-center justify-center gap-1 py-1.5 text-xs font-semibold text-brand hover:text-brand/70 transition-colors active:scale-[0.97]"
+                >
+                  <Sparkles className="w-3 h-3 shrink-0" />
+                  Detailed Analysis
+                  <ChevronDown className={`w-3 h-3 shrink-0 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
+                </button>
               </div>
-              <button
-                onClick={() => setExpanded(v => !v)}
-                className="flex items-center justify-center gap-1 py-1.5 text-xs font-semibold text-brand hover:text-brand/70 transition-colors active:scale-[0.97]"
-              >
-                <Sparkles className="w-3 h-3 shrink-0" />
-                Detailed Analysis
-                <ChevronDown className={`w-3 h-3 shrink-0 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
-              </button>
             </div>
           );
         })()}
@@ -985,12 +965,18 @@ function Trophy({ className }: { className?: string }) {
 }
 
 /* ── Itinerary route map + stop cards ────────────────────────────────── */
-/* ── Seasonal weather for Thanjavur (month-derived) ─────────────────── */
-function getThanjavurWeather(): { emoji: string; label: string; temp: string } {
-  const m = new Date().getMonth(); // 0=Jan
-  if (m >= 2 && m <= 5)  return { emoji: '☀️', label: 'Hot & sunny',    temp: '36–38°C' };
-  if (m >= 6 && m <= 9)  return { emoji: '🌧️', label: 'Monsoon showers', temp: '28–32°C' };
-  return                        { emoji: '⛅', label: 'Pleasant',         temp: '26–30°C' };
+/* ── Time-of-day icon for stop cards ─────────────────────────────────── */
+function getTimeOfDayIcon(time: string): React.ReactNode {
+  const upper = time.toUpperCase();
+  const isPM  = upper.includes('PM');
+  const isAM  = upper.includes('AM');
+  const parts = time.replace(/[APM\s]/gi, '').split(':');
+  let h = parseInt(parts[0], 10);
+  if (isPM && h !== 12) h += 12;
+  if (isAM && h === 12) h = 0;
+  if (h < 12) return <Sunrise className="w-4 h-4" />;
+  if (h < 17) return <Sun className="w-4 h-4" />;
+  return <Sunset className="w-4 h-4" />;
 }
 
 /* ── Short label for progress strip ─────────────────────────────────── */
@@ -1010,43 +996,15 @@ function getTravelMode(leg: string): { emoji: React.ReactNode; bg: string; color
   return                          { emoji: <><span aria-hidden="true">🚗</span><span className="sr-only">Car</span></>, bg: 'var(--color-brand-softer)',  color: 'var(--color-brand)' };
 }
 
-function ItineraryView({ stops, onRegenerate, onExploreStop }: {
+function ItineraryView({ stops, onRegenerate, onExploreStop, onBack }: {
   stops: (ItineraryStop | LiveItineraryStop)[];
+  onBack?: () => void;
   onRegenerate: () => void;
   onExploreStop?: (target: string) => void;
 }) {
   void onRegenerate;
+  void onBack;
   const [expandedStops, setExpandedStops] = useState<Set<number>>(new Set());
-  const [activeIdx, setActiveIdx]         = useState(0);
-  const timelineScrollRef = useRef<HTMLDivElement>(null);
-  const nodeRefs          = useRef<(HTMLButtonElement | null)[]>([]);
-
-  // Track which stop card is in view
-  useEffect(() => {
-    const observers: IntersectionObserver[] = [];
-    stops.forEach((_, idx) => {
-      const el = document.getElementById(`itin-stop-${idx}`);
-      if (!el) return;
-      const obs = new IntersectionObserver(
-        ([entry]) => { if (entry.isIntersecting) setActiveIdx(idx); },
-        { threshold: 0.25, rootMargin: '0px 0px -50% 0px' },
-      );
-      obs.observe(el);
-      observers.push(obs);
-    });
-    return () => observers.forEach(o => o.disconnect());
-  }, [stops.length]);
-
-  // Slide timeline to keep active node + next node visible
-  useEffect(() => {
-    const container = timelineScrollRef.current;
-    const node      = nodeRefs.current[activeIdx];
-    if (!container || !node) return;
-    const cRect = container.getBoundingClientRect();
-    const nRect = node.getBoundingClientRect();
-    const target = container.scrollLeft + nRect.left - cRect.left - cRect.width / 2 + nRect.width / 2;
-    container.scrollTo({ left: Math.max(0, target), behavior: 'smooth' });
-  }, [activeIdx]);
 
   const displayStops = stops;
 
@@ -1056,95 +1014,8 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
     return next;
   });
 
-  const wx = getThanjavurWeather();
-  const crowdOrder: Record<string, number> = { Low: 0, Moderate: 1, High: 2 };
-  const worstCrowd = stops.reduce<'Low' | 'Moderate' | 'High'>((w, s) => {
-    const sc = s.crowdLevel;
-    return sc && crowdOrder[sc] > crowdOrder[w] ? sc : w;
-  }, 'Low');
-  const crowdStyle = worstCrowd === 'High'
-    ? { bg: 'var(--color-danger-soft)',   text: 'var(--color-danger-strong)',   dot: 'var(--color-danger)' }
-    : worstCrowd === 'Moderate'
-    ? { bg: 'var(--color-brand-softer)',  text: 'var(--color-brand)',           dot: 'var(--color-warning-strong)' }
-    : { bg: 'var(--color-success-soft)',  text: 'var(--color-success)',         dot: 'var(--color-success-medium)' };
-
   return (
     <div>
-
-      {/* ── Day progress strip — sticky ──────────────────────── */}
-      <div className="sticky top-14 z-40 mb-4 rounded-xl bg-surface border border-card-border shadow-sm overflow-hidden">
-        {/* Single compact header row */}
-        <div className="px-4 py-3 border-b border-border/60 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 min-w-0">
-            <Route className="w-3.5 h-3.5 text-brand shrink-0" />
-            <span className="text-sm font-bold text-heading whitespace-nowrap">Day Plan</span>
-            <span className="text-xs text-muted whitespace-nowrap">· {stops.length} stops</span>
-          </div>
-          <div className="flex items-center gap-1.5 shrink-0 text-xs">
-            <span className="hidden sm:inline">{wx.emoji} <span className="font-semibold text-body">{wx.temp}</span></span>
-            <span className="hidden sm:inline w-px h-3 bg-border" />
-            <span className="font-semibold" style={{ color: crowdStyle.text }}>{worstCrowd} crowd</span>
-            <span className="w-px h-3 bg-border" />
-            <span className="font-bold text-brand">{stops[0]?.time} – {stops[stops.length - 1]?.time}</span>
-          </div>
-        </div>
-
-        {/* Timeline — scrollable, number + time only */}
-        <div ref={timelineScrollRef} className="overflow-x-auto no-scrollbar px-4 py-4">
-          <div className="flex items-center" style={{ minWidth: `${stops.length * 44 + (stops.length - 1) * 44}px` }}>
-            {stops.map((stop, idx) => {
-              const isLast    = idx === stops.length - 1;
-              const isActive  = idx === activeIdx;
-              const isPast    = idx < activeIdx;
-              const travelMin = stop.travelToNext?.match(/\d+\s*min/)?.[0] ?? '';
-              return (
-                <React.Fragment key={idx}>
-                  {/* Stop node: circle + time */}
-                  <button
-                    ref={el => { nodeRefs.current[idx] = el; }}
-                    type="button"
-                    onClick={() => document.getElementById(`itin-stop-${idx}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-                    className="flex flex-col items-center gap-1.5 shrink-0 focus:outline-none group transition-opacity duration-300"
-                    style={{ width: 44, opacity: isActive ? 1 : isPast ? 0.45 : 0.6 }}
-                  >
-                    <div
-                      className="w-8 h-8 rounded-full flex items-center justify-center font-black text-sm ring-1 ring-white transition-all duration-300 group-hover:scale-110 group-active:scale-95"
-                      style={{
-                        background: isActive
-                          ? 'linear-gradient(135deg,var(--color-brand),var(--color-brand-active))'
-                          : isPast
-                          ? 'var(--color-brand-soft)'
-                          : 'var(--color-border)',
-                        color: isActive ? '#fff' : isPast ? 'var(--color-brand)' : 'var(--color-muted)',
-                        boxShadow: isActive ? '0 0 0 3px var(--color-brand-soft)' : 'none',
-                        transform: isActive ? 'scale(1.15)' : 'scale(1)',
-                      }}
-                    >
-                      {idx + 1}
-                    </div>
-                    <span className={`text-[10px] font-semibold whitespace-nowrap transition-colors duration-300 ${isActive ? 'text-brand font-bold' : 'text-muted'}`}>
-                      {stop.time}
-                    </span>
-                  </button>
-
-                  {/* Connector: line + travel time */}
-                  {!isLast && (
-                    <div className="flex-1 flex flex-col items-center gap-1" style={{ minWidth: 44, opacity: idx < activeIdx ? 0.4 : 1 }}>
-                      {travelMin && (
-                        <span className="text-[10px] font-bold whitespace-nowrap px-1.5 py-0.5 rounded-full"
-                          style={{ background: TRAFFIC_LINE_BG[stop.currentTraffic] + '20', color: TRAFFIC_LINE_BG[stop.currentTraffic] }}>
-                          {travelMin}
-                        </span>
-                      )}
-                      <div className="w-full h-[2px] rounded-full" style={{ background: TRAFFIC_LINE_BG[stop.currentTraffic] }} />
-                    </div>
-                  )}
-                </React.Fragment>
-              );
-            })}
-          </div>
-        </div>
-      </div>
 
       {/* ── Stop cards ───────────────────────────────────────── */}
       <div className="space-y-1">
@@ -1161,7 +1032,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.07 }}
-                className="rounded-xl overflow-hidden border border-card-border shadow-sm"
+                className="rounded-xl overflow-hidden border border-card-border shadow-md"
               >
                 {/* ── Photo zone ──────────────────────────── */}
                 <div className="relative h-[185px]">
@@ -1171,48 +1042,26 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-black/25" />
 
-                  {/* Top: stop# + time + duration + explore arrow */}
+                  {/* Top: time-of-day icon + explore arrow */}
                   <div className="absolute top-3 left-3 right-3 flex items-start justify-between z-10">
-                    <span className="bg-white text-xs font-black px-2.5 py-1 rounded-full shadow-sm leading-none text-brand">
-                      Place {idx + 1}
+                    <span className="bg-black/50 backdrop-blur-sm text-white p-1.5 rounded-full flex items-center justify-center">
+                      {getTimeOfDayIcon(stop.time)}
                     </span>
-                    <div className="flex flex-col items-end gap-1">
-                      <button
-                        type="button"
-                        aria-label={`Explore ${stop.stop}`}
-                        onClick={() => onExploreStop?.(stop.stop)}
-                        className="bg-white/20 backdrop-blur-sm hover:bg-white/35 transition-colors rounded-full p-1 leading-none"
-                      >
-                        <ArrowRight className="w-3.5 h-3.5 text-white" />
-                      </button>
-                      <span className="bg-black/55 backdrop-blur-sm text-white text-xs font-bold px-2 py-0.5 rounded-full leading-none">
-                        {stop.time}
-                      </span>
-                      {stop.duration && (
-                        <span className="bg-black/55 backdrop-blur-sm text-white/80 text-xs font-semibold px-2 py-0.5 rounded-full leading-none">
-                          <span aria-hidden="true">⏱</span> {stop.duration}
-                        </span>
-                      )}
-                    </div>
+                    <button
+                      type="button"
+                      aria-label={`Explore ${stop.stop}`}
+                      onClick={() => onExploreStop?.(stop.stop)}
+                      className="bg-white/20 backdrop-blur-sm hover:bg-white/35 transition-colors rounded-full p-2.5 leading-none"
+                    >
+                      <ArrowRight className="w-3.5 h-3.5 text-white" />
+                    </button>
                   </div>
 
-                  {/* Bottom: name + traffic/crowd badges */}
+                  {/* Bottom: name only */}
                   <div className="absolute bottom-0 left-0 right-0 p-3.5 z-10">
-                    <h3 className="text-white font-display font-black text-lg leading-tight drop-shadow mb-2">
+                    <h3 className="text-white font-display font-black text-lg leading-tight tracking-tight drop-shadow">
                       {stop.stop}
                     </h3>
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className={`inline-flex items-center gap-1 text-xs font-black px-2 py-0.5 rounded-full border ${traffic.bg} ${traffic.border} ${traffic.text}`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${traffic.dot}`} />
-                        {stop.currentTraffic} traffic
-                      </span>
-                      {crowd && stop.crowdLevel && (
-                        <span className={`inline-flex items-center gap-1 text-xs font-black px-2 py-0.5 rounded-full border ${crowd.bg} ${crowd.border} ${crowd.text}`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${crowd.dot}`} />
-                          {stop.crowdLevel} crowd
-                        </span>
-                      )}
-                    </div>
                   </div>
                 </div>
 
@@ -1244,11 +1093,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                     <button
                       type="button"
                       onClick={() => toggleStop(idx)}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold border transition-colors"
-                      style={isExpanded
-                        ? { background: 'var(--color-brand-softer)', borderColor: 'var(--color-brand-soft)', color: 'var(--color-brand)' }
-                        : { background: 'var(--color-bg-app)', borderColor: 'var(--color-border)', color: 'var(--color-body)' }
-                      }
+                      className="flex items-center justify-center gap-1.5 px-4 py-2 min-h-[44px] rounded-lg text-xs font-bold border border-brand text-brand bg-transparent hover:bg-brand-softer transition-colors shrink-0"
                     >
                       Know More
                       <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
@@ -1263,7 +1108,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                         <button
                           type="button"
                           onClick={() => window.open(url, '_blank', 'noopener')}
-                          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold text-white transition-colors"
+                          className="flex-1 flex items-center justify-center gap-1.5 py-2 min-h-[44px] rounded-lg text-xs font-bold text-white transition-colors"
                           style={{ background: 'var(--color-brand)' }}
                         >
                           <Navigation className="w-3.5 h-3.5" />
@@ -1328,19 +1173,6 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
                         );
                       })()}
 
-                      {/* Travel note to next stop */}
-                      {stop.travelToNext && (
-                        <div className="flex items-start gap-2 p-2.5 rounded-lg border border-border bg-surface">
-                          <Navigation className="w-3.5 h-3.5 text-muted shrink-0 mt-0.5" />
-                          <div className="flex-1 min-w-0">
-                            <span className="text-xs font-bold text-body">Next place: </span>
-                            <span className="text-xs text-muted">{stop.travelToNext}</span>
-                            {stop.departBy && (
-                              <span className="text-xs font-bold ml-1 text-brand">· leave by {stop.departBy}</span>
-                            )}
-                          </div>
-                        </div>
-                      )}
                     </div>
                   </motion.div>
                 )}
@@ -1387,7 +1219,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop }: {
 const EXPLORE_TABS = ['Overview', 'Reviews'] as const;
 type ExploreTab = typeof EXPLORE_TABS[number];
 
-function ExploreView({ place, visitTime = 'Morning' }: { place: ExploreResult; visitTime?: string }) {
+function ExploreView({ place, visitTime = 'Morning', onBack }: { place: ExploreResult; visitTime?: string; onBack?: () => void }) {
   const [activeTab, setActiveTab] = useState<ExploreTab>('Overview');
   const sortedReviews = [...place.reviews].sort(
     (a, b) => scoreReviewForTime(b.text, visitTime) - scoreReviewForTime(a.text, visitTime)
@@ -1420,7 +1252,7 @@ function ExploreView({ place, visitTime = 'Morning' }: { place: ExploreResult; v
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/10" />
         <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
           <div className="flex items-start justify-between gap-2 mb-1.5">
-            <h2 className="font-display font-black text-xl text-white drop-shadow leading-tight flex-1">{place.name}</h2>
+            <h2 className="font-display font-black text-xl text-white drop-shadow leading-tight tracking-tight flex-1">{place.name}</h2>
             <Badge variant={place.status === 'Open' ? 'success' : place.status === 'Busy' ? 'warning' : 'danger'} dot pill>
               {place.status}
             </Badge>
@@ -1450,7 +1282,7 @@ function ExploreView({ place, visitTime = 'Morning' }: { place: ExploreResult; v
             role="tab"
             aria-selected={activeTab === t}
             onClick={() => setActiveTab(t)}
-            className={`flex-1 py-2 text-xs font-bold rounded-lg transition-colors ${
+            className={`flex-1 py-2 min-h-[36px] text-xs font-bold rounded-lg transition-colors ${
               activeTab === t
                 ? 'bg-brand text-white shadow-sm'
                 : 'text-muted hover:text-heading hover:bg-border/30'
@@ -1679,27 +1511,6 @@ export function ResultsView({
     <div className="w-full max-w-[920px] mx-auto px-4 pt-2 pb-28 lg:pb-8">
 
 
-      {/* Active tag chips — shown when hotel/food tags are applied */}
-      {(tab === 'Hotels' || tab === 'Food') && selectedTags.length > 0 && onCancelTag && (
-        <div className="flex flex-wrap gap-2 mb-4">
-          {selectedTags.map(tag => (
-            <div
-              key={tag}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold"
-              style={{ background: accentBg, color: accent, border: `1.5px solid ${accent}` }}
-            >
-              <span>{tag}</span>
-              <button
-                onClick={() => onCancelTag(tag)}
-                className="flex items-center justify-center w-6 h-6 rounded-full hover:bg-brand-medium transition-colors"
-                aria-label={`Remove ${tag}`}
-              >
-                <X className="w-2.5 h-2.5" />
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
 
       {/* Demo mode banner — Hotels/Food API failed, showing sample fallback */}
       {(tab === 'Hotels' || tab === 'Food') && apiError && (results?.length ?? 0) > 0 && (
@@ -1781,6 +1592,84 @@ export function ResultsView({
         </motion.div>
       )}
 
+      {/* Results context row — consistent across all tabs */}
+      {(tab === 'Hotels' || tab === 'Food') && (results?.length ?? 0) > 0 && (
+        <>
+          <div className="flex items-center justify-between mb-2">
+            <button
+              type="button"
+              onClick={onBack}
+              className="flex items-center gap-1.5 min-h-[36px] -ml-1 pr-2 text-heading hover:text-brand transition-colors"
+              aria-label="Go back"
+            >
+              <ArrowLeft className="w-4 h-4 shrink-0" />
+              <span className="text-sm font-bold">{tab}</span>
+              <span className="text-sm text-muted">·</span>
+              <span className="text-sm text-muted tabular-nums">{results!.length} results</span>
+            </button>
+            <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-brand text-white">
+              <Sparkles className="w-3 h-3 shrink-0" />AI Ranked
+            </span>
+          </div>
+          {/* Active tag chips — below context row */}
+          {selectedTags.length > 0 && onCancelTag && (
+            <div className="flex flex-wrap gap-1.5 mb-3">
+              {selectedTags.map(tag => (
+                <div
+                  key={tag}
+                  className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-brand-softer border border-brand-soft text-brand"
+                >
+                  <span>{tag}</span>
+                  <button
+                    onClick={() => onCancelTag(tag)}
+                    className="flex items-center justify-center w-4 h-4 rounded-full hover:bg-brand/10 transition-colors"
+                    aria-label={`Remove ${tag}`}
+                  >
+                    <X className="w-2.5 h-2.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
+      {tab === 'Itinerary' && itinerary && (
+        <div className="flex items-center justify-between mb-2">
+          <button
+            type="button"
+            onClick={onBack}
+            className="flex items-center gap-1.5 min-h-[36px] -ml-1 pr-2 text-heading hover:text-brand transition-colors"
+            aria-label="Go back"
+          >
+            <ArrowLeft className="w-4 h-4 shrink-0" />
+            <span className="text-sm font-bold">Itinerary</span>
+            <span className="text-sm text-muted">·</span>
+            <span className="text-sm text-muted tabular-nums">{itinerary.length} stops</span>
+          </button>
+          <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-brand text-white">
+            <Sparkles className="w-3 h-3 shrink-0" />AI Planned
+          </span>
+        </div>
+      )}
+      {tab === 'Explore' && explore && (
+        <div className="flex items-center justify-between mb-3">
+          <button
+            type="button"
+            onClick={onBack}
+            className="flex items-center gap-1.5 min-h-[36px] -ml-1 pr-2 text-heading hover:text-brand transition-colors min-w-0"
+            aria-label="Go back"
+          >
+            <ArrowLeft className="w-4 h-4 shrink-0" />
+            <span className="text-sm font-bold shrink-0">Explore</span>
+            <span className="text-sm text-muted shrink-0">·</span>
+            <span className="text-sm text-muted truncate">{explore.name}</span>
+          </button>
+          <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-brand text-white shrink-0 ml-2">
+            <Sparkles className="w-3 h-3 shrink-0" />AI Guide
+          </span>
+        </div>
+      )}
+
       {/* Results — M-03: 2-column grid on desktop for better use of space */}
       <div className={tab === 'Hotels' || tab === 'Food' ? 'flex flex-col gap-5 mb-5' : 'space-y-4 mb-5'}>
         {(tab === 'Hotels' || tab === 'Food') && results?.map((p, idx) => (
@@ -1798,8 +1687,8 @@ export function ResultsView({
             />
           </React.Fragment>
         ))}
-        {tab === 'Itinerary' && itinerary && <ItineraryView stops={itinerary} onRegenerate={onRegenerate} onExploreStop={onExploreStop} />}
-        {tab === 'Explore' && explore && <ExploreView place={explore} visitTime={visitTime} />}
+        {tab === 'Itinerary' && itinerary && <ItineraryView stops={itinerary} onRegenerate={onRegenerate} onExploreStop={onExploreStop} onBack={onBack} />}
+        {tab === 'Explore' && explore && <ExploreView place={explore} visitTime={visitTime} onBack={onBack} />}
         {tab === 'Explore' && !explore && (
           <motion.div
             initial={{ opacity: 0, y: 12 }}

@@ -120,35 +120,42 @@ export function Navbar({ section, onSectionChange, onLogout, userName, searchLoc
       <header className="sticky top-0 z-[200] border-b" style={{ background: 'rgba(249,250,251,0.88)', backdropFilter: 'blur(20px)', borderColor: 'rgba(0,0,0,0.07)', boxShadow: '0 1px 12px rgba(28,100,242,0.06)', paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="w-full max-w-[920px] mx-auto px-4 h-14 flex items-center gap-3">
 
-          {/* Brand / Back button */}
-          {showBack ? (
-            <button
-              onClick={onBack}
-              aria-label="Go back"
-              className="flex items-center gap-2 shrink-0 group"
-            >
-              {/* min 44×44px touch target — C-02 */}
-              <div className="w-11 h-11 bg-bg-app border border-border rounded-lg flex items-center justify-center group-hover:bg-brand-softer group-hover:border-brand transition-colors">
-                <ArrowLeft className="w-4 h-4 text-heading" />
-              </div>
-              <span className="font-semibold text-sm text-heading hidden sm:block">
-                {backLabel ?? 'Back'}
-              </span>
-            </button>
-          ) : (
-            <button
-              onClick={() => onSectionChange('home')}
-              aria-label="Go to home"
-              className="flex items-center gap-2 shrink-0"
-            >
-              <div className="w-8 h-8 bg-brand rounded-lg flex items-center justify-center">
-                <Compass className="w-4 h-4 text-white" />
-              </div>
-              <span className="font-display font-bold text-xl text-heading tracking-tight hidden sm:block">
-                Trip<span className="text-brand">AI</span>
-              </span>
-            </button>
-          )}
+          {/* Desktop: always logo — website standard */}
+          <button
+            onClick={() => onSectionChange('home')}
+            aria-label="Go to home"
+            className="hidden sm:flex items-center gap-2 shrink-0"
+          >
+            <div className="w-8 h-8 bg-brand rounded-lg flex items-center justify-center">
+              <Compass className="w-4 h-4 text-white" />
+            </div>
+            <span className="font-display font-bold text-xl text-heading tracking-tight">
+              Trip<span className="text-brand">AI</span>
+            </span>
+          </button>
+
+          {/* Mobile: back arrow on results, logo on home — web app standard */}
+          <div className="sm:hidden">
+            {showBack ? (
+              <button
+                onClick={onBack}
+                aria-label="Go back"
+                className="flex items-center justify-center min-w-[44px] min-h-[44px] text-heading hover:text-brand transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5 shrink-0" />
+              </button>
+            ) : (
+              <button
+                onClick={() => onSectionChange('home')}
+                aria-label="Go to home"
+                className="flex items-center justify-center"
+              >
+                <div className="w-8 h-8 bg-brand rounded-lg flex items-center justify-center">
+                  <Compass className="w-4 h-4 text-white" />
+                </div>
+              </button>
+            )}
+          </div>
 
           {/* Spacer */}
           <div className="flex-1" />

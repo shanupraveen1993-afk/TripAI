@@ -3,11 +3,13 @@ import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import {
   Search, ChevronDown, ChevronRight, Sparkles, MapPin, Navigation, X,
   Hotel, Utensils, Route, Compass, Flame, Clock, AlertTriangle,
+  Sunrise, Sun, Sunset,
 } from 'lucide-react';
 import { fetchCityTags, fetchAutocomplete, AutocompleteSuggestion, CityTagsResult } from '../api/client';
 import { Tab } from './ui/Tabs';
 import { Button } from './ui/Button';
 import { isThanjavurCity } from '../utils/city';
+import { MOCK_HOTELS, MOCK_FOOD } from '../mock/data';
 
 const uImg = (id: string, w = 320, h = 200) =>
   `https://images.unsplash.com/photo-${id}?w=${w}&h=${h}&fit=crop&auto=format&q=80`;
@@ -38,7 +40,7 @@ const TAB_META: Record<Tab, {
     label:       'Hotels',
     headline:    'Best stays',
     sub:         'Price · reviews · AI-ranked',
-    trending:    ['Near Big Temple', 'Heritage hotels', 'Temple Nearby', 'Family rooms', 'AC rooms'],
+    trending:    ['Brihadeeswarar Temple', 'Royal Palace', 'Saraswathi Mahal', 'Darasuram', 'Gangaikonda', 'Rajarajan Mandapam'],
   },
   Food: {
     icon:        <Utensils     className="w-4 h-4" />,
@@ -50,7 +52,7 @@ const TAB_META: Record<Tab, {
     label:       'Food',
     headline:    'Best eats',
     sub:         'Thali · coffee · AI-picked',
-    trending:    ['Thanjavur thali/meals', 'Filter coffee', 'Pure veg', 'South Indian', 'Street food', 'Biryani spots'],
+    trending:    ['Brihadeeswarar Temple', 'Royal Palace', 'Saraswathi Mahal', 'Darasuram', 'Gangaikonda', 'Rajarajan Mandapam'],
   },
   Itinerary: {
     icon:        <Route        className="w-4 h-4" />,
@@ -191,6 +193,7 @@ interface QuickOverride {
   exploreTarget?: string;
   startTime?: string;
   usePreset?: boolean;
+  searchQuery?: string;
 }
 
 /* ── Smart picks per city ────────────────────────────────────────────── */
@@ -203,19 +206,19 @@ interface SmartPick {
   overrides: QuickOverride;
 }
 
-/* ── Popular searches — shown below the filter card ─────────────────── */
-const POPULAR_QUERIES: { label: string; overrides: QuickOverride }[] = [
-  // Hotels
-  { label: 'best hotel in thanjavur',                      overrides: { tab: 'Hotels', usePreset: true } },
-  { label: 'best hotel near big temple in thanjavur',      overrides: { tab: 'Hotels', hotelTag: 'Near Big Temple', usePreset: true } },
-  { label: 'best family hotel in thanjavur',               overrides: { tab: 'Hotels', hotelTag: 'Good Amenities', usePreset: true } },
-  { label: 'best hotel near railway station thanjavur',    overrides: { tab: 'Hotels', hotelTag: 'Near Railway Station', usePreset: true } },
-  // Food
-  { label: 'best restaurant in thanjavur',                 overrides: { tab: 'Food', usePreset: true } },
-  { label: 'best thali in thanjavur',                      overrides: { tab: 'Food', foodTag: 'Mess & Meals', usePreset: true } },
-  { label: 'best biryani in thanjavur',                    overrides: { tab: 'Food', foodTag: 'Biryani', usePreset: true } },
-  { label: 'best filter coffee in thanjavur',              overrides: { tab: 'Food', foodTag: 'Cafe & Drinks', usePreset: true } },
-  { label: 'vegetarian restaurants in thanjavur',          overrides: { tab: 'Food', foodTag: 'Pure Veg', usePreset: true } },
+/* ── Popular searches — tab-specific (Hotels & Food only) ──────────── */
+const HOTEL_QUERIES: { label: string; overrides: QuickOverride }[] = [
+  { label: 'best hotel in thanjavur',                   overrides: { tab: 'Hotels', usePreset: true } },
+  { label: 'best hotel near big temple in thanjavur',   overrides: { tab: 'Hotels', hotelTag: 'Near Big Temple', usePreset: true } },
+  { label: 'best family hotel in thanjavur',            overrides: { tab: 'Hotels', hotelTag: 'Good Amenities', usePreset: true } },
+  { label: 'best hotel near railway station thanjavur', overrides: { tab: 'Hotels', hotelTag: 'Near Railway Station', usePreset: true } },
+];
+const FOOD_QUERIES: { label: string; overrides: QuickOverride }[] = [
+  { label: 'best restaurant in thanjavur',              overrides: { tab: 'Food', usePreset: true } },
+  { label: 'best thali in thanjavur',                   overrides: { tab: 'Food', foodTag: 'Mess & Meals', usePreset: true } },
+  { label: 'best biryani in thanjavur',                 overrides: { tab: 'Food', foodTag: 'Biryani', usePreset: true } },
+  { label: 'best filter coffee in thanjavur',           overrides: { tab: 'Food', foodTag: 'Cafe & Drinks', usePreset: true } },
+  { label: 'vegetarian restaurants in thanjavur',       overrides: { tab: 'Food', foodTag: 'Pure Veg', usePreset: true } },
 ];
 
 /* ── Tab accent gradients for SMART_PICKS ───────────────────────────── */
@@ -285,6 +288,37 @@ const SMART_PICKS: Record<string, SmartPick[]> = {
   ],
 };
 
+/* ── 2x2 bento cards for Hotels & Food tabs ─────────────────────────── */
+interface BentoCard { label: string; desc: string; imgId: string; grad: string; overrides: QuickOverride }
+
+const HOTEL_BENTO: BentoCard[] = [
+  { label: 'Near Big Temple', desc: 'Walking distance · Heritage stay',  imgId: '1686310894901-d326b8722c13', grad: 'linear-gradient(135deg,#1e3a8a,#1d4ed8)',                              overrides: { tab: 'Hotels', hotelTag: 'Near Big Temple',    usePreset: true } },
+  { label: 'City Centre',     desc: 'Best connectivity · Top rated',     imgId: '1566915682737-3e97a7eed93b', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))',  overrides: { tab: 'Hotels', hotelTag: 'City Centre',        usePreset: true } },
+  { label: 'Heritage Hotels', desc: 'Authentic Thanjavur character',     imgId: '1523544261025-3159599b1fc3', grad: 'linear-gradient(135deg,#78350F,#92400E)',                              overrides: { tab: 'Hotels', hotelTag: 'Heritage',           usePreset: true } },
+  { label: 'Good Amenities',  desc: 'Pool · WiFi · Parking',             imgId: '1602216056096-3b40cc0c9944', grad: 'linear-gradient(135deg,#065f46,#059669)',                              overrides: { tab: 'Hotels', hotelTag: 'Good Amenities',     usePreset: true } },
+];
+const FOOD_BENTO: BentoCard[] = [
+  { label: 'Mess & Meals',   desc: 'Traditional thali · Banana leaf',   imgId: '1711153419402-336ee48f2138', grad: 'linear-gradient(135deg,var(--color-brand-active),var(--color-brand))', overrides: { tab: 'Food', foodTag: 'Mess & Meals',          usePreset: true } },
+  { label: 'Biryani',        desc: 'Ambur-style · Bold flavours',        imgId: '1589302168068-964664d93dc0', grad: 'linear-gradient(135deg,#92400E,#78350F)',                              overrides: { tab: 'Food', foodTag: 'Biryani',               usePreset: true } },
+  { label: 'Filter Coffee',  desc: 'Strong · South Indian style',        imgId: '1509042239860-f550ce710b93', grad: 'linear-gradient(135deg,#1e3a8a,#1d4ed8)',                              overrides: { tab: 'Food', foodTag: 'Cafe & Drinks',         usePreset: true } },
+  { label: 'Pure Veg',       desc: 'Vegetarian only · Family dining',    imgId: '1546833999-b9f581a1996d',   grad: 'linear-gradient(135deg,#065f46,#059669)',                              overrides: { tab: 'Food', foodTag: 'Pure Veg', dietType: 'Pure Veg' as DietType, usePreset: true } },
+];
+
+/* ── Unsplash photo IDs for hotel & food explore cards ──────────────── */
+const PLACE_PHOTO_IDS: Record<string, string> = {
+  'Hotel Parisutham':          '1566915682737-3e97a7eed93b',
+  'Hotel Sangam':              '1535827841776-24afc1e255ac',
+  'Hotel Tamil Nadu (TTDC)':   '1529408632839-a54952c491e5',
+  'Ideal River View Resort':   '1524037610898-e48dce8ee95e',
+  'Grand Pragati Hotel':       '1602216056096-3b40cc0c9944',
+  'Pattukottai Kamatchi Mess': '1711153419402-336ee48f2138',
+  'Hotel Sathars':             '1589302168068-964664d93dc0',
+  'Chola Mess':                '1546833999-b9f581a1996d',
+  'Bombay Bakes & Café':       '1509042239860-f550ce710b93',
+  'Kannapa Restaurant':        '1624791596524-d989400f3241',
+  'Hotel Ramnath':             '1611270629280-fd6fd2734b67',
+};
+
 function getSmartPicks(destination: string): SmartPick[] {
   const key = destination.trim().toLowerCase().split(',')[0];
   for (const [city, picks] of Object.entries(SMART_PICKS)) {
@@ -293,9 +327,16 @@ function getSmartPicks(destination: string): SmartPick[] {
   return SMART_PICKS.default;
 }
 
-/* ── Trending → filter overrides ────────────────────────────────────── */
+/* ── Trending → filter overrides (Hotels & Food only) ───────────────── */
 const TRENDING_OVERRIDES: Record<string, QuickOverride> = {
-  // Hotels
+  // Tourist places — both Hotels & Food tabs navigate to Explore
+  'Brihadeeswarar Temple': { tab: 'Explore', exploreTarget: 'Brihadeeswarar Temple' },
+  'Royal Palace':          { tab: 'Explore', exploreTarget: 'Thanjavur Maratha Palace Royal Museum' },
+  'Saraswathi Mahal':      { tab: 'Explore', exploreTarget: 'Saraswathi Mahal Library' },
+  'Darasuram':             { tab: 'Explore', exploreTarget: 'Airavatesvara Temple Darasuram' },
+  'Gangaikonda':           { tab: 'Explore', exploreTarget: 'Gangaikonda Cholapuram' },
+  'Rajarajan Mandapam':    { tab: 'Explore', exploreTarget: 'Rajarajan Manimandapam' },
+  // Legacy hotel filters
   'Near Big Temple':  { tab: 'Hotels', hotelTag: 'Near Big Temple' },
   'Heritage hotels':  { tab: 'Hotels', hotelTag: 'Heritage' },
   'Temple Nearby':    { tab: 'Hotels', hotelTag: 'Near Temple' },
@@ -305,7 +346,6 @@ const TRENDING_OVERRIDES: Record<string, QuickOverride> = {
   'Near airport':     { tab: 'Hotels', hotelTag: 'City Centre' },
   'Business hotels':  { tab: 'Hotels', hotelTag: 'Business' },
   'Sea view rooms':   { tab: 'Hotels', hotelTag: 'Sea View' },
-  // Food
   'Thanjavur thali/meals': { tab: 'Food', foodTag: 'Mess & Meals' },
   'Filter coffee':         { tab: 'Food', foodTag: 'Cafe & Drinks' },
   'Pure veg':              { tab: 'Food', foodTag: 'Pure Veg', dietType: 'Pure Veg' },
@@ -315,23 +355,6 @@ const TRENDING_OVERRIDES: Record<string, QuickOverride> = {
   'Rooftop dining':        { tab: 'Food', foodTag: 'Fine Dining' },
   'Seafood':               { tab: 'Food', foodTag: 'Seafood' },
   'Craft beer bars':       { tab: 'Food', foodTag: 'Cafe & Drinks' },
-  // Itinerary
-  'Big Temple morning': { tab: 'Itinerary', startTime: 'Morning' },
-  'Full day heritage':  { tab: 'Itinerary', startTime: 'Morning' },
-  'Family outing':      { tab: 'Itinerary', startTime: 'Morning' },
-  'Family day out':     { tab: 'Itinerary', startTime: 'Morning' },
-  'Couple getaway':     { tab: 'Itinerary', startTime: 'Morning' },
-  'Solo explorer':      { tab: 'Itinerary', startTime: 'Morning' },
-  'Heritage walk':      { tab: 'Itinerary', startTime: 'Morning' },
-  '1-day plan':         { tab: 'Itinerary', startTime: 'Morning' },
-  'Photography walk':   { tab: 'Itinerary', startTime: 'Morning' },
-  // Explore
-  'Brihadeeswarar Temple':              { tab: 'Explore', exploreTarget: 'Brihadeeswarar Temple' },
-  'Thanjavur Maratha Palace Royal Museum': { tab: 'Explore', exploreTarget: 'Thanjavur Maratha Palace Royal Museum' },
-  'Saraswathi Mahal':                   { tab: 'Explore', exploreTarget: 'Saraswathi Mahal Library' },
-  'Gangaikonda':                        { tab: 'Explore', exploreTarget: 'Gangaikonda Cholapuram' },
-  'Morning visit':                      { tab: 'Explore', exploreTarget: 'Brihadeeswarar Temple' },
-  'Evening visit':                      { tab: 'Explore', exploreTarget: 'Thanjavur Maratha Palace Royal Museum' },
 };
 
 /* ── Location bar ────────────────────────────────────────────────────── */
@@ -447,7 +470,7 @@ function CategorySelector({ active, onChange }: { active: Tab; onChange: (t: Tab
             aria-selected={isActive}
             onClick={() => onChange(tab)}
             className={[
-              'flex-1 flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg transition-all duration-200',
+              'flex-1 flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg transition-all duration-200 min-h-[44px]',
               isActive ? activeClass : 'bg-transparent text-muted hover:text-heading hover:bg-border/30',
             ].join(' ')}
             whileTap={{ scale: 0.96 }}
@@ -502,7 +525,7 @@ interface DashboardProps {
   initialTab?: Tab;
   onSearch: (filters: DashboardFilters) => void;
   loading: boolean;
-  recentSearches?: Array<{ destination: string; tab: Tab }>;
+  recentSearches?: Array<{ destination: string; tab: Tab; tag?: string }>;
   onDestinationSelect?: (destination: string) => void;
   onTabChange?: (tab: Tab) => void;
   userName?: string;
@@ -661,7 +684,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       startTime:    ov.startTime ?? startTime,
       exploreTarget: ov.exploreTarget ?? exploreTarget,
       visitTime,
-      searchQuery:   searchQuery.trim(),
+      searchQuery:   ov.searchQuery ?? searchQuery.trim(),
     };
   };
 
@@ -766,7 +789,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                             }}
                             className={`px-3 py-1.5 rounded-full border text-xs font-medium transition-all ${
                               isSelected
-                                ? 'border-brand bg-brand-softer text-brand'
+                                ? 'border-brand bg-brand text-white'
                                 : isMaxed
                                   ? 'border-border bg-bg-app text-border-medium cursor-not-allowed'
                                   : 'border-border bg-white text-body'
@@ -798,7 +821,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                           className="px-3 py-1.5 rounded-full border text-xs font-medium transition-all"
                           style={
                             isSelected
-                              ? { borderColor: 'var(--color-brand)', background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
+                              ? { borderColor: 'var(--color-brand)', background: 'var(--color-brand)', color: 'white' }
                               : isMaxed
                                 ? { borderColor: 'var(--color-border)', background: 'var(--color-bg-app)', color: 'var(--color-border-medium)', cursor: 'not-allowed' }
                                 : { borderColor: 'var(--color-border)', background: 'var(--color-surface)', color: 'var(--color-body)' }
@@ -865,7 +888,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                             style={isVegBlocked
                               ? { borderColor: 'var(--color-border)', background: 'var(--color-bg-app)', color: 'var(--color-border-medium)', cursor: 'not-allowed', opacity: 0.5 }
                               : isSelected
-                                ? { borderColor: 'var(--color-brand)', background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
+                                ? { borderColor: 'var(--color-brand)', background: 'var(--color-brand)', color: 'white' }
                                 : isMaxed
                                   ? { borderColor: 'var(--color-border)', background: 'var(--color-bg-app)', color: 'var(--color-border-medium)', cursor: 'not-allowed' }
                                   : { borderColor: 'var(--color-border)', background: 'var(--color-surface)', color: 'var(--color-body)' }
@@ -895,7 +918,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                           )}
                           className="px-3 py-1.5 rounded-full border text-xs font-medium transition-all"
                           style={isSelected
-                            ? { borderColor: 'var(--color-brand)', background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
+                            ? { borderColor: 'var(--color-brand)', background: 'var(--color-brand)', color: 'white' }
                             : isMaxed
                               ? { borderColor: 'var(--color-border)', background: 'var(--color-bg-app)', color: 'var(--color-placeholder)', cursor: 'not-allowed' }
                               : { borderColor: 'var(--color-border)', background: 'var(--color-surface)',  color: 'var(--color-body)' }
@@ -950,7 +973,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                             style={isVegBlocked
                               ? { borderColor: 'var(--color-border)', background: 'var(--color-bg-app)', color: 'var(--color-border-medium)', cursor: 'not-allowed', opacity: 0.5 }
                               : isSelected
-                                ? { borderColor: 'var(--color-brand)', background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
+                                ? { borderColor: 'var(--color-brand)', background: 'var(--color-brand)', color: 'white' }
                                 : isMaxed
                                   ? { borderColor: 'var(--color-border)', background: 'var(--color-bg-app)', color: 'var(--color-border-medium)', cursor: 'not-allowed' }
                                   : { borderColor: 'var(--color-border)', background: 'var(--color-surface)', color: 'var(--color-body)' }
@@ -989,7 +1012,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                     key={t}
                     type="button"
                     onClick={() => { setStartTime(t); setShowTimeError(false); }}
-                    className="flex-1 flex items-center justify-center py-3 min-h-[44px] rounded-lg border-2 transition-all"
+                    className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3 min-h-[56px] rounded-lg border-2 transition-all"
                     style={startTime === t
                       ? { borderColor: 'var(--color-brand)',  background: 'var(--color-brand-softer)', color: 'var(--color-brand)' }
                       : showTimeError
@@ -997,6 +1020,9 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                         : { borderColor: 'var(--color-border)', background: 'var(--color-surface)',     color: 'var(--color-muted)' }
                     }
                   >
+                    {t === 'Morning'   ? <Sunrise className="w-4 h-4 shrink-0" /> :
+                     t === 'Afternoon' ? <Sun     className="w-4 h-4 shrink-0" /> :
+                                        <Sunset  className="w-4 h-4 shrink-0" />}
                     <span className="text-xs font-semibold uppercase tracking-wide">{t}</span>
                   </button>
               ))}
@@ -1077,7 +1103,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
 
   return (
     <div
-      className="w-full max-w-[920px] mx-auto pb-10 lg:pb-4 px-4 space-y-3"
+      className="w-full max-w-[920px] mx-auto pb-10 lg:pb-4 px-4 space-y-4"
       style={{ paddingTop: 0 }}
     >
 
@@ -1125,7 +1151,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             transition={{ duration: 0.2, ease: 'easeOut' }}
             className="absolute bottom-5 left-5 right-5"
           >
-            <p className="text-white font-display font-black text-lg leading-tight drop-shadow">{hero.headline}</p>
+            <p className="text-white font-display font-black text-lg leading-tight tracking-tight drop-shadow">{hero.headline}</p>
             <p className="text-white/75 text-xs mt-0.5 leading-snug">{hero.sub}</p>
           </motion.div>
         </AnimatePresence>
@@ -1185,7 +1211,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                   onFocus={() => setSearchFocused(true)}
                   onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
                   onKeyDown={e => { if (e.key === 'Enter' && searchQuery.trim()) { setSearchFocused(false); handleSearch(); } }}
-                  placeholder={activeTab === 'Hotels' ? 'Search hotels… e.g. near bus stand' : 'Search food… e.g. pure veg biryani'}
+                  placeholder={activeTab === 'Hotels' ? "Try 'best hotel in thanjavur'…" : "Try 'best veg restaurant in thanjavur'…"}
                   className="flex-1 bg-transparent text-sm text-heading placeholder-muted outline-none min-w-0"
                 />
                 {searchQuery && (
@@ -1275,195 +1301,274 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         <div ref={ctaSentinelRef} className="h-px" />
       </motion.div>
 
-      {/* ── Popular searches ───────────────────────────────────── */}
-      <div className="relative z-10">
-        <p className="text-xs font-normal text-muted mb-2 flex items-center gap-1.5">
-          <Search className="w-3 h-3" /> People also search for
-        </p>
-        <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 no-scrollbar [mask-image:linear-gradient(to_right,black_calc(100%-40px),transparent)]">
-          {POPULAR_QUERIES.map((q, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => onBentoAction ? onBentoAction(q.overrides.tab!, q.overrides) : triggerSearch(q.overrides)}
-              className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-surface text-xs font-medium text-body hover:border-brand hover:text-brand transition-colors"
-            >
-              <Search className="w-3 h-3 text-muted shrink-0" />
-              {q.label}
-            </button>
-          ))}
+      {/* ── Popular searches / Recent / Social proof / Trending — Hotels & Food only ── */}
+      {(activeTab === 'Hotels' || activeTab === 'Food') && (
+        <>
+          {/* Popular searches */}
+          <div className="relative z-10">
+            <p className="text-xs font-normal text-muted mb-2 flex items-center gap-1.5">
+              <Search className="w-3 h-3" /> People also search for
+            </p>
+            <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 no-scrollbar [mask-image:linear-gradient(to_right,black_calc(100%-40px),transparent)]">
+              {(activeTab === 'Hotels' ? HOTEL_QUERIES : FOOD_QUERIES).map((q, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => onBentoAction ? onBentoAction(q.overrides.tab!, q.overrides) : triggerSearch(q.overrides)}
+                  className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-surface text-xs font-medium text-body hover:border-brand hover:text-brand transition-colors min-h-[36px]"
+                >
+                  <Search className="w-3 h-3 text-muted shrink-0" />
+                  {q.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Recent searches */}
+          {recentSearches.length > 0 && (
+            <div className="relative z-10">
+              <p className="text-xs font-normal text-muted mb-2 flex items-center gap-1.5">
+                <Clock className="w-3 h-3" /> Recent
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {recentSearches.map((s, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => {
+                      if (!s.tag) onDestinationSelect?.(s.destination);
+                      triggerSearch({
+                        tab: s.tab,
+                        destination: s.destination,
+                        ...(s.tag && s.tab === 'Hotels' ? { hotelTag: s.tag } : {}),
+                        ...(s.tag && s.tab === 'Food'   ? { foodTag:  s.tag } : {}),
+                      });
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-surface text-xs font-medium text-body hover:border-brand hover:text-brand transition-colors"
+                  >
+                    <Clock className="w-3 h-3 text-muted shrink-0" />
+                    {s.tag ?? s.destination}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Social proof */}
+          <div className="flex items-center gap-2 py-1 px-1 relative z-10">
+            <div className="flex -space-x-1.5">
+              {['var(--color-brand)','var(--color-brand-active)','var(--color-brand-border)'].map((c,i) => (
+                <div key={i} aria-hidden="true" className="w-5 h-5 rounded-full border-2 border-white flex items-center justify-center text-white text-xs font-black" style={{ background: c }}>
+                  {['K','P','R'][i]}
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-muted">
+              <span className="text-heading font-bold tabular-nums">127 AI trip plans</span> generated today in {destination || 'Thanjavur'}
+            </p>
+          </div>
+        </>
+      )}
+
+      {/* ══ SEGMENT 1 — Bento smart picks ══════════════════════════════════ */}
+      <div className="relative z-10 bg-surface rounded-2xl border border-border/60 shadow-sm p-4">
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <h2 className="font-display font-bold text-lg text-heading tracking-tight">Plan your visit</h2>
+            <p className="text-sm text-muted mt-0.5">Tap a card — AI builds your shortlist</p>
+          </div>
         </div>
+
+        {(activeTab === 'Hotels' || activeTab === 'Food') ? (
+          /* 2×2 equal grid for Hotels & Food */
+          <div className="grid grid-cols-2 gap-2.5">
+            {(activeTab === 'Hotels' ? HOTEL_BENTO : FOOD_BENTO).map(item => (
+              <motion.button
+                key={item.label}
+                whileTap={prefersReducedMotion ? {} : { scale: 0.97 }}
+                type="button"
+                onClick={() => onBentoAction ? onBentoAction(item.overrides.tab!, item.overrides) : triggerSearch(item.overrides)}
+                className="relative overflow-hidden rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand group text-left"
+                style={{ height: 144, background: item.grad }}
+              >
+                <img src={uImg(item.imgId, 440, 290)} alt={item.label}
+                  width={440} height={290}
+                  loading="lazy" decoding="async"
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent rounded-2xl" />
+                <div className="absolute bottom-0 left-0 right-0 p-3 z-10">
+                  <p className="text-white font-display font-black text-sm leading-tight drop-shadow">{item.label}</p>
+                  <p className="text-white/70 text-xs mt-0.5 leading-tight">{item.desc}</p>
+                </div>
+              </motion.button>
+            ))}
+          </div>
+        ) : (
+          /* Hero + 3 smaller cards for Itinerary & Explore */
+          <div className="grid grid-cols-2 gap-2.5">
+            {THANJAVUR_ACTIONS[0] && (() => {
+              const item = THANJAVUR_ACTIONS[0];
+              return (
+                <motion.button
+                  key="bento-hero"
+                  whileTap={prefersReducedMotion ? {} : { scale: 0.97 }}
+                  type="button"
+                  onClick={() => onBentoAction ? onBentoAction(item.tab, item.overrides) : triggerSearch(item.overrides)}
+                  className="col-span-2 relative overflow-hidden rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand group text-left"
+                  style={{ height: 180, background: item.grad }}
+                >
+                  <img src={uImg(item.imgId, 800, 360)} alt={item.label}
+                    width={800} height={360}
+                    loading="lazy" decoding="async"
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent rounded-2xl" />
+                  <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
+                    <p className="text-white font-display font-black text-lg leading-tight drop-shadow">{item.label}</p>
+                    <p className="text-white/70 text-xs mt-0.5">{item.desc}</p>
+                  </div>
+                </motion.button>
+              );
+            })()}
+            {THANJAVUR_ACTIONS.slice(1).map(item => (
+              <motion.button
+                key={item.tab}
+                whileTap={prefersReducedMotion ? {} : { scale: 0.97 }}
+                type="button"
+                onClick={() => onBentoAction ? onBentoAction(item.tab, item.overrides) : triggerSearch(item.overrides)}
+                className="relative overflow-hidden rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand group text-left"
+                style={{ height: 138, background: item.grad }}
+              >
+                <img src={uImg(item.imgId, 440, 280)} alt={item.label}
+                  width={440} height={280}
+                  loading="lazy" decoding="async"
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent rounded-2xl" />
+                <div className="absolute bottom-0 left-0 right-0 p-3 z-10">
+                  <p className="text-white font-display font-black text-sm leading-tight drop-shadow">{item.label}</p>
+                  <p className="text-white/70 text-xs mt-0.5 leading-tight">{item.desc}</p>
+                </div>
+              </motion.button>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* ── Recent searches ────────────────────────────────────── */}
-      {recentSearches.length > 0 && (
-        <div className="relative z-10">
-          <p className="text-xs font-normal text-muted mb-2 flex items-center gap-1.5">
-            <Clock className="w-3 h-3" /> Recent
-          </p>
-          <div className="flex flex-wrap gap-1.5">
-            {recentSearches.map((s, i) => (
+      {/* ══ SEGMENT 2 — Explore best hotels/food (Hotels & Food) OR Discover Thanjavur (others) ══ */}
+      {(activeTab === 'Hotels' || activeTab === 'Food') ? (
+        <div className="relative z-10 bg-surface rounded-2xl border border-border/60 shadow-sm pt-4 pb-2">
+          <div className="flex items-center justify-between mb-3 px-4">
+            <div>
+              <h2 className="font-display font-bold text-lg text-heading tracking-tight">
+                {activeTab === 'Hotels' ? 'Explore best hotels' : 'Explore best food'}
+              </h2>
+              <p className="text-sm text-muted mt-0.5">Top picks in Thanjavur</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => triggerSearch({ tab: activeTab, usePreset: true })}
+              className="text-xs font-semibold text-brand flex items-center gap-0.5 shrink-0 hover:underline"
+            >
+              View all <ChevronRight className="w-3 h-3" />
+            </button>
+          </div>
+          <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar -mx-4 px-4">
+            {(activeTab === 'Hotels' ? MOCK_HOTELS : MOCK_FOOD).map(item => {
+              const imgId = PLACE_PHOTO_IDS[item.name];
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => triggerSearch({ tab: activeTab, searchQuery: item.name })}
+                  className="shrink-0 w-[180px] h-[150px] rounded-2xl overflow-hidden relative focus:outline-none focus-visible:ring-2 focus-visible:ring-brand group"
+                  style={{ background: 'var(--color-brand)' }}
+                >
+                  {imgId ? (
+                    <img
+                      src={uImg(imgId, 360, 300)}
+                      alt={item.name}
+                      loading="lazy" decoding="async"
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                    />
+                  ) : (
+                    <div className={`absolute inset-0 ${item.photoColor}`} />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+                  <div className="absolute top-2.5 right-2.5 z-10">
+                    <span className="text-white text-xs font-bold tabular-nums px-1.5 py-0.5 rounded-full" style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(6px)' }}>
+                      {item.rating}★
+                    </span>
+                  </div>
+                  <div className="absolute bottom-0 left-0 right-0 p-3 z-10">
+                    <p className="text-white font-display font-black text-sm leading-tight drop-shadow line-clamp-1">{item.name}</p>
+                    <p className="text-white/70 text-xs mt-0.5 leading-tight line-clamp-1">{item.priceRange ?? item.priceLevel}</p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ) : (
+        <div className="relative z-10 bg-surface rounded-2xl border border-border/60 shadow-sm pt-4 pb-2">
+          <div className="flex items-center justify-between mb-3 px-4">
+            <div>
+              <h2 className="font-display font-bold text-lg text-heading tracking-tight">Discover Thanjavur</h2>
+              <p className="text-sm text-muted mt-0.5">Must-see landmarks · Opens Explore</p>
+            </div>
+            <span className="text-xs text-muted shrink-0 flex items-center gap-0.5">Swipe <ChevronRight className="w-3 h-3" /></span>
+          </div>
+          <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar -mx-4 px-4">
+            {INSPIRATION_CITIES.map(c => (
               <button
-                key={i}
+                key={c.city}
                 type="button"
-                onClick={() => { onDestinationSelect?.(s.destination); triggerSearch({ tab: s.tab, destination: s.destination }); }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-surface text-xs font-medium text-body hover:border-brand hover:text-brand transition-colors"
+                disabled={c.comingSoon}
+                onClick={c.comingSoon ? undefined : () => triggerSearch({ tab: 'Explore', exploreTarget: c.exploreTarget })}
+                className={`shrink-0 w-[220px] h-[150px] rounded-2xl overflow-hidden relative focus:outline-none focus-visible:ring-2 focus-visible:ring-brand group ${c.comingSoon ? 'cursor-not-allowed' : ''}`}
+                style={{ background: c.grad }}
               >
-                <MapPin className="w-3 h-3 text-muted shrink-0" />
-                {s.destination}
-                <span className="text-xs text-muted">· {s.tab}</span>
+                {c.imgId && (
+                  <img
+                    src={uImg(c.imgId, 440, 300)}
+                    alt={c.city}
+                    loading="lazy" decoding="async"
+                    className={`absolute inset-0 w-full h-full object-cover transition-transform duration-300 ${c.comingSoon ? 'opacity-60' : 'group-hover:scale-105'}`}
+                    onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                  />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
+                <div className="absolute top-3 right-3 z-10">
+                  {c.comingSoon ? (
+                    <span className="text-xs font-semibold uppercase tracking-wide px-2 py-1 rounded backdrop-blur-sm"
+                      style={{ background: 'var(--color-warning-soft)', border: '1px solid var(--color-warning-medium)', color: 'var(--color-warning-strong)' }}>
+                      Coming Soon
+                    </span>
+                  ) : (
+                    <span className="text-white text-xs font-black uppercase tracking-wide px-2 py-1 rounded-full"
+                      style={{ background: TAB_META.Explore.accent }}>
+                      Explore
+                    </span>
+                  )}
+                </div>
+                <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
+                  <span className="text-2xl leading-none drop-shadow" aria-hidden="true">{c.emoji}</span>
+                  <p className="text-white font-display font-black text-base leading-tight mt-1.5 drop-shadow">{c.city}</p>
+                  <p className="text-white/75 text-xs mt-0.5 leading-tight">{c.hook}</p>
+                </div>
               </button>
             ))}
           </div>
         </div>
       )}
 
-      {/* ── Social proof ────────────────────────────────────────── */}
-      <div className="flex items-center gap-2 py-1 px-1 relative z-10">
-        <div className="flex -space-x-1.5">
-          {['var(--color-brand)','var(--color-brand-active)','var(--color-brand-border)'].map((c,i) => (
-            <div key={i} aria-hidden="true" className="w-5 h-5 rounded-full border-2 border-white flex items-center justify-center text-white text-xs font-black" style={{ background: c }}>
-              {['K','P','R'][i]}
-            </div>
-          ))}
-        </div>
-        <p className="text-xs text-muted">
-          <span className="text-heading font-bold tabular-nums">127 AI trip plans</span> generated today in {destination || 'Thanjavur'}
-        </p>
-      </div>
-
-      {/* ══ SEGMENT 1 — Bento smart picks ══════════════════════════════════ */}
-      <div className="relative z-10">
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <h2 className="font-display font-bold text-lg text-heading">Plan your visit</h2>
-            <p className="text-sm text-muted mt-0.5">Tap a card — AI builds your shortlist</p>
-          </div>
-        </div>
-
-        {/* Bento: 1 large hero card + 3 smaller cards */}
-        <div className="grid grid-cols-2 gap-2.5">
-          {/* Large featured card — spans 2 cols */}
-          {THANJAVUR_ACTIONS[0] && (() => {
-            const item = THANJAVUR_ACTIONS[0];
-            return (
-              <motion.button
-                key="bento-hero"
-                whileTap={prefersReducedMotion ? {} : { scale: 0.97 }}
-                type="button"
-                onClick={() => onBentoAction ? onBentoAction(item.tab, item.overrides) : triggerSearch(item.overrides)}
-                className="col-span-2 relative overflow-hidden rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand group text-left"
-                style={{ height: 180, background: item.grad }}
-              >
-                <img src={uImg(item.imgId, 800, 360)} alt={item.label}
-                  width={800} height={360}
-                  loading="lazy" decoding="async"
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
-                <div className="absolute inset-0 rounded-2xl" style={{ background: TAB_META[item.tab].accent, opacity: 0.2 }} />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent rounded-2xl" />
-                <div className="absolute top-3 left-3 z-10">
-                  <span className="text-white text-xs font-black uppercase tracking-wide px-2 py-1 rounded-full" style={{ background: TAB_META[item.tab].accent }}>{item.tab}</span>
-                </div>
-                <div className="absolute top-3 right-3 z-10">
-                  <span className="text-white text-xs font-black px-2 py-1 rounded-full" style={{ background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(6px)' }}>⭐ Featured</span>
-                </div>
-                <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
-                  <span className="text-2xl leading-none drop-shadow" aria-hidden="true">{item.emoji}</span>
-                  <p className="text-white font-display font-black text-lg leading-tight mt-1.5 drop-shadow">{item.label}</p>
-                  <p className="text-white/70 text-xs mt-0.5">{item.desc}</p>
-                </div>
-              </motion.button>
-            );
-          })()}
-
-          {/* 3 smaller cards */}
-          {THANJAVUR_ACTIONS.slice(1).map(item => (
-            <motion.button
-              key={item.tab}
-              whileTap={prefersReducedMotion ? {} : { scale: 0.97 }}
-              type="button"
-              onClick={() => onBentoAction ? onBentoAction(item.tab, item.overrides) : triggerSearch(item.overrides)}
-              className="relative overflow-hidden rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand group text-left"
-              style={{ height: 138, background: item.grad }}
-            >
-              <img src={uImg(item.imgId, 440, 280)} alt={item.label}
-                width={440} height={280}
-                loading="lazy" decoding="async"
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
-              <div className="absolute inset-0 rounded-2xl" style={{ background: TAB_META[item.tab].accent, opacity: 0.25 }} />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent rounded-2xl" />
-              <div className="absolute top-2.5 left-2.5 z-10">
-                <span className="text-white text-xs font-black uppercase tracking-wide px-1.5 py-0.5 rounded-full" style={{ background: TAB_META[item.tab].accent }}>{item.tab}</span>
-              </div>
-              <div className="absolute bottom-0 left-0 right-0 p-3 z-10">
-                <span className="text-lg leading-none drop-shadow" aria-hidden="true">{item.emoji}</span>
-                <p className="text-white font-display font-black text-sm leading-tight mt-1 drop-shadow">{item.label}</p>
-                <p className="text-white/70 text-xs mt-0.5 leading-tight">{item.desc}</p>
-              </div>
-            </motion.button>
-          ))}
-        </div>
-      </div>
-
-      {/* ══ SEGMENT 2 — Discover Thanjavur (landmark scroll) ═══════════════ */}
-      <div className="relative z-10 border-t border-border pt-5">
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <h2 className="font-display font-bold text-lg text-heading">Discover Thanjavur</h2>
-            <p className="text-sm text-muted mt-0.5">Must-see landmarks · Opens Explore</p>
-          </div>
-          <span className="text-xs text-muted shrink-0 flex items-center gap-0.5">Swipe <ChevronRight className="w-3 h-3" /></span>
-        </div>
-        <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar -mx-4 px-4">
-          {INSPIRATION_CITIES.map(c => (
-            <button
-              key={c.city}
-              type="button"
-              disabled={c.comingSoon}
-              onClick={c.comingSoon ? undefined : () => triggerSearch({ tab: 'Explore', exploreTarget: c.exploreTarget })}
-              className={`shrink-0 w-[220px] h-[150px] rounded-2xl overflow-hidden relative focus:outline-none focus-visible:ring-2 focus-visible:ring-brand group ${c.comingSoon ? 'cursor-not-allowed' : ''}`}
-              style={{ background: c.grad }}
-            >
-              {c.imgId && (
-                <img
-                  src={uImg(c.imgId, 440, 300)}
-                  alt={c.city}
-                  loading="lazy" decoding="async"
-                  className={`absolute inset-0 w-full h-full object-cover transition-transform duration-300 ${c.comingSoon ? 'opacity-60' : 'group-hover:scale-105'}`}
-                  onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-                />
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
-              <div className="absolute top-3 right-3 z-10">
-                {c.comingSoon ? (
-                  <span className="text-xs font-semibold uppercase tracking-wide px-2 py-1 rounded backdrop-blur-sm"
-                    style={{ background: 'var(--color-warning-soft)', border: '1px solid var(--color-warning-medium)', color: 'var(--color-warning-strong)' }}>
-                    Coming Soon
-                  </span>
-                ) : (
-                  <span className="text-white text-xs font-black uppercase tracking-wide px-2 py-1 rounded-full"
-                    style={{ background: TAB_META.Explore.accent }}>
-                    Explore
-                  </span>
-                )}
-              </div>
-              <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
-                <span className="text-2xl leading-none drop-shadow" aria-hidden="true">{c.emoji}</span>
-                <p className="text-white font-display font-black text-base leading-tight mt-1.5 drop-shadow">{c.city}</p>
-                <p className="text-white/75 text-xs mt-0.5 leading-tight">{c.hook}</p>
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
-
       {/* ══ SEGMENT 3 — Plan another city (destination scroll) ═════════════ */}
-      <div className="relative z-10 border-t border-border pt-5">
-        <div className="flex items-center justify-between mb-3">
+      <div className="relative z-10 bg-surface rounded-2xl border border-border/60 shadow-sm pt-4 pb-2">
+        <div className="flex items-center justify-between mb-3 px-4">
           <div>
-            <h2 className="font-display font-bold text-lg text-heading">Plan another city</h2>
+            <h2 className="font-display font-bold text-lg text-heading tracking-tight">Plan another city</h2>
             <p className="text-xs text-muted mt-0.5">Tap to switch destination</p>
           </div>
           <span className="text-xs text-muted shrink-0 flex items-center gap-0.5">Swipe <ChevronRight className="w-3 h-3" /></span>
@@ -1502,30 +1607,32 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         </div>
       </div>
 
-      {/* ── Trending chips ─────────────────────────────────────────────────── */}
-      <div className="relative z-10 border-t border-border pt-5 pb-2">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-1.5">
-            <Flame className="w-3.5 h-3.5 text-brand shrink-0" />
-            <h2 className="font-display font-bold text-lg text-heading">
-              Trending in {destination || 'your city'}
-            </h2>
+      {/* ── Trending chips — Hotels & Food only ──────────────────────────── */}
+      {(activeTab === 'Hotels' || activeTab === 'Food') && (
+        <div className="relative z-10 bg-surface rounded-2xl border border-border/60 shadow-sm p-4">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-1.5">
+              <Flame className="w-3.5 h-3.5 text-brand shrink-0" />
+              <h2 className="font-display font-bold text-lg text-heading tracking-tight">
+                Trending in {destination || 'your city'}
+              </h2>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {meta.trending.map(topic => (
+              <motion.button
+                key={topic}
+                type="button"
+                whileTap={prefersReducedMotion ? {} : { scale: 0.97 }}
+                onClick={() => { const ov = TRENDING_OVERRIDES[topic] ?? { tab: activeTab }; onBentoAction ? onBentoAction(ov.tab ?? activeTab, ov) : triggerSearch(ov); }}
+                className="text-xs font-medium px-3 py-1.5 rounded-lg border border-border bg-surface text-body hover:border-brand hover:text-brand hover:bg-brand-softer motion-safe:active:scale-[0.97] transition-all duration-150 select-none min-h-[36px]"
+              >
+                {topic}
+              </motion.button>
+            ))}
           </div>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {meta.trending.map(topic => (
-            <motion.button
-              key={topic}
-              type="button"
-              whileTap={prefersReducedMotion ? {} : { scale: 0.97 }}
-              onClick={() => { const ov = TRENDING_OVERRIDES[topic] ?? { tab: activeTab }; onBentoAction ? onBentoAction(ov.tab ?? activeTab, ov) : triggerSearch(ov); }}
-              className="text-xs font-medium px-3 py-1.5 rounded-lg border border-border bg-surface text-body hover:border-brand hover:text-brand hover:bg-brand-softer motion-safe:active:scale-[0.97] transition-all duration-150 select-none"
-            >
-              {topic}
-            </motion.button>
-          ))}
-        </div>
-      </div>
+      )}
 
     </div>
   );
