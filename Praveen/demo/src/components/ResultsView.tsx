@@ -475,12 +475,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
 
           {/* Col 2: Left Info — Name, Address, Rating, Tags, Sentiment */}
           <div className="flex-1 min-w-0 px-3 py-2.5 flex flex-col gap-1.5 cursor-pointer" onClick={() => setExpanded(v => !v)}>
-            <div className="flex items-baseline gap-2 flex-wrap pr-1">
-              <h3 className="font-display font-bold text-base text-heading leading-snug" title={place.name}>{place.name}</h3>
-              {place.matchScore !== undefined && (
-                <span className={`text-xs font-bold shrink-0 whitespace-nowrap ${place.matchScore >= 80 ? 'text-success-strong' : place.matchScore >= 55 ? 'text-brand' : 'text-muted'}`}>{place.matchScore}% match</span>
-              )}
-            </div>
+            <h3 className="font-display font-bold text-base text-heading leading-snug" title={place.name}>{place.name}</h3>
             {place.address && (
               <a
                 href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
@@ -531,8 +526,11 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             })()}
           </div>
 
-          {/* Col 3: Right — Save */}
-          <div className="w-[44px] shrink-0 flex flex-col items-center pt-2.5 pb-2 px-1">
+          {/* Col 3: Right — Match + Save */}
+          <div className="shrink-0 flex flex-col items-end gap-1.5 pt-2.5 pb-2 px-2">
+            {place.matchScore !== undefined && (
+              <span className={`text-xs font-bold whitespace-nowrap ${place.matchScore >= 80 ? 'text-success-strong' : place.matchScore >= 55 ? 'text-brand' : 'text-muted'}`}>{place.matchScore}%</span>
+            )}
             <button
               onClick={(e) => { e.stopPropagation(); toggleBookmark(); }}
               aria-label={bookmarked ? 'Remove from saved' : 'Save this place'}
@@ -595,12 +593,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
 
         {/* Col 2: Info — Name, Address, Rating, Tags, Sentiment */}
         <div className="flex-1 min-w-0 px-3 py-3 flex flex-col gap-1.5">
-          <div className="flex items-baseline gap-2 flex-wrap pr-1">
-            <h3 className="font-display font-bold text-base text-heading leading-snug" title={place.name}>{place.name}</h3>
-            {place.matchScore !== undefined && (
-              <span className={`text-xs font-bold shrink-0 whitespace-nowrap ${place.matchScore >= 80 ? 'text-success-strong' : place.matchScore >= 55 ? 'text-brand' : 'text-muted'}`}>{place.matchScore}% match</span>
-            )}
-          </div>
+          <h3 className="font-display font-bold text-base text-heading leading-snug" title={place.name}>{place.name}</h3>
           {place.address && (
             <a
               href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
@@ -648,9 +641,12 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           })()}
         </div>
 
-        {/* Col 3: Right — Save, Book, Analysis */}
+        {/* Col 3: Right — Match + Save, Book, Analysis */}
         <div className="w-[150px] shrink-0 flex flex-col items-stretch gap-2 px-3 py-3">
-          <div className="flex justify-end">
+          <div className="flex items-center justify-end gap-2">
+            {place.matchScore !== undefined && (
+              <span className={`text-xs font-bold whitespace-nowrap ${place.matchScore >= 80 ? 'text-success-strong' : place.matchScore >= 55 ? 'text-brand' : 'text-muted'}`}>{place.matchScore}% match</span>
+            )}
             <button
               onClick={(e) => { e.stopPropagation(); toggleBookmark(); }}
               aria-label={bookmarked ? 'Remove from saved' : 'Save this place'}
