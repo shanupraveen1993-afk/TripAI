@@ -474,17 +474,22 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           </div>
 
           {/* Col 2: Left Info — Name, Address, Rating, Tags, Sentiment */}
-          <div className="flex-1 min-w-0 px-2.5 py-2.5 flex flex-col gap-1.5 cursor-pointer" onClick={() => setExpanded(v => !v)}>
-            <h3 className="font-display font-bold text-base text-heading leading-snug line-clamp-1" title={place.name}>{place.name}</h3>
+          <div className="flex-1 min-w-0 px-3 py-2.5 flex flex-col gap-1.5 cursor-pointer" onClick={() => setExpanded(v => !v)}>
+            <div className="flex items-baseline gap-2 flex-wrap pr-1">
+              <h3 className="font-display font-bold text-base text-heading leading-snug" title={place.name}>{place.name}</h3>
+              {place.matchScore !== undefined && (
+                <span className={`text-xs font-bold shrink-0 whitespace-nowrap ${place.matchScore >= 80 ? 'text-success-strong' : place.matchScore >= 55 ? 'text-brand' : 'text-muted'}`}>{place.matchScore}% match</span>
+              )}
+            </div>
             {place.address && (
               <a
                 href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
                 target="_blank" rel="noopener noreferrer"
                 onClick={e => e.stopPropagation()}
-                className="flex items-start gap-1 text-xs text-muted hover:text-brand transition-colors leading-snug w-fit"
+                className="flex items-center gap-1 text-xs text-muted hover:text-brand transition-colors leading-snug w-fit max-w-full"
               >
-                <MapPin className="w-3 h-3 shrink-0 mt-0.5" />
-                <span className="line-clamp-1">{place.address}</span>
+                <span className="truncate max-w-[160px]">{place.address}</span>
+                <ExternalLink className="w-2.5 h-2.5 shrink-0" />
               </a>
             )}
             <div className="flex items-center gap-0.5">
@@ -526,18 +531,8 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             })()}
           </div>
 
-          {/* Col 3: Right — Match score + Save */}
-          <div className="w-[64px] shrink-0 flex flex-col items-center gap-2 pt-2.5 pb-2 px-1">
-            {place.matchScore !== undefined && (
-              <div className={`flex flex-col items-center justify-center w-11 h-11 rounded-xl border-2 ${
-                place.matchScore >= 80 ? 'border-success bg-success-soft text-success-strong' :
-                place.matchScore >= 55 ? 'border-brand bg-brand-softer text-brand' :
-                'border-border bg-bg-app text-muted'
-              }`}>
-                <span className="text-sm font-black leading-none tabular-nums">{place.matchScore}%</span>
-                <span className="text-[9px] font-semibold leading-none mt-0.5">match</span>
-              </div>
-            )}
+          {/* Col 3: Right — Save */}
+          <div className="w-[44px] shrink-0 flex flex-col items-center pt-2.5 pb-2 px-1">
             <button
               onClick={(e) => { e.stopPropagation(); toggleBookmark(); }}
               aria-label={bookmarked ? 'Remove from saved' : 'Save this place'}
@@ -599,16 +594,21 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
         </div>
 
         {/* Col 2: Info — Name, Address, Rating, Tags, Sentiment */}
-        <div className="flex-1 min-w-0 px-2.5 py-2.5 flex flex-col gap-1.5">
-          <h3 className="font-display font-bold text-base text-heading leading-snug line-clamp-1" title={place.name}>{place.name}</h3>
+        <div className="flex-1 min-w-0 px-3 py-3 flex flex-col gap-1.5">
+          <div className="flex items-baseline gap-2 flex-wrap pr-1">
+            <h3 className="font-display font-bold text-base text-heading leading-snug" title={place.name}>{place.name}</h3>
+            {place.matchScore !== undefined && (
+              <span className={`text-xs font-bold shrink-0 whitespace-nowrap ${place.matchScore >= 80 ? 'text-success-strong' : place.matchScore >= 55 ? 'text-brand' : 'text-muted'}`}>{place.matchScore}% match</span>
+            )}
+          </div>
           {place.address && (
             <a
               href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
               target="_blank" rel="noopener noreferrer"
-              className="flex items-start gap-1 text-xs text-muted hover:text-brand transition-colors leading-snug w-fit"
+              className="flex items-center gap-1 text-xs text-muted hover:text-brand transition-colors leading-snug w-fit max-w-full"
             >
-              <MapPin className="w-3 h-3 shrink-0 mt-0.5" />
-              <span className="line-clamp-1">{place.address}</span>
+              <span className="truncate max-w-[220px]">{place.address}</span>
+              <ExternalLink className="w-2.5 h-2.5 shrink-0" />
             </a>
           )}
           <div className="flex items-center gap-0.5">
@@ -648,19 +648,9 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           })()}
         </div>
 
-        {/* Col 3: Right — Match score + Save, Book, Analysis */}
-        <div className="w-[160px] shrink-0 flex flex-col items-stretch gap-2 px-3 py-3 border-l border-border">
-          <div className="flex items-center justify-between gap-1.5">
-            {place.matchScore !== undefined ? (
-              <div className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border ${
-                place.matchScore >= 80 ? 'border-success bg-success-soft text-success-strong' :
-                place.matchScore >= 55 ? 'border-brand bg-brand-softer text-brand' :
-                'border-border bg-bg-app text-muted'
-              }`}>
-                <span className="text-sm font-black tabular-nums leading-none">{place.matchScore}%</span>
-                <span className="text-xs font-semibold leading-none">match</span>
-              </div>
-            ) : <div />}
+        {/* Col 3: Right — Save, Book, Analysis */}
+        <div className="w-[150px] shrink-0 flex flex-col items-stretch gap-2 px-3 py-3">
+          <div className="flex justify-end">
             <button
               onClick={(e) => { e.stopPropagation(); toggleBookmark(); }}
               aria-label={bookmarked ? 'Remove from saved' : 'Save this place'}
