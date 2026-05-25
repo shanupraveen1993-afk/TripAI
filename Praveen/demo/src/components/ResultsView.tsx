@@ -1607,12 +1607,12 @@ export function ResultsView({
               {selectedTags.map(tag => (
                 <div
                   key={tag}
-                  className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-brand-softer border border-brand-soft text-brand"
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-brand text-white"
                 >
                   <span>{tag}</span>
                   <button
                     onClick={() => onCancelTag(tag)}
-                    className="flex items-center justify-center w-4 h-4 rounded-full hover:bg-brand/10 transition-colors"
+                    className="flex items-center justify-center w-4 h-4 rounded-full hover:bg-white/20 transition-colors"
                     aria-label={`Remove ${tag}`}
                   >
                     <X className="w-2.5 h-2.5" />
