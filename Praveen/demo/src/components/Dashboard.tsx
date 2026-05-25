@@ -1554,8 +1554,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                   )}
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
-                  <span className="text-2xl leading-none drop-shadow" aria-hidden="true">{c.emoji}</span>
-                  <p className="text-white font-display font-black text-base leading-tight mt-1.5 drop-shadow">{c.city}</p>
+                  <p className="text-white font-display font-black text-xl leading-tight drop-shadow">{c.city}</p>
                   <p className="text-white/75 text-xs mt-0.5 leading-tight">{c.hook}</p>
                 </div>
               </button>
@@ -1591,13 +1590,6 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               />
               <div className="absolute inset-0" style={{ background: c.grad, opacity: 0.3 }} />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
-              {/* Coming soon badge */}
-              <div className="absolute top-3 left-3 z-10">
-                <span className="text-xs font-semibold uppercase tracking-wide px-2 py-1 rounded backdrop-blur-sm"
-                  style={{ background: 'rgba(250,202,21,0.18)', border: '1px solid rgba(250,202,21,0.40)', color: 'var(--color-warning)' }}>
-                  Coming Soon
-                </span>
-              </div>
               <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
                 <p className="text-white font-display font-black text-xl leading-tight drop-shadow">{c.city}</p>
                 <p className="text-white/75 text-xs mt-0.5 leading-tight">{c.sub}</p>
