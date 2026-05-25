@@ -490,7 +490,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
         <div className="flex min-h-[120px] cursor-pointer" onClick={() => setExpanded(v => !v)}>
 
           {/* Col 1: Photo */}
-          <div className="w-[90px] shrink-0 relative">
+          <div className="w-[90px] h-[90px] shrink-0 relative self-start">
             <div className="absolute inset-0">
               <PlacePhoto
                 color={place.photoColor}
@@ -602,7 +602,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
       <div className="hidden sm:flex min-h-[130px]">
 
         {/* Col 1: Photo */}
-        <div className="w-[130px] shrink-0 relative">
+        <div className="w-[130px] h-[130px] shrink-0 relative self-start">
           <div className="absolute inset-0">
             <PlacePhoto
               color={place.photoColor}
