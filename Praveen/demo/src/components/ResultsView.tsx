@@ -614,8 +614,8 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
       {/* ══ DESKTOP CARD LAYOUT (≥ sm) ══ */}
       <div className="hidden sm:flex min-h-[120px]">
 
-        {/* Col 1: Photo — square */}
-        <div className="w-[120px] shrink-0 relative self-stretch">
+        {/* Col 1: Photo — square, click to expand */}
+        <div className="w-[120px] shrink-0 relative self-stretch cursor-pointer" onClick={() => setExpanded(v => !v)}>
           <div className="absolute inset-0">
             <PlacePhoto
               color={place.photoColor}
@@ -631,8 +631,8 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           </span>
         </div>
 
-        {/* Col 2: Info */}
-        <div className="flex-1 min-w-0 px-3 py-3 flex flex-col gap-1.5">
+        {/* Col 2: Info — click to expand */}
+        <div className="flex-1 min-w-0 px-3 py-3 flex flex-col gap-1.5 cursor-pointer" onClick={() => setExpanded(v => !v)}>
           <div className="flex items-baseline gap-1.5 flex-wrap">
             <h3 className="font-display font-bold text-base text-heading leading-snug tracking-tight line-clamp-1" title={place.name}>{place.name}</h3>
             {place.matchScore !== undefined && (
@@ -1056,7 +1056,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop, onBack }: {
                 </div>
 
                 {/* ── Info + CTA row ─────────────────────── */}
-                <div className="bg-surface px-3.5 pt-3 pb-3.5 space-y-3">
+                <div className="bg-surface px-3.5 pt-3 pb-3.5 space-y-3 cursor-pointer" onClick={() => toggleStop(idx)}>
                   {/* AI tip */}
                   <p className="text-xs text-body leading-relaxed italic border-l-2 border-brand/30 pl-2.5">
                     "{stop.tip}"
@@ -1079,7 +1079,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop, onBack }: {
                   )}
 
                   {/* CTA row */}
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
                     <button
                       type="button"
                       onClick={() => toggleStop(idx)}
@@ -1585,7 +1585,7 @@ export function ResultsView({
       {/* Results context row — consistent across all tabs */}
       {(tab === 'Hotels' || tab === 'Food') && (results?.length ?? 0) > 0 && (
         <>
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center mb-2">
             <button
               type="button"
               onClick={onBack}
@@ -1597,7 +1597,7 @@ export function ResultsView({
               <span className="text-sm text-muted">·</span>
               <span className="text-sm text-muted tabular-nums">{results!.length} results</span>
             </button>
-            <span className="flex items-center gap-1 text-xs font-semibold text-brand">
+            <span className="flex items-center gap-1 text-xs font-semibold text-brand ml-2">
               <Sparkles className="w-3 h-3 shrink-0" />AI Ranked
             </span>
           </div>
@@ -1624,7 +1624,7 @@ export function ResultsView({
         </>
       )}
       {tab === 'Itinerary' && itinerary && (
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center mb-2">
           <button
             type="button"
             onClick={onBack}
@@ -1636,13 +1636,13 @@ export function ResultsView({
             <span className="text-sm text-muted">·</span>
             <span className="text-sm text-muted tabular-nums">{itinerary.length} stops</span>
           </button>
-          <span className="flex items-center gap-1 text-xs font-semibold text-brand">
+          <span className="flex items-center gap-1 text-xs font-semibold text-brand ml-2">
             <Sparkles className="w-3 h-3 shrink-0" />AI Planned
           </span>
         </div>
       )}
       {tab === 'Explore' && explore && (
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center mb-3 min-w-0">
           <button
             type="button"
             onClick={onBack}
