@@ -474,11 +474,11 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
       transition={{ delay: animDelay, duration: 0.35, ease: 'easeOut', layout: { duration: 0.28, ease: 'easeInOut' } }}
       className="relative bg-surface border border-card-border rounded-xl shadow-sm card-hover overflow-hidden"
     >
-      {/* ── Save bookmark — card top-right corner (all sizes) ── */}
+      {/* ── Save bookmark — card top-right corner (mobile only) ── */}
       <button
         onClick={(e) => { e.stopPropagation(); toggleBookmark(); }}
         aria-label={bookmarked ? 'Remove from saved' : 'Save this place'}
-        className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full bg-white/90 border border-border shadow-sm z-20 active:scale-90 transition-transform hover:bg-white"
+        className="sm:hidden absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full bg-white/90 border border-border shadow-sm z-20 active:scale-90 transition-transform hover:bg-white"
       >
         <Bookmark className={`w-3.5 h-3.5 ${bookmarked ? 'fill-brand text-brand' : 'text-muted'}`} />
       </button>
@@ -490,7 +490,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
         <div className="flex min-h-[120px] cursor-pointer" onClick={() => setExpanded(v => !v)}>
 
           {/* Col 1: Photo */}
-          <div className="w-[90px] h-[90px] shrink-0 relative self-start">
+          <div className="w-[90px] h-[90px] shrink-0 relative self-start overflow-hidden">
             <div className="absolute inset-0">
               <PlacePhoto
                 color={place.photoColor}
@@ -602,7 +602,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
       <div className="hidden sm:flex min-h-[130px]">
 
         {/* Col 1: Photo */}
-        <div className="w-[130px] h-[130px] shrink-0 relative self-start">
+        <div className="w-[130px] h-[130px] shrink-0 relative self-start overflow-hidden">
           <div className="absolute inset-0">
             <PlacePhoto
               color={place.photoColor}
@@ -681,6 +681,15 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           return (
             <div className="w-[220px] shrink-0 flex flex-col items-stretch justify-between px-3 py-3">
               <div className="flex flex-col gap-2">
+                <div className="flex justify-end">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); toggleBookmark(); }}
+                    aria-label={bookmarked ? 'Remove from saved' : 'Save this place'}
+                    className="w-7 h-7 flex items-center justify-center rounded-full border border-border bg-surface hover:border-brand transition-colors active:scale-90"
+                  >
+                    <Bookmark className={`w-3.5 h-3.5 ${bookmarked ? 'fill-brand text-brand' : 'text-muted'}`} />
+                  </button>
+                </div>
                 {tab === 'Hotels' && (
                   <a href={place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`}
                     target="_blank" rel="noopener noreferrer"
