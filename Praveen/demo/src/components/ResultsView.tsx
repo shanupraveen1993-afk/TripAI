@@ -1597,7 +1597,7 @@ export function ResultsView({
               <span className="text-sm text-muted">·</span>
               <span className="text-sm text-muted tabular-nums">{results!.length} results</span>
             </button>
-            <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-brand text-white">
+            <span className="flex items-center gap-1 text-xs font-semibold text-brand">
               <Sparkles className="w-3 h-3 shrink-0" />AI Ranked
             </span>
           </div>
@@ -1636,7 +1636,7 @@ export function ResultsView({
             <span className="text-sm text-muted">·</span>
             <span className="text-sm text-muted tabular-nums">{itinerary.length} stops</span>
           </button>
-          <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-brand text-white">
+          <span className="flex items-center gap-1 text-xs font-semibold text-brand">
             <Sparkles className="w-3 h-3 shrink-0" />AI Planned
           </span>
         </div>
@@ -1654,7 +1654,7 @@ export function ResultsView({
             <span className="text-sm text-muted shrink-0">·</span>
             <span className="text-sm text-muted truncate">{explore.name}</span>
           </button>
-          <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-brand text-white shrink-0 ml-2">
+          <span className="flex items-center gap-1 text-xs font-semibold text-brand shrink-0 ml-2">
             <Sparkles className="w-3 h-3 shrink-0" />AI Guide
           </span>
         </div>
