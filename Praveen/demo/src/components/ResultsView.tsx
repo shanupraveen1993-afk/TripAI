@@ -659,26 +659,25 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               ))}
             </div>
           )}
-          {/* Latest Sentiment mini — inline in L1 card */}
-          {(() => {
-            function agoToDaysCo(ago: string): number {
-              const m = ago.match(/(\d+)\s+(day|week|month)/);
-              if (!m) return 0;
-              const n = parseInt(m[1], 10);
-              return m[2] === 'day' ? n : m[2] === 'week' ? n * 7 : n * 30;
-            }
-            if (place.reviews.length === 0) return null;
-            const isUp = place.trendVerdict === 'improving';
-            const isDown = place.trendVerdict === 'declining';
-            const sentimentMsg = resolveTagVerdictWeb(place.reviews, tab as 'Hotels' | 'Food', isDown, agoToDaysCo);
-            return (
-              <div className={`rounded-lg px-2.5 py-2 border ${isUp ? 'bg-success-soft border-success-medium/40' : isDown ? 'bg-warning-soft border-warning-medium/40' : 'bg-brand-softer border-brand-soft'}`}>
-                <p className="text-xs leading-snug text-body line-clamp-1">{sentimentMsg}</p>
-              </div>
-            );
-          })()}
-          {/* Map button — Hotels & Food, bottom of info col */}
-          {(tab === 'Hotels' || tab === 'Food') && (
+          {/* Sentiment + Map — pinned to bottom of info col to mirror Col 3 layout */}
+          <div className="mt-auto flex flex-col gap-1.5">
+            {(() => {
+              function agoToDaysCo(ago: string): number {
+                const m = ago.match(/(\d+)\s+(day|week|month)/);
+                if (!m) return 0;
+                const n = parseInt(m[1], 10);
+                return m[2] === 'day' ? n : m[2] === 'week' ? n * 7 : n * 30;
+              }
+              if (place.reviews.length === 0) return null;
+              const isUp = place.trendVerdict === 'improving';
+              const isDown = place.trendVerdict === 'declining';
+              const sentimentMsg = resolveTagVerdictWeb(place.reviews, tab as 'Hotels' | 'Food', isDown, agoToDaysCo);
+              return (
+                <div className={`rounded-lg px-2.5 py-2 border ${isUp ? 'bg-success-soft border-success-medium/40' : isDown ? 'bg-warning-soft border-warning-medium/40' : 'bg-brand-softer border-brand-soft'}`}>
+                  <p className="text-xs leading-snug text-body line-clamp-1">{sentimentMsg}</p>
+                </div>
+              );
+            })()}
             <a
               href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
               target="_blank" rel="noopener noreferrer"
@@ -686,7 +685,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             >
               <Map className="w-3 h-3 shrink-0" />Map
             </a>
-          )}
+          </div>
         </div>
 
         {/* Col 3: CTAs — save / book / details */}
