@@ -3382,10 +3382,10 @@ const EXPLORE_COLORS: Record<string, string> = {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MAIN HANDLER
-// ── Gemini Hotel Pricing — parallel call with Google Search grounding ─────────
+// ── Gemini Hotel Pricing — parallel call using Gemini knowledge ──────────────
 interface HotelPriceResult {
-  price: string;          // e.g. "₹2,100/night"
-  googleRank: number | null;  // position in Google Hotels results, null if not found
+  price: string;
+  googleRank: number | null;
 }
 
 function normalizeHotelName(name: string): string {
@@ -3405,40 +3405,37 @@ async function geminiHotelPricing(
   const result = new Map<string, HotelPriceResult>();
   if (!geminiKey || hotelNames.length === 0) return result;
 
-  const prompt = `Search Google Hotels for "${query} hotels in ${city}" and find nightly room prices.
+  const prompt = `You are a hotel pricing expert for ${city}, Tamil Nadu, India. Provide nightly room rates for these hotels based on your knowledge of ${city} hotel pricing, categories, and typical rates.
 
-Hotels to price:
+Search query context: "${query}"
+
+Hotels:
 ${hotelNames.map((n, i) => `${i + 1}. ${n}`).join('\n')}
 
-For each hotel:
-- If it appears in Google Hotels search results, use that price and note its rank position.
-- If not found in search results, estimate price based on hotel name type (lodge/inn=budget ₹600-1200, hotel=mid ₹1200-3000, resort/palace/heritage=premium ₹3000-7000) and typical Thanjavur rates.
+Pricing tiers for ${city}:
+- Budget (OYO/lodge/inn/residency): ₹600–₹1,500/night
+- Mid-range (standard hotel, 3-star): ₹1,200–₹3,000/night
+- Premium (4-star, heritage, palace): ₹3,000–₹8,000/night
+- Luxury (5-star, spa resort): ₹6,000–₹15,000/night
 
-Return ONLY a valid JSON array, no markdown:
-[{"name":"<exact name from input>","price":"₹X,XXX/night","googleRank":<1-based rank or null>,"estimated":<true/false>}]
+Give each hotel a distinct realistic price. Also rank them 1–${hotelNames.length} by how prominently they appear in Google Hotels for the query "${query} hotels in ${city}".
 
-Rules:
-- Include every hotel from the input list.
-- price format: ₹X,XXX/night (use Indian number format with comma).
-- googleRank: integer rank from Google Hotels results, null if not found there.
-- estimated: false if price came from Google Hotels, true if estimated.`;
+Return ONLY valid JSON array, no markdown:
+[{"name":"<exact name from input>","price":"₹X,XXX/night","googleRank":<1 to ${hotelNames.length}>}]`;
 
   try {
     const resp = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,
+      `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,
       {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          tools:    [{ google_search: {} }],
-        }),
+        body:    JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
       }
     );
-    const data = await resp.json() as any;
-    const raw  = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+    const data  = await resp.json() as any;
+    const raw   = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
     const clean = raw.replace(/```json|```/g, '').trim();
-    const parsed: Array<{ name: string; price: string; googleRank: number | null; estimated: boolean }> =
+    const parsed: Array<{ name: string; price: string; googleRank: number }> =
       clean ? JSON.parse(clean) : [];
 
     const normInputs = hotelNames.map(n => ({ original: n, norm: normalizeHotelName(n) }));
@@ -3446,7 +3443,6 @@ Rules:
     for (const item of parsed) {
       if (!item.price) continue;
       const normItem = normalizeHotelName(item.name);
-      // Match by exact name first, then fuzzy
       const match = normInputs.find(n =>
         n.norm === normItem ||
         n.norm.includes(normItem) ||
@@ -3460,7 +3456,7 @@ Rules:
       }
     }
   } catch {
-    // Pricing is best-effort — never block hotel results
+    // Pricing is best-effort — never blocks main hotel results
   }
   return result;
 }
