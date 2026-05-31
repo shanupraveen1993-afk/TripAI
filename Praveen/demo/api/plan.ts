@@ -264,6 +264,10 @@ const FIELD_MASK = [
 // Separate field mask when we need photo refs (Hotels / Food only)
 const FIELD_MASK_WITH_PHOTOS = FIELD_MASK + ',places.photos';
 
+// Place Details API uses field names WITHOUT "places." prefix
+const DETAIL_MASK            = FIELD_MASK.replace(/places\./g, '');
+const DETAIL_MASK_WITH_PHOTOS = DETAIL_MASK + ',photos';
+
 // City coordinates lookup — used for Places API locationBias
 // Fallback: Thanjavur centre. Add cities here as the app expands.
 const CITY_CONFIG: Record<string, { lat: number; lng: number; state: string }> = {
@@ -1674,7 +1678,7 @@ async function fetchPlaces(
 async function fetchPlaceDetailsBatch(placeIds: string[], withPhotos = false): Promise<Map<string, any>> {
   const map = new Map<string, any>();
   if (!placeIds.length) return map;
-  const mask = withPhotos ? FIELD_MASK_WITH_PHOTOS : FIELD_MASK;
+  const mask = withPhotos ? DETAIL_MASK_WITH_PHOTOS : DETAIL_MASK;
   const results = await Promise.allSettled(
     placeIds.map(id =>
       fetch(`https://places.googleapis.com/v1/places/${id}`, {
