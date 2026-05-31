@@ -386,14 +386,14 @@ function scoreReviewForTime(text: string, timeSlot: string): number {
 
 function getHotelPriceLabel(priceRange?: string, priceLevel?: string): string | null {
   if (priceRange) {
-    const base = priceRange.replace(/\/night.*$/i, '').trim();
-    return `${base} (approx)`;
+    const base = priceRange.replace(/\/night.*/i, '').trim();
+    return `${base}/night`;
   }
   const tierMap: Record<string, string> = {
-    '₹':    'From ₹800 (approx)',
-    '₹₹':   'From ₹1,500 (approx)',
-    '₹₹₹':  'From ₹3,500 (approx)',
-    '₹₹₹₹': 'From ₹7,000 (approx)',
+    '₹':    '₹800+/night',
+    '₹₹':   '₹1,500+/night',
+    '₹₹₹':  '₹3,500+/night',
+    '₹₹₹₹': '₹7,000+/night',
   };
   return (priceLevel && tierMap[priceLevel]) ? tierMap[priceLevel] : null;
 }
