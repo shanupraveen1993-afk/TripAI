@@ -248,7 +248,7 @@ export default function App() {
       return;
     }
     setActiveTab(filters.tab);
-    if (filters.destination) setSearchLocation(filters.destination);
+    if (filters.destination) setSearchLocation('Thanjavur');
     setLastSearchFilters(filters);
     setContent('loading');
     setIsSaved(false);
@@ -580,10 +580,10 @@ export default function App() {
 
   // ── Render helpers ───────────────────────────────────────────────────────
   const LOADING_LABELS: Record<string, string> = {
-    Hotels:    `Ranking hotels in ${searchLocation} by your preferences…`,
-    Food:      `Filtering what's actually worth eating in ${searchLocation}…`,
-    Itinerary: `Building your AI-sequenced day plan for ${searchLocation}…`,
-    Explore:   `Building your personalised visit guide…`,
+    Hotels:    'Ranking hotels in Thanjavur by your preferences…',
+    Food:      'Filtering what\'s actually worth eating in Thanjavur…',
+    Itinerary: 'Building your AI-sequenced day plan for Thanjavur…',
+    Explore:   'Building your personalised visit guide…',
   };
 
   const renderLoading = () => (
@@ -819,11 +819,11 @@ export default function App() {
         searchLocation={searchLocation}
         onSearchChange={v => {
           if (v && !isThanjavurCity(v)) { setNonThanjavurNotice(v); }
-          else setSearchLocation(v);
+          else setSearchLocation('Thanjavur');
         }}
         onLocationPick={(display, area) => {
           if (display && !isThanjavurCity(display)) { setNonThanjavurNotice(display); }
-          else { setSearchLocation(display); setSearchArea(area); }
+          else { setSearchLocation('Thanjavur'); setSearchArea(area); }
         }}
         showBack={contentScreen === 'results'}
         onBack={() => {
