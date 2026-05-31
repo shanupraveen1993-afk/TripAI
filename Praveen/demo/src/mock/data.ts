@@ -43,7 +43,6 @@ export interface PlaceResult {
   websiteUri?: string | null;
   googleMapsUri?: string | null;
   googleHotelsPrice?: string;
-  googleHotelsRank?:  number;
   reviews: ReviewItem[];
   recentRatings?: number[];
   photoColor: string;

@@ -528,13 +528,8 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             const priceLabel = getHotelPriceLabel(place.googleHotelsPrice, place.priceRange, place.priceLevel);
             if (!priceLabel) return null;
             return (
-              <div className="flex items-center gap-1.5 flex-wrap">
+              <div className="flex items-center gap-1">
                 <span className="text-xs font-semibold text-heading">{priceLabel}</span>
-                {place.googleHotelsRank && place.googleHotelsRank <= 3 && (
-                  <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-brand text-white">
-                    <Sparkles className="w-2.5 h-2.5" />Google #{place.googleHotelsRank}
-                  </span>
-                )}
               </div>
             );
           })()}
@@ -692,13 +687,8 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             const priceLabel = getHotelPriceLabel(place.googleHotelsPrice, place.priceRange, place.priceLevel);
             if (!priceLabel) return null;
             return (
-              <div className="flex items-center gap-1.5 flex-wrap">
+              <div className="flex items-center gap-1">
                 <span className="text-xs font-semibold text-heading">{priceLabel}</span>
-                {place.googleHotelsRank && place.googleHotelsRank <= 3 && (
-                  <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-brand text-white">
-                    <Sparkles className="w-2.5 h-2.5" />Google #{place.googleHotelsRank}
-                  </span>
-                )}
               </div>
             );
           })()}
