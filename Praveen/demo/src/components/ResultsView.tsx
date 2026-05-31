@@ -534,7 +534,6 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             if (!priceLabel) return null;
             return (
               <div className="flex items-center gap-1">
-                <DollarSign className="w-3 h-3 text-muted shrink-0" />
                 <span className="text-xs font-semibold text-heading">{priceLabel}</span>
                 <span className="text-[10px] text-muted/70">est.</span>
               </div>
@@ -695,7 +694,6 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             if (!priceLabel) return null;
             return (
               <div className="flex items-center gap-1">
-                <DollarSign className="w-3 h-3 text-muted shrink-0" />
                 <span className="text-xs font-semibold text-heading">{priceLabel}</span>
                 <span className="text-[10px] text-muted/70">est.</span>
               </div>
