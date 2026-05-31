@@ -386,14 +386,14 @@ function scoreReviewForTime(text: string, timeSlot: string): number {
 
 function getHotelPriceLabel(priceRange?: string, priceLevel?: string): string | null {
   if (priceRange) {
-    if (priceRange.includes('/night')) return priceRange;
-    return `${priceRange}/night`;
+    const base = priceRange.replace(/\/night.*$/i, '').trim();
+    return `${base} (approx)`;
   }
   const tierMap: Record<string, string> = {
-    '₹':    'Under ₹1,500/night',
-    '₹₹':   '₹1,500–₹3,500/night',
-    '₹₹₹':  '₹3,500–₹7,000/night',
-    '₹₹₹₹': '₹7,000+/night',
+    '₹':    'From ₹800 (approx)',
+    '₹₹':   'From ₹1,500 (approx)',
+    '₹₹₹':  'From ₹3,500 (approx)',
+    '₹₹₹₹': 'From ₹7,000 (approx)',
   };
   return (priceLevel && tierMap[priceLevel]) ? tierMap[priceLevel] : null;
 }
@@ -535,7 +535,6 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             return (
               <div className="flex items-center gap-1">
                 <span className="text-xs font-semibold text-heading">{priceLabel}</span>
-                <span className="text-[10px] text-muted/70">est.</span>
               </div>
             );
           })()}
@@ -695,7 +694,6 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             return (
               <div className="flex items-center gap-1">
                 <span className="text-xs font-semibold text-heading">{priceLabel}</span>
-                <span className="text-[10px] text-muted/70">est.</span>
               </div>
             );
           })()}
