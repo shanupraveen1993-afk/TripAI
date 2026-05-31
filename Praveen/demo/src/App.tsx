@@ -5,7 +5,6 @@ import { PlaceCardSkeleton, ItineraryItemSkeleton } from './components/ui/Skelet
 import { LandingPage } from './components/LandingPage';
 import { Navbar, MainSection } from './components/Navbar';
 import { Dashboard, DashboardFilters } from './components/Dashboard';
-import { CityLockScreen } from './components/CityLockScreen';
 import { ResultsView } from './components/ResultsView';
 import { SavedTrips, SavedTrip } from './components/SavedTrips';
 import { Profile } from './components/Profile';
@@ -32,7 +31,7 @@ import {
 import { isThanjavurCity } from './utils/city';
 
 type AppScreen = 'landing' | 'browse' | 'app';
-type ContentScreen = 'dashboard' | 'citylock' | 'loading' | 'results';
+type ContentScreen = 'dashboard' | 'loading' | 'results';
 
 /* ── Static skeleton index arrays — defined outside component to avoid realloc ── */
 const ITIN_SKELETONS = Array.from({ length: 5 }, (_, i) => i);
@@ -440,7 +439,7 @@ export default function App() {
 
   const handleViewTrip = (trip: SavedTrip) => {
     setActiveTab(trip.tab);
-    setSearchLocation(trip.destination);
+    setSearchLocation('Thanjavur');
     setMainSection('home');
     setContent('results');
   };
@@ -653,7 +652,6 @@ export default function App() {
           <motion.div key="results" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>
             <ResultsView
               tab={activeTab}
-              destination="Thanjavur"
               searchArea={searchArea}
               hotels={activeTab === 'Hotels' ? (liveResults as PlaceResult[] ?? []) : []}
               food={activeTab === 'Food'    ? (liveResults as PlaceResult[] ?? []) : []}
@@ -819,7 +817,7 @@ export default function App() {
         searchLocation={searchLocation}
         onSearchChange={v => {
           if (v && !isThanjavurCity(v)) { setNonThanjavurNotice(v); }
-          else setSearchLocation('Thanjavur');
+          else { setSearchLocation('Thanjavur'); setSearchArea(''); }
         }}
         onLocationPick={(display, area) => {
           if (display && !isThanjavurCity(display)) { setNonThanjavurNotice(display); }

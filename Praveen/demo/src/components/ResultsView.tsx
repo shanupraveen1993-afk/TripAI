@@ -114,7 +114,6 @@ function StarRating({ rating, size = 'sm' }: { rating: number; size?: 'sm' | 'xs
 
 interface ResultsViewProps {
   tab: Tab;
-  destination: string;
   searchArea?: string;
   hotels?: PlaceResult[];
   food?: PlaceResult[];
@@ -129,7 +128,6 @@ interface ResultsViewProps {
   onSwitchTab?: (tab: Tab) => void;
   backLabel?: string;
   onExploreStop?: (target: string) => void;
-  isFirstItinerary?: boolean;
   selectedTags?: string[];
   onCancelTag?: (tag: string) => void;
   visitTime?: string;
@@ -407,12 +405,8 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
   refLat?: number; refLng?: number; refLabel?: string;
 }) {
   // rank-1 AI Top Pick cards start collapsed to save space; all others start expanded
-  const [cardCollapsed, setCardCollapsed] = useState(defaultCollapsed);
-  const [expanded, setExpanded]         = useState(false);
-  const [showAnalysis, setShowAnalysis] = useState(false);
-  const [showNearby, setShowNearby]     = useState(false);
-  const [openAiRow, setOpenAiRow]       = useState<number | null>(null);
-  const [bookmarked, setBookmarked]     = useState(false);
+  const [expanded, setExpanded]   = useState(false);
+  const [bookmarked, setBookmarked] = useState(false);
   const { toast } = useToast();
 
   // Distance from reference point (header-selected area or city centre)
@@ -438,30 +432,6 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
     setBookmarked(v => !v);
     toast(bookmarked ? `${place.name} removed` : `${place.name} saved`, bookmarked ? 'info' : 'success');
   };
-
-  const actionButtons = (
-    <div className="flex items-center gap-1.5 shrink-0">
-      {tab === 'Hotels' && (<>
-        <a href={place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`}
-          target="_blank" rel="noopener noreferrer"
-          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-brand text-white hover:bg-brand/90 transition-colors active:scale-[0.97] shadow-sm">
-          <ExternalLink className="w-3.5 h-3.5" />Book
-        </a>
-        <a href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
-          target="_blank" rel="noopener noreferrer"
-          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold border border-border text-muted hover:border-brand hover:text-brand transition-colors active:scale-[0.97]">
-          <Map className="w-3.5 h-3.5" />Map
-        </a>
-      </>)}
-      {tab === 'Food' && (
-        <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
-          target="_blank" rel="noopener noreferrer"
-          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-brand text-white hover:bg-brand/90 transition-colors active:scale-[0.97] shadow-sm">
-          <Navigation className="w-3 h-3" />Directions
-        </a>
-      )}
-    </div>
-  );
 
   // Competitor-style coloured rating badge (Booking.com / Goibibo pattern)
   const ratingColor = place.rating >= 4.5 ? 'var(--color-success-strong)' : place.rating >= 4.0 ? 'var(--color-brand)' : place.rating >= 3.5 ? 'var(--color-warning-strong)' : 'var(--color-danger-strong)';
@@ -985,8 +955,6 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
     </motion.div>
   );
 
-  // suppress unused-var warnings for state vars no longer used in JSX
-  void cardCollapsed; void setCardCollapsed; void showNearby; void setShowNearby; void openAiRow; void setOpenAiRow; void actionButtons; void showAnalysis; void setShowAnalysis;
 }
 
 /* ── Trophy icon (not in lucide default set, use inline) ─────────────── */
@@ -1033,14 +1001,10 @@ function getTravelMode(leg: string): { emoji: React.ReactNode; bg: string; color
   return                          { emoji: <><span aria-hidden="true">🚗</span><span className="sr-only">Car</span></>, bg: 'var(--color-brand-softer)',  color: 'var(--color-brand)' };
 }
 
-function ItineraryView({ stops, onRegenerate, onExploreStop, onBack }: {
+function ItineraryView({ stops, onExploreStop }: {
   stops: (ItineraryStop | LiveItineraryStop)[];
-  onBack?: () => void;
-  onRegenerate: () => void;
   onExploreStop?: (target: string) => void;
 }) {
-  void onRegenerate;
-  void onBack;
   const [expandedStops, setExpandedStops] = useState<Set<number>>(new Set());
 
   const displayStops = stops;
@@ -1521,10 +1485,10 @@ function resolveStopCoords(stopName: string): { lat: number; lng: number } | nul
 }
 
 export function ResultsView({
-  tab, destination, searchArea, hotels, food, itinerary, explore, apiError,
+  tab, searchArea, hotels, food, itinerary, explore, apiError,
   isLoadingMore = false,
   onBack, onRegenerate, onSave, saved = false, onSwitchTab,
-  backLabel, onExploreStop, isFirstItinerary = false, selectedTags = [], onCancelTag,
+  backLabel, onExploreStop, selectedTags = [], onCancelTag,
   visitTime = 'Morning',
 }: ResultsViewProps) {
   const { toast } = useToast();
@@ -1724,7 +1688,7 @@ export function ResultsView({
             />
           </React.Fragment>
         ))}
-        {tab === 'Itinerary' && itinerary && <ItineraryView stops={itinerary} onRegenerate={onRegenerate} onExploreStop={onExploreStop} onBack={onBack} />}
+        {tab === 'Itinerary' && itinerary && <ItineraryView stops={itinerary} onExploreStop={onExploreStop} />}
         {tab === 'Explore' && explore && <ExploreView place={explore} visitTime={visitTime} onBack={onBack} />}
         {tab === 'Explore' && !explore && (
           <motion.div

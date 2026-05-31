@@ -1680,11 +1680,14 @@ async function fetchPlaceDetailsBatch(placeIds: string[], withPhotos = false): P
   if (!placeIds.length) return map;
   const mask = withPhotos ? DETAIL_MASK_WITH_PHOTOS : DETAIL_MASK;
   const results = await Promise.allSettled(
-    placeIds.map(id =>
-      fetch(`https://places.googleapis.com/v1/places/${id}`, {
+    placeIds.map(id => {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 8000);
+      return fetch(`https://places.googleapis.com/v1/places/${id}`, {
         headers: { 'X-Goog-Api-Key': PLACES_KEY, 'X-Goog-FieldMask': mask },
-      }).then(r => r.ok ? r.json() : null)
-    )
+        signal: ctrl.signal,
+      }).then(r => r.ok ? r.json() : null).finally(() => clearTimeout(timer));
+    })
   );
   for (let i = 0; i < results.length; i++) {
     const r = results[i];
@@ -3427,7 +3430,7 @@ const EXPLORE_COLORS: Record<string, string> = {
 // MAIN HANDLER
 // ── Hotel price extraction from review text ──────────────────────────────────
 function extractHotelPriceFromReviews(reviews: any[]): string | null {
-  const priceRe = /(?:paid|charged|cost|costs?|rate|priced?|rs\.?|₹|inr)\s*[\s:]*(\d[\d,]+)/gi;
+  const priceRe = /(?:paid|charged|cost|costs?|rate|priced?|rs\.?|₹|inr)\s*[\s:]*(\d[\d,]+)/i;
   const roomRe  = /(?:room|stay|night|per night|nightly)/i;
   const positive = reviews.filter(r => (r.rating ?? 0) >= 4);
   for (const r of positive) {
@@ -3442,14 +3445,15 @@ function extractHotelPriceFromReviews(reviews: any[]): string | null {
   return null;
 }
 
-function hotelPriceFromLevel(priceLevel: string, name: string): string {
+function hotelPriceFromLevel(rawPriceLevel: string, name: string): string {
   const lower = name.toLowerCase();
   if (/oyo|lodge|inn|residency|budget|economy/.test(lower)) return '₹800/night';
   if (/palace|heritage|resort|spa|boutique/.test(lower))    return '₹5,000/night';
-  if (priceLevel === '₹')    return '₹900/night';
-  if (priceLevel === '₹₹')   return '₹1,800/night';
-  if (priceLevel === '₹₹₹')  return '₹4,500/night';
-  if (priceLevel === '₹₹₹₹') return '₹8,000/night';
+  // Accept raw PRICE_LEVEL_* values from Google Places API
+  if (rawPriceLevel === 'PRICE_LEVEL_FREE' || rawPriceLevel === 'PRICE_LEVEL_INEXPENSIVE') return '₹900/night';
+  if (rawPriceLevel === 'PRICE_LEVEL_MODERATE') return '₹1,800/night';
+  if (rawPriceLevel === 'PRICE_LEVEL_EXPENSIVE') return '₹4,500/night';
+  if (rawPriceLevel === 'PRICE_LEVEL_VERY_EXPENSIVE') return '₹8,000/night';
   return '₹1,500/night';
 }
 
@@ -4171,7 +4175,7 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
           photoRef:           p.photos?.[0]?.name ?? null,
           websiteUri:         p.websiteUri    ?? null,
           googleMapsUri:      p.googleMapsUri ?? null,
-          googleHotelsPrice:  pricingMap.get(p.displayName?.text ?? '') ?? extractHotelPriceFromReviews(p.reviews ?? []) ?? hotelPriceFromLevel(priceStr, p.displayName?.text ?? ''),
+          googleHotelsPrice:  pricingMap.get(p.displayName?.text ?? '') ?? extractHotelPriceFromReviews(p.reviews ?? []) ?? hotelPriceFromLevel(p.priceLevel ?? '', p.displayName?.text ?? ''),
           aiDetail: {
             whyOverOthers: ai.whyOverOthers || whyOverOthersFB,
             dataPoints,
