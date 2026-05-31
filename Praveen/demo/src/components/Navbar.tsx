@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MapPin, Home, History, User, Compass, LogOut, ChevronDown, ArrowLeft } from 'lucide-react';
+import { MapPin, Home, History, User, Compass, LogOut, ChevronDown } from 'lucide-react';
 
 export type MainSection = 'home' | 'history' | 'profile';
 
@@ -134,27 +134,17 @@ export function Navbar({ section, onSectionChange, onLogout, userName, searchLoc
             </span>
           </button>
 
-          {/* Mobile: back arrow on results, logo on home — web app standard */}
+          {/* Mobile: always show logo — back is handled by ResultsView's breadcrumb */}
           <div className="sm:hidden">
-            {showBack ? (
-              <button
-                onClick={onBack}
-                aria-label="Go back"
-                className="flex items-center justify-center min-w-[44px] min-h-[44px] text-heading hover:text-brand transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5 shrink-0" />
-              </button>
-            ) : (
-              <button
-                onClick={() => onSectionChange('home')}
-                aria-label="Go to home"
-                className="flex items-center justify-center"
-              >
-                <div className="w-8 h-8 bg-brand rounded-lg flex items-center justify-center">
-                  <Compass className="w-4 h-4 text-white" />
-                </div>
-              </button>
-            )}
+            <button
+              onClick={() => onSectionChange('home')}
+              aria-label="Go to home"
+              className="flex items-center justify-center"
+            >
+              <div className="w-8 h-8 bg-brand rounded-lg flex items-center justify-center">
+                <Compass className="w-4 h-4 text-white" />
+              </div>
+            </button>
           </div>
 
           {/* Spacer */}

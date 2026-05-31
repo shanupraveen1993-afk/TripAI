@@ -384,6 +384,20 @@ function scoreReviewForTime(text: string, timeSlot: string): number {
   return kws.reduce((n, kw) => n + (lower.includes(kw) ? 1 : 0), 0);
 }
 
+function getHotelPriceLabel(priceRange?: string, priceLevel?: string): string | null {
+  if (priceRange) {
+    if (priceRange.includes('/night')) return priceRange;
+    return `${priceRange}/night`;
+  }
+  const tierMap: Record<string, string> = {
+    '₹':    'Under ₹1,500/night',
+    '₹₹':   '₹1,500–₹3,500/night',
+    '₹₹₹':  '₹3,500–₹7,000/night',
+    '₹₹₹₹': '₹7,000+/night',
+  };
+  return (priceLevel && tierMap[priceLevel]) ? tierMap[priceLevel] : null;
+}
+
 function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -487,127 +501,158 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
       {/* ══ MOBILE CARD LAYOUT (< sm) ══ */}
       <div className="sm:hidden flex flex-col">
 
-        {/* Row 1: Photo + Info — tap anywhere to expand */}
-        <div className="flex min-h-[120px] cursor-pointer" onClick={() => setExpanded(v => !v)}>
-
-          {/* Col 1: Photo */}
-          <div className="w-[90px] shrink-0 relative self-stretch rounded-lg overflow-hidden">
-            <div className="absolute inset-0">
-              <PlacePhoto
-                color={place.photoColor}
-                name={place.name}
-                photoRef={place.photoRef ?? null}
-                autoLoad={rank <= 2}
-              />
-            </div>
-            <span className={`absolute top-1.5 left-1.5 flex items-center gap-0.5 px-1 py-0.5 rounded-full text-xs font-semibold leading-none ${place.openNow ? 'bg-success/90 text-white' : 'bg-black/60 text-white/80'}`}>
-              <span className={`w-1 h-1 rounded-full shrink-0 ${place.openNow ? 'bg-white' : 'bg-white/60'}`} />
-              {place.openNow ? 'Open' : 'Closed'}
-            </span>
-          </div>
-
-          {/* Col 2: Info */}
-          <div className="flex-1 min-w-0 px-3 py-3 flex flex-col gap-1.5">
-            <div className="flex items-baseline gap-1.5 flex-wrap pr-9">
-              <h3 className="font-display font-bold text-base text-heading leading-snug tracking-tight line-clamp-1" title={place.name}>{place.name}</h3>
-              {place.matchScore !== undefined && (
-                <span className={`text-xs font-bold shrink-0 ${place.matchScore >= 80 ? 'text-success-strong' : place.matchScore >= 55 ? 'text-brand' : 'text-muted'}`}>
-                  {place.matchScore}%
-                </span>
-              )}
-            </div>
-            <div className="flex items-center gap-0.5">
-              <StarRating rating={place.rating} size="xs" />
-              <span className="text-xs text-muted ml-0.5">(<span className="tabular-nums">{place.reviewCount.toLocaleString()}</span>)</span>
-            </div>
-            {(confirmed.length > 0 || unconfirmed.length > 0) && (
-              <div className="flex gap-1 flex-wrap">
-                {confirmed.slice(0, 2).map((t, i) => (
-                  <span key={t} className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-medium border ${
-                    i === 0
-                      ? 'bg-success text-white border-success'
-                      : 'bg-success-soft border-success-medium text-success-strong'
-                  }`}>
-                    <CheckCircle className="w-2 h-2" />{t}
-                  </span>
-                ))}
-                {unconfirmed.slice(0, 1).map(t => (
-                  <span key={t} className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-medium border bg-bg-app border-border-medium text-muted">~{t}</span>
-                ))}
-              </div>
-            )}
-            {/* Latest Sentiment mini */}
-            {(() => {
-              function agoToDaysCo(ago: string): number {
-                const m = ago.match(/(\d+)\s+(day|week|month)/);
-                if (!m) return 0;
-                const n = parseInt(m[1], 10);
-                return m[2] === 'day' ? n : m[2] === 'week' ? n * 7 : n * 30;
-              }
-              if (place.reviews.length === 0) return null;
-              const isUp = place.trendVerdict === 'improving';
-              const isDown = place.trendVerdict === 'declining';
-              const sentimentMsg = resolveTagVerdictWeb(place.reviews, tab as 'Hotels' | 'Food', isDown, agoToDaysCo);
-              return (
-                <div className={`rounded-lg px-2 py-1.5 border ${isUp ? 'bg-success-soft border-success-medium/40' : isDown ? 'bg-warning-soft border-warning-medium/40' : 'bg-brand-softer border-brand-soft'}`}>
-                  <p className="text-xs leading-snug text-body line-clamp-1">{sentimentMsg}</p>
-                </div>
-              );
-            })()}
-          </div>
+        {/* Row 1: Full-width image on top — tap to expand */}
+        <div className="relative h-40 cursor-pointer" onClick={() => setExpanded(v => !v)}>
+          <PlacePhoto
+            color={place.photoColor}
+            name={place.name}
+            photoRef={place.photoRef ?? null}
+            autoLoad={rank <= 2}
+          />
+          <span className={`absolute top-2 left-2 flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-semibold leading-none ${place.openNow ? 'bg-success/90 text-white' : 'bg-black/60 text-white/80'}`}>
+            <span className={`w-1 h-1 rounded-full shrink-0 ${place.openNow ? 'bg-white' : 'bg-white/60'}`} />
+            {place.openNow ? 'Open' : 'Closed'}
+          </span>
         </div>
 
-        {/* Row 2: Map (small) + Book Now/Directions (big) */}
+        {/* Row 2: Info — tap to expand */}
+        <div className="px-3 py-3 flex flex-col gap-1.5 cursor-pointer" onClick={() => setExpanded(v => !v)}>
+          <div className="flex items-baseline gap-1.5 flex-wrap pr-9">
+            <h3 className="font-display font-bold text-base text-heading leading-snug tracking-tight line-clamp-1" title={place.name}>{place.name}</h3>
+            {place.matchScore !== undefined && (
+              <span className={`text-xs font-bold shrink-0 ${place.matchScore >= 80 ? 'text-success-strong' : place.matchScore >= 55 ? 'text-brand' : 'text-muted'}`}>
+                {place.matchScore}%
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-0.5">
+            <StarRating rating={place.rating} size="xs" />
+            <span className="text-xs text-muted ml-0.5">(<span className="tabular-nums">{place.reviewCount.toLocaleString()}</span>)</span>
+          </div>
+          {tab === 'Hotels' && (() => {
+            const priceLabel = getHotelPriceLabel(place.priceRange, place.priceLevel);
+            if (!priceLabel) return null;
+            return (
+              <div className="flex items-center gap-1">
+                <DollarSign className="w-3 h-3 text-muted shrink-0" />
+                <span className="text-xs font-semibold text-heading">{priceLabel}</span>
+                <span className="text-[10px] text-muted/70">est.</span>
+              </div>
+            );
+          })()}
+          {(confirmed.length > 0 || unconfirmed.length > 0) && (
+            <div className="flex gap-1 flex-wrap">
+              {confirmed.slice(0, 2).map((t, i) => (
+                <span key={t} className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-medium border ${
+                  i === 0
+                    ? 'bg-success text-white border-success'
+                    : 'bg-success-soft border-success-medium text-success-strong'
+                }`}>
+                  <CheckCircle className="w-2 h-2" />{t}
+                </span>
+              ))}
+              {unconfirmed.slice(0, 1).map(t => (
+                <span key={t} className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-medium border bg-bg-app border-border-medium text-muted">~{t}</span>
+              ))}
+            </div>
+          )}
+          {/* Sentiment — 2 lines so the AI summary is readable */}
+          {(() => {
+            function agoToDaysCo(ago: string): number {
+              const m = ago.match(/(\d+)\s+(day|week|month)/);
+              if (!m) return 0;
+              const n = parseInt(m[1], 10);
+              return m[2] === 'day' ? n : m[2] === 'week' ? n * 7 : n * 30;
+            }
+            if (place.reviews.length === 0) return null;
+            const isUp = place.trendVerdict === 'improving';
+            const isDown = place.trendVerdict === 'declining';
+            const sentimentMsg = resolveTagVerdictWeb(place.reviews, tab as 'Hotels' | 'Food', isDown, agoToDaysCo);
+            return (
+              <div className={`rounded-lg px-2 py-1.5 border ${isUp ? 'bg-success-soft border-success-medium/40' : isDown ? 'bg-warning-soft border-warning-medium/40' : 'bg-brand-softer border-brand-soft'}`}>
+                <p className="text-xs leading-snug text-body line-clamp-2">{sentimentMsg}</p>
+              </div>
+            );
+          })()}
+        </div>
+
+        {/* Row 3: CTAs */}
         {(() => {
           const ctaLockedM = selectedTags.length === 0;
           const mapsHrefM = place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`;
           const bookHrefM = place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`;
+
+          if (tab === 'Hotels') {
+            return (
+              <>
+                {/* Hotels: Map + Book Now */}
+                <div className="border-t border-border flex gap-2 px-3 py-2.5">
+                  {ctaLockedM ? (
+                    <>
+                      <button
+                        onClick={() => toast('Select a filter tag above to unlock', 'info')}
+                        className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold border border-border text-muted bg-bg-app active:scale-[0.97] shrink-0"
+                      >
+                        <Map className="w-3.5 h-3.5 shrink-0" />Map
+                      </button>
+                      <button
+                        onClick={() => toast('Select a filter tag above to unlock', 'info')}
+                        className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold bg-brand/25 text-brand/70 active:scale-[0.97]"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5 shrink-0" />Book Now
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <a href={mapsHrefM} target="_blank" rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold border border-border text-body active:scale-[0.97] shrink-0">
+                        <Map className="w-3.5 h-3.5 shrink-0" />Map
+                      </a>
+                      <a href={bookHrefM} target="_blank" rel="noopener noreferrer"
+                        className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold bg-brand text-white active:scale-[0.97]">
+                        <ExternalLink className="w-3.5 h-3.5 shrink-0" />Book Now
+                      </a>
+                    </>
+                  )}
+                </div>
+                {/* Hotels: Detailed Analysis — separate row */}
+                <div className="border-t border-border">
+                  <button onClick={() => setExpanded(v => !v)}
+                    className="w-full flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-brand active:scale-[0.97] min-h-[44px]">
+                    <Sparkles className="w-3 h-3 shrink-0" />
+                    Detailed Analysis
+                    <ChevronDown className={`w-3 h-3 shrink-0 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
+                  </button>
+                </div>
+              </>
+            );
+          }
+
+          /* Food: Map + Detailed Analysis in one row */
           return (
             <div className="border-t border-border flex gap-2 px-3 py-2.5">
               {ctaLockedM ? (
-                <>
-                  <button
-                    onClick={() => toast('Select a filter tag above to unlock', 'info')}
-                    className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold border border-border text-muted bg-bg-app active:scale-[0.97] shrink-0"
-                  >
-                    <Map className="w-3.5 h-3.5 shrink-0" />Map
-                  </button>
-                  {tab === 'Hotels' && (
-                    <button
-                      onClick={() => toast('Select a filter tag above to unlock', 'info')}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold bg-brand/25 text-brand/70 active:scale-[0.97]"
-                    >
-                      <ExternalLink className="w-3.5 h-3.5 shrink-0" />Book Now
-                    </button>
-                  )}
-                </>
+                <button
+                  onClick={() => toast('Select a filter tag above to unlock', 'info')}
+                  className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold border border-border text-muted bg-bg-app active:scale-[0.97] shrink-0"
+                >
+                  <Map className="w-3.5 h-3.5 shrink-0" />Map
+                </button>
               ) : (
-                <>
-                  <a href={mapsHrefM} target="_blank" rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold border border-border text-body active:scale-[0.97] shrink-0">
-                    <Map className="w-3.5 h-3.5 shrink-0" />Map
-                  </a>
-                  {tab === 'Hotels' && (
-                    <a href={bookHrefM} target="_blank" rel="noopener noreferrer"
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold bg-brand text-white active:scale-[0.97]">
-                      <ExternalLink className="w-3.5 h-3.5 shrink-0" />Book Now
-                    </a>
-                  )}
-                </>
+                <a href={mapsHrefM} target="_blank" rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold border border-border text-body active:scale-[0.97] shrink-0">
+                  <Map className="w-3.5 h-3.5 shrink-0" />Map
+                </a>
               )}
+              <button onClick={() => setExpanded(v => !v)}
+                className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-brand border border-brand/30 rounded-lg active:scale-[0.97]">
+                <Sparkles className="w-3 h-3 shrink-0" />
+                Detailed Analysis
+                <ChevronDown className={`w-3 h-3 shrink-0 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
+              </button>
             </div>
           );
         })()}
-
-        {/* Row 3: Detailed Analysis toggle */}
-        <div className="border-t border-border">
-          <button onClick={() => setExpanded(v => !v)}
-            className="w-full flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-brand active:scale-[0.97] min-h-[44px]">
-            <Sparkles className="w-3 h-3 shrink-0" />
-            Detailed Analysis
-            <ChevronDown className={`w-3 h-3 shrink-0 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
-          </button>
-        </div>
 
       </div>
 
@@ -645,6 +690,17 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             <StarRating rating={place.rating} size="xs" />
             <span className="text-xs text-muted ml-0.5">(<span className="tabular-nums">{place.reviewCount.toLocaleString()}</span>)</span>
           </div>
+          {tab === 'Hotels' && (() => {
+            const priceLabel = getHotelPriceLabel(place.priceRange, place.priceLevel);
+            if (!priceLabel) return null;
+            return (
+              <div className="flex items-center gap-1">
+                <DollarSign className="w-3 h-3 text-muted shrink-0" />
+                <span className="text-xs font-semibold text-heading">{priceLabel}</span>
+                <span className="text-[10px] text-muted/70">est.</span>
+              </div>
+            );
+          })()}
           {(confirmed.length > 0 || unconfirmed.length > 0) && (
             <div className="flex gap-1 flex-wrap">
               {confirmed.slice(0, 2).map(t => (
@@ -674,7 +730,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               const sentimentMsg = resolveTagVerdictWeb(place.reviews, tab as 'Hotels' | 'Food', isDown, agoToDaysCo);
               return (
                 <div className={`rounded-lg px-2.5 py-2 border ${isUp ? 'bg-success-soft border-success-medium/40' : isDown ? 'bg-warning-soft border-warning-medium/40' : 'bg-brand-softer border-brand-soft'}`}>
-                  <p className="text-xs leading-snug text-body line-clamp-1">{sentimentMsg}</p>
+                  <p className="text-xs leading-snug text-body line-clamp-2">{sentimentMsg}</p>
                 </div>
               );
             })()}
@@ -1083,7 +1139,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop, onBack }: {
                     <button
                       type="button"
                       onClick={() => toggleStop(idx)}
-                      className="flex items-center justify-center gap-1.5 px-4 py-2 min-h-[44px] rounded-lg text-xs font-bold border border-brand text-brand bg-transparent hover:bg-brand-softer transition-colors shrink-0"
+                      className="flex items-center justify-center gap-1.5 px-3 py-2 min-h-[44px] rounded-lg text-sm font-semibold border border-brand text-brand bg-transparent hover:bg-brand-softer transition-colors shrink-0"
                     >
                       Know More
                       <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
@@ -1098,7 +1154,7 @@ function ItineraryView({ stops, onRegenerate, onExploreStop, onBack }: {
                         <button
                           type="button"
                           onClick={() => window.open(url, '_blank', 'noopener')}
-                          className="flex-1 flex items-center justify-center gap-1.5 py-2 min-h-[44px] rounded-lg text-xs font-bold text-white transition-colors"
+                          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 min-h-[44px] rounded-lg text-sm font-semibold text-white transition-colors"
                           style={{ background: 'var(--color-brand)' }}
                         >
                           <Navigation className="w-3.5 h-3.5" />

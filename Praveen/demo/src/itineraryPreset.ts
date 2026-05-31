@@ -133,10 +133,9 @@ const PRESET_LEGS: Record<string, PresetLeg> = {
     traffic: { Morning: 'Light', Afternoon: 'Moderate', Evening: 'Heavy' },
   },
   'big_temple|rajarajan_manimandapam': {
-    distanceM: 2800, walkMins: null, autoMins: 12, autoFare: 80,
+    distanceM: 2000, walkMins: null, autoMins: 10, autoFare: 70,
     mode: 'auto',
     traffic: { Morning: 'Light', Afternoon: 'Moderate', Evening: 'Heavy' },
-    note: 'Road route goes around the outer temple complex — 2.8 km by auto (~12 min)',
   },
   'palace|saraswathi_mahal': {
     distanceM: 150, walkMins: 2, autoMins: 1, autoFare: 0,
@@ -171,6 +170,29 @@ const PRESET_LEGS: Record<string, PresetLeg> = {
     distanceM: 80, walkMins: 1, autoMins: 1, autoFare: 0,
     mode: 'walk',
     traffic: { Morning: 'Light', Afternoon: 'Light', Evening: 'Light' },
+  },
+
+  // ── Rajarajan Manimandapam connections ────────────────────────────────────
+
+  'rajarajan_manimandapam|schwartz_church': {
+    distanceM: 1500, walkMins: null, autoMins: 8, autoFare: 60,
+    mode: 'auto',
+    traffic: { Morning: 'Light', Afternoon: 'Moderate', Evening: 'Moderate' },
+  },
+  // ── Schwartz Church connections ───────────────────────────────────────────
+
+  'schwartz_church|rajarajan_manimandapam': {
+    distanceM: 1500, walkMins: null, autoMins: 8, autoFare: 60,
+    mode: 'auto',
+    traffic: { Morning: 'Light', Afternoon: 'Moderate', Evening: 'Moderate' },
+  },
+
+  // ── Art Gallery connections ───────────────────────────────────────────────
+
+  'art_gallery|sivaganga_fort': {
+    distanceM: 900, walkMins: null, autoMins: 8, autoFare: 60,
+    mode: 'auto',
+    traffic: { Morning: 'Light', Afternoon: 'Moderate', Evening: 'Heavy' },
   },
 
   // ── Short auto hops within city ──────────────────────────────────────────
@@ -248,16 +270,14 @@ const PRESET_LEGS: Record<string, PresetLeg> = {
     traffic: { Morning: 'Light', Afternoon: 'Moderate', Evening: 'Moderate' },
   },
   'rajarajan_manimandapam|palace': {
-    distanceM: 3200, walkMins: null, autoMins: 14, autoFare: 90,
+    distanceM: 2000, walkMins: null, autoMins: 10, autoFare: 70,
     mode: 'auto',
-    traffic: { Morning: 'Light', Afternoon: 'Moderate', Evening: 'Heavy' },
-    note: '2.8 km from Big Temple area; palace is a further ~400 m — auto recommended',
+    traffic: { Morning: 'Light', Afternoon: 'Moderate', Evening: 'Moderate' },
   },
   'saraswathi_mahal|rajarajan_manimandapam': {
-    distanceM: 2800, walkMins: null, autoMins: 12, autoFare: 80,
+    distanceM: 2000, walkMins: null, autoMins: 10, autoFare: 70,
     mode: 'auto',
-    traffic: { Morning: 'Light', Afternoon: 'Moderate', Evening: 'Heavy' },
-    note: 'Auto from Palace complex via outer road — Manimandapam is near Big Temple north gate',
+    traffic: { Morning: 'Light', Afternoon: 'Moderate', Evening: 'Moderate' },
   },
   'rajarajan_manimandapam|sivaganga_fort': {
     distanceM: 1500, walkMins: null, autoMins: 10, autoFare: 60,
@@ -393,9 +413,9 @@ export function legToReachNote(leg: PresetLeg, toStop: string): string {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const SLOT_PLANS: Record<string, string[]> = {
-  '07:00': ['big_temple', 'palace', 'saraswathi_mahal', 'rajarajan_manimandapam', 'sivaganga_fort'],
-  '14:00': ['big_temple', 'palace', 'saraswathi_mahal'],
-  '12:00': ['big_temple', 'palace', 'saraswathi_mahal'],
+  '07:00': ['big_temple', 'rajarajan_manimandapam', 'schwartz_church', 'palace', 'saraswathi_mahal', 'art_gallery', 'sivaganga_fort'],
+  '14:00': ['big_temple', 'palace', 'saraswathi_mahal', 'big_temple'],
+  '12:00': ['big_temple', 'palace', 'saraswathi_mahal', 'big_temple'],
   '17:00': ['big_temple', 'punnainallur_temple'],
   '16:00': ['big_temple', 'punnainallur_temple'],
 };
