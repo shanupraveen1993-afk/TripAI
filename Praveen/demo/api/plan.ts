@@ -3433,10 +3433,13 @@ Return ONLY a JSON array with exactly ${hotelNames.length} elements in the same 
       }
     );
     const data  = await resp.json() as any;
+    console.log('[pricing] status:', resp.status, 'error:', data?.error?.message ?? 'none');
     const raw   = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+    console.log('[pricing] raw snippet:', raw.slice(0, 200));
     const clean = raw.replace(/```json|```/g, '').trim();
     const parsed: Array<{ idx: number; price: string; googleRank: number }> =
       clean ? JSON.parse(clean) : [];
+    console.log('[pricing] parsed count:', parsed.length);
 
     for (const item of parsed) {
       const name = hotelNames[item.idx];
@@ -3446,8 +3449,8 @@ Return ONLY a JSON array with exactly ${hotelNames.length} elements in the same 
         googleRank: item.googleRank ?? null,
       });
     }
-  } catch {
-    // Pricing is best-effort — never blocks main hotel results
+  } catch (err: any) {
+    console.error('[pricing] error:', err?.message ?? err);
   }
   return result;
 }
