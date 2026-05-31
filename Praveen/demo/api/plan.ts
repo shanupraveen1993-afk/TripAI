@@ -3383,7 +3383,6 @@ const EXPLORE_COLORS: Record<string, string> = {
 // ─────────────────────────────────────────────────────────────────────────────
 // MAIN HANDLER
 // ── Hotel price extraction from review text ──────────────────────────────────
-// Scans review text for price mentions (e.g. "paid ₹1800", "room was ₹2500")
 function extractHotelPriceFromReviews(reviews: any[]): string | null {
   const priceRe = /(?:paid|charged|cost|costs?|rate|priced?|rs\.?|₹|inr)\s*[\s:]*(\d[\d,]+)/gi;
   const roomRe  = /(?:room|stay|night|per night|nightly)/i;
@@ -3402,13 +3401,69 @@ function extractHotelPriceFromReviews(reviews: any[]): string | null {
 
 function hotelPriceFromLevel(priceLevel: string, name: string): string {
   const lower = name.toLowerCase();
-  if (/oyo|lodge|inn|residency|budget|economy/.test(lower)) return '₹800–₹1,200/night';
-  if (/palace|heritage|resort|spa|boutique/.test(lower))    return '₹4,000–₹8,000/night';
-  if (priceLevel === '₹')    return '₹600–₹1,200/night';
-  if (priceLevel === '₹₹')   return '₹1,200–₹2,500/night';
-  if (priceLevel === '₹₹₹')  return '₹3,000–₹6,000/night';
-  if (priceLevel === '₹₹₹₹') return '₹6,000+/night';
-  return '₹1,000–₹2,000/night';
+  if (/oyo|lodge|inn|residency|budget|economy/.test(lower)) return '₹800/night';
+  if (/palace|heritage|resort|spa|boutique/.test(lower))    return '₹5,000/night';
+  if (priceLevel === '₹')    return '₹900/night';
+  if (priceLevel === '₹₹')   return '₹1,800/night';
+  if (priceLevel === '₹₹₹')  return '₹4,500/night';
+  if (priceLevel === '₹₹₹₹') return '₹8,000/night';
+  return '₹1,500/night';
+}
+
+// ── Gemini-lite pricing — separate quota from main flash call ─────────────────
+async function geminiLitePricing(
+  hotelNames: string[],
+  query: string,
+  city: string,
+  geminiKey: string
+): Promise<Map<string, string>> {
+  const result = new Map<string, string>();
+  if (!geminiKey || hotelNames.length === 0) return result;
+
+  const tryModel = async (model: string, useGrounding: boolean): Promise<boolean> => {
+    const body: any = {
+      contents: [{ parts: [{ text:
+        `You are a hotel pricing expert for ${city}, India. For the query "${query}", provide the current nightly room rate for each hotel below. Use Google Hotels data where available, otherwise use your knowledge of ${city} hotel prices.
+
+Hotels (respond in exact same order):
+${hotelNames.map((n, i) => `${i}. ${n}`).join('\n')}
+
+Return ONLY valid JSON array, no markdown:
+[{"idx":0,"price":"₹X,XXX/night"},{"idx":1,"price":"₹X,XXX/night"},...]
+
+Give each hotel a distinct single price (not a range). Format: ₹X,XXX/night` }] }],
+    };
+    if (useGrounding) body.tools = [{ google_search: {} }];
+
+    const resp = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`,
+      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
+    );
+    if (resp.status === 429) return false;
+    const data  = await resp.json() as any;
+    if (data?.error) return false;
+    const raw   = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+    const clean = raw.replace(/```json|```/g, '').trim();
+    const parsed: Array<{ idx: number; price: string }> = clean ? JSON.parse(clean) : [];
+    for (const item of parsed) {
+      const name = hotelNames[item.idx];
+      if (name && item.price) result.set(name, item.price);
+    }
+    return result.size > 0;
+  };
+
+  try {
+    // Level 1: flash-lite + Google Search grounding → real Google Hotels prices
+    const ok1 = await tryModel('gemini-2.0-flash-lite', true);
+    if (ok1) return result;
+
+    // Level 2: flash-lite without grounding → Gemini knowledge estimates
+    result.clear();
+    await tryModel('gemini-2.0-flash-lite', false);
+  } catch {
+    // Level 3 fallback handled by caller (review extraction + priceLevel)
+  }
+  return result;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -3902,8 +3957,13 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
         _filterLayer:   1 as const,
       }));
 
-      const filterScored = applyFilterScoring(placesToRank, tab, filters);
-      const rankedAi     = await geminiRankAndAnalyse(placesToRank, tab, filters, filterScored.map(s => s.filterScore));
+      const filterScored  = applyFilterScoring(placesToRank, tab, filters);
+      const hotelNames    = placesToRank.map((p: any) => p.displayName?.text ?? '').filter(Boolean);
+      const pricingQuery  = selectedTags.length > 0 ? selectedTags.join(' ') : (filters.searchQuery || 'hotel');
+      const [rankedAi, pricingMap] = await Promise.all([
+        geminiRankAndAnalyse(placesToRank, tab, filters, filterScored.map(s => s.filterScore)),
+        geminiLitePricing(hotelNames, pricingQuery, city, GEMINI_KEY),
+      ]);
 
       const sorted          = [...rankedAi].sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99));
       const geminiOrdered   = sorted.map((ai: any) => placesToRank[ai.originalIdx ?? 0] ?? placesToRank[0]);
@@ -4059,7 +4119,7 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
           photoRef:           p.photos?.[0]?.name ?? null,
           websiteUri:         p.websiteUri    ?? null,
           googleMapsUri:      p.googleMapsUri ?? null,
-          googleHotelsPrice:  extractHotelPriceFromReviews(p.reviews ?? []) ?? hotelPriceFromLevel(priceStr, p.displayName?.text ?? ''),
+          googleHotelsPrice:  pricingMap.get(p.displayName?.text ?? '') ?? extractHotelPriceFromReviews(p.reviews ?? []) ?? hotelPriceFromLevel(priceStr, p.displayName?.text ?? ''),
           aiDetail: {
             whyOverOthers: ai.whyOverOthers || whyOverOthersFB,
             dataPoints,
