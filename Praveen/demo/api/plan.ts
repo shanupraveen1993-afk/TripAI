@@ -3405,23 +3405,23 @@ async function geminiHotelPricing(
   const result = new Map<string, HotelPriceResult>();
   if (!geminiKey || hotelNames.length === 0) return result;
 
-  const prompt = `You are a hotel pricing expert for ${city}, Tamil Nadu, India. Provide nightly room rates for these hotels based on your knowledge of ${city} hotel pricing, categories, and typical rates.
+  const prompt = `You are a hotel pricing expert for ${city}, Tamil Nadu, India. For each hotel below, provide an estimated nightly room rate based on the hotel name, category signals, and typical ${city} rates.
 
-Search query context: "${query}"
+Query context: "${query}"
 
-Hotels:
-${hotelNames.map((n, i) => `${i + 1}. ${n}`).join('\n')}
+Hotels (respond in the SAME ORDER, one entry per hotel):
+${hotelNames.map((n, i) => `${i}. ${n}`).join('\n')}
 
-Pricing tiers for ${city}:
+Pricing guide for ${city}:
 - Budget (OYO/lodge/inn/residency): ₹600–₹1,500/night
-- Mid-range (standard hotel, 3-star): ₹1,200–₹3,000/night
-- Premium (4-star, heritage, palace): ₹3,000–₹8,000/night
-- Luxury (5-star, spa resort): ₹6,000–₹15,000/night
+- Mid-range (hotel, 3-star): ₹1,200–₹3,000/night
+- Premium (heritage/palace/4-star): ₹3,000–₹8,000/night
+- Luxury (5-star/spa resort): ₹6,000+/night
 
-Give each hotel a distinct realistic price. Also rank them 1–${hotelNames.length} by how prominently they appear in Google Hotels for the query "${query} hotels in ${city}".
+Also assign each hotel a googleRank (1 = most prominent on Google Hotels for "${query} hotels in ${city}").
 
-Return ONLY valid JSON array, no markdown:
-[{"name":"<exact name from input>","price":"₹X,XXX/night","googleRank":<1 to ${hotelNames.length}>}]`;
+Return ONLY a JSON array with exactly ${hotelNames.length} elements in the same order as the input, no markdown:
+[{"idx":0,"price":"₹X,XXX/night","googleRank":N},{"idx":1,"price":"₹X,XXX/night","googleRank":N},...]`;
 
   try {
     const resp = await fetch(
@@ -3435,25 +3435,16 @@ Return ONLY valid JSON array, no markdown:
     const data  = await resp.json() as any;
     const raw   = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
     const clean = raw.replace(/```json|```/g, '').trim();
-    const parsed: Array<{ name: string; price: string; googleRank: number }> =
+    const parsed: Array<{ idx: number; price: string; googleRank: number }> =
       clean ? JSON.parse(clean) : [];
 
-    const normInputs = hotelNames.map(n => ({ original: n, norm: normalizeHotelName(n) }));
-
     for (const item of parsed) {
-      if (!item.price) continue;
-      const normItem = normalizeHotelName(item.name);
-      const match = normInputs.find(n =>
-        n.norm === normItem ||
-        n.norm.includes(normItem) ||
-        normItem.includes(n.norm)
-      );
-      if (match) {
-        result.set(match.original, {
-          price:      item.price,
-          googleRank: item.googleRank ?? null,
-        });
-      }
+      const name = hotelNames[item.idx];
+      if (!name || !item.price) continue;
+      result.set(name, {
+        price:      item.price,
+        googleRank: item.googleRank ?? null,
+      });
     }
   } catch {
     // Pricing is best-effort — never blocks main hotel results
