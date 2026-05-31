@@ -3423,6 +3423,8 @@ Also assign each hotel a googleRank (1 = most prominent on Google Hotels for "${
 Return ONLY a JSON array with exactly ${hotelNames.length} elements in the same order as the input, no markdown:
 [{"idx":0,"price":"₹X,XXX/night","googleRank":N},{"idx":1,"price":"₹X,XXX/night","googleRank":N},...]`;
 
+  let _debug: any = {};
+  (result as any)._debug = _debug;
   try {
     const resp = await fetch(
       `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,
@@ -3433,24 +3435,22 @@ Return ONLY a JSON array with exactly ${hotelNames.length} elements in the same 
       }
     );
     const data  = await resp.json() as any;
-    console.log('[pricing] status:', resp.status, 'error:', data?.error?.message ?? 'none');
-    const raw   = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
-    console.log('[pricing] raw snippet:', raw.slice(0, 200));
-    const clean = raw.replace(/```json|```/g, '').trim();
+    _debug.status  = resp.status;
+    _debug.error   = data?.error?.message ?? null;
+    const raw      = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+    _debug.rawSnip = raw.slice(0, 300);
+    const clean    = raw.replace(/```json|```/g, '').trim();
     const parsed: Array<{ idx: number; price: string; googleRank: number }> =
       clean ? JSON.parse(clean) : [];
-    console.log('[pricing] parsed count:', parsed.length);
+    _debug.parsedCount = parsed.length;
 
     for (const item of parsed) {
       const name = hotelNames[item.idx];
       if (!name || !item.price) continue;
-      result.set(name, {
-        price:      item.price,
-        googleRank: item.googleRank ?? null,
-      });
+      result.set(name, { price: item.price, googleRank: item.googleRank ?? null });
     }
   } catch (err: any) {
-    console.error('[pricing] error:', err?.message ?? err);
+    _debug.caught = err?.message ?? String(err);
   }
   return result;
 }
@@ -4127,9 +4127,9 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
       return res.json({
         results: finalResults,
         _pricingDebug: {
-          inputNames:    hotelNamesForPricing,
-          mapSize:       pricingMap.size,
-          mapEntries:    Array.from(pricingMap.entries()).map(([k,v]) => ({ k, ...v })),
+          inputNames:  hotelNamesForPricing,
+          mapSize:     pricingMap.size,
+          geminiDebug: (pricingMap as any)._debug,
         },
       });
     }
