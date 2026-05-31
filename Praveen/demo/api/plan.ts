@@ -3382,6 +3382,89 @@ const EXPLORE_COLORS: Record<string, string> = {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MAIN HANDLER
+// ── Gemini Hotel Pricing — parallel call with Google Search grounding ─────────
+interface HotelPriceResult {
+  price: string;          // e.g. "₹2,100/night"
+  googleRank: number | null;  // position in Google Hotels results, null if not found
+}
+
+function normalizeHotelName(name: string): string {
+  return name.toLowerCase()
+    .replace(/\b(hotel|inn|lodge|resort|palace|heritage|stay|rooms|suites|the|a|an)\b/g, '')
+    .replace(/[^a-z0-9]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+async function geminiHotelPricing(
+  hotelNames: string[],
+  query: string,
+  city: string,
+  geminiKey: string
+): Promise<Map<string, HotelPriceResult>> {
+  const result = new Map<string, HotelPriceResult>();
+  if (!geminiKey || hotelNames.length === 0) return result;
+
+  const prompt = `Search Google Hotels for "${query} hotels in ${city}" and find nightly room prices.
+
+Hotels to price:
+${hotelNames.map((n, i) => `${i + 1}. ${n}`).join('\n')}
+
+For each hotel:
+- If it appears in Google Hotels search results, use that price and note its rank position.
+- If not found in search results, estimate price based on hotel name type (lodge/inn=budget ₹600-1200, hotel=mid ₹1200-3000, resort/palace/heritage=premium ₹3000-7000) and typical Thanjavur rates.
+
+Return ONLY a valid JSON array, no markdown:
+[{"name":"<exact name from input>","price":"₹X,XXX/night","googleRank":<1-based rank or null>,"estimated":<true/false>}]
+
+Rules:
+- Include every hotel from the input list.
+- price format: ₹X,XXX/night (use Indian number format with comma).
+- googleRank: integer rank from Google Hotels results, null if not found there.
+- estimated: false if price came from Google Hotels, true if estimated.`;
+
+  try {
+    const resp = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,
+      {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          tools:    [{ google_search: {} }],
+        }),
+      }
+    );
+    const data = await resp.json() as any;
+    const raw  = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+    const clean = raw.replace(/```json|```/g, '').trim();
+    const parsed: Array<{ name: string; price: string; googleRank: number | null; estimated: boolean }> =
+      clean ? JSON.parse(clean) : [];
+
+    const normInputs = hotelNames.map(n => ({ original: n, norm: normalizeHotelName(n) }));
+
+    for (const item of parsed) {
+      if (!item.price) continue;
+      const normItem = normalizeHotelName(item.name);
+      // Match by exact name first, then fuzzy
+      const match = normInputs.find(n =>
+        n.norm === normItem ||
+        n.norm.includes(normItem) ||
+        normItem.includes(n.norm)
+      );
+      if (match) {
+        result.set(match.original, {
+          price:      item.price,
+          googleRank: item.googleRank ?? null,
+        });
+      }
+    }
+  } catch {
+    // Pricing is best-effort — never block hotel results
+  }
+  return result;
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin',  '*');
@@ -3873,8 +3956,13 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
         _filterLayer:   1 as const,
       }));
 
-      const filterScored = applyFilterScoring(placesToRank, tab, filters);
-      const rankedAi     = await geminiRankAndAnalyse(placesToRank, tab, filters, filterScored.map(s => s.filterScore));
+      const filterScored  = applyFilterScoring(placesToRank, tab, filters);
+      const hotelNamesForPricing = placesToRank.map((p: any) => p.displayName?.text ?? '').filter(Boolean);
+      const pricingQuery  = selectedTags.length > 0 ? selectedTags.join(' ') : (filters.searchQuery || 'hotel');
+      const [rankedAi, pricingMap] = await Promise.all([
+        geminiRankAndAnalyse(placesToRank, tab, filters, filterScored.map(s => s.filterScore)),
+        geminiHotelPricing(hotelNamesForPricing, pricingQuery, city, GEMINI_KEY),
+      ]);
 
       const sorted          = [...rankedAi].sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99));
       const geminiOrdered   = sorted.map((ai: any) => placesToRank[ai.originalIdx ?? 0] ?? placesToRank[0]);
@@ -4030,6 +4118,8 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
           photoRef:           p.photos?.[0]?.name ?? null,
           websiteUri:         p.websiteUri    ?? null,
           googleMapsUri:      p.googleMapsUri ?? null,
+          googleHotelsPrice:  pricingMap.get(p.displayName?.text ?? '')?.price      ?? undefined,
+          googleHotelsRank:   pricingMap.get(p.displayName?.text ?? '')?.googleRank ?? undefined,
           aiDetail: {
             whyOverOthers: ai.whyOverOthers || whyOverOthersFB,
             dataPoints,

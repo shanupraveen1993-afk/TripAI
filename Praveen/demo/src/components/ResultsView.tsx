@@ -384,18 +384,13 @@ function scoreReviewForTime(text: string, timeSlot: string): number {
   return kws.reduce((n, kw) => n + (lower.includes(kw) ? 1 : 0), 0);
 }
 
-function getHotelPriceLabel(priceRange?: string, priceLevel?: string): string | null {
+function getHotelPriceLabel(googleHotelsPrice?: string, priceRange?: string, priceLevel?: string): string | null {
+  if (googleHotelsPrice) return googleHotelsPrice;
   if (priceRange) {
     const base = priceRange.replace(/\/night.*/i, '').trim();
     return `${base}/night`;
   }
-  const tierMap: Record<string, string> = {
-    '₹':    '₹800+/night',
-    '₹₹':   '₹1,500+/night',
-    '₹₹₹':  '₹3,500+/night',
-    '₹₹₹₹': '₹7,000+/night',
-  };
-  return (priceLevel && tierMap[priceLevel]) ? tierMap[priceLevel] : null;
+  return null;
 }
 
 function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
@@ -530,11 +525,16 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             <span className="text-xs text-muted ml-0.5">(<span className="tabular-nums">{place.reviewCount.toLocaleString()}</span>)</span>
           </div>
           {tab === 'Hotels' && (() => {
-            const priceLabel = getHotelPriceLabel(place.priceRange, place.priceLevel);
+            const priceLabel = getHotelPriceLabel(place.googleHotelsPrice, place.priceRange, place.priceLevel);
             if (!priceLabel) return null;
             return (
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5 flex-wrap">
                 <span className="text-xs font-semibold text-heading">{priceLabel}</span>
+                {place.googleHotelsRank && place.googleHotelsRank <= 3 && (
+                  <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-brand text-white">
+                    <Sparkles className="w-2.5 h-2.5" />Google #{place.googleHotelsRank}
+                  </span>
+                )}
               </div>
             );
           })()}
@@ -689,11 +689,16 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             <span className="text-xs text-muted ml-0.5">(<span className="tabular-nums">{place.reviewCount.toLocaleString()}</span>)</span>
           </div>
           {tab === 'Hotels' && (() => {
-            const priceLabel = getHotelPriceLabel(place.priceRange, place.priceLevel);
+            const priceLabel = getHotelPriceLabel(place.googleHotelsPrice, place.priceRange, place.priceLevel);
             if (!priceLabel) return null;
             return (
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5 flex-wrap">
                 <span className="text-xs font-semibold text-heading">{priceLabel}</span>
+                {place.googleHotelsRank && place.googleHotelsRank <= 3 && (
+                  <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-brand text-white">
+                    <Sparkles className="w-2.5 h-2.5" />Google #{place.googleHotelsRank}
+                  </span>
+                )}
               </div>
             );
           })()}

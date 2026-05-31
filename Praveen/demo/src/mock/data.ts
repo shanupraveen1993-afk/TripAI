@@ -42,6 +42,8 @@ export interface PlaceResult {
   photoRef?: string | null;
   websiteUri?: string | null;
   googleMapsUri?: string | null;
+  googleHotelsPrice?: string;
+  googleHotelsRank?:  number;
   reviews: ReviewItem[];
   recentRatings?: number[];
   photoColor: string;
