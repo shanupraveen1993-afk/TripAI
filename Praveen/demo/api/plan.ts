@@ -191,6 +191,25 @@ function cacheStore(key: string, places: any[]): void {
   PLACES_CACHE.set(key, { ts: Date.now(), places });
 }
 
+// ── BASIC field mask — Pro SKU only (cheap pool queries) ─────────────────────
+// No reviews, photos, editorialSummary, or boolean attributes.
+// Used for pool fetch (60 candidates) — pays cheap Pro tier rate.
+const BASIC_FIELD_MASK = [
+  'places.id',
+  'places.displayName',
+  'places.formattedAddress',
+  'places.location',
+  'places.rating',
+  'places.userRatingCount',
+  'places.priceLevel',
+  'places.types',
+  'places.primaryType',
+  'places.businessStatus',
+  'places.regularOpeningHours',
+].join(',');
+
+// ── FULL field mask — Atmosphere SKU (final 20 only) ─────────────────────────
+// Used only for the top-20 candidates after basic filtering.
 // Preferred SKU fields — same billing tier as servesVegetarianFood (already paying it)
 const FIELD_MASK = [
   'places.id',
@@ -1583,14 +1602,14 @@ const SEED_PREFIX: Record<number, string> = {
 };
 
 interface FetchOptions {
-  withPhotos?:   boolean;
-  minRating?:    number;
-  // API-level filters — Google enforces these before returning any results
-  priceLevels?:  string[];  // e.g. ['PRICE_LEVEL_INEXPENSIVE'] — direct Places API param
-  openNow?:      boolean;   // true = only currently open places
-  includedType?:   string;    // e.g. 'vegetarian_restaurant' — single place type restriction
-  center?:         { latitude: number; longitude: number }; // city centre for locationBias
-  noLocationBias?: boolean;   // skip locationBias entirely — lets Google's own spatial ranking handle "near X"
+  withPhotos?:     boolean;
+  basicFieldsOnly?: boolean;  // use BASIC_FIELD_MASK (Pro SKU) instead of full Atmosphere mask
+  minRating?:      number;
+  priceLevels?:    string[];
+  openNow?:        boolean;
+  includedType?:   string;
+  center?:         { latitude: number; longitude: number };
+  noLocationBias?: boolean;
 }
 
 // Hotels/Food use locationBias (city-centred); filterThanjavurOnly enforces strict locality.
@@ -1601,12 +1620,11 @@ async function fetchPlaces(
   radiusKm = 15,
   opts: FetchOptions = {},
 ) {
-  const { withPhotos = false, minRating = 0, priceLevels, openNow, includedType, center = DEFAULT_CENTER, noLocationBias = false } = opts;
+  const { withPhotos = false, basicFieldsOnly = false, minRating = 0, priceLevels, openNow, includedType, center = DEFAULT_CENTER, noLocationBias = false } = opts;
   const rankPreference = SEED_RANK[searchSeed % 4] ?? 'RELEVANCE';
   const prefix         = SEED_PREFIX[searchSeed % 4] ?? '';
 
-  // Cache key covers every param that affects the result
-  const cacheKey = JSON.stringify({ query, searchSeed, radiusKm, withPhotos, minRating, priceLevels, openNow, includedType, noLocationBias, center });
+  const cacheKey = JSON.stringify({ query, searchSeed, radiusKm, withPhotos, basicFieldsOnly, minRating, priceLevels, openNow, includedType, noLocationBias, center });
   const cached = cacheLookup(cacheKey);
   if (cached) return cached;
 
@@ -1635,7 +1653,7 @@ async function fetchPlaces(
     headers: {
       'Content-Type':     'application/json',
       'X-Goog-Api-Key':   PLACES_KEY,
-      'X-Goog-FieldMask': withPhotos ? FIELD_MASK_WITH_PHOTOS : FIELD_MASK,
+      'X-Goog-FieldMask': basicFieldsOnly ? BASIC_FIELD_MASK : (withPhotos ? FIELD_MASK_WITH_PHOTOS : FIELD_MASK),
     },
     body: JSON.stringify(body),
   });
@@ -1648,6 +1666,27 @@ async function fetchPlaces(
   const places = data.places ?? [];
   cacheStore(cacheKey, places);
   return places;
+}
+
+// ─── Batch Place Details fetch ────────────────────────────────────────────────
+// Fetches full Atmosphere fields for a specific list of place IDs.
+// Uses Place Details SKU (cheaper than Text Search Atmosphere for targeted lookups).
+async function fetchPlaceDetailsBatch(placeIds: string[], withPhotos = false): Promise<Map<string, any>> {
+  const map = new Map<string, any>();
+  if (!placeIds.length) return map;
+  const mask = withPhotos ? FIELD_MASK_WITH_PHOTOS : FIELD_MASK;
+  const results = await Promise.allSettled(
+    placeIds.map(id =>
+      fetch(`https://places.googleapis.com/v1/places/${id}`, {
+        headers: { 'X-Goog-Api-Key': PLACES_KEY, 'X-Goog-FieldMask': mask },
+      }).then(r => r.ok ? r.json() : null)
+    )
+  );
+  for (let i = 0; i < results.length; i++) {
+    const r = results[i];
+    if (r.status === 'fulfilled' && r.value) map.set(placeIds[i], r.value);
+  }
+  return map;
 }
 
 // ─── Multi-query pool fetch ───────────────────────────────────────────────────
@@ -3798,26 +3837,24 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
         ? `${filters.searchQuery} in ${city} ${state}`
         : buildHotelQuery(filters);
 
-      const fetchOpts = {
-        withPhotos:     !filters.searchQuery, // no photos for free-text search results
-        openNow:        apiOpenNow || undefined,
-        center:         cityCenter,
-        noLocationBias: !!filters.searchQuery,
+      // Pool opts: basicFieldsOnly = true → Pro SKU (cheap) for all pool queries
+      const poolOpts = {
+        basicFieldsOnly: true,
+        openNow:         apiOpenNow || undefined,
+        center:          cityCenter,
+        noLocationBias:  !!filters.searchQuery,
       };
 
-      // Fetch strategy:
-      // Search mode: single query (name-specific, no benefit from variants)
-      // Tag mode:    3 DISTINCT natural queries from tag keywords → varied Google results → ~40-60 unique candidates
-      // Browse mode: 5-variant broad pool for discovery
+      // Fetch strategy — all pool queries use basic fields only (cheap)
       let mergedPool: any[];
       if (filters.searchQuery) {
-        mergedPool = await fetchPlaces(query, searchSeed, 20, fetchOpts);
+        mergedPool = await fetchPlaces(query, searchSeed, 20, poolOpts);
       } else if (selectedTags.length > 0) {
         const [q1, q2, q3] = buildHotelQueryVariants(selectedTags, city);
         const [p1, p2, p3] = await Promise.all([
-          fetchPlaces(q1, searchSeed, 20, fetchOpts),
-          fetchPlaces(q2, searchSeed, 20, fetchOpts),
-          fetchPlaces(q3, searchSeed, 20, fetchOpts),
+          fetchPlaces(q1, searchSeed, 20, poolOpts),
+          fetchPlaces(q2, searchSeed, 20, poolOpts),
+          fetchPlaces(q3, searchSeed, 20, poolOpts),
         ]);
         const hotelSeen = new Set<string>();
         mergedPool = [];
@@ -3827,11 +3864,11 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
         }
       } else {
         const hotelVariants: PoolVariant[] = [
-          { query, seed: searchSeed,            opts: fetchOpts },
-          { query, seed: (searchSeed + 1) % 4, opts: fetchOpts },
-          { query: `budget hotels lodges accommodation in ${city} ${state}`, seed: searchSeed,            opts: fetchOpts },
-          { query: `hotels near ${city} ${state}`,                           seed: (searchSeed + 2) % 4, opts: fetchOpts },
-          { query: `best hotels ${city} Tamil Nadu`,                         seed: (searchSeed + 3) % 4, opts: fetchOpts },
+          { query, seed: searchSeed,            opts: poolOpts },
+          { query, seed: (searchSeed + 1) % 4, opts: poolOpts },
+          { query: `budget hotels lodges accommodation in ${city} ${state}`, seed: searchSeed,            opts: poolOpts },
+          { query: `hotels near ${city} ${state}`,                           seed: (searchSeed + 2) % 4, opts: poolOpts },
+          { query: `best hotels ${city} Tamil Nadu`,                         seed: (searchSeed + 3) % 4, opts: poolOpts },
         ];
         mergedPool = await fetchPlacesPool(hotelVariants);
       }
@@ -3943,8 +3980,19 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
         finalCandidates = [...finalCandidates, ...padItems];
       }
 
+      // Enrich top 20 with full Atmosphere details (reviews, photos, booleans)
+      // Only these 20 pay the Atmosphere SKU rate — pool queries were basic/cheap
+      const top20 = finalCandidates.slice(0, 20);
+      const top20Ids = top20.map(c => c.place.id).filter(Boolean) as string[];
+      const detailsMap = await fetchPlaceDetailsBatch(top20Ids, true);
+      // Merge full details back — if detail fetch fails for a place, keep basic data
+      const enriched = top20.map(c => ({
+        ...c,
+        place: detailsMap.get(c.place.id) ? { ...c.place, ...detailsMap.get(c.place.id) } : c.place,
+      }));
+
       // Attach scores to each place object for Gemini + buildHotelResult
-      const placesToRank = finalCandidates.slice(0, 20).map(c => ({
+      const placesToRank = enriched.map(c => ({
         ...c.place,
         _matchedTags:   c.matchedTags,
         _confirmedTags: c.confirmedTags,
@@ -4148,31 +4196,26 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
       : buildFoodQuery(filters);
     const foodNoLocationBias = !!filters.searchQuery;
 
-    const foodWithPhotos = !filters.searchQuery; // no photos for free-text search results
-    const foodBaseOpts: FetchOptions = {
-      withPhotos:     foodWithPhotos,
-      minRating:      apiMinRating,
-      openNow:        apiOpenNow || undefined,
-      includedType:   apiIncludedType,
-      center:         cityCenter,
-      noLocationBias: foodNoLocationBias,
+    // Food pool opts: basicFieldsOnly = true → Pro SKU (cheap)
+    const foodPoolOpts: FetchOptions = {
+      basicFieldsOnly: true,
+      minRating:       apiMinRating,
+      openNow:         apiOpenNow || undefined,
+      includedType:    apiIncludedType,
+      center:          cityCenter,
+      noLocationBias:  foodNoLocationBias,
     };
 
-    // Tag-selected: single composed query — Google's own ranking handles relevance.
-    // No tags / browse mode: 5-variant pool for broad discovery.
-    // Free-text search: single call, no locationBias (mirrors Google Maps).
     const activeFoodTags = (filters.foodTags?.length ?? 0) > 0 ? filters.foodTags! : (filters.foodTag ? [filters.foodTag] : []);
     let rawPlaces: any[];
     if (filters.searchQuery) {
-      rawPlaces = await fetchPlaces(query, searchSeed, 20, foodBaseOpts);
+      rawPlaces = await fetchPlaces(query, searchSeed, 20, foodPoolOpts);
     } else if (activeFoodTags.length > 0) {
-      // 3 DISTINCT natural-language queries from tag keywords → varied Google result sets
-      // → ~40-60 unique candidates → guaranteed 5+ quality results after filters
       const [q1, q2, q3] = buildFoodQueryVariants(activeFoodTags, city);
       const [p1, p2, p3] = await Promise.all([
-        fetchPlaces(q1, searchSeed, 20, foodBaseOpts),
-        fetchPlaces(q2, searchSeed, 20, foodBaseOpts),
-        fetchPlaces(q3, searchSeed, 20, foodBaseOpts),
+        fetchPlaces(q1, searchSeed, 20, foodPoolOpts),
+        fetchPlaces(q2, searchSeed, 20, foodPoolOpts),
+        fetchPlaces(q3, searchSeed, 20, foodPoolOpts),
       ]);
       const tagSeen = new Set<string>();
       rawPlaces = [];
@@ -4181,10 +4224,10 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
         if (pid && !tagSeen.has(pid)) { tagSeen.add(pid); rawPlaces.push(p); }
       }
     } else {
-      const broadOpts: FetchOptions = { ...foodBaseOpts, includedType: undefined, minRating: 0, noLocationBias: false };
+      const broadOpts: FetchOptions = { ...foodPoolOpts, includedType: undefined, minRating: 0, noLocationBias: false };
       const foodVariants: PoolVariant[] = [
-        { query, seed: searchSeed,            opts: foodBaseOpts },
-        { query, seed: (searchSeed + 1) % 4, opts: foodBaseOpts },
+        { query, seed: searchSeed,            opts: foodPoolOpts },
+        { query, seed: (searchSeed + 1) % 4, opts: foodPoolOpts },
         { query: `restaurants dining in ${city} ${foodState}`,              seed: searchSeed,            opts: broadOpts },
         { query: `tiffin center mess food hotels ${city} ${foodState}`,     seed: (searchSeed + 2) % 4, opts: broadOpts },
         { query: `best restaurants ${city} Tamil Nadu`,                     seed: (searchSeed + 3) % 4, opts: broadOpts },
@@ -4251,8 +4294,17 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
     const qualified    = filterScored.filter(({ place }) => (place.userRatingCount ?? 0) >= 5);
     const scoredToRank = qualified.length >= 5 ? qualified : filterScored;
 
-    const placesToRank = scoredToRank.map(s => s.place).slice(0, 20);
-    const placeScores  = scoredToRank.map(s => s.filterScore).slice(0, 20);
+    // Enrich top 20 food results with full Atmosphere details (reviews, photos, booleans)
+    const top20Food    = scoredToRank.slice(0, 20);
+    const top20FoodIds = top20Food.map(s => s.place.id).filter(Boolean) as string[];
+    const foodDetailsMap = await fetchPlaceDetailsBatch(top20FoodIds, false);
+    const enrichedFood = top20Food.map(s => ({
+      ...s,
+      place: foodDetailsMap.get(s.place.id) ? { ...s.place, ...foodDetailsMap.get(s.place.id) } : s.place,
+    }));
+
+    const placesToRank = enrichedFood.map(s => s.place);
+    const placeScores  = enrichedFood.map(s => s.filterScore);
 
     const rankedAi = await geminiRankAndAnalyse(placesToRank, tab, filters, placeScores);
     const sorted          = [...rankedAi].sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99));
