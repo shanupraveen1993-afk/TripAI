@@ -55,7 +55,7 @@ const HOTEL_TAG_KEYWORDS: Record<string, string[]> = {
   'City Centre':          ['city centre', 'city center', 'central', 'main road', 'heart of city'],
   'Near Railway Station': ['railway station', 'railway', 'junction', 'rail', 'near station'],
   'Quiet & Peaceful':     ['quiet', 'peaceful', 'calm', 'serene', 'tranquil', 'noise-free'],
-  'Free Parking':         ['parking', 'car park', 'free parking', 'car parking', 'parking available'],
+  'Car Parking':          ['parking', 'car park', 'free parking', 'car parking', 'parking available'],
 
   // ── Rooms ────────────────────────────────────────────────────────────────
   'Good Amenities':       ['amenities', 'all amenities', 'basic amenities', 'well equipped', 'facilities', 'ac', 'air conditioned', 'hot water', 'geyser', 'comfortable', 'good facilities', 'nice room'],
@@ -83,7 +83,7 @@ const HOTEL_BASE_TAGS: TagMeta[] = [
   { tag: 'City Centre',          segment: 'Location',  group: 'A' },
   { tag: 'Near Railway Station', segment: 'Location',  group: 'A' },
   { tag: 'Quiet & Peaceful',     segment: 'Location',  group: 'B' },
-  { tag: 'Free Parking',         segment: 'Location',  group: 'B' },
+  { tag: 'Car Parking',          segment: 'Location',  group: 'B' },
   // ROOMS (5) — all with real review keyword support
   { tag: 'Good Amenities',       segment: 'Rooms',     group: 'B' },
   { tag: 'Good WiFi',            segment: 'Rooms',     group: 'B' },
@@ -204,7 +204,7 @@ const FOOD_TAG_SEGMENT_MAP: Record<string, { segment: string; group: 'A' | 'B' }
 };
 
 const HOTEL_FALLBACKS = [
-  'Near Big Temple', 'City Centre', 'Near Railway Station', 'Quiet & Peaceful', 'Free Parking',
+  'Near Big Temple', 'City Centre', 'Near Railway Station', 'Quiet & Peaceful', 'Car Parking',
   'Good Amenities', 'Good WiFi', 'Spacious Rooms', 'Swimming Pool', 'In-House Restaurant',
   'Budget Stay', 'Premium Stay', 'Highly Rated', 'Heritage Stay', 'Breakfast Included',
 ];
@@ -299,11 +299,11 @@ function scoreTagsAgainstPlaces(meta: TagMeta[], places: any[]): TagMeta[] {
         ).length;
         if (reviewHits >= 1) count++;
       }
-    } else if (m.tag === 'Free Parking') {
+    } else if (m.tag === 'Car Parking') {
       for (const p of places) {
         if (p.parkingOptions?.freeParkingLot === true || p.parkingOptions?.paidParkingLot === true) { count++; continue; }
         const corpus = buildCorpus(p);
-        const kws = HOTEL_TAG_KEYWORDS['Free Parking'] ?? [];
+        const kws = HOTEL_TAG_KEYWORDS['Car Parking'] ?? [];
         if (kws.some(k => corpus.includes(k))) count++;
       }
     } else if (m.tag === 'In-House Restaurant') {
@@ -329,6 +329,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin',  '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST')   return res.status(405).json({ error: 'Method not allowed' });
 

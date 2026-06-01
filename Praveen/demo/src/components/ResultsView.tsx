@@ -5,7 +5,7 @@ import {
   ChevronRight, ChevronDown, Sparkles, Info, RefreshCw, Bookmark, BookmarkCheck,
   Utensils, CheckCircle, AlertTriangle, RotateCcw, Hotel, Route,
   ImageIcon, ExternalLink, Map, X, Lightbulb, DollarSign, Flame, TrendingUp, ThumbsUp, Ticket,
-  Sunrise, Sun, Sunset,
+  Sunrise, Sun, Sunset, SquareParking,
 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Badge } from './ui/Badge';
@@ -105,7 +105,7 @@ function StarRating({ rating, size = 'sm' }: { rating: number; size?: 'sm' | 'xs
         <Star key={i} className={`${cls} ${
           i < Math.floor(rating) ? 'fill-warning-strong text-warning-strong'
           : i < rating ? 'fill-warning-medium text-warning-medium'
-          : 'text-border'
+          : 'fill-transparent text-border'
         }`} />
       ))}
     </div>
@@ -263,7 +263,7 @@ function ReviewCard({ review, idx, keywords = [] }: { review: ReviewItem; idx: n
           <div className="flex items-center gap-1.5 mb-1.5">
             <div className="flex items-center gap-0.5">
               {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} className={`w-2.5 h-2.5 ${i < review.stars ? 'fill-warning-strong text-warning-strong' : 'text-border'}`} />
+                <Star key={i} className={`w-2.5 h-2.5 ${i < review.stars ? 'fill-warning-strong text-warning-strong' : 'fill-transparent text-border'}`} />
               ))}
             </div>
             {positiveBadge}
@@ -318,7 +318,7 @@ const TAG_KEYWORD_MAP: Record<string, string[]> = {
   'City Centre':        ['city centre', 'city center', 'central', 'main road', 'heart of city', 'bus stand', 'prime location', 'good location'],
   'Quiet & Peaceful':   ['quiet', 'peaceful', 'calm', 'serene', 'tranquil', 'noise-free', 'no noise', 'undisturbed', 'relaxing', 'silent', 'restful'],
   'Easy Parking':       ['parking', 'car park', 'car parking', 'parking available', 'free parking', 'two wheeler', 'bike stand', 'vehicle parking', 'ample parking'],
-  'Free Parking':       ['parking', 'car park', 'free parking', 'car parking', 'parking available', 'two wheeler', 'bike stand', 'complimentary parking'],
+  'Car Parking':        ['parking', 'car park', 'free parking', 'car parking', 'parking available', 'two wheeler', 'bike stand', 'complimentary parking'],
   // ── Hotels: Staff & Service ──────────────────────────────────────────────
   'Friendly & Helpful': ['friendly', 'helpful', 'warm', 'welcoming', 'attentive', 'cooperative', 'caring', 'supportive', 'kind', 'polite', 'courteous', 'nice staff', 'good staff', 'excellent staff', 'great staff'],
   'Warm Hospitality':   ['hospitality', 'courteous', 'polite', 'professional', 'heartwarming', 'outstanding service', 'warm welcome', 'felt at home', 'great hospitality', 'excellent hospitality', 'welcoming'],
@@ -498,8 +498,8 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             const priceLabel = getHotelPriceLabel(place.googleHotelsPrice, place.priceRange, place.priceLevel);
             if (!priceLabel) return null;
             return (
-              <div className="flex items-center gap-1">
-                <span className="text-xs font-semibold text-heading">{priceLabel}</span>
+              <div className="flex items-baseline gap-1 mt-0.5">
+                <span className="text-lg font-black text-brand leading-none">{priceLabel}</span>
               </div>
             );
           })()}
@@ -543,7 +543,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
         {(() => {
           const ctaLockedM = selectedTags.length === 0;
           const mapsHrefM = place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`;
-          const bookHrefM = place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`;
+          const bookHrefM = place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`;
 
           if (tab === 'Hotels') {
             return (
@@ -653,15 +653,6 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             <StarRating rating={place.rating} size="xs" />
             <span className="text-xs text-muted ml-0.5">(<span className="tabular-nums">{place.reviewCount.toLocaleString()}</span>)</span>
           </div>
-          {tab === 'Hotels' && (() => {
-            const priceLabel = getHotelPriceLabel(place.googleHotelsPrice, place.priceRange, place.priceLevel);
-            if (!priceLabel) return null;
-            return (
-              <div className="flex items-center gap-1">
-                <span className="text-xs font-semibold text-heading">{priceLabel}</span>
-              </div>
-            );
-          })()}
           {(confirmed.length > 0 || unconfirmed.length > 0) && (
             <div className="flex gap-1 flex-wrap">
               {confirmed.slice(0, 2).map(t => (
@@ -708,7 +699,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
         {/* Col 3: CTAs — save / book / details */}
         {(() => {
           const ctaLocked = selectedTags.length === 0;
-          const bookHref = place.websiteUri ?? `https://www.booking.com/search.html?ss=${encodeURIComponent(place.name + ' Thanjavur')}`;
+          const bookHref = place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`;
           const mapsHref = place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`;
           return (
             <div className="w-[220px] shrink-0 flex flex-col justify-between px-3 py-3">
@@ -722,6 +713,17 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                   <Bookmark className={`w-4 h-4 ${bookmarked ? 'fill-brand text-brand' : 'text-muted'}`} />
                 </button>
               </div>
+              {/* Price — big highlighted block above Book Now */}
+              {tab === 'Hotels' && (() => {
+                const priceLabel = getHotelPriceLabel(place.googleHotelsPrice, place.priceRange, place.priceLevel);
+                if (!priceLabel) return null;
+                return (
+                  <div className="flex flex-col items-center gap-0.5 py-2 px-3 rounded-xl bg-brand-softer border border-brand-medium/30">
+                    <span className="text-xl font-black text-brand leading-none">{priceLabel}</span>
+                  </div>
+                );
+              })()}
+
               {/* Book Now (Hotels only) + Detailed Analysis — grouped at bottom */}
               <div className="flex flex-col gap-2">
                 {tab === 'Hotels' && (ctaLocked ? (
@@ -801,7 +803,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                       const lbl = avg >= 4.2 ? `Recent guests loved the ${kw}` : avg >= 3.5 ? `Steady ratings around ${kw}` : `Recent concerns around ${kw}`;
                       return (
                         <div className="flex items-start gap-2 px-2.5 py-1.5 rounded-lg bg-white border border-brand-medium/40">
-                          <Star className="w-3.5 h-3.5 text-brand shrink-0 mt-0.5" />
+                          <Star className="w-3.5 h-3.5 fill-warning-strong text-warning-strong shrink-0 mt-0.5" />
                           <span className="text-xs font-semibold text-heading leading-snug">{avg.toFixed(1)} avg · {lbl}</span>
                         </div>
                       );
@@ -899,7 +901,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                             <div className="ml-auto flex items-center gap-1 shrink-0">
                               <div className="flex gap-0.5">
                                 {Array.from({ length: 5 }).map((_, j) => (
-                                  <Star key={j} className={`w-2.5 h-2.5 ${j < r.stars ? 'fill-warning-strong text-warning-strong' : 'text-border'}`} />
+                                  <Star key={j} className={`w-2.5 h-2.5 ${j < r.stars ? 'fill-warning-strong text-warning-strong' : 'fill-transparent text-border'}`} />
                                 ))}
                               </div>
                               {r.stars === 5 && <span className="text-xs font-semibold text-success-strong bg-success-soft px-1.5 py-0.5 rounded-full border border-success-medium/30">✓ Loved it</span>}
@@ -1060,7 +1062,7 @@ function ItineraryView({ stops, onExploreStop }: {
 
                   {/* Bottom: name only */}
                   <div className="absolute bottom-0 left-0 right-0 p-3.5 z-10">
-                    <h3 className="text-white font-display font-black text-lg leading-tight tracking-tight drop-shadow">
+                    <h3 className="text-white font-display font-black text-lg leading-tight tracking-tight drop-shadow line-clamp-2">
                       {stop.stop}
                     </h3>
                   </div>
@@ -1620,6 +1622,7 @@ export function ResultsView({
                   key={tag}
                   className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-brand text-white"
                 >
+                  {tag === 'Car Parking' && <SquareParking className="w-3 h-3 shrink-0" />}
                   <span>{tag}</span>
                   <button
                     onClick={() => onCancelTag(tag)}

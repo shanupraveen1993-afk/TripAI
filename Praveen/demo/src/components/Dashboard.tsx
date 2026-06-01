@@ -612,9 +612,9 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
 
   // Dynamic city-specific tags loaded from /api/tags
   const HOTEL_TAG_FALLBACK: CityTagsResult = {
-    tags: ['Near Big Temple', 'City Centre', 'Near Railway Station', 'Quiet & Peaceful', 'Free Parking', 'Good Amenities', 'Good WiFi', 'Spacious Rooms', 'Swimming Pool', 'In-House Restaurant', 'Budget Stay', 'Premium Stay', 'Highly Rated', 'Heritage Stay', 'Breakfast Included'],
+    tags: ['Near Big Temple', 'City Centre', 'Near Railway Station', 'Quiet & Peaceful', 'Car Parking', 'Good Amenities', 'Good WiFi', 'Spacious Rooms', 'Swimming Pool', 'In-House Restaurant', 'Budget Stay', 'Premium Stay', 'Highly Rated', 'Heritage Stay', 'Breakfast Included'],
     segments: {
-      'Location':  ['Near Big Temple', 'City Centre', 'Near Railway Station', 'Quiet & Peaceful', 'Free Parking'],
+      'Location':  ['Near Big Temple', 'City Centre', 'Near Railway Station', 'Quiet & Peaceful', 'Car Parking'],
       'Rooms':     ['Good Amenities', 'Good WiFi', 'Spacious Rooms', 'Swimming Pool', 'In-House Restaurant'],
       'Stay Type': ['Budget Stay', 'Premium Stay', 'Highly Rated', 'Heritage Stay', 'Breakfast Included'],
     },
@@ -1324,14 +1324,14 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             </div>
           </div>
 
-          {/* Recent searches */}
-          {recentSearches.length > 0 && (
+          {/* Recent searches — filtered to active tab */}
+          {recentSearches.filter(s => s.tab === activeTab).length > 0 && (
             <div className="relative z-10">
-              <p className="text-xs font-normal text-muted mb-2 flex items-center gap-1.5">
+              <p className="text-xs font-semibold text-brand mb-2 flex items-center gap-1.5">
                 <Clock className="w-3 h-3" /> Recent
               </p>
               <div className="flex flex-wrap gap-1.5">
-                {recentSearches.map((s, i) => (
+                {recentSearches.filter(s => s.tab === activeTab).map((s, i) => (
                   <button
                     key={i}
                     type="button"
@@ -1344,9 +1344,9 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                         ...(s.tag && s.tab === 'Food'   ? { foodTag:  s.tag } : {}),
                       });
                     }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-surface text-xs font-medium text-body hover:border-brand hover:text-brand transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-brand/30 bg-brand/8 text-xs font-semibold text-brand hover:bg-brand/15 hover:border-brand/50 transition-colors"
                   >
-                    <Clock className="w-3 h-3 text-muted shrink-0" />
+                    <Clock className="w-3 h-3 shrink-0" />
                     {s.tag ?? s.destination}
                   </button>
                 ))}
@@ -1398,8 +1398,8 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                   onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent rounded-2xl" />
                 <div className="absolute bottom-0 left-0 right-0 p-3 z-10">
-                  <p className="text-white font-display font-black text-sm leading-tight drop-shadow">{item.label}</p>
-                  <p className="text-white/70 text-xs mt-0.5 leading-tight">{item.desc}</p>
+                  <p className="text-white font-display font-black text-sm leading-tight drop-shadow line-clamp-1">{item.label}</p>
+                  <p className="text-white/70 text-xs mt-0.5 leading-tight line-clamp-2">{item.desc}</p>
                 </div>
               </motion.button>
             ))}
@@ -1425,8 +1425,8 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                     onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent rounded-2xl" />
                   <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
-                    <p className="text-white font-display font-black text-lg leading-tight drop-shadow">{item.label}</p>
-                    <p className="text-white/70 text-xs mt-0.5">{item.desc}</p>
+                    <p className="text-white font-display font-black text-lg leading-tight drop-shadow line-clamp-1">{item.label}</p>
+                    <p className="text-white/70 text-xs mt-0.5 line-clamp-2">{item.desc}</p>
                   </div>
                 </motion.button>
               );
@@ -1447,8 +1447,8 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                   onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent rounded-2xl" />
                 <div className="absolute bottom-0 left-0 right-0 p-3 z-10">
-                  <p className="text-white font-display font-black text-sm leading-tight drop-shadow">{item.label}</p>
-                  <p className="text-white/70 text-xs mt-0.5 leading-tight">{item.desc}</p>
+                  <p className="text-white font-display font-black text-sm leading-tight drop-shadow line-clamp-1">{item.label}</p>
+                  <p className="text-white/70 text-xs mt-0.5 leading-tight line-clamp-2">{item.desc}</p>
                 </div>
               </motion.button>
             ))}
@@ -1554,8 +1554,8 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                   )}
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
-                  <p className="text-white font-display font-black text-xl leading-tight drop-shadow">{c.city}</p>
-                  <p className="text-white/75 text-xs mt-0.5 leading-tight">{c.hook}</p>
+                  <p className="text-white font-display font-black text-xl leading-tight drop-shadow line-clamp-1">{c.city}</p>
+                  <p className="text-white/75 text-xs mt-0.5 leading-tight line-clamp-2">{c.hook}</p>
                 </div>
               </button>
             ))}
@@ -1591,8 +1591,8 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               <div className="absolute inset-0" style={{ background: c.grad, opacity: 0.3 }} />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
-                <p className="text-white font-display font-black text-xl leading-tight drop-shadow">{c.city}</p>
-                <p className="text-white/75 text-xs mt-0.5 leading-tight">{c.sub}</p>
+                <p className="text-white font-display font-black text-xl leading-tight drop-shadow line-clamp-1">{c.city}</p>
+                <p className="text-white/75 text-xs mt-0.5 leading-tight line-clamp-2">{c.sub}</p>
               </div>
             </motion.button>
           ))}

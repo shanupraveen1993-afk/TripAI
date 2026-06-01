@@ -373,7 +373,16 @@ const NON_HOTEL_TYPES = new Set([
   'bank', 'atm', 'finance', 'insurance_agency', 'real_estate_agency',
   'shopping_mall', 'electronics_store', 'clothing_store', 'hardware_store',
   'tourist_attraction', 'museum', 'art_gallery', 'park', 'church', 'mosque', 'temple',
+  // Parking lots, bike/vehicle stores that leak when parking-keyword queries run
+  'parking', 'parking_lot', 'bicycle_rental', 'bicycle_store', 'two_wheeler_store',
+  'vehicle_dealer', 'motorcycle_repair_shop', 'auto_repair',
 ]);
+
+// Place must have at least one of these types OR a hotel keyword in its name
+const HOTEL_POSITIVE_TYPES = new Set([
+  'lodging', 'hotel', 'motel', 'guest_house', 'extended_stay_hotel', 'hostel', 'bed_and_breakfast',
+]);
+const HOTEL_NAME_RE = /\b(hotel|lodge|inn|residency|residencies|guest\s*house|hostel|suites?|palace|mahal|resort|dharma|comforts?|cottage|stay)\b/i;
 
 // Food tags that map to a Google Places includedType — kept for Veg/Pure Veg only
 // Cuisine tags use keyword post-fetch filter instead (more reliable for smaller cities)
@@ -413,7 +422,7 @@ const HOTEL_TAG_VERIFY: Record<string, string[] | null> = {
   'AC Rooms':            ['ac room', 'air conditioned room', 'air-conditioned room', 'centrally air', 'fully ac', 'ac available'],
   'Hot Water':           ['hot water', 'geyser', 'hot shower', 'warm water'],
   'Good WiFi':           ['wifi', 'wi-fi', 'free wifi', 'internet', 'fast wifi'],
-  'Free Parking':        ['parking', 'car park', 'free parking', 'valet', 'garage'],
+  'Car Parking':         ['parking', 'car park', 'free parking', 'valet', 'garage'],
   'Budget Stay':         ['budget', 'affordable', 'cheap', 'economical', 'inexpensive', 'low cost', 'lodge'],
   'Premium Stay':        ['luxury', 'premium', 'five star', '5 star', 'star hotel', 'suite', 'upscale'],
   'Highly Rated':        ['recommend', 'recommended', 'excellent', 'best hotel', 'outstanding', 'top rated'],
@@ -488,7 +497,7 @@ const TAG_TEXT_KEYWORDS: Record<string, string[]> = {
   'Central & Walkable':  ['city centre', 'main road', 'central', 'town centre', 'walk', 'walkable', 'walking distance', 'minutes away', 'nearby', 'convenient', 'prime location', 'good location', 'great location', 'central location', 'near everything', 'well located', 'located well', 'good connectivity'],
   'City Centre':         ['city', 'centre', 'central', 'city center', 'town', 'main road', 'heart of', 'prime location', 'good location', 'great location'],
   'Easy Parking':        ['parking', 'car park', 'valet', 'garage', 'bike parking', 'two wheeler', 'bike stand', 'vehicle parking', 'parking space', 'ample parking', 'free parking', 'parking available'],
-  'Free Parking':        ['parking', 'car park', 'free parking', 'bike parking', 'two wheeler', 'bike stand', 'vehicle parking', 'parking space', 'ample parking', 'parking available', 'complimentary parking'],
+  'Car Parking':         ['parking', 'car park', 'free parking', 'bike parking', 'two wheeler', 'bike stand', 'vehicle parking', 'parking space', 'ample parking', 'parking available', 'complimentary parking'],
   'Walkable Distance':   ['walk', 'walking', 'walkable', 'nearby', 'close to', 'minutes walk', 'walking distance'],
   'Quiet & Peaceful':    ['quiet', 'peaceful', 'calm', 'serene', 'tranquil', 'noise-free', 'peaceful stay', 'no noise', 'undisturbed', 'relaxing', 'silent', 'restful'],
   'Budget-Friendly':     ['budget', 'affordable', 'cheap', 'economical', 'inexpensive', 'low cost', 'lodge', 'reasonable', 'worth', 'good price', 'value for money', 'pocket friendly'],
@@ -885,10 +894,10 @@ function scoreAllTagsForHotel(place: any, selectedTags: string[], cityKey: strin
     if (wfHits > 0) { tagEvidence['Good WiFi'] = `"wifi" in ${wfHits} reviews`; const s = findSnippet(wfKws); if (s) tagSnippets['Good WiFi'] = s; }
   }
 
-  // ── FREE PARKING — same logic as Easy Parking ────────────────────────────
-  allTagScores['Free Parking'] = scoreParking.score;
-  if (scoreParking.ev) tagEvidence['Free Parking'] = scoreParking.ev;
-  if (parkSnip) tagSnippets['Free Parking'] = parkSnip;
+  // ── CAR PARKING — same logic as Easy Parking ─────────────────────────────
+  allTagScores['Car Parking'] = scoreParking.score;
+  if (scoreParking.ev) tagEvidence['Car Parking'] = scoreParking.ev;
+  if (parkSnip) tagSnippets['Car Parking'] = parkSnip;
 
   // ── BUDGET STAY — mirrors Budget-Friendly ───────────────────────────────
   allTagScores['Budget Stay'] = allTagScores['Budget-Friendly'] ?? 0.3;
@@ -1062,7 +1071,7 @@ const HOTEL_TAG_SEARCH: Record<string, string> = {
   'AC Rooms':            'hotel air conditioned rooms Thanjavur AC room',
   'Hot Water':           'hotel hot water geyser Thanjavur',
   'Good WiFi':           'hotel wifi internet Thanjavur free wifi',
-  'Free Parking':        'hotel parking free parking Thanjavur car park',
+  'Car Parking':         'hotel car parking Thanjavur',
   'Prompt Service':      'hotel quick service Thanjavur efficient',
   'Good Hospitality':    'best service hotel Thanjavur hospitality welcoming',
   'Highly Recommended':  'most recommended hotel Thanjavur excellent',
@@ -1120,7 +1129,7 @@ const HOTEL_TAG_SHORT_TERM: Record<string, string> = {
   'AC Rooms':            'air conditioned',
   'Hot Water':           'hot water',
   'Good WiFi':           'wifi internet',
-  'Free Parking':        'free parking',
+  'Car Parking':         'car parking',
   'Quiet & Peaceful':    'quiet peaceful',
   'Budget-Friendly':     'budget affordable',
   'Pure Veg Hotel':      'pure veg',
@@ -3518,6 +3527,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin',  '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Cache-Control', 'public, s-maxage=1800, stale-while-revalidate=3600');
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST')   return res.status(405).json({ error: 'Method not allowed' });
 
@@ -3881,13 +3891,17 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
         mergedPool = await fetchPlacesPool(hotelVariants);
       }
 
-      // Strip restaurants, vehicle dealers, and other non-accommodation places + city guard
+      // Strip non-accommodation places + require positive lodging indicator
       const localPool  = filterCityOnly(mergedPool, city);
       const hotelOnly  = localPool.filter(p => {
         const primaryType = (p.primaryType ?? '') as string;
         const types = (p.types ?? []) as string[];
+        const name = (p.displayName?.text ?? '') as string;
         if (primaryType && NON_HOTEL_TYPES.has(primaryType)) return false;
-        return !types.some(t => NON_HOTEL_TYPES.has(t));
+        if (types.some(t => NON_HOTEL_TYPES.has(t))) return false;
+        // Must have a lodging type OR hotel keyword in name — blocks parking lots, bike shops, etc.
+        const hasLodgingType = HOTEL_POSITIVE_TYPES.has(primaryType) || types.some(t => HOTEL_POSITIVE_TYPES.has(t));
+        return hasLodgingType || HOTEL_NAME_RE.test(name);
       });
       const basePool = filterStalePlaces(hotelOnly.length >= 2 ? hotelOnly : localPool)
         .filter(p => (p.rating ?? 0) >= 3.5);
