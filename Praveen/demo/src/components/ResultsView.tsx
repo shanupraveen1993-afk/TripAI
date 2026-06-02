@@ -548,42 +548,22 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
 
         {/* Row 3: CTAs */}
         {(() => {
-          const ctaLockedM = selectedTags.length === 0;
           const mapsHrefM = place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`;
           const bookHrefM = place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`;
 
           if (tab === 'Hotels') {
             return (
               <>
-                {/* Hotels: Map + Book Now */}
+                {/* Hotels: Map + Book Now — always active */}
                 <div className="border-t border-border flex gap-2 px-3 py-2.5">
-                  {ctaLockedM ? (
-                    <>
-                      <button
-                        onClick={() => toast('Select a filter tag above to unlock', 'info')}
-                        className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold border border-border text-muted bg-bg-app active:scale-[0.97] shrink-0"
-                      >
-                        <Map className="w-3.5 h-3.5 shrink-0" />Map
-                      </button>
-                      <button
-                        onClick={() => toast('Select a filter tag above to unlock', 'info')}
-                        className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold bg-brand/25 text-brand/70 active:scale-[0.97]"
-                      >
-                        <ExternalLink className="w-3.5 h-3.5 shrink-0" />Book Now
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <a href={mapsHrefM} target="_blank" rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold border border-border text-body active:scale-[0.97] shrink-0">
-                        <Map className="w-3.5 h-3.5 shrink-0" />Map
-                      </a>
-                      <a href={bookHrefM} target="_blank" rel="noopener noreferrer"
-                        className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold bg-brand text-white active:scale-[0.97]">
-                        <ExternalLink className="w-3.5 h-3.5 shrink-0" />Book Now
-                      </a>
-                    </>
-                  )}
+                  <a href={mapsHrefM} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold border border-border text-body active:scale-[0.97] shrink-0">
+                    <Map className="w-3.5 h-3.5 shrink-0" />Map
+                  </a>
+                  <a href={bookHrefM} target="_blank" rel="noopener noreferrer"
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold bg-brand text-white active:scale-[0.97]">
+                    <ExternalLink className="w-3.5 h-3.5 shrink-0" />Book Now
+                  </a>
                 </div>
                 {/* Hotels: Detailed Analysis — separate row */}
                 <div className="border-t border-border">
@@ -598,26 +578,17 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             );
           }
 
-          /* Food: Map + Detailed Analysis in one row */
+          /* Food: Direction (primary) + Detailed Analysis */
           return (
             <div className="border-t border-border flex gap-2 px-3 py-2.5">
-              {ctaLockedM ? (
-                <button
-                  onClick={() => toast('Select a filter tag above to unlock', 'info')}
-                  className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold border border-border text-muted bg-bg-app active:scale-[0.97] shrink-0"
-                >
-                  <Map className="w-3.5 h-3.5 shrink-0" />Map
-                </button>
-              ) : (
-                <a href={mapsHrefM} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold border border-border text-body active:scale-[0.97] shrink-0">
-                  <Map className="w-3.5 h-3.5 shrink-0" />Map
-                </a>
-              )}
+              <a href={mapsHrefM} target="_blank" rel="noopener noreferrer"
+                className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold bg-brand text-white active:scale-[0.97]">
+                <Navigation className="w-3.5 h-3.5 shrink-0" />Direction
+              </a>
               <button onClick={() => setExpanded(v => !v)}
-                className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-brand border border-brand/30 rounded-lg active:scale-[0.97]">
+                className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-brand border border-brand/30 rounded-lg active:scale-[0.97] shrink-0">
                 <Sparkles className="w-3 h-3 shrink-0" />
-                Detailed Analysis
+                Analysis
                 <ChevronDown className={`w-3 h-3 shrink-0 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
               </button>
             </div>
@@ -650,6 +621,10 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
         <div className="flex-1 min-w-0 px-3 py-3 flex flex-col gap-1.5 cursor-pointer" onClick={() => setExpanded(v => !v)}>
           <div className="flex items-baseline gap-1.5 flex-wrap">
             <h3 className="font-display font-bold text-base text-heading leading-snug tracking-tight line-clamp-1" title={place.name}>{place.name}</h3>
+            {tab === 'Hotels' && (() => {
+              const priceLabel = getHotelPriceLabel(place.googleHotelsPrice, place.priceRange, place.priceLevel);
+              return priceLabel ? <span className="ml-auto text-sm font-bold text-heading shrink-0">{priceLabel}</span> : null;
+            })()}
           </div>
           <div className="flex items-center gap-0.5">
             <StarRating rating={place.rating} size="xs" />
@@ -697,23 +672,31 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                 </div>
               );
             })()}
-            <a
-              href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
-              target="_blank" rel="noopener noreferrer"
-              className="self-start inline-flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-xs font-bold border border-border text-body hover:border-brand hover:text-brand transition-colors active:scale-[0.97]"
-            >
-              <Map className="w-3 h-3 shrink-0" />Map
-            </a>
+            {tab === 'Food' ? (
+              <a
+                href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
+                target="_blank" rel="noopener noreferrer"
+                className="self-start inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold bg-brand text-white active:scale-[0.97]"
+              >
+                <Navigation className="w-3 h-3 shrink-0" />Direction
+              </a>
+            ) : (
+              <a
+                href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
+                target="_blank" rel="noopener noreferrer"
+                className="self-start inline-flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-xs font-bold border border-border text-body hover:border-brand hover:text-brand transition-colors active:scale-[0.97]"
+              >
+                <Map className="w-3 h-3 shrink-0" />Map
+              </a>
+            )}
           </div>
         </div>
 
         {/* Col 3: CTAs — save / book / details */}
         {(() => {
-          const ctaLocked = selectedTags.length === 0;
           const bookHref = place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`;
-          const mapsHref = place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`;
           return (
-            <div className="w-[220px] shrink-0 flex flex-col justify-between px-3 py-3">
+            <div className="w-[200px] shrink-0 flex flex-col justify-between px-3 py-3">
               {/* Save — top-right corner */}
               <div className="flex justify-end">
                 <button
@@ -724,32 +707,15 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                   <Bookmark className={`w-4 h-4 ${bookmarked ? 'fill-brand text-brand' : 'text-muted'}`} />
                 </button>
               </div>
-              {/* Price — big highlighted block above Book Now */}
-              {tab === 'Hotels' && (() => {
-                const priceLabel = getHotelPriceLabel(place.googleHotelsPrice, place.priceRange, place.priceLevel);
-                if (!priceLabel) return null;
-                return (
-                  <div className="flex flex-col items-center gap-0.5 py-2 px-3 rounded-xl bg-brand-softer border border-brand-medium/30">
-                    <span className="text-xl font-black text-brand leading-none">{priceLabel}</span>
-                  </div>
-                );
-              })()}
 
               {/* Book Now (Hotels only) + Detailed Analysis — grouped at bottom */}
               <div className="flex flex-col gap-2">
-                {tab === 'Hotels' && (ctaLocked ? (
-                  <button
-                    onClick={() => toast('Select a filter tag above to unlock', 'info')}
-                    className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold bg-brand/25 text-brand/70 active:scale-[0.97]"
-                  >
-                    Book Now
-                  </button>
-                ) : (
+                {tab === 'Hotels' && (
                   <a href={bookHref} target="_blank" rel="noopener noreferrer"
                     className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold bg-brand text-white active:scale-[0.97]">
                     <ExternalLink className="w-3 h-3 shrink-0" />Book Now
                   </a>
-                ))}
+                )}
                 <button
                   onClick={() => setExpanded(v => !v)}
                   className="w-full flex items-center justify-center gap-1 py-2 text-xs font-semibold text-brand hover:text-brand/70 transition-colors active:scale-[0.97]"
