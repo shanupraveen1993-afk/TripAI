@@ -481,7 +481,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             color={place.photoColor}
             name={place.name}
             photoRef={place.photoRef ?? null}
-            autoLoad={rank <= 2}
+            autoLoad={rank === 1}
           />
           <span className={`absolute top-2 left-2 flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-semibold leading-none ${place.openNow ? 'bg-success/90 text-white' : 'bg-black/60 text-white/80'}`}>
             <span className={`w-1 h-1 rounded-full shrink-0 ${place.openNow ? 'bg-white' : 'bg-white/60'}`} />
@@ -609,13 +609,13 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
       <div className="hidden sm:flex min-h-[140px]">
 
         {/* Col 1: Photo — square, click to expand */}
-        <div className="w-[120px] shrink-0 relative self-stretch cursor-pointer" onClick={() => setExpanded(v => !v)}>
+        <div className="w-[160px] shrink-0 relative self-stretch cursor-pointer" onClick={() => setExpanded(v => !v)}>
           <div className="absolute inset-0">
             <PlacePhoto
               color={place.photoColor}
               name={place.name}
               photoRef={place.photoRef ?? null}
-              autoLoad={rank <= 2}
+              autoLoad={rank === 1}
             />
           </div>
           {/* Open/Closed — top left of photo */}
