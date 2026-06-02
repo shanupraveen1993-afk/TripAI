@@ -3855,12 +3855,10 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
         ? `${filters.searchQuery} in ${city} ${state}`
         : buildHotelQuery(filters);
 
-      // Pool opts: basicFieldsOnly = true → Pro SKU (cheap) for all pool queries
       const poolOpts = {
-        basicFieldsOnly: true,
-        openNow:         apiOpenNow || undefined,
-        center:          cityCenter,
-        noLocationBias:  !!filters.searchQuery,
+        openNow:        apiOpenNow || undefined,
+        center:         cityCenter,
+        noLocationBias: !!filters.searchQuery,
       };
 
       // Fetch strategy — all pool queries use basic fields only (cheap)
@@ -4218,14 +4216,12 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
       : buildFoodQuery(filters);
     const foodNoLocationBias = !!filters.searchQuery;
 
-    // Food pool opts: basicFieldsOnly = true → Pro SKU (cheap)
     const foodPoolOpts: FetchOptions = {
-      basicFieldsOnly: true,
-      minRating:       apiMinRating,
-      openNow:         apiOpenNow || undefined,
-      includedType:    apiIncludedType,
-      center:          cityCenter,
-      noLocationBias:  foodNoLocationBias,
+      minRating:      apiMinRating,
+      openNow:        apiOpenNow || undefined,
+      includedType:   apiIncludedType,
+      center:         cityCenter,
+      noLocationBias: foodNoLocationBias,
     };
 
     const activeFoodTags = (filters.foodTags?.length ?? 0) > 0 ? filters.foodTags! : (filters.foodTag ? [filters.foodTag] : []);
