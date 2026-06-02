@@ -491,7 +491,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
 
         {/* Row 2: Info — tap to expand */}
         <div
-          className="px-3 py-3 flex flex-col gap-1.5 cursor-pointer"
+          className="px-4 py-3 flex flex-col gap-2 cursor-pointer"
           role="button"
           tabIndex={0}
           aria-label={expanded ? 'Collapse details' : 'Expand details'}
@@ -499,7 +499,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && setExpanded(v => !v)}
         >
           <div className="flex items-baseline gap-1.5 flex-wrap pr-9">
-            <h3 className="font-display font-bold text-base text-heading leading-snug tracking-tight line-clamp-1" title={place.name}>{place.name}</h3>
+            <h3 className="font-display font-semibold text-lg text-heading leading-snug tracking-tight line-clamp-1" title={place.name}>{place.name}</h3>
           </div>
           <div className="flex items-center gap-0.5">
             <StarRating rating={place.rating} size="xs" />
@@ -535,7 +535,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             const sentimentMsg = resolveTagVerdictWeb(place.reviews, tab as 'Hotels' | 'Food', isDown, agoToDaysCo);
             return (
               <div className={`rounded-lg px-2 py-1.5 border ${isUp ? 'bg-success-soft border-success-medium/40' : isDown ? 'bg-warning-soft border-warning-medium/40' : 'bg-brand-softer border-brand-soft'}`}>
-                <p className="text-xs leading-snug text-body line-clamp-2">{sentimentMsg}</p>
+                <p className="text-sm leading-normal text-body line-clamp-2">{sentimentMsg}</p>
               </div>
             );
           })()}
@@ -552,8 +552,8 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               <>
                 {/* Price block — Booking.com / Goibibo hierarchy */}
                 <div className="border-t border-border px-3 pt-3 pb-2">
-                  <p className="text-[11px] font-medium text-muted uppercase tracking-wide mb-0.5">per night</p>
-                  <p className="text-xl font-black text-heading leading-none">
+                  <p className="text-xs font-medium text-muted uppercase tracking-wide mb-0.5">per night</p>
+                  <p className="text-2xl font-black text-heading leading-none">
                     {priceLabelM ?? place.priceLevel ?? '—'}
                   </p>
                 </div>
@@ -625,9 +625,9 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
         </div>
 
         {/* Col 2: Info — click to expand */}
-        <div className="flex-1 min-w-0 px-3 py-3 flex flex-col gap-1.5 cursor-pointer" onClick={() => setExpanded(v => !v)}>
+        <div className="flex-1 min-w-0 px-4 py-3 flex flex-col gap-2 cursor-pointer" onClick={() => setExpanded(v => !v)}>
           <div className="flex items-baseline gap-1.5 flex-wrap">
-            <h3 className="font-display font-bold text-base text-heading leading-snug tracking-tight line-clamp-1" title={place.name}>{place.name}</h3>
+            <h3 className="font-display font-semibold text-lg text-heading leading-snug tracking-tight line-clamp-1" title={place.name}>{place.name}</h3>
           </div>
           <div className="flex items-center gap-0.5">
             <StarRating rating={place.rating} size="xs" />
@@ -648,7 +648,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             </div>
           )}
           {/* Sentiment + Map — pinned to bottom of info col to mirror Col 3 layout */}
-          <div className="mt-auto flex flex-col gap-1.5">
+          <div className="mt-auto flex flex-col gap-2">
             {(() => {
               function agoToDaysCo(ago: string): number {
                 const m = ago.match(/(\d+)\s+(day|week|month)/);
@@ -662,7 +662,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               const sentimentMsg = resolveTagVerdictWeb(place.reviews, tab as 'Hotels' | 'Food', isDown, agoToDaysCo);
               return (
                 <div className={`rounded-lg px-2.5 py-2 border ${isUp ? 'bg-success-soft border-success-medium/40' : isDown ? 'bg-warning-soft border-warning-medium/40' : 'bg-brand-softer border-brand-soft'}`}>
-                  <p className="text-xs leading-snug text-body line-clamp-2">{sentimentMsg}</p>
+                  <p className="text-sm leading-normal text-body line-clamp-2">{sentimentMsg}</p>
                 </div>
               );
             })()}
@@ -711,8 +711,8 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                     <>
                       {displayPrice && (
                         <div className="text-center">
-                          <p className="text-[11px] font-medium text-muted uppercase tracking-wide mb-0.5">per night</p>
-                          <p className="text-xl font-black text-heading leading-none">{displayPrice}</p>
+                          <p className="text-xs font-medium text-muted uppercase tracking-wide mb-0.5">per night</p>
+                          <p className="text-2xl font-black text-heading leading-none">{displayPrice}</p>
                         </div>
                       )}
                       <a href={bookHref} target="_blank" rel="noopener noreferrer"
@@ -764,7 +764,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                       return pct !== null ? (
                         <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-white border border-brand-medium/40">
                           <ThumbsUp className="w-3.5 h-3.5 text-brand shrink-0" />
-                          <span className="text-xs font-semibold text-heading">
+                          <span className="text-sm font-semibold text-heading">
                             {pct}% of guests rated 4★ or higher
                           </span>
                         </div>
@@ -787,7 +787,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                       return (
                         <div className="flex items-start gap-2 px-2.5 py-1.5 rounded-lg bg-white border border-brand-medium/40">
                           <Star className="w-3.5 h-3.5 fill-warning-strong text-warning-strong shrink-0 mt-0.5" />
-                          <span className="text-xs font-semibold text-heading leading-snug">{avg.toFixed(1)} avg · {lbl}</span>
+                          <span className="text-sm font-semibold text-heading leading-snug">{avg.toFixed(1)} avg · {lbl}</span>
                         </div>
                       );
                     })()}
@@ -822,7 +822,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                     </div>
                     <span className="text-xs font-bold uppercase tracking-wide text-warning-strong">What to Be Aware Of</span>
                   </div>
-                  <p className="text-xs text-body leading-relaxed">
+                  <p className="text-sm text-body leading-relaxed">
                     {place.aiDetail?.caveat || place.cautionNote}
                   </p>
                 </div>
@@ -891,7 +891,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                               {r.stars === 4 && <span className="text-xs font-semibold text-warning-strong bg-warning-soft px-1.5 py-0.5 rounded-full border border-warning-medium/40">✓ Liked it</span>}
                             </div>
                           </div>
-                          <p className="text-xs text-body leading-relaxed line-clamp-3">
+                          <p className="text-sm text-body leading-relaxed line-clamp-3">
                             "{highlightKeywords(r.text, [...(r.highlight ? [r.highlight] : []), ...kws])}"
                           </p>
                           <p className="text-xs text-muted">{r.ago} · via Google</p>
@@ -911,7 +911,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                     </div>
                     <span className="text-xs font-bold uppercase tracking-wide text-brand">Insider Tip</span>
                   </div>
-                  <p className="text-xs text-body leading-relaxed">{place.aiDetail.insiderTip}</p>
+                  <p className="text-sm text-body leading-relaxed">{place.aiDetail.insiderTip}</p>
                 </div>
               )}
 

@@ -1374,7 +1374,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       <div className="relative z-10 bg-surface rounded-2xl border border-border/60 shadow-sm p-4">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <h2 className="font-display font-bold text-lg text-heading tracking-tight">Plan your visit</h2>
+            <h2 className="font-display font-black text-2xl text-heading tracking-tight">Plan your visit</h2>
             <p className="text-sm text-muted mt-0.5">Tap a card — AI builds your shortlist</p>
           </div>
         </div>
@@ -1398,7 +1398,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                   onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent rounded-2xl" />
                 <div className="absolute bottom-0 left-0 right-0 p-3 z-10">
-                  <p className="text-white font-display font-black text-sm leading-tight drop-shadow line-clamp-1">{item.label}</p>
+                  <p className="text-white font-sans font-black text-sm leading-tight drop-shadow line-clamp-1">{item.label}</p>
                   <p className="text-white/70 text-xs mt-0.5 leading-tight line-clamp-2">{item.desc}</p>
                 </div>
               </motion.button>
@@ -1447,7 +1447,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                   onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent rounded-2xl" />
                 <div className="absolute bottom-0 left-0 right-0 p-3 z-10">
-                  <p className="text-white font-display font-black text-sm leading-tight drop-shadow line-clamp-1">{item.label}</p>
+                  <p className="text-white font-sans font-black text-sm leading-tight drop-shadow line-clamp-1">{item.label}</p>
                   <p className="text-white/70 text-xs mt-0.5 leading-tight line-clamp-2">{item.desc}</p>
                 </div>
               </motion.button>
