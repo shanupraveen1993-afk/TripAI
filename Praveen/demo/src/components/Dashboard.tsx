@@ -1306,7 +1306,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         <>
           {/* Popular searches */}
           <div className="relative z-10">
-            <p className="text-xs font-normal text-muted mb-2 flex items-center gap-1.5">
+            <p className="text-xs font-semibold text-heading mb-2 flex items-center gap-1.5">
               <Search className="w-3 h-3" /> People also search for
             </p>
             <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 no-scrollbar [mask-image:linear-gradient(to_right,black_calc(100%-40px),transparent)]">
@@ -1327,7 +1327,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
           {/* Recent searches — filtered to active tab */}
           {recentSearches.filter(s => s.tab === activeTab).length > 0 && (
             <div className="relative z-10">
-              <p className="text-xs font-semibold text-brand mb-2 flex items-center gap-1.5">
+              <p className="text-xs font-semibold text-heading mb-2 flex items-center gap-1.5">
                 <Clock className="w-3 h-3" /> Recent
               </p>
               <div className="flex flex-wrap gap-1.5">
@@ -1344,9 +1344,9 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                         ...(s.tag && s.tab === 'Food'   ? { foodTag:  s.tag } : {}),
                       });
                     }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-brand/30 bg-brand/8 text-xs font-semibold text-brand hover:bg-brand/15 hover:border-brand/50 transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-surface text-xs font-medium text-body hover:border-brand hover:text-brand transition-colors min-h-[36px]"
                   >
-                    <Clock className="w-3 h-3 shrink-0" />
+                    <Clock className="w-3 h-3 text-muted shrink-0" />
                     {s.tag ?? s.destination}
                   </button>
                 ))}
