@@ -491,7 +491,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
 
         {/* Row 2: Info — tap to expand */}
         <div
-          className="px-4 py-3 flex flex-col gap-2 cursor-pointer"
+          className="px-4 py-3.5 flex flex-col gap-2.5 cursor-pointer"
           role="button"
           tabIndex={0}
           aria-label={expanded ? 'Collapse details' : 'Expand details'}
@@ -500,12 +500,6 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
         >
           <div className="flex items-center gap-2 flex-wrap pr-9">
             <h3 className="font-display font-semibold text-lg text-heading leading-snug tracking-tight line-clamp-1 flex-1" title={place.name}>{place.name}</h3>
-            {tab === 'Hotels' && (() => {
-              const pl = getHotelPriceLabel(place.googleHotelsPrice, place.priceRange, place.priceLevel);
-              return (pl ?? place.priceLevel)
-                ? <span className="text-base font-black text-heading shrink-0 tabular-nums">{pl ?? place.priceLevel}</span>
-                : null;
-            })()}
           </div>
           <div className="flex items-center gap-0.5">
             <StarRating rating={place.rating} size="xs" />
@@ -547,26 +541,35 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           })()}
         </div>
 
-        {/* Row 3: CTAs */}
+        {/* Row 3: Price (Hotels) + CTAs */}
         {(() => {
           const mapsHrefM = place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`;
           const bookHrefM = place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`;
 
           if (tab === 'Hotels') {
+            const plM = getHotelPriceLabel(place.googleHotelsPrice, place.priceRange, place.priceLevel);
             return (
               <>
-                {/* Map + Book Now */}
-                <div className="border-t border-border flex gap-2 px-3 py-2.5">
-                  <a href={mapsHrefM} target="_blank" rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border border-border text-body active:scale-[0.97] shrink-0">
-                    <Map className="w-3.5 h-3.5 shrink-0" />Map
-                  </a>
-                  <a href={bookHrefM} target="_blank" rel="noopener noreferrer"
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold bg-brand text-white active:scale-[0.97]">
-                    <ExternalLink className="w-3.5 h-3.5 shrink-0" />Book Now
-                  </a>
+                {/* Price + Map + Book Now */}
+                <div className="border-t border-border">
+                  {(plM ?? place.priceLevel) && (
+                    <div className="px-4 pt-3 pb-1 flex items-baseline gap-1.5">
+                      <span className="text-xl font-black text-heading tabular-nums leading-tight">{plM ?? place.priceLevel}</span>
+                      {plM && <span className="text-xs text-muted font-medium">/night</span>}
+                    </div>
+                  )}
+                  <div className="flex gap-2 px-3 pb-3 pt-2">
+                    <a href={mapsHrefM} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-bold border border-border text-body active:scale-[0.97] shrink-0">
+                      <Map className="w-3.5 h-3.5 shrink-0" />Map
+                    </a>
+                    <a href={bookHrefM} target="_blank" rel="noopener noreferrer"
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-sm font-bold bg-brand text-white active:scale-[0.97] shadow-sm">
+                      <ExternalLink className="w-3.5 h-3.5 shrink-0" />Book Now
+                    </a>
+                  </div>
                 </div>
-                {/* Hotels: Detailed Analysis — separate row */}
+                {/* Detailed Analysis */}
                 <div className="border-t border-border">
                   <button onClick={() => setExpanded(v => !v)}
                     className="w-full flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-brand active:scale-[0.97] min-h-[44px]">
@@ -579,12 +582,12 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             );
           }
 
-          /* Food: Direction (primary, full-width) → Detailed Analysis below */
+          /* Food: Direction → Detailed Analysis */
           return (
             <>
               <div className="border-t border-border px-3 py-2.5">
                 <a href={mapsHrefM} target="_blank" rel="noopener noreferrer"
-                  className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold bg-brand text-white active:scale-[0.97]">
+                  className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-sm font-bold bg-brand text-white active:scale-[0.97] shadow-sm">
                   <Navigation className="w-3.5 h-3.5 shrink-0" />Direction
                 </a>
               </div>
@@ -603,7 +606,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
       </div>
 
       {/* ══ DESKTOP CARD LAYOUT (≥ sm) ══ */}
-      <div className="hidden sm:flex min-h-[120px]">
+      <div className="hidden sm:flex min-h-[140px]">
 
         {/* Col 1: Photo — square, click to expand */}
         <div className="w-[120px] shrink-0 relative self-stretch cursor-pointer" onClick={() => setExpanded(v => !v)}>
@@ -623,15 +626,9 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
         </div>
 
         {/* Col 2: Info — click to expand */}
-        <div className="flex-1 min-w-0 px-4 py-3 flex flex-col gap-2 cursor-pointer" onClick={() => setExpanded(v => !v)}>
+        <div className="flex-1 min-w-0 px-5 py-4 flex flex-col gap-2.5 cursor-pointer" onClick={() => setExpanded(v => !v)}>
           <div className="flex items-center gap-2 flex-wrap">
             <h3 className="font-display font-semibold text-lg text-heading leading-snug tracking-tight line-clamp-1 flex-1" title={place.name}>{place.name}</h3>
-            {tab === 'Hotels' && (() => {
-              const pl = getHotelPriceLabel(place.googleHotelsPrice, place.priceRange, place.priceLevel);
-              return (pl ?? place.priceLevel)
-                ? <span className="text-base font-black text-heading shrink-0 tabular-nums">{pl ?? place.priceLevel}</span>
-                : null;
-            })()}
           </div>
           <div className="flex items-center gap-0.5">
             <StarRating rating={place.rating} size="xs" />
@@ -651,8 +648,8 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               ))}
             </div>
           )}
-          {/* Sentiment + Map — pinned to bottom of info col to mirror Col 3 layout */}
-          <div className="mt-auto flex flex-col gap-2">
+          {/* Sentiment + Map — pinned to bottom of info col */}
+          <div className="mt-auto flex flex-col gap-2.5">
             {(() => {
               function agoToDaysCo(ago: string): number {
                 const m = ago.match(/(\d+)\s+(day|week|month)/);
@@ -665,20 +662,12 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               const isDown = place.trendVerdict === 'declining';
               const sentimentMsg = resolveTagVerdictWeb(place.reviews, tab as 'Hotels' | 'Food', isDown, agoToDaysCo);
               return (
-                <div className={`rounded-lg px-2.5 py-2 border ${isUp ? 'bg-success-soft border-success-medium/40' : isDown ? 'bg-warning-soft border-warning-medium/40' : 'bg-brand-softer border-brand-soft'}`}>
+                <div className={`rounded-lg px-3 py-2.5 border ${isUp ? 'bg-success-soft border-success-medium/40' : isDown ? 'bg-warning-soft border-warning-medium/40' : 'bg-brand-softer border-brand-soft'}`}>
                   <p className="text-sm leading-normal text-body line-clamp-2">{sentimentMsg}</p>
                 </div>
               );
             })()}
-            {tab === 'Food' ? (
-              <a
-                href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
-                target="_blank" rel="noopener noreferrer"
-                className="self-start inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold bg-brand text-white active:scale-[0.97]"
-              >
-                <Navigation className="w-3 h-3 shrink-0" />Direction
-              </a>
-            ) : (
+            {tab === 'Hotels' && (
               <a
                 href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
                 target="_blank" rel="noopener noreferrer"
@@ -694,7 +683,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
         {(() => {
           const bookHref = place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`;
           return (
-            <div className="w-[200px] shrink-0 flex flex-col justify-between px-3 py-3">
+            <div className="w-[200px] shrink-0 flex flex-col justify-between px-4 py-4 border-l border-border">
               {/* Save — top-right corner */}
               <div className="flex justify-end">
                 <button
@@ -706,12 +695,26 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                 </button>
               </div>
 
-              {/* Price + Book Now (Hotels) + Detailed Analysis — Booking.com hierarchy */}
-              <div className="flex flex-col gap-2">
-                {tab === 'Hotels' && (
+              {/* Price + primary CTA + Detailed Analysis */}
+              <div className="flex flex-col gap-2.5">
+                {tab === 'Hotels' && (() => {
+                  const plD = getHotelPriceLabel(place.googleHotelsPrice, place.priceRange, place.priceLevel);
+                  return (plD ?? place.priceLevel) ? (
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-2xl font-black text-heading tabular-nums leading-tight">{plD ?? place.priceLevel}</span>
+                      {plD && <span className="text-xs text-muted font-medium">/night</span>}
+                    </div>
+                  ) : null;
+                })()}
+                {tab === 'Hotels' ? (
                   <a href={bookHref} target="_blank" rel="noopener noreferrer"
-                    className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-sm font-bold bg-brand text-white active:scale-[0.97]">
+                    className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-sm font-bold bg-brand text-white active:scale-[0.97] shadow-sm">
                     <ExternalLink className="w-3 h-3 shrink-0" />Book Now
+                  </a>
+                ) : (
+                  <a href={bookHref} target="_blank" rel="noopener noreferrer"
+                    className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-sm font-bold bg-brand text-white active:scale-[0.97] shadow-sm">
+                    <Navigation className="w-3 h-3 shrink-0" />Direction
                   </a>
                 )}
                 <button
