@@ -1548,8 +1548,8 @@ function buildRecentSentiment(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Hard limit: never show reviews older than 5 months. No fallback to old reviews.
-const MAX_DISPLAY_AGE_MS = 5 * 30.4375 * 24 * 3600 * 1000; // 5 months — hard cap, no fallback
+// Show reviews up to 24 months old — Google only returns 5 most recent so this is rarely hit.
+const MAX_DISPLAY_AGE_MS = 24 * 30.4375 * 24 * 3600 * 1000; // 24 months
 
 function isGenuineReview(r: any): boolean {
   const text = (r.text?.text ?? '').trim();
@@ -1562,14 +1562,14 @@ function isGenuineReview(r: any): boolean {
 
 function filterReviewsForDisplay(reviews: any[]): any[] {
   const now = Date.now();
-  // Hard recency filter — no fallback. Reviews older than 5 months never show.
+  // Include reviews within 24 months; include undated reviews (no publishTime = keep)
   const recent = reviews.filter(r => {
-    if (!r.publishTime) return false; // no date = exclude
+    if (!r.publishTime) return true;
     return (now - new Date(r.publishTime).getTime()) < MAX_DISPLAY_AGE_MS;
   });
-  // Strip fake/generic reviews; fall back to recent (not old) if too few genuine
+  // Prefer genuine reviews; fall back to all recent if none pass the genuine check
   const genuine = recent.filter(isGenuineReview);
-  return genuine.length >= 1 ? genuine : recent;
+  return genuine.length >= 1 ? genuine : recent.length >= 1 ? recent : reviews;
 }
 
 // REVIEW SORT — unified sort used for all UI review display and Gemini context.
@@ -4000,12 +4000,15 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
         finalCandidates = [...finalCandidates, ...padItems];
       }
 
-      // Enrich top 20 with full Atmosphere details (reviews, photos, booleans)
-      // Only these 20 pay the Atmosphere SKU rate — pool queries were basic/cheap
+      // Enrich top 20: top 5 get photos (1 photo ref per result), rest get reviews/booleans only
       const top20 = finalCandidates.slice(0, 20);
-      const top20Ids = top20.map(c => c.place.id).filter(Boolean) as string[];
-      const detailsMap = await fetchPlaceDetailsBatch(top20Ids, true);
-      // Merge full details back — if detail fetch fails for a place, keep basic data
+      const top5Ids   = top20.slice(0,  5).map(c => c.place.id).filter(Boolean) as string[];
+      const rest15Ids = top20.slice(5, 20).map(c => c.place.id).filter(Boolean) as string[];
+      const [photoMap, noPhotoMap] = await Promise.all([
+        fetchPlaceDetailsBatch(top5Ids,   true),   // photos for top 5 only
+        fetchPlaceDetailsBatch(rest15Ids, false),  // reviews + booleans, no photos
+      ]);
+      const detailsMap = new Map([...noPhotoMap, ...photoMap]);
       const enriched = top20.map(c => ({
         ...c,
         place: detailsMap.get(c.place.id) ? { ...c.place, ...detailsMap.get(c.place.id) } : c.place,
@@ -4045,9 +4048,12 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
         const matchScore = (p._matchScore    ?? 100) as number;  // 0-100 match %
         const fLayer     = 1 as const;
 
-        // Keywords from ALL selected + matched tags — catches every synonym across both tags
+        // Keywords from selected + matched tags; fall back to place's own type tags if both empty
+        const kTagSource = selectedTags.length > 0 || mTags.length > 0
+          ? [...selectedTags, ...mTags]
+          : (p.types ?? []).slice(0, 3).map((t: string) => t.replace(/_/g, ' '));
         const allHotelKws: string[] = [...new Set(
-          [...selectedTags, ...mTags].flatMap(t => (TAG_TEXT_KEYWORDS[t] ?? []).map((k: string) => k.toLowerCase()))
+          kTagSource.flatMap((t: string) => (TAG_TEXT_KEYWORDS[t] ?? [t.toLowerCase()]).map((k: string) => k.toLowerCase()))
         )];
         const displayReviews = filterReviewsForDisplay(p.reviews ?? []);
         const allSortedReviews = sortReviewsForDisplay(displayReviews, allHotelKws);
@@ -4312,10 +4318,15 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
     const qualified    = filterScored.filter(({ place }) => (place.userRatingCount ?? 0) >= 5);
     const scoredToRank = qualified.length >= 5 ? qualified : filterScored;
 
-    // Enrich top 20 food results with full Atmosphere details (reviews, photos, booleans)
-    const top20Food    = scoredToRank.slice(0, 20);
-    const top20FoodIds = top20Food.map(s => s.place.id).filter(Boolean) as string[];
-    const foodDetailsMap = await fetchPlaceDetailsBatch(top20FoodIds, false);
+    // Enrich top 20 food: top 5 get photos, rest get reviews/booleans only
+    const top20Food      = scoredToRank.slice(0, 20);
+    const top5FoodIds    = top20Food.slice(0,  5).map(s => s.place.id).filter(Boolean) as string[];
+    const rest15FoodIds  = top20Food.slice(5, 20).map(s => s.place.id).filter(Boolean) as string[];
+    const [foodPhotoMap, foodNoPhotoMap] = await Promise.all([
+      fetchPlaceDetailsBatch(top5FoodIds,   true),   // photos for top 5
+      fetchPlaceDetailsBatch(rest15FoodIds, false),  // reviews + booleans, no photos
+    ]);
+    const foodDetailsMap = new Map([...foodNoPhotoMap, ...foodPhotoMap]);
     const enrichedFood = top20Food.map(s => ({
       ...s,
       place: foodDetailsMap.get(s.place.id) ? { ...s.place, ...foodDetailsMap.get(s.place.id) } : s.place,
@@ -4327,7 +4338,13 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
     const rankedAi = await geminiRankAndAnalyse(placesToRank, tab, filters, placeScores);
     const sorted          = [...rankedAi].sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99));
     const geminiOrderedF  = sorted.map((ai: any) => placesToRank[ai.originalIdx ?? 0] ?? placesToRank[0]);
-    const reorderedPlaces = pinNameMatchToTop(geminiOrderedF, filters.searchQuery ?? '');
+    let reorderedPlaces = pinNameMatchToTop(geminiOrderedF, filters.searchQuery ?? '');
+    // Guarantee minimum 5 results — pad from placesToRank if Gemini returned fewer
+    if (reorderedPlaces.length < 5) {
+      const included = new Set(reorderedPlaces.map((p: any) => p.id ?? ''));
+      const pad = placesToRank.filter((p: any) => !included.has(p.id ?? '')).slice(0, 5 - reorderedPlaces.length);
+      reorderedPlaces = [...reorderedPlaces, ...pad];
+    }
 
     const buildPlaceResult = (p: any, ai: any, globalIdx: number) => {
       const evidence = p._matchEvidence as { keyword: string; snippet: string | null; source: string } | undefined;
