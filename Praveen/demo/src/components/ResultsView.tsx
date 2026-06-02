@@ -492,15 +492,6 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             <StarRating rating={place.rating} size="xs" />
             <span className="text-xs text-muted ml-0.5">(<span className="tabular-nums">{place.reviewCount.toLocaleString()}</span>)</span>
           </div>
-          {tab === 'Hotels' && (() => {
-            const priceLabel = getHotelPriceLabel(place.googleHotelsPrice, place.priceRange, place.priceLevel);
-            if (!priceLabel) return null;
-            return (
-              <div className="flex items-baseline gap-1 mt-0.5">
-                <span className="text-lg font-black text-brand leading-none">{priceLabel}</span>
-              </div>
-            );
-          })()}
           {(confirmed.length > 0 || unconfirmed.length > 0) && (
             <div className="flex gap-1 flex-wrap">
               {confirmed.slice(0, 2).map((t, i) => (
@@ -515,15 +506,6 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               {unconfirmed.slice(0, 1).map(t => (
                 <span key={t} className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-medium border bg-bg-app border-border-medium text-muted">~{t}</span>
               ))}
-            </div>
-          )}
-          {/* Filter evidence — shows highlighted review quote when a tag filter is active */}
-          {selectedTags.length > 0 && place.filterVerification && (
-            <div className="flex items-start gap-1.5 px-2 py-1.5 rounded-lg bg-brand-softer border border-brand-medium/30">
-              <CheckCircle className="w-3 h-3 text-brand shrink-0 mt-0.5" />
-              <p className="text-xs text-brand leading-snug line-clamp-2">
-                {highlightKeywords(place.filterVerification, reviewKeywords)}
-              </p>
             </div>
           )}
           {/* Sentiment — 2 lines so the AI summary is readable */}
@@ -552,10 +534,17 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           const bookHrefM = place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`;
 
           if (tab === 'Hotels') {
+            const priceLabelM = getHotelPriceLabel(place.googleHotelsPrice, place.priceRange, place.priceLevel);
             return (
               <>
-                {/* Hotels: Map + Book Now — always active */}
-                <div className="border-t border-border flex gap-2 px-3 py-2.5">
+                {/* Hotels: Price above buttons — competitor pattern (Booking.com / Goibibo) */}
+                {priceLabelM && (
+                  <div className="border-t border-border px-3 pt-2.5 pb-0 flex items-baseline gap-1">
+                    <span className="text-xl font-black text-heading leading-none">{priceLabelM}</span>
+                  </div>
+                )}
+                {/* Hotels: Map + Book Now */}
+                <div className={`${priceLabelM ? '' : 'border-t border-border '}flex gap-2 px-3 py-2.5`}>
                   <a href={mapsHrefM} target="_blank" rel="noopener noreferrer"
                     className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold border border-border text-body active:scale-[0.97] shrink-0">
                     <Map className="w-3.5 h-3.5 shrink-0" />Map
@@ -621,10 +610,6 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
         <div className="flex-1 min-w-0 px-3 py-3 flex flex-col gap-1.5 cursor-pointer" onClick={() => setExpanded(v => !v)}>
           <div className="flex items-baseline gap-1.5 flex-wrap">
             <h3 className="font-display font-bold text-base text-heading leading-snug tracking-tight line-clamp-1" title={place.name}>{place.name}</h3>
-            {tab === 'Hotels' && (() => {
-              const priceLabel = getHotelPriceLabel(place.googleHotelsPrice, place.priceRange, place.priceLevel);
-              return priceLabel ? <span className="ml-auto text-sm font-bold text-heading shrink-0">{priceLabel}</span> : null;
-            })()}
           </div>
           <div className="flex items-center gap-0.5">
             <StarRating rating={place.rating} size="xs" />
@@ -642,15 +627,6 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                   ~{t}
                 </span>
               ))}
-            </div>
-          )}
-          {/* Filter evidence — shows highlighted review quote when a tag filter is active */}
-          {selectedTags.length > 0 && place.filterVerification && (
-            <div className="flex items-start gap-1.5 px-2.5 py-1.5 rounded-lg bg-brand-softer border border-brand-medium/30">
-              <CheckCircle className="w-3 h-3 text-brand shrink-0 mt-0.5" />
-              <p className="text-xs text-brand leading-snug line-clamp-2">
-                {highlightKeywords(place.filterVerification, reviewKeywords)}
-              </p>
             </div>
           )}
           {/* Sentiment + Map — pinned to bottom of info col to mirror Col 3 layout */}
@@ -708,14 +684,22 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                 </button>
               </div>
 
-              {/* Book Now (Hotels only) + Detailed Analysis — grouped at bottom */}
+              {/* Price + Book Now (Hotels) + Detailed Analysis — grouped at bottom */}
               <div className="flex flex-col gap-2">
-                {tab === 'Hotels' && (
-                  <a href={bookHref} target="_blank" rel="noopener noreferrer"
-                    className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold bg-brand text-white active:scale-[0.97]">
-                    <ExternalLink className="w-3 h-3 shrink-0" />Book Now
-                  </a>
-                )}
+                {tab === 'Hotels' && (() => {
+                  const priceLabel = getHotelPriceLabel(place.googleHotelsPrice, place.priceRange, place.priceLevel);
+                  return (
+                    <>
+                      {priceLabel && (
+                        <span className="text-2xl font-black text-heading text-center leading-none">{priceLabel}</span>
+                      )}
+                      <a href={bookHref} target="_blank" rel="noopener noreferrer"
+                        className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold bg-brand text-white active:scale-[0.97]">
+                        <ExternalLink className="w-3 h-3 shrink-0" />Book Now
+                      </a>
+                    </>
+                  );
+                })()}
                 <button
                   onClick={() => setExpanded(v => !v)}
                   className="w-full flex items-center justify-center gap-1 py-2 text-xs font-semibold text-brand hover:text-brand/70 transition-colors active:scale-[0.97]"
