@@ -3,15 +3,15 @@ import { useRouter } from "expo-router";
 import { Search, MapPin, Star, ShieldCheck, Droplets, Zap, Hammer, Paintbrush, Building2, Layers, Wrench, Bike, CircleDot, Phone } from "lucide-react-native";
 
 const SERVICES = [
-  { id: "plumbing",   icon: Droplets,   label: "Plumbing",    color: "#0056D2", bg: "#EBF0FF", route: "/(customer)/plumbing" },
-  { id: "electrical", icon: Zap,        label: "Electrical",  color: "#D97706", bg: "#FEF3C7", route: "/(customer)/providers" },
-  { id: "carpentry",  icon: Hammer,     label: "Carpentry",   color: "#92400E", bg: "#FDF3E7", route: "/(customer)/providers" },
-  { id: "painting",   icon: Paintbrush, label: "Painting",    color: "#BE185D", bg: "#FCE7F3", route: "/(customer)/providers" },
-  { id: "civil",      icon: Building2,  label: "Civil Mason", color: "#475569", bg: "#F1F5F9", route: "/(customer)/providers" },
-  { id: "tile",       icon: Layers,     label: "Tile Mason",  color: "#15767E", bg: "#D1EDEF", route: "/(customer)/providers" },
-  { id: "appliance",  icon: Wrench,     label: "Appliance",   color: "#4338CA", bg: "#EEF2FF", route: "/(customer)/providers" },
-  { id: "bike",       icon: Bike,       label: "Bike Mech",   color: "#DC2626", bg: "#FEF2F2", route: "/(customer)/providers" },
-  { id: "puncture",   icon: CircleDot,  label: "Puncture",    color: "#57534E", bg: "#F5F5F4", route: "/(customer)/providers" },
+  { id: "plumbing",   icon: Droplets,   label: "Plumbing",    color: "#0056D2", bg: "#EBF0FF", route: "/(customer)/plumbing", active: true },
+  { id: "electrical", icon: Zap,        label: "Electrical",  color: "#D97706", bg: "#FEF3C7", route: "/(customer)/providers", active: false },
+  { id: "carpentry",  icon: Hammer,     label: "Carpentry",   color: "#92400E", bg: "#FDF3E7", route: "/(customer)/providers", active: false },
+  { id: "painting",   icon: Paintbrush, label: "Painting",    color: "#BE185D", bg: "#FCE7F3", route: "/(customer)/providers", active: false },
+  { id: "civil",      icon: Building2,  label: "Civil Mason", color: "#475569", bg: "#F1F5F9", route: "/(customer)/providers", active: false },
+  { id: "tile",       icon: Layers,     label: "Tile Mason",  color: "#15767E", bg: "#D1EDEF", route: "/(customer)/providers", active: false },
+  { id: "appliance",  icon: Wrench,     label: "Appliance",   color: "#4338CA", bg: "#EEF2FF", route: "/(customer)/providers", active: false },
+  { id: "bike",       icon: Bike,       label: "Bike Mech",   color: "#DC2626", bg: "#FEF2F2", route: "/(customer)/providers", active: false },
+  { id: "puncture",   icon: CircleDot,  label: "Puncture",    color: "#57534E", bg: "#F5F5F4", route: "/(customer)/providers", active: false },
 ];
 
 export default function CustomerHomeScreen() {
@@ -73,17 +73,23 @@ export default function CustomerHomeScreen() {
             <Text className="text-appbar-bg text-xs font-semibold">View All</Text>
           </View>
           <View className="flex-row flex-wrap" style={{ gap: 10 }}>
-            {SERVICES.map(({ id, icon: Icon, label, color, bg, route }) => (
+            {SERVICES.map(({ id, icon: Icon, label, color, bg, route, active }) => (
               <TouchableOpacity
                 key={id}
                 className="items-center justify-center bg-surface-container-lowest rounded-xl py-3.5 border border-outline-variant"
-                style={{ width: "30.5%", shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.03, shadowRadius: 3, elevation: 1 }}
-                onPress={() => router.push(route as any)}
+                style={{ width: "30.5%", shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.03, shadowRadius: 3, elevation: 1, opacity: active ? 1 : 0.5 }}
+                onPress={() => active && router.push(route as any)}
+                activeOpacity={active ? 0.7 : 1}
               >
                 <View className="w-12 h-12 rounded-full items-center justify-center mb-2.5" style={{ backgroundColor: bg }}>
                   <Icon color={color} size={22} />
                 </View>
                 <Text className="text-on-surface text-xs font-semibold text-center">{label}</Text>
+                {!active && (
+                  <View className="mt-1 rounded-full px-2 py-0.5" style={{ backgroundColor: "#F0F0F0" }}>
+                    <Text style={{ fontSize: 9, color: "#888", fontWeight: "600" }}>Coming Soon</Text>
+                  </View>
+                )}
               </TouchableOpacity>
             ))}
           </View>
