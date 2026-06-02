@@ -385,12 +385,11 @@ function scoreReviewForTime(text: string, timeSlot: string): number {
   return kws.reduce((n, kw) => n + (lower.includes(kw) ? 1 : 0), 0);
 }
 
+// Returns the price NUMBER only (no /night suffix) — caller adds the "per night" label
 function getHotelPriceLabel(googleHotelsPrice?: string, priceRange?: string, priceLevel?: string): string | null {
-  if (googleHotelsPrice) return googleHotelsPrice;
-  if (priceRange) {
-    const base = priceRange.replace(/\/night.*/i, '').trim();
-    return `${base}/night`;
-  }
+  if (googleHotelsPrice) return googleHotelsPrice.replace(/\/night.*/i, '').trim();
+  if (priceRange)        return priceRange.replace(/\/night.*/i, '').trim();
+  if (priceLevel && priceLevel !== 'Free') return priceLevel; // ₹ / ₹₹ / ₹₹₹ / ₹₹₹₹ as fallback
   return null;
 }
 
@@ -537,14 +536,15 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             const priceLabelM = getHotelPriceLabel(place.googleHotelsPrice, place.priceRange, place.priceLevel);
             return (
               <>
-                {/* Hotels: Price above buttons — competitor pattern (Booking.com / Goibibo) */}
-                {priceLabelM && (
-                  <div className="border-t border-border px-3 pt-2.5 pb-0 flex items-baseline gap-1">
-                    <span className="text-xl font-black text-heading leading-none">{priceLabelM}</span>
-                  </div>
-                )}
-                {/* Hotels: Map + Book Now */}
-                <div className={`${priceLabelM ? '' : 'border-t border-border '}flex gap-2 px-3 py-2.5`}>
+                {/* Price block — Booking.com / Goibibo hierarchy */}
+                <div className="border-t border-border px-3 pt-3 pb-2">
+                  <p className="text-[11px] font-medium text-muted uppercase tracking-wide mb-0.5">per night</p>
+                  <p className="text-3xl font-black text-heading leading-none">
+                    {priceLabelM ?? place.priceLevel ?? '—'}
+                  </p>
+                </div>
+                {/* Map + Book Now */}
+                <div className="flex gap-2 px-3 pb-2.5">
                   <a href={mapsHrefM} target="_blank" rel="noopener noreferrer"
                     className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold border border-border text-body active:scale-[0.97] shrink-0">
                     <Map className="w-3.5 h-3.5 shrink-0" />Map
@@ -684,17 +684,21 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                 </button>
               </div>
 
-              {/* Price + Book Now (Hotels) + Detailed Analysis — grouped at bottom */}
+              {/* Price + Book Now (Hotels) + Detailed Analysis — Booking.com hierarchy */}
               <div className="flex flex-col gap-2">
                 {tab === 'Hotels' && (() => {
                   const priceLabel = getHotelPriceLabel(place.googleHotelsPrice, place.priceRange, place.priceLevel);
+                  const displayPrice = priceLabel ?? place.priceLevel ?? null;
                   return (
                     <>
-                      {priceLabel && (
-                        <span className="text-2xl font-black text-heading text-center leading-none">{priceLabel}</span>
+                      {displayPrice && (
+                        <div className="text-center">
+                          <p className="text-[11px] font-medium text-muted uppercase tracking-wide mb-0.5">per night</p>
+                          <p className="text-3xl font-black text-heading leading-none">{displayPrice}</p>
+                        </div>
                       )}
                       <a href={bookHref} target="_blank" rel="noopener noreferrer"
-                        className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold bg-brand text-white active:scale-[0.97]">
+                        className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-sm font-bold bg-brand text-white active:scale-[0.97]">
                         <ExternalLink className="w-3 h-3 shrink-0" />Book Now
                       </a>
                     </>
