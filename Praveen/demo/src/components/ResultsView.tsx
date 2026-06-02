@@ -539,7 +539,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                 {/* Price block — Booking.com / Goibibo hierarchy */}
                 <div className="border-t border-border px-3 pt-3 pb-2">
                   <p className="text-[11px] font-medium text-muted uppercase tracking-wide mb-0.5">per night</p>
-                  <p className="text-3xl font-black text-heading leading-none">
+                  <p className="text-xl font-black text-heading leading-none">
                     {priceLabelM ?? place.priceLevel ?? '—'}
                   </p>
                 </div>
@@ -567,20 +567,24 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             );
           }
 
-          /* Food: Direction (primary) + Detailed Analysis */
+          /* Food: Direction (primary, full-width) → Detailed Analysis below */
           return (
-            <div className="border-t border-border flex gap-2 px-3 py-2.5">
-              <a href={mapsHrefM} target="_blank" rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold bg-brand text-white active:scale-[0.97]">
-                <Navigation className="w-3.5 h-3.5 shrink-0" />Direction
-              </a>
-              <button onClick={() => setExpanded(v => !v)}
-                className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-brand border border-brand/30 rounded-lg active:scale-[0.97] shrink-0">
-                <Sparkles className="w-3 h-3 shrink-0" />
-                Analysis
-                <ChevronDown className={`w-3 h-3 shrink-0 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
-              </button>
-            </div>
+            <>
+              <div className="border-t border-border px-3 py-2.5">
+                <a href={mapsHrefM} target="_blank" rel="noopener noreferrer"
+                  className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold bg-brand text-white active:scale-[0.97]">
+                  <Navigation className="w-3.5 h-3.5 shrink-0" />Direction
+                </a>
+              </div>
+              <div className="border-t border-border">
+                <button onClick={() => setExpanded(v => !v)}
+                  className="w-full flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-brand active:scale-[0.97] min-h-[44px]">
+                  <Sparkles className="w-3 h-3 shrink-0" />
+                  Detailed Analysis
+                  <ChevronDown className={`w-3 h-3 shrink-0 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
+                </button>
+              </div>
+            </>
           );
         })()}
 
@@ -694,7 +698,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                       {displayPrice && (
                         <div className="text-center">
                           <p className="text-[11px] font-medium text-muted uppercase tracking-wide mb-0.5">per night</p>
-                          <p className="text-3xl font-black text-heading leading-none">{displayPrice}</p>
+                          <p className="text-xl font-black text-heading leading-none">{displayPrice}</p>
                         </div>
                       )}
                       <a href={bookHref} target="_blank" rel="noopener noreferrer"
