@@ -178,7 +178,7 @@ function ItineraryPhoto({ stopName, photoRef }: {
   }, [photoRef, stopName]);
 
   if (uri) {
-    return <img src={uri} alt={`${stopName}, Thanjavur`} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />;
+    return <img src={uri} alt={`${stopName}, Thanjavur`} loading="lazy" width="400" height="185" className="absolute inset-0 w-full h-full object-cover" />;
   }
   return <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-active))' }} />;
 }
@@ -213,7 +213,7 @@ function PlacePhoto({ color, name, photoRef, autoLoad }: { color: string; name: 
   if (photoUri) {
     return (
       <div className="w-full h-full overflow-hidden">
-        <img src={photoUri} alt={`${name}, Thanjavur`} loading="lazy" className="w-full h-full object-cover" />
+        <img src={photoUri} alt={`${name}, Thanjavur`} loading="lazy" width="400" height="300" className="w-full h-full object-cover" />
       </div>
     );
   }
@@ -469,7 +469,14 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
       <div className="sm:hidden flex flex-col">
 
         {/* Row 1: Full-width image on top — tap to expand */}
-        <div className="relative h-40 cursor-pointer" onClick={() => setExpanded(v => !v)}>
+        <div
+          className="relative h-40 cursor-pointer"
+          role="button"
+          tabIndex={0}
+          aria-label={expanded ? 'Collapse details' : 'Expand details'}
+          onClick={() => setExpanded(v => !v)}
+          onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && setExpanded(v => !v)}
+        >
           <PlacePhoto
             color={place.photoColor}
             name={place.name}
@@ -483,7 +490,14 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
         </div>
 
         {/* Row 2: Info — tap to expand */}
-        <div className="px-3 py-3 flex flex-col gap-1.5 cursor-pointer" onClick={() => setExpanded(v => !v)}>
+        <div
+          className="px-3 py-3 flex flex-col gap-1.5 cursor-pointer"
+          role="button"
+          tabIndex={0}
+          aria-label={expanded ? 'Collapse details' : 'Expand details'}
+          onClick={() => setExpanded(v => !v)}
+          onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && setExpanded(v => !v)}
+        >
           <div className="flex items-baseline gap-1.5 flex-wrap pr-9">
             <h3 className="font-display font-bold text-base text-heading leading-snug tracking-tight line-clamp-1" title={place.name}>{place.name}</h3>
           </div>

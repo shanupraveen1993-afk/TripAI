@@ -403,7 +403,7 @@ function LocationBar({ value, onChange, placeholder, autoDetect, mockResolvedLoc
       )}
 
       <input
-        type="text"
+        type="search"
         inputMode="search"
         autoComplete="off"
         value={detecting ? '' : value}
