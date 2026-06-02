@@ -1169,7 +1169,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -4 }}
         transition={{ duration: 0.18, ease: 'easeOut' }}
-        className="rounded-xl overflow-hidden relative z-10 bg-surface"
+        className="rounded-xl relative z-10 bg-surface"
         style={{ border: '1px solid var(--color-border)' }}
       >
         {/* Search override — Hotels + Food only */}
