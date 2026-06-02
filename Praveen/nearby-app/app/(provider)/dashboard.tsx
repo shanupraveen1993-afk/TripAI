@@ -1,146 +1,126 @@
-import { ScrollView, View, Text, TouchableOpacity } from "react-native";
-import { useRouter } from "expo-router";
-import { Phone, Star, ShieldCheck, Users, MapPin, BarChart2 } from "lucide-react-native";
+import { useState } from 'react';
+import { ScrollView, View, Text, TouchableOpacity, Image } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Menu, Bell, MapPin, ImageIcon, Star, ShieldCheck, Home, Clock, User } from 'lucide-react-native';
 
-const RECENT_REQUESTS = [
-  { name: "Amit Sharma", service: "Electrician Needed", dist: "2.4 km", online: true },
-  { name: "Priya Patel",  service: "AC Repair",          dist: "0.8 km", online: true },
-  { name: "Dr. V. Rao",   service: "Switchboard",         dist: "5.1 km", online: false },
+const BANNER_URI = 'https://lh3.googleusercontent.com/aida-public/AB6AXuAWqTQ2gUZTRe2Dk3xJnfYe4a72j23nlti8J24cBOzAssyKipM1oegfEtsYMzfhmgIgoTkrb-i5-TCDzvKyNGHDNUU6zfN0VRV96AxfQ9Ghar5F4oFOwDtrfNWMjJ8USpTKLybUxakHxy1Jlm_HZuA6f49cW4XEeVb3DXYPbWAARZTZE-jINtCvIlYze0Zn81pwPZBIhC2bCO37Z4tVJBkZ8OzgdJjBHGckwpTkbCTbgxzjaQgCPnN2jeG0AbAv4VY3tfuAhr8aUXw';
+
+const BOOST_CARDS = [
+  { icon: ImageIcon, title: 'Add photos of past work to get', bold: '3x more calls', cta: 'Add Photos' },
+  { icon: Star,      title: 'Ask for a review to build trust with new customers.', bold: '', cta: 'Request Review' },
+  { icon: ShieldCheck, title: 'Verify your ID to get a verified badge.', bold: '', cta: 'Verify Now' },
 ];
 
-export default function ProviderDashboardScreen() {
+export default function ProviderDashboard() {
   const router = useRouter();
+  const [online, setOnline] = useState(true);
 
   return (
-    <ScrollView className="flex-1 bg-surface" showsVerticalScrollIndicator={false}>
-      {/* Header */}
-      <View
-        className="bg-surface-container-lowest pt-14 pb-4 px-5 flex-row items-center justify-between"
-        style={{ borderBottomWidth: 1, borderBottomColor: "#e7bdb2" }}
-      >
-        <View className="flex-row items-center gap-3">
-          <View className="w-10 h-10 rounded-full bg-surface-container-high overflow-hidden border-2 border-outline-variant items-center justify-center">
-            <Text className="text-on-surface-variant text-base font-bold">R</Text>
-          </View>
-          <Text className="text-appbar-bg text-xl font-bold">Dashboard</Text>
+    <View className="flex-1 bg-surface-off-white">
+      {/* AppBar */}
+      <View className="h-14 flex-row items-center justify-between px-4" style={{ backgroundColor: '#FF4500', position: 'absolute', top: 0, left: 0, right: 0, zIndex: 50 }}>
+        <View className="flex-row items-center" style={{ gap: 12 }}>
+          <TouchableOpacity className="p-1">
+            <Menu size={22} color="#fff" />
+          </TouchableOpacity>
+          <Text className="text-white text-xl font-bold">Nearby</Text>
         </View>
-        <View className="bg-surface-container-low rounded-full px-3 py-1.5 flex-row items-center gap-1.5 border border-outline-variant">
-          <ShieldCheck color="#FF4500" size={14} />
-          <Text className="text-appbar-bg text-xs font-bold">VERIFIED</Text>
-        </View>
+        <TouchableOpacity className="p-1">
+          <Bell size={22} color="#fff" />
+        </TouchableOpacity>
       </View>
 
-      <View className="px-4 pt-4 gap-4 pb-8">
-        {/* Greeting */}
-        <View className="flex-row items-start justify-between">
-          <View>
-            <Text className="text-on-surface-variant text-sm">Welcome back,</Text>
-            <Text className="text-appbar-bg text-3xl font-bold leading-tight">Hi Ramesh</Text>
-          </View>
-        </View>
-
-        {/* Free trial CTA */}
-        <TouchableOpacity
-          className="bg-surface-container-low rounded-xl p-5 overflow-hidden border border-outline-variant"
-          style={{ shadowColor: "#FF4500", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 3 }}
-          onPress={() => router.push("/(provider)/growth-plans" as any)}
-        >
-          <View className="absolute -right-6 -bottom-6 w-28 h-28 rounded-full bg-white/30" />
-          <View className="flex-row items-center justify-between">
-            <View className="flex-1">
-              <Text className="text-on-surface text-base font-bold">180 Days Free Trial</Text>
-              <Text className="text-on-surface-variant text-sm mt-0.5">Enjoy premium features &amp; priority leads</Text>
-            </View>
+      <ScrollView className="flex-1" style={{ marginTop: 56 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 24, paddingBottom: 80, gap: 16 }}>
+        {/* Greeting + Online Toggle */}
+        <View className="flex-row items-center justify-between px-4">
+          <Text className="text-2xl font-medium text-text-primary">Hi Ram</Text>
+          <View className="flex-row items-center" style={{ gap: 10 }}>
+            <Text style={{ fontSize: 14, fontWeight: '600', color: online ? '#FF4500' : '#5d4038' }}>Online</Text>
             <TouchableOpacity
-              className="bg-surface-container-lowest rounded-xl px-4 py-2.5 border border-outline-variant"
-              style={{ shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 3, elevation: 2 }}
-              onPress={() => router.push("/(provider)/growth-plans" as any)}
+              style={{ width: 44, height: 24, borderRadius: 12, backgroundColor: online ? 'rgba(255,69,0,0.2)' : '#e4e2e1', padding: 2 }}
+              onPress={() => setOnline(o => !o)}
+              activeOpacity={0.8}
             >
-              <Text className="text-appbar-bg text-sm font-bold">Check Status</Text>
+              <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: online ? '#FF4500' : '#5d4038', transform: [{ translateX: online ? 20 : 0 }], shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.2, shadowRadius: 2, elevation: 2 }} />
             </TouchableOpacity>
           </View>
-        </TouchableOpacity>
-
-        {/* Stats bento */}
-        <View className="gap-3">
-          {/* Demand card */}
-          <View
-            className="bg-surface-container-lowest rounded-xl p-5 flex-row items-center gap-4 border border-outline-variant"
-            style={{ shadowColor: "#FF4500", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 6, elevation: 1 }}
-          >
-            <View className="w-14 h-14 rounded-full bg-appbar-bg/10 items-center justify-center flex-shrink-0">
-              <Users color="#FF4500" size={28} />
-            </View>
-            <View>
-              <Text className="text-on-surface-variant text-xs font-bold uppercase tracking-widest">Market Demand</Text>
-              <Text className="text-on-surface text-xl font-bold">150+ customers nearby</Text>
-            </View>
-          </View>
-
-          {/* Monthly report */}
-          <View className="bg-surface-container-low rounded-xl p-5 border border-outline-variant">
-            <View className="flex-row items-center justify-between mb-5">
-              <View className="flex-row items-center gap-2">
-                <BarChart2 color="#FF4500" size={20} />
-                <Text className="text-on-surface text-base font-bold">Monthly Report</Text>
-              </View>
-              <Text className="text-appbar-bg text-xs font-bold uppercase tracking-wide">Details</Text>
-            </View>
-            <View className="flex-row">
-              {[
-                { label: "Calls Received", value: "42", color: "#FF4500" },
-                { label: "Missed",          value: "5",  color: "#C62828" },
-                { label: "Messages",        value: "12", color: "#15767E" },
-              ].map(({ label, value, color }) => (
-                <View key={label} className="flex-1 items-center gap-1.5">
-                  <Text className="text-3xl font-bold" style={{ color }}>{value}</Text>
-                  <Text className="text-on-surface-variant text-xs text-center leading-tight">{label}</Text>
-                </View>
-              ))}
-            </View>
-          </View>
         </View>
 
-        {/* Recent Requests */}
-        <View>
-          <View className="flex-row items-center justify-between mb-3">
-            <Text className="text-on-surface text-base font-bold">Recent Requests</Text>
-            <Text className="text-appbar-bg text-xs font-bold">View All</Text>
+        {/* Nearby customers card */}
+        <View className="bg-surface-container-lowest border border-secondary-container rounded-xl p-4 flex-row items-center"
+          style={{ gap: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 3, elevation: 1 }}>
+          <View style={{ padding: 8, borderRadius: 999, backgroundColor: '#fff1ed', alignItems: 'center', justifyContent: 'center' }}>
+            <MapPin size={20} color="#FF4500" fill="#FF4500" />
           </View>
-          <View className="gap-3">
-            {RECENT_REQUESTS.map((r) => (
-              <View
-                key={r.name}
-                className="bg-surface-container-lowest rounded-xl p-4 flex-row items-center justify-between border border-outline-variant"
-                style={{ shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4, elevation: 1 }}
-              >
-                <View className="flex-row items-center gap-3 flex-1">
-                  <View className="relative flex-shrink-0">
-                    <View className="w-12 h-12 rounded-full bg-surface-container-high border-2 border-outline-variant items-center justify-center">
-                      <Text className="text-on-surface text-base font-bold">{r.name[0]}</Text>
-                    </View>
-                    <View
-                      className="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white"
-                      style={{ backgroundColor: r.online ? "#00A389" : "#926f66" }}
-                    />
+          <Text className="text-base text-text-primary">
+            <Text className="font-bold">42</Text> customers are near your location
+          </Text>
+        </View>
+
+        {/* Trial Status */}
+        <View className="bg-surface-container-lowest border border-secondary-container rounded-xl p-4"
+          style={{ gap: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 3, elevation: 1 }}>
+          <View className="flex-row justify-between items-center">
+            <Text className="text-base font-semibold text-text-primary">Your Trial Status</Text>
+            <View style={{ backgroundColor: '#fff1ed', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4 }}>
+              <Text style={{ color: '#FF4500', fontSize: 14, fontWeight: '600' }}>22 days left</Text>
+            </View>
+          </View>
+          <View style={{ height: 8, backgroundColor: '#e4e2e1', borderRadius: 4, overflow: 'hidden' }}>
+            <View style={{ height: '100%', width: '67%', backgroundColor: '#FF4500', borderRadius: 4 }} />
+          </View>
+          <Text className="text-sm text-secondary text-right">Upgrade to extend subscription</Text>
+        </View>
+
+        {/* Boost section */}
+        <View style={{ gap: 10 }}>
+          <Text className="text-base font-semibold text-text-primary px-1">Boost Your Profile</Text>
+
+          {/* Banner */}
+          <View style={{ borderRadius: 12, overflow: 'hidden', height: 128 }}>
+            <Image source={{ uri: BANNER_URI }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+            <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255,69,0,0.6)', paddingHorizontal: 24, justifyContent: 'center' }}>
+              <Text className="text-white text-xl font-bold">Get 3x more leads!</Text>
+            </View>
+          </View>
+
+          {/* Scrollable boost cards */}
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: -16 }} contentContainerStyle={{ paddingHorizontal: 16, gap: 12 }}>
+            {BOOST_CARDS.map(card => (
+              <View key={card.cta} style={{ width: 280, backgroundColor: '#fff', borderRadius: 12, borderWidth: 1, borderColor: '#e4e2e1', padding: 16, height: 160, justifyContent: 'space-between', shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 3, elevation: 1 }}>
+                <View className="flex-row items-start" style={{ gap: 12 }}>
+                  <View style={{ padding: 8, borderRadius: 999, backgroundColor: '#fff1ed' }}>
+                    <card.icon size={20} color="#FF4500" fill="#FF4500" />
                   </View>
-                  <View>
-                    <Text className="text-on-surface text-sm font-bold">{r.name}</Text>
-                    <Text className="text-on-surface-variant text-xs">{r.service} · {r.dist}</Text>
-                  </View>
+                  <Text style={{ flex: 1, fontSize: 16, color: '#1A1A1A', lineHeight: 22 }}>
+                    {card.title}{card.bold ? <Text style={{ fontWeight: '700' }}> {card.bold}</Text> : null}
+                  </Text>
                 </View>
-                <TouchableOpacity
-                  className="w-11 h-11 rounded-full bg-appbar-bg items-center justify-center"
-                  style={{ shadowColor: "#FF4500", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.35, shadowRadius: 4, elevation: 4 }}
-                  onPress={() => router.push("/(provider)/incoming-call" as any)}
-                >
-                  <Phone color="white" size={18} />
+                <TouchableOpacity style={{ borderWidth: 1, borderColor: '#FF4500', borderRadius: 8, paddingVertical: 8, alignItems: 'center' }} activeOpacity={0.8}>
+                  <Text style={{ color: '#FF4500', fontSize: 14, fontWeight: '600' }}>{card.cta}</Text>
                 </TouchableOpacity>
               </View>
             ))}
-          </View>
+          </ScrollView>
         </View>
+      </ScrollView>
+
+      {/* Bottom Nav — Home active */}
+      <View className="flex-row justify-around items-center bg-white border-t border-outline-variant h-16 px-4"
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, shadowColor: '#000', shadowOffset: { width: 0, height: -2 }, shadowOpacity: 0.05, shadowRadius: 4, elevation: 8 }}>
+        <TouchableOpacity className="flex-col items-center" style={{ gap: 2 }}>
+          <Home size={24} color="#FF4500" fill="#FF4500" />
+          <Text className="text-xs font-semibold" style={{ color: '#FF4500' }}>Home</Text>
+        </TouchableOpacity>
+        <TouchableOpacity className="flex-col items-center" style={{ gap: 2 }} onPress={() => router.push('/(provider)/calls')}>
+          <Clock size={24} color="#5d4038" />
+          <Text className="text-xs text-on-surface-variant">History</Text>
+        </TouchableOpacity>
+        <TouchableOpacity className="flex-col items-center" style={{ gap: 2 }} onPress={() => router.push('/(provider)/account')}>
+          <User size={24} color="#5d4038" />
+          <Text className="text-xs text-on-surface-variant">Profile</Text>
+        </TouchableOpacity>
       </View>
-    </ScrollView>
+    </View>
   );
 }

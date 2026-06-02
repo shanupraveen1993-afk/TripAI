@@ -1,145 +1,110 @@
-import { ScrollView, View, Text, TouchableOpacity } from "react-native";
-import { useRouter } from "expo-router";
-import { Search, MapPin, Star, ShieldCheck, Droplets, Zap, Hammer, Paintbrush, Building2, Layers, Wrench, Bike, CircleDot, Phone } from "lucide-react-native";
+import { useState } from 'react';
+import { ScrollView, View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
+import { useRouter } from 'expo-router';
+import { MapPin, ChevronDown, Bell, Search, Home, Clock, User } from 'lucide-react-native';
 
 const SERVICES = [
-  { id: "plumbing",   icon: Droplets,   label: "Plumbing",    color: "#0056D2", bg: "#EBF0FF", route: "/(customer)/plumbing", active: true },
-  { id: "electrical", icon: Zap,        label: "Electrical",  color: "#D97706", bg: "#FEF3C7", route: "/(customer)/providers", active: false },
-  { id: "carpentry",  icon: Hammer,     label: "Carpentry",   color: "#92400E", bg: "#FDF3E7", route: "/(customer)/providers", active: false },
-  { id: "painting",   icon: Paintbrush, label: "Painting",    color: "#BE185D", bg: "#FCE7F3", route: "/(customer)/providers", active: false },
-  { id: "civil",      icon: Building2,  label: "Civil Mason", color: "#475569", bg: "#F1F5F9", route: "/(customer)/providers", active: false },
-  { id: "tile",       icon: Layers,     label: "Tile Mason",  color: "#15767E", bg: "#D1EDEF", route: "/(customer)/providers", active: false },
-  { id: "appliance",  icon: Wrench,     label: "Appliance",   color: "#4338CA", bg: "#EEF2FF", route: "/(customer)/providers", active: false },
-  { id: "bike",       icon: Bike,       label: "Bike Mech",   color: "#DC2626", bg: "#FEF2F2", route: "/(customer)/providers", active: false },
-  { id: "puncture",   icon: CircleDot,  label: "Puncture",    color: "#57534E", bg: "#F5F5F4", route: "/(customer)/providers", active: false },
+  { id: 'plumbing',    label: 'Plumbing',    route: '/(customer)/plumbing', uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCe1NQZr8_BL_lQHBtSetOQcR_spuTtJhcW5j1c9wZo-arg-g0IgWm8yzuAfsaHPN5ajFWHHUt3V0r2KFquHptxlI9m4pXOb1aAGO28IpPKfwmrh5VmMs-qa7-QNx49mgdP6tmOjruKmm4uL4Dv6LWx6ZDJN7bU9Su0fmSL1MANaz92zZwu46bkIZv4n5jXcyYdxd5sgB-Qe7TcwZrQKoENm9P-SMvo8KBYhEI10Q-rOrsDalH5ypCPE-p12tV8jxqqT4W-d9FeESE', active: true },
+  { id: 'electrical',  label: 'Electrical',  route: '/(customer)/providers', uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB_aJ0ID86HOaSsJwEQK-9RgMno5AodOQmFqm4MbVSJKj4EcD8KPY46jD1EJBeJ2mDhYxNJGgLU4ciCzlwALgWwbTdAe5LVJ095KkF59bh2KbHktYxs_Z01aCy7yjvfxSHKMpNHfMNe-JpVHOZXOijUt0UY7tD26BSpzpyNLHjiosAY1KxdUkw9lMdE2Fq7YPE4Eie-e1cFVFGZB_EAQRG05iLwsQl62QoR1YSv2LJilqpZ7Vm2zLcjyt7YELXwV-KB6thOptT85WQ', active: false },
+  { id: 'carpentry',   label: 'Carpentry',   route: '/(customer)/providers', uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuANBmi4CnpDz-P0_xzRUWhWAI3RwM-bRbeTb2wTHFKcxClN72TS9IRwAxeGcHYtUbU7PvqqbFA2saYnWsR-ml9MX80DmTsR6KwDmfkyhsmZWLr0kzC_wfgxep1FCfaO5yjlSdCd7usCWdy5OwKdXRijWfMtYNryLWsJNoaM9ygdmoDEwRoosRV131VHe-WZxpHNGDt38eDsw-RAdbQMD99o8XGSk4AfKRVC3ndELAXZ4mGyJ9wEEfRd6acPsLG9b1wo3DTGx_VBOJY', active: false },
+  { id: 'painting',    label: 'Painting',    route: '/(customer)/providers', uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBmdsMAr75J-wPVPjjI0pHUCp3cuILUz4VcQ1x4PErd7WN4IaCm4WBIJIy53fv3Y6w7Of0sETw94nF3AB6k2LTmmVXObc91nZ62jgTsTielQung2_sRuqDgzDGn9_8zAl0e1O4eCMDKQu5fNjjfFBb3OIbDyPiF4UFvhF12o1I90uMs8B3GKGzovWC19F6VeHZzMakGoW1GRK3BjG7zjXFoab02AvaPi_I6UVUNB92QnRnE9JiuFLABuUZT1ggLDAyub7Vw5ypZKtQ', active: false },
+  { id: 'civil',       label: 'Civil Mason', route: '/(customer)/providers', uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAbrSW-OmVVIKoLmH6If3IXC5amIRrvPNU8UsqqO5n8irQjFJrL7mW4B6elmRYBf2w2Nj4JDu3uwhDDsjWO4-ti9VkdAMq1VZbCk528iNPA8XaDqvtAfNUpZrY9IyMDy7k2XTlqfWHYR4eKE5OVMcueHLWiBnm8LmpbC5_FLj3vbeV0ttRzWDyVWosYRX8IIT9s3HFh9d9PUdWSsIJu_Aa_L4JTegHx52tqa1CN894iGh02rjGGOS1joLENmtshN4e4DVU4YwqBizE', active: false },
+  { id: 'tile',        label: 'Tile Mason',  route: '/(customer)/providers', uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuARLhsfgIPWeeF5WOnhs4uArPnMsjYgAoYPsB2Z4cjZX-B-xXehYJ1N5PWPiXOE-nKyc5YIYUl7fnP4ngR17IwQmplO3t214dUjrHrCZM5q7qSqQw8fCbFBG25cA6OGtR8Wi8bGgPu4-XdliA04lxDuA6-vBZ4gnTD0QGP-3k3RY9diFz5E5vXACbbJdroCqiduJZ1-2GQItkFhhAP4jguxCD9HRwT-GN8BsfWfr4H_RuvKaNBTJdD8oWc42q1pjZGd86iv7Ga9-Qk', active: false },
+  { id: 'appliance',   label: 'Appliance',   route: '/(customer)/providers', uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA2VKdpqesbWjdIQSKIX-KS747Hm_tk17F-buU326SFxMvMdhj1UHDUJxnLBgdRMJ3vsnhu333ngQ0cDQzwvSCcoVvx7UHFPDapaEsG_qPajHTaJpSctbpxD9sr9gpFg_-dMSenerYXShL9Bd9UaGDUDiasEn_-ugP7XKLt-Anbpl1dUJv0mQ-jgdMc5O1wgekbKoZQnekQkiwzCtyZw9xXqT4tmqcyvjoBhMLIKIB1W4ZMSUkvKzNDbIO76BgFYKFyJpBpvnKBA_A', active: false },
+  { id: 'mechanic',    label: 'Mechanic',    route: '/(customer)/providers', uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD4HZOtKGtzRidGW-BE8GIdGU2NcL1RFiTo1WZGWgpQDFOBbt708hT6-oEBb43wRQWM5WTUssvVAHA_1ZkZZ3uPM2trmppg2SS0jHc6O7PAMMZv4uLT6_b1cv56eGkl6Mz8FVhKpIWZLs3uBfdTC9-zyTBGWObtoCW_JU-20FfzqgGFjbJSvmdtJfTlRalvI_E11wiL4q7RdF6eY__GqghHmnTf-jSYzBSEZtSZQWdUEyMeDTxY9VpvX1fcFp4rlus7gAWbpo8AWt8', active: false },
+  { id: 'puncture',    label: 'Puncture',    route: '/(customer)/providers', uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD-PJsMvKBoV-JQHI_kjgmIqZAWPMMAB-7-fEnxtQ47BFkuZ6pIW0UGsSCVEQ2_IhzQExhNGMcWjrx2t5R686mcRxpumeoKS6VFpzhHF8J4-aDjKoVEZE-zHuCveY1TZLDc4RtXFCk4Zc6o6qD8KQCI-glGGo5rSc3MXQ3PBzgMDQ1_BAPYAdk8lx5sHN1BpCcg0OiGoWxcbmxQadBzYhRGFANSoF6TCi8Iyt2hmBIra92m0C7OjBzxXphH1dbI3GTRm_BVv8v-gwE', active: false },
 ];
 
-export default function CustomerHomeScreen() {
+export default function CustomerHome() {
   const router = useRouter();
+  const [search, setSearch] = useState('');
 
   return (
-    <ScrollView className="flex-1 bg-surface" showsVerticalScrollIndicator={false}>
-      {/* Header */}
-      <View className="bg-surface-container-lowest pt-14 pb-4 px-5 flex-row items-center justify-between"
-        style={{ borderBottomWidth: 1, borderBottomColor: "#ffe2db" }}>
-        <View>
-          <Text className="text-on-surface text-xl font-bold">Hi Praveen</Text>
-          <View className="flex-row items-center gap-1 mt-0.5">
-            <MapPin color="#FF4500" size={13} />
-            <Text className="text-on-surface-variant text-sm">Sriram nagar, Thiruvaiyaru</Text>
-          </View>
+    <View className="flex-1 bg-surface-off-white">
+      {/* Extended Orange Header */}
+      <View style={{ backgroundColor: '#FF4500', paddingTop: 48, paddingBottom: 16, paddingHorizontal: 16, borderBottomLeftRadius: 12, borderBottomRightRadius: 12 }}>
+        {/* Location + Bell row */}
+        <View className="flex-row justify-between items-center mb-4">
+          <TouchableOpacity className="flex-row items-center" style={{ gap: 4 }}>
+            <MapPin size={18} color="#fff" fill="#fff" />
+            <Text className="text-white text-sm font-semibold">Current Location</Text>
+            <ChevronDown size={18} color="#fff" />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Bell size={26} color="#fff" fill="#fff" />
+            <View style={{ position: 'absolute', top: 2, right: 2, width: 8, height: 8, borderRadius: 4, backgroundColor: '#fff', borderWidth: 1.5, borderColor: '#FF4500' }} />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          className="w-10 h-10 rounded-full bg-primary-fixed items-center justify-center"
-          onPress={() => router.push("/(customer)/profile" as any)}
-        >
-          <Text className="text-trust-blue text-base font-bold">P</Text>
+
+        {/* Greeting */}
+        <Text className="text-white text-2xl font-bold mb-0.5">Hi Praveen</Text>
+        <Text className="text-white text-sm mb-4" style={{ opacity: 0.9 }}>What service do you need today?</Text>
+
+        {/* Search Bar */}
+        <View className="flex-row items-center bg-white rounded-xl px-4" style={{ height: 48, gap: 10 }}>
+          <Search size={18} color="#757575" />
+          <TextInput
+            className="flex-1 text-base text-text-primary"
+            placeholder="Search for services..."
+            placeholderTextColor="#9CA3AF"
+            value={search}
+            onChangeText={setSearch}
+          />
+        </View>
+      </View>
+
+      {/* Service Grid */}
+      <ScrollView className="flex-1 px-4 pt-3" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 80 }}>
+        <Text className="text-lg font-bold text-on-background mb-3 mt-1">Select Service</Text>
+
+        <View className="flex-row flex-wrap" style={{ gap: 12 }}>
+          {SERVICES.map(svc => (
+            <TouchableOpacity
+              key={svc.id}
+              style={{ width: '47%' }}
+              onPress={() => {
+                if (svc.active) router.push(svc.route as any);
+              }}
+              activeOpacity={svc.active ? 0.85 : 0.6}
+            >
+              <View
+                className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden"
+                style={{ opacity: svc.active ? 1 : 0.6, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 4, elevation: 1 }}
+              >
+                <Image
+                  source={{ uri: svc.uri }}
+                  style={{ width: '100%', aspectRatio: 16 / 10 }}
+                  resizeMode="cover"
+                />
+                <View className="py-2 px-2 items-center">
+                  <Text className="text-xs font-semibold text-on-background text-center">{svc.label}</Text>
+                  {!svc.active && (
+                    <View style={{ backgroundColor: '#F0F0F0', borderRadius: 12, paddingHorizontal: 6, paddingVertical: 1, marginTop: 2 }}>
+                      <Text style={{ fontSize: 9, color: '#888', fontWeight: '600' }}>Coming Soon</Text>
+                    </View>
+                  )}
+                </View>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </ScrollView>
+
+      {/* Bottom Nav */}
+      <View className="flex-row justify-around items-center bg-surface-container-lowest border-t border-outline-variant h-16 px-4" style={{ shadowColor: '#000', shadowOffset: { width: 0, height: -2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 10 }}>
+        <TouchableOpacity className="flex-col items-center" style={{ gap: 2 }}>
+          <Home size={24} color="#FF4500" fill="#FF4500" />
+          <Text className="text-xs font-semibold" style={{ color: '#FF4500' }}>Home</Text>
+        </TouchableOpacity>
+        <TouchableOpacity className="flex-col items-center" style={{ gap: 2 }} onPress={() => router.push('/(customer)/history')}>
+          <Clock size={24} color="#5d4038" />
+          <Text className="text-xs text-on-surface-variant">History</Text>
+        </TouchableOpacity>
+        <TouchableOpacity className="flex-col items-center" style={{ gap: 2 }} onPress={() => router.push('/(customer)/profile')}>
+          <User size={24} color="#5d4038" />
+          <Text className="text-xs text-on-surface-variant">Profile</Text>
         </TouchableOpacity>
       </View>
-
-      <View className="px-4 pt-4 gap-4 pb-6">
-        {/* Search */}
-        <View className="flex-row items-center bg-surface-container-low rounded-xl px-4 py-3.5 gap-2.5 border border-outline-variant">
-          <Search color="#926f66" size={18} />
-          <Text className="text-on-surface-variant text-sm flex-1">Search for plumbing, electrical...</Text>
-        </View>
-
-        {/* Promo banner */}
-        <View className="rounded-xl p-5 overflow-hidden" style={{ backgroundColor: "#FF4500" }}>
-          <View className="absolute -right-4 -bottom-4 w-32 h-32 rounded-full bg-white/10" />
-          <View className="absolute -left-6 -top-6 w-36 h-36 rounded-full bg-white/10" />
-          <View>
-            <View className="bg-white/20 self-start rounded-full px-2.5 py-1 mb-2">
-              <Text className="text-white text-xs font-bold uppercase tracking-widest">Offer</Text>
-            </View>
-            <Text className="text-white text-xl font-bold">180 Days Free Trial</Text>
-            <Text className="text-white/90 text-sm mt-1.5">Premium service calls at ₹0 for 6 months</Text>
-            <TouchableOpacity className="mt-4 bg-white rounded-xl px-5 h-10 items-center justify-center self-start">
-              <Text className="text-appbar-bg text-sm font-bold">Claim Now</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Trusted Badge */}
-        <View className="flex-row items-center bg-surface-container-low rounded-xl px-4 py-3 gap-2.5 border border-outline-variant">
-          <ShieldCheck color="#00A389" size={18} />
-          <Text className="text-on-surface-variant text-xs font-semibold flex-1">All 500+ local professionals are Aadhaar-verified for your safety.</Text>
-        </View>
-
-        {/* 3×3 Service grid */}
-        <View>
-          <View className="flex-row items-center justify-between mb-3">
-            <Text className="text-on-surface text-base font-bold">Our Services</Text>
-            <Text className="text-appbar-bg text-xs font-semibold">View All</Text>
-          </View>
-          <View className="flex-row flex-wrap" style={{ gap: 10 }}>
-            {SERVICES.map(({ id, icon: Icon, label, color, bg, route, active }) => (
-              <TouchableOpacity
-                key={id}
-                className="items-center justify-center bg-surface-container-lowest rounded-xl py-3.5 border border-outline-variant"
-                style={{ width: "30.5%", shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.03, shadowRadius: 3, elevation: 1, opacity: active ? 1 : 0.5 }}
-                onPress={() => active && router.push(route as any)}
-                activeOpacity={active ? 0.7 : 1}
-              >
-                <View className="w-12 h-12 rounded-full items-center justify-center mb-2.5" style={{ backgroundColor: bg }}>
-                  <Icon color={color} size={22} />
-                </View>
-                <Text className="text-on-surface text-xs font-semibold text-center">{label}</Text>
-                {!active && (
-                  <View className="mt-1 rounded-full px-2 py-0.5" style={{ backgroundColor: "#F0F0F0" }}>
-                    <Text style={{ fontSize: 9, color: "#888", fontWeight: "600" }}>Coming Soon</Text>
-                  </View>
-                )}
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-
-        {/* Top Rated Nearby */}
-        <View>
-          <Text className="text-on-surface text-base font-bold mb-3">Top Rated Nearby</Text>
-          <View
-            className="bg-surface-container-lowest rounded-xl p-4 flex-row gap-4 border border-outline-variant"
-            style={{ shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4, elevation: 2 }}
-          >
-            <View className="w-20 h-20 rounded-xl bg-surface-container-high items-center justify-center relative flex-shrink-0">
-              <Text className="text-on-surface-variant text-3xl font-bold">R</Text>
-              <View className="absolute bottom-0 right-0 bg-success-teal rounded-tl-lg p-1">
-                <ShieldCheck color="white" size={10} />
-              </View>
-            </View>
-            <View className="flex-1 justify-between">
-              <View>
-                <View className="flex-row items-start justify-between">
-                  <View>
-                    <Text className="text-on-surface text-base font-bold">Ramesh Kumar</Text>
-                    <Text className="text-brand-teal text-xs font-medium">Master Electrician<Text className="text-on-surface-variant font-normal"> · 8 yrs exp</Text></Text>
-                  </View>
-                  <View className="flex-row items-center bg-surface-container-high rounded-full px-2 py-0.5 gap-1">
-                    <Star color="#FFC107" size={12} fill="#FFC107" />
-                    <Text className="text-on-surface text-xs font-bold">4.9</Text>
-                  </View>
-                </View>
-              </View>
-              <View className="flex-row gap-2 mt-3">
-                <TouchableOpacity
-                  className="flex-1 bg-appbar-bg rounded-xl h-10 items-center justify-center"
-                  style={{ shadowColor: "#FF4500", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 4, elevation: 4 }}
-                  onPress={() => router.push("/(customer)/provider-detail" as any)}
-                >
-                  <Text className="text-white text-sm font-bold">Book Service</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  className="w-10 h-10 rounded-xl border border-appbar-bg items-center justify-center"
-                  onPress={() => router.push("/(customer)/call" as any)}
-                >
-                  <Phone color="#FF4500" size={16} />
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </View>
-      </View>
-    </ScrollView>
+    </View>
   );
 }

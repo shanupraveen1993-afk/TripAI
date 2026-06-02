@@ -1,89 +1,86 @@
-import { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
-import { useRouter } from "expo-router";
-import { ChevronLeft, MapPin } from "lucide-react-native";
+import { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Image, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { useRouter } from 'expo-router';
+import { ArrowLeft, MapPin, Crosshair } from 'lucide-react-native';
 
-export default function ProviderAddressScreen() {
+const MAP_URI = 'https://lh3.googleusercontent.com/aida-public/AB6AXuAmI0NK5n38kIk5gHNpKLBmepVBZZ5PIIlA6jCOqWQfeEttwMN1LlErMRRlXfoz1QbCewb4GJIxswaTQ6nPBjkaqrjeAd4WVz4LWh-T0kofT4dMhen5h9iSSO2hm5nuvrO_q_6JMQeXy0yswiK5VrK6NBcuex5YH9Lt4c8Cyx2LRdiQiUrsFkUKH83-9Dq__EZzlWVAUVvOSgiF6rrBSgY1he-1BLUj7KK4t6OuJFZ38qXk256uDZF6OV3KefdJ9vAz714aSffrYEs';
+
+export default function ProviderAddress() {
   const router = useRouter();
-  const [door, setDoor] = useState("");
-  const [street, setStreet] = useState("");
-  const [city, setCity] = useState("Thanjavur");
-  const [pincode, setPincode] = useState("");
-  const [radius, setRadius] = useState("5");
-
-  const isValid = door.trim() && street.trim() && city.trim() && pincode.length === 6;
+  const [locType, setLocType] = useState<'home' | 'shop'>('home');
+  const [form, setForm] = useState({ door: '', street: '', city: '', landmark: '', pincode: '' });
+  const set = (k: keyof typeof form, v: string) => setForm(f => ({ ...f, [k]: v }));
 
   return (
-    <KeyboardAvoidingView className="flex-1 bg-surface" behavior={Platform.OS === "ios" ? "padding" : undefined}>
+    <KeyboardAvoidingView className="flex-1" behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       {/* AppBar */}
-      <View className="bg-appbar-bg pt-14 pb-5 px-5 flex-row items-center gap-3">
-        <TouchableOpacity onPress={() => router.back()} className="p-2 rounded-lg hover:bg-white/10" aria-label="Go back">
-          <ChevronLeft color="white" size={22} />
+      <View className="h-14 flex-row items-center justify-center px-4" style={{ backgroundColor: '#FF4500' }}>
+        <TouchableOpacity style={{ position: 'absolute', left: 8 }} onPress={() => router.back()} className="p-2">
+          <ArrowLeft size={24} color="#fff" />
         </TouchableOpacity>
-        <Text className="text-white text-lg font-semibold flex-1 text-center">Service Area</Text>
-        <View className="w-10" />
+        <Text className="text-white text-lg font-semibold">Set Location</Text>
       </View>
 
-      <ScrollView className="flex-1 px-6 pt-6" keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-        <Text className="text-on-surface text-xl font-bold mb-1">Your Base Location</Text>
-        <Text className="text-on-surface-variant text-sm mb-6">Customers within your area will see your profile</Text>
-
-        {/* Map placeholder */}
-        <View className="h-44 bg-surface-container-low rounded-xl items-center justify-center mb-6 border border-outline-variant">
-          <View
-            className="w-12 h-12 rounded-full bg-appbar-bg items-center justify-center"
-            style={{ shadowColor: "#FF4500", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.4, shadowRadius: 6, elevation: 6 }}
-          >
-            <MapPin color="white" size={22} />
-          </View>
-          <Text className="text-appbar-bg text-xs mt-2 font-medium">Tap to set location</Text>
+      {/* Map — FIX: pin is #FF4500, not green */}
+      <View style={{ height: '40%' }}>
+        <Image source={{ uri: MAP_URI }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, alignItems: 'center', justifyContent: 'center' }}>
+          <MapPin size={44} color="#FF4500" fill="#FF4500" />
         </View>
-
-        <View className="gap-4 mb-6">
-          <View>
-            <Text className="text-on-surface-variant text-xs font-semibold mb-1.5 uppercase tracking-wide">Door / Shop No.</Text>
-            <TextInput className="h-12 px-4 bg-surface-container-lowest rounded-xl border border-outline-variant text-on-surface text-sm" placeholder="Door / Flat / Shop No." placeholderTextColor="#926f66" value={door} onChangeText={setDoor} />
-          </View>
-          <View>
-            <Text className="text-on-surface-variant text-xs font-semibold mb-1.5 uppercase tracking-wide">Street / Area</Text>
-            <TextInput className="h-12 px-4 bg-surface-container-lowest rounded-xl border border-outline-variant text-on-surface text-sm" placeholder="Street / Colony / Area" placeholderTextColor="#926f66" value={street} onChangeText={setStreet} />
-          </View>
-          <View className="flex-row gap-3">
-            <View className="flex-1">
-              <Text className="text-on-surface-variant text-xs font-semibold mb-1.5 uppercase tracking-wide">City</Text>
-              <TextInput className="h-12 px-4 bg-surface-container-lowest rounded-xl border border-outline-variant text-on-surface text-sm" placeholder="City" placeholderTextColor="#926f66" value={city} onChangeText={setCity} />
-            </View>
-            <View className="w-32">
-              <Text className="text-on-surface-variant text-xs font-semibold mb-1.5 uppercase tracking-wide">Pincode</Text>
-              <TextInput className="h-12 px-4 bg-surface-container-lowest rounded-xl border border-outline-variant text-on-surface text-sm" placeholder="Pincode" placeholderTextColor="#926f66" value={pincode} onChangeText={(t) => setPincode(t.replace(/\D/g, "").slice(0, 6))} keyboardType="number-pad" />
-            </View>
-          </View>
-        </View>
-
-        <Text className="text-on-surface text-sm font-semibold mb-3">Service Radius</Text>
-        <View className="flex-row gap-3 mb-8">
-          {["3", "5", "10", "15+"].map((r) => (
-            <TouchableOpacity
-              key={r}
-              className={`px-4 py-2 rounded-full border-2 ${radius === r ? "bg-appbar-bg border-appbar-bg" : "bg-surface-container-lowest border-outline-variant"}`}
-              onPress={() => setRadius(r)}
-            >
-              <Text className={`text-sm font-semibold ${radius === r ? "text-white" : "text-on-surface"}`}>{r} km</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        <TouchableOpacity
-          className={`rounded-xl h-14 items-center justify-center mb-8 ${isValid ? "bg-appbar-bg" : "bg-surface-container-high"}`}
-          style={isValid ? { shadowColor: "#FF4500", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.35, shadowRadius: 8, elevation: 6 } : {}}
-          disabled={!isValid}
-          onPress={() => router.push("/onboarding/provider-services")}
-        >
-          <Text className={`text-base font-bold ${isValid ? "text-white" : "text-on-surface-variant"}`}>
-            Save & Continue →
-          </Text>
+        <TouchableOpacity style={{ position: 'absolute', bottom: 12, right: 12, backgroundColor: '#fff', borderRadius: 999, padding: 10, borderWidth: 1, borderColor: '#e7bdb2', elevation: 3 }}>
+          <Crosshair size={20} color="#FF4500" />
         </TouchableOpacity>
-      </ScrollView>
+      </View>
+
+      {/* Bottom Sheet */}
+      <View className="flex-1 bg-surface-container-lowest" style={{ borderTopLeftRadius: 16, borderTopRightRadius: 16, marginTop: -16, borderTopWidth: 1, borderColor: '#e7bdb2' }}>
+        <View className="items-center pt-3 pb-1">
+          <View style={{ width: 48, height: 4, backgroundColor: '#e4e2e1', borderRadius: 4 }} />
+        </View>
+
+        <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+          <Text className="text-xl font-bold text-text-primary mt-3 mb-1">Define your service area</Text>
+          <Text className="text-sm text-text-secondary mb-4">Location Type</Text>
+
+          {/* Home / Service Shop toggle */}
+          <View className="flex-row bg-secondary-container rounded-xl p-1 mb-5">
+            {(['home', 'shop'] as const).map(t => (
+              <TouchableOpacity
+                key={t}
+                className="flex-1 py-2 rounded-xl items-center"
+                style={{ backgroundColor: locType === t ? '#FF4500' : 'transparent' }}
+                onPress={() => setLocType(t)}
+                activeOpacity={0.85}
+              >
+                <Text style={{ color: locType === t ? '#fff' : '#757575', fontSize: 14, fontWeight: '600' }}>
+                  {t === 'home' ? 'Home' : 'Service Shop'}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          <Text className="text-sm text-text-secondary mb-3">Complete address*</Text>
+          <View style={{ gap: 10, paddingBottom: 100 }}>
+            {[
+              { k: 'door',   p: 'Door no, Apartment name, Floor no, Block no' },
+              { k: 'street', p: 'Street name, Area' },
+              { k: 'city',   p: 'City' },
+            ].map(({ k, p }) => (
+              <TextInput key={k} className="border border-secondary-container rounded-lg px-4 py-3 text-sm text-text-primary bg-surface-container-lowest" placeholder={p} placeholderTextColor="#9CA3AF" value={form[k as keyof typeof form]} onChangeText={v => set(k as keyof typeof form, v)} />
+            ))}
+            <View className="flex-row" style={{ gap: 10 }}>
+              <TextInput className="flex-1 border border-secondary-container rounded-lg px-4 py-3 text-sm text-text-primary bg-surface-container-lowest" placeholder="Landmark" placeholderTextColor="#9CA3AF" value={form.landmark} onChangeText={v => set('landmark', v)} />
+              <TextInput className="flex-1 border border-secondary-container rounded-lg px-4 py-3 text-sm text-text-primary bg-surface-container-lowest" placeholder="Pincode*" placeholderTextColor="#9CA3AF" keyboardType="numeric" maxLength={6} value={form.pincode} onChangeText={v => set('pincode', v)} />
+            </View>
+          </View>
+        </ScrollView>
+
+        <View className="absolute bottom-0 left-0 right-0 bg-surface-container-lowest border-t border-outline-variant px-4 py-4">
+          <TouchableOpacity className="w-full rounded-xl py-4 items-center" style={{ backgroundColor: '#FF4500' }} onPress={() => router.push('/onboarding/provider-skills')} activeOpacity={0.85}>
+            <Text className="text-white text-sm font-bold">Save Location</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </KeyboardAvoidingView>
   );
 }

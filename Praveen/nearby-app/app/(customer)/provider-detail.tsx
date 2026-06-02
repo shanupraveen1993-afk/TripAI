@@ -1,110 +1,101 @@
-import { ScrollView, View, Text, TouchableOpacity } from "react-native";
-import { useRouter } from "expo-router";
-import { ChevronLeft, Star, ShieldCheck, MapPin, Phone } from "lucide-react-native";
+import { ScrollView, View, Text, TouchableOpacity, Image } from 'react-native';
+import { useRouter } from 'expo-router';
+import { ArrowLeft, Bell, Star, ShieldCheck, MapPin, Phone, Home, Clock, User } from 'lucide-react-native';
 
-const REVIEWS = [
-  { name: "Amit Patel",   rating: 5, text: "Excellent work! Fixed my bathroom tap within 30 minutes. Very professional.", time: "2 days ago" },
-  { name: "Sunita Mishra",rating: 4, text: "Good service. Came on time and solved the leakage problem.",                  time: "1 week ago" },
-];
+const PROVIDER_IMG = 'https://lh3.googleusercontent.com/aida-public/AB6AXuD0kMDcEpNLiW5VVNuBLaefVbVpb5vKo-enrU3jt-xLBA50c8kIVG7hAZ00DBqOwm0js3oqbdzOYXijtKR23fSWfBhZSw01kg-JwBsg9UoNBsExITTHgGXtjr-ef6_nOYn2C2ZUa9GPnEuYKSOvjWLQwUC-h2Gjuk3WT8WpiB51DFDJ40Rwkp2oIAmspEtaHDyMa5meds_xRtGLWKZLOt6PhLyb0VVDC_Ad_4wkZWV1etp3gNhLHkowSXpVbbpmYOtl4VFlN5y9P2E';
+const MAP_IMG = 'https://lh3.googleusercontent.com/aida-public/AB6AXuDqoH1LzQXyW77fG0hnveAWCi0lJp0HvUGNbHkqoR3dg7TisG8BQBL_XBPGwLZgVzSY_TxeIFSAMjQqeiyjK_12GfmlJBMh7Ejmol-cRal9Pyx_8IZefnG1huxXUSJsTzskVgu666DVa_Zt9SEStzGjPQ8ul6fq-v6J6CTcx21ZqE95nN83oZ7Y4b0cPA2by79oYqyKUTwan9mILa-OC9pZOFmfAH-mTVSmM5DjfY2BGjo12pUviGbN0eKV2AAUOLJNYmbdxpKcLFY';
 
-export default function ProviderDetailScreen() {
+export default function ProviderDetail() {
   const router = useRouter();
 
   return (
-    <View className="flex-1 bg-surface">
-      {/* AppBar h-14 */}
-      <View className="bg-appbar-bg pt-14 pb-4 px-5 flex-row items-center gap-3">
-        <TouchableOpacity onPress={() => router.back()} className="p-2 rounded-lg hover:bg-white/10">
-          <ChevronLeft color="white" size={24} />
+    <View className="flex-1 bg-surface-off-white">
+      {/* AppBar */}
+      <View className="h-14 flex-row items-center justify-between px-4" style={{ backgroundColor: '#FF4500' }}>
+        <TouchableOpacity onPress={() => router.back()} className="p-2 -ml-2">
+          <ArrowLeft size={24} color="#fff" />
         </TouchableOpacity>
-        <Text className="text-white text-lg font-semibold flex-1 text-center">Provider Profile</Text>
-        <View className="w-10" />
+        <Text className="text-white text-lg font-bold">Service Provider Details</Text>
+        <TouchableOpacity className="p-2">
+          <Bell size={22} color="#fff" />
+        </TouchableOpacity>
       </View>
 
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <View className="bg-surface-container-lowest px-5 pt-6 pb-5">
-          <View className="items-center mb-4">
-            <View className="w-24 h-24 rounded-full bg-primary-fixed items-center justify-center mb-3 relative">
-              <Text className="text-trust-blue text-4xl font-bold">R</Text>
-              <View className="absolute bottom-0 right-0 bg-aadhaar-gold rounded-full px-2 py-0.5 flex-row items-center gap-0.5">
-                <ShieldCheck color="white" size={10} />
-                <Text className="text-white text-[9px] font-bold">VERIFIED</Text>
-              </View>
-            </View>
-            <Text className="text-on-surface text-xl font-bold">Rajesh Kumar</Text>
-            <Text className="text-brand-teal text-sm font-medium">Expert Plumber<Text className="text-on-surface-variant font-normal"> · 12 years experience</Text></Text>
-            <View className="flex-row items-center gap-2 mt-2">
-              <View className="flex-row items-center gap-1">
-                {[1,2,3,4,5].map((s) => <Star key={s} color="#FFC107" size={14} fill="#FFC107" />)}
-              </View>
-              <Text className="text-on-surface text-sm font-bold">4.9</Text>
-              <Text className="text-on-surface-variant text-sm">(89 reviews)</Text>
+      <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: 16, paddingBottom: 100 }}>
+        {/* Provider Identity Card */}
+        <View className="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex-row items-center mb-4"
+          style={{ gap: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 4, elevation: 2 }}>
+          <Image source={{ uri: PROVIDER_IMG }} style={{ width: 80, height: 80, borderRadius: 40, borderWidth: 2, borderColor: '#fff' }} resizeMode="cover" />
+
+          <View className="flex-1">
+            <Text className="text-base font-semibold text-text-primary">Vikram Sharma</Text>
+            <Text className="text-sm text-text-secondary mt-1">Plumber - 4 Skills{'\n'}10yrs Experience</Text>
+            <View className="flex-row items-center mt-2 border border-outline-variant rounded px-2 py-1 self-start" style={{ gap: 4 }}>
+              <Star size={16} color="#FF4500" fill="#FF4500" />
+              <Text className="text-xs font-bold text-text-primary">4.8</Text>
+              <Text className="text-xs text-text-secondary">(215 Jobs)</Text>
             </View>
           </View>
 
-          <View className="flex-row gap-3 mb-4">
-            {[["128", "Jobs Done"], ["4.9★", "Rating"], ["12 yrs", "Experience"]].map(([val, lbl]) => (
-              <View key={lbl} className="flex-1 bg-surface-container-lowest rounded-xl p-3 items-center border border-outline-variant">
-                <Text className="text-appbar-bg text-base font-bold">{val}</Text>
-                <Text className="text-on-surface-variant text-xs mt-0.5">{lbl}</Text>
-              </View>
-            ))}
-          </View>
-
-          <View className="flex-row items-center gap-2 bg-surface-container-low rounded-xl px-4 py-3 border border-outline-variant">
-            <MapPin color="#FF4500" size={16} />
-            <Text className="text-on-surface text-sm">2.4 km away · Sriram Nagar, Thanjavur</Text>
+          <View className="bg-surface-container-highest rounded-full p-2">
+            <ShieldCheck size={22} color="#FF4500" />
           </View>
         </View>
 
-        {/* Map placeholder */}
-        <View className="h-36 bg-surface-container-low items-center justify-center">
-          <View className="w-10 h-10 rounded-full bg-appbar-bg items-center justify-center">
-            <MapPin color="white" size={18} />
-          </View>
-          <Text className="text-appbar-bg text-xs font-medium mt-1">2.4 km away</Text>
-        </View>
-
-        <View className="px-5 pt-5 pb-6 gap-5">
-          <View>
-            <Text className="text-on-surface text-base font-bold mb-2">About</Text>
-            <Text className="text-on-surface-variant text-sm leading-5">
-              Certified plumber with 12 years of experience in residential and commercial projects. Specializes in tap fixing, pipe fitting, and water pump repair. Aadhaar verified professional.
-            </Text>
+        {/* Address Card */}
+        <View className="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 mb-4"
+          style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 4, elevation: 2 }}>
+          <View className="flex-row items-center mb-3" style={{ gap: 8 }}>
+            <MapPin size={20} color="#FF4500" />
+            <Text className="text-base font-semibold text-text-primary">Address</Text>
           </View>
 
-          <View>
-            <Text className="text-on-surface text-base font-bold mb-3">Customer Reviews</Text>
-            <View className="gap-3">
-              {REVIEWS.map((r) => (
-                <View key={r.name} className="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant">
-                  <View className="flex-row items-center justify-between mb-2">
-                    <Text className="text-on-surface text-sm font-semibold">{r.name}</Text>
-                    <View className="flex-row items-center gap-0.5">
-                      {Array.from({ length: r.rating }).map((_, i) => (
-                        <Star key={i} color="#FFC107" size={12} fill="#FFC107" />
-                      ))}
-                    </View>
-                  </View>
-                  <Text className="text-on-surface-variant text-xs leading-4">{r.text}</Text>
-                  <Text className="text-on-surface-variant text-xs mt-2">{r.time}</Text>
-                </View>
-              ))}
+          <View style={{ borderLeftWidth: 2, borderLeftColor: '#fddbd3', marginLeft: 8, paddingLeft: 12, marginBottom: 12 }}>
+            <Text className="text-sm text-text-secondary">Plot No. 42, Sector 18{'\n'}Udyog Vihar Phase IV{'\n'}Gurugram, Haryana 122015</Text>
+          </View>
+
+          {/* Map */}
+          <View className="rounded-xl overflow-hidden border border-outline-variant" style={{ height: 180 }}>
+            <Image source={{ uri: MAP_IMG }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+            {/* FIX: Orange pin, not green */}
+            <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, alignItems: 'center', justifyContent: 'center' }}>
+              <MapPin size={40} color="#FF4500" fill="#FF4500" />
+            </View>
+            <View style={{ position: 'absolute', bottom: 8, right: 8, backgroundColor: 'rgba(255,255,255,0.95)', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4, borderWidth: 1, borderColor: '#e7bdb2' }}>
+              <Text className="text-xs font-medium text-text-primary">1.2 km away</Text>
             </View>
           </View>
         </View>
       </ScrollView>
 
-      {/* CTA */}
-      <View className="px-5 pb-8 pt-4 bg-surface-container-lowest border-t border-outline-variant">
-        <TouchableOpacity
-          className="bg-appbar-bg rounded-xl h-14 items-center justify-center flex-row gap-2"
-          style={{ shadowColor: "#FF4500", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.35, shadowRadius: 8, elevation: 6 }}
-          onPress={() => router.push("/(customer)/call" as any)}
-        >
-          <Phone color="white" size={18} />
-          <Text className="text-white text-base font-bold">Call Rajesh Kumar</Text>
-        </TouchableOpacity>
+      {/* Call Button + Bottom Nav */}
+      <View className="bg-surface-container-lowest border-t border-outline-variant">
+        <View className="px-4 py-3">
+          <TouchableOpacity
+            className="w-full rounded-xl py-3.5 flex-row items-center justify-center"
+            style={{ backgroundColor: '#FF4500', gap: 8, shadowColor: '#FF4500', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 4 }}
+            onPress={() => router.push('/(customer)/call')}
+            activeOpacity={0.85}
+          >
+            <Phone size={18} color="#fff" fill="#fff" />
+            <Text className="text-white text-sm font-bold">Call</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View className="flex-row justify-around items-center h-14 px-4">
+          <TouchableOpacity className="flex-col items-center" style={{ gap: 2 }} onPress={() => router.push('/(customer)/home')}>
+            <Home size={22} color="#FF4500" fill="#FF4500" />
+            <Text className="text-xs font-semibold" style={{ color: '#FF4500' }}>Home</Text>
+          </TouchableOpacity>
+          <TouchableOpacity className="flex-col items-center" style={{ gap: 2 }} onPress={() => router.push('/(customer)/history')}>
+            <Clock size={22} color="#5d4038" />
+            <Text className="text-xs text-on-surface-variant">History</Text>
+          </TouchableOpacity>
+          <TouchableOpacity className="flex-col items-center" style={{ gap: 2 }} onPress={() => router.push('/(customer)/profile')}>
+            <User size={22} color="#5d4038" />
+            <Text className="text-xs text-on-surface-variant">Profile</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );

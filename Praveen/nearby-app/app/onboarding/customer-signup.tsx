@@ -1,92 +1,98 @@
-import { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
-import { useRouter } from "expo-router";
-import { ChevronLeft, ShieldCheck } from "lucide-react-native";
+import { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { useRouter } from 'expo-router';
+import { MapPin } from 'lucide-react-native';
 
-export default function CustomerSignupScreen() {
+export default function CustomerSignup() {
   const router = useRouter();
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [agreed, setAgreed] = useState(false);
-
-  const isValid = name.trim().length >= 2 && phone.replace(/\D/g, "").length === 10 && agreed;
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
 
   return (
-    <KeyboardAvoidingView className="flex-1 bg-surface" behavior={Platform.OS === "ios" ? "padding" : undefined}>
-      <ScrollView className="flex-1" keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-        {/* AppBar */}
-        <View className="flex-row items-center px-4 pt-14 pb-3 bg-surface-container-lowest border-b border-outline-variant">
-          <TouchableOpacity onPress={() => router.back()} className="p-2 mr-2 rounded-lg" aria-label="Go back">
-            <ChevronLeft color="#291712" size={24} />
-          </TouchableOpacity>
-          <Text className="text-appbar-bg text-lg font-bold flex-1 text-center">Nearby</Text>
-          <View className="w-10" />
-        </View>
-
-        <View className="px-6 pt-6 pb-8">
-          <Text className="text-on-surface text-2xl font-bold mb-1">Get Started</Text>
-          <Text className="text-on-surface-variant text-sm mb-6">Book trusted services near you</Text>
-
-          {/* Illustration placeholder */}
-          <View className="bg-surface-container-low rounded-xl h-40 items-center justify-center mb-6 border border-outline-variant">
-            <View className="bg-appbar-bg/10 rounded-xl px-4 py-2 flex-row items-center gap-2">
-              <ShieldCheck color="#FF4500" size={18} />
-              <Text className="text-appbar-bg text-sm font-semibold">Secure Sign-up</Text>
-            </View>
+    <KeyboardAvoidingView
+      className="flex-1 bg-surface-off-white"
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 24 }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <View className="flex-1 items-center px-4 pt-12">
+          {/* Brand Logo */}
+          <View className="items-center mb-8" style={{ gap: 4 }}>
+            <MapPin size={40} color="#FF4500" fill="#FF4500" />
+            <Text className="text-3xl font-bold tracking-tight" style={{ color: '#FF4500' }}>Nearby</Text>
           </View>
 
-          {/* Full Name */}
-          <View className="mb-5">
-            <Text className="text-on-surface-variant text-xs font-semibold mb-1.5 uppercase tracking-wide">Full Name</Text>
-            <TextInput
-              className="h-12 px-4 rounded-xl border border-outline-variant bg-surface-container-lowest text-on-surface text-base"
-              placeholder="Enter your full name"
-              placeholderTextColor="#926f66"
-              value={name}
-              onChangeText={setName}
-              autoCapitalize="words"
-            />
-          </View>
-
-          {/* Mobile */}
-          <View className="mb-6">
-            <Text className="text-on-surface-variant text-xs font-semibold mb-1.5 uppercase tracking-wide">Mobile Number</Text>
-            <View className="h-12 flex-row items-center px-4 rounded-xl border border-outline-variant bg-surface-container-lowest">
-              <Text className="text-on-surface text-base font-medium mr-2">+91</Text>
-              <View className="w-px h-5 bg-outline-variant mr-2" />
-              <TextInput
-                className="flex-1 text-on-surface text-base"
-                placeholder="98765 43210"
-                placeholderTextColor="#926f66"
-                value={phone}
-                onChangeText={(t) => setPhone(t.replace(/\D/g, "").slice(0, 10))}
-                keyboardType="phone-pad"
-              />
-            </View>
-          </View>
-
-          {/* T&C */}
-          <TouchableOpacity className="flex-row items-start gap-3 mb-8" onPress={() => setAgreed(!agreed)}>
-            <View className={`w-5 h-5 rounded border-2 mt-0.5 items-center justify-center ${agreed ? "bg-appbar-bg border-appbar-bg" : "border-outline"}`}>
-              {agreed && <Text className="text-white text-xs font-bold">✓</Text>}
-            </View>
-            <Text className="flex-1 text-on-surface-variant text-sm leading-5">
-              I agree to the <Text className="text-appbar-bg font-medium">Terms of Service</Text> and{" "}
-              <Text className="text-appbar-bg font-medium">Privacy Policy</Text>
-            </Text>
-          </TouchableOpacity>
-
-          {/* CTA */}
-          <TouchableOpacity
-            className={`rounded-xl h-14 items-center justify-center ${isValid ? "bg-appbar-bg" : "bg-surface-container-high"}`}
-            style={isValid ? { shadowColor: "#FF4500", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.35, shadowRadius: 8, elevation: 6 } : {}}
-            disabled={!isValid}
-            onPress={() => router.push("/onboarding/customer-otp")}
+          {/* Login Card */}
+          <View
+            className="w-full bg-surface-container-lowest rounded-xl p-5 border border-outline-variant mb-6"
+            style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 4, elevation: 2 }}
           >
-            <Text className={`text-base font-bold ${isValid ? "text-white" : "text-on-surface-variant"}`}>
-              Send OTP →
-            </Text>
-          </TouchableOpacity>
+            <Text className="text-xl font-bold text-text-primary mb-1">Welcome Back</Text>
+            <Text className="text-sm text-text-secondary mb-5">Enter your details to continue as a user.</Text>
+
+            <View style={{ gap: 12 }}>
+              <View style={{ gap: 6 }}>
+                <Text className="text-sm font-semibold text-text-primary">Full Name</Text>
+                <TextInput
+                  className="border border-outline-variant rounded-xl px-4 py-3 text-base text-text-primary bg-surface-container-lowest"
+                  placeholder="Enter your name"
+                  placeholderTextColor="#9CA3AF"
+                  value={name}
+                  onChangeText={setName}
+                />
+              </View>
+
+              <View className="flex-row border border-outline-variant rounded-xl overflow-hidden bg-surface-container-lowest">
+                <View className="px-4 py-3 border-r border-outline-variant justify-center">
+                  <Text className="text-base text-text-primary font-medium">+91</Text>
+                </View>
+                <TextInput
+                  className="flex-1 px-4 py-3 text-base text-text-primary"
+                  placeholder="Mobile Number"
+                  placeholderTextColor="#9CA3AF"
+                  keyboardType="phone-pad"
+                  maxLength={10}
+                  value={phone}
+                  onChangeText={setPhone}
+                />
+              </View>
+
+              <TouchableOpacity
+                className="w-full rounded-xl py-3.5 items-center"
+                style={{ backgroundColor: '#FF4500', shadowColor: '#FF4500', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 4 }}
+                onPress={() => router.push('/onboarding/customer-otp')}
+                activeOpacity={0.85}
+              >
+                <Text className="text-white text-sm font-bold">Continue</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* OR Divider */}
+          <View className="flex-row items-center w-full mb-6" style={{ gap: 16 }}>
+            <View className="flex-1 h-px bg-outline-variant" />
+            <Text className="text-sm text-text-secondary">OR</Text>
+            <View className="flex-1 h-px bg-outline-variant" />
+          </View>
+
+          {/* Provider Card */}
+          <View
+            className="w-full bg-surface-off-white rounded-xl p-4 items-center"
+            style={{ borderWidth: 1, borderStyle: 'dashed', borderColor: '#e7bdb2', gap: 12 }}
+          >
+            <Text className="text-base font-semibold text-text-primary">Are you a Service Professional?</Text>
+            <TouchableOpacity
+              className="border rounded-xl px-6 py-2"
+              style={{ borderColor: '#FF4500' }}
+              onPress={() => router.push('/onboarding/provider-signup')}
+              activeOpacity={0.8}
+            >
+              <Text className="text-sm font-semibold" style={{ color: '#FF4500' }}>Login as Technician</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

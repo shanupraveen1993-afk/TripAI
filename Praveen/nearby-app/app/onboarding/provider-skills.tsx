@@ -1,102 +1,136 @@
-import { useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
-import { useRouter } from "expo-router";
-import { ChevronLeft, ShieldCheck } from "lucide-react-native";
+import { useState } from 'react';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { useRouter } from 'expo-router';
+import { ArrowLeft, CheckCircle2, Circle } from 'lucide-react-native';
 
-const EXPERIENCE_YEARS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10+"];
-const SKILLS = [
-  { id: "tap",    label: "Tap Fixing",           defaultChecked: true },
-  { id: "wash",   label: "Wash Basin Repair" },
-  { id: "leak",   label: "Leakage Detection",    defaultChecked: true },
-  { id: "toilet", label: "Toilet Fittings" },
-  { id: "ro",     label: "RO Fitting" },
-  { id: "pipe",   label: "Pipe Fitting",         defaultChecked: true },
-  { id: "pump",   label: "Water Pump Repair" },
-  { id: "tank",   label: "Water Tank Cleaning" },
-];
+const CATEGORIES = ['Plumbing', 'Electrical', 'Painting', 'Cleaning'];
 
-export default function ProviderSkillsScreen() {
+const SKILLS_MAP: Record<string, { id: string; label: string; desc: string }[]> = {
+  Plumbing: [
+    { id: 'tap',    label: 'Tap Fixing & Repair',  desc: 'Fixing leaks, drips, and replacements.' },
+    { id: 'basin',  label: 'Wash Basin Service',    desc: 'Clog removal and mounting.' },
+    { id: 'leak',   label: 'Leakage Repair',        desc: 'Expert pipe leak detection and fix.' },
+    { id: 'toilet', label: 'Toilet Fittings',       desc: 'Flushing issues and installations.' },
+    { id: 'ro',     label: 'RO & Filter Service',   desc: 'Filter replacement and maintenance.' },
+  ],
+  Electrical: [
+    { id: 'wiring',  label: 'Wiring & Fitting',  desc: 'New wiring and socket installations.' },
+    { id: 'fan',     label: 'Fan & Light',        desc: 'Fan and light fixture repairs.' },
+    { id: 'switch',  label: 'Switchboard Repair', desc: 'MCB and switchboard work.' },
+  ],
+  Painting: [
+    { id: 'wall',    label: 'Wall Painting',      desc: 'Interior and exterior wall painting.' },
+    { id: 'texture', label: 'Texture Work',       desc: 'Designer textures and finishes.' },
+  ],
+  Cleaning: [
+    { id: 'deep',    label: 'Deep Cleaning',      desc: 'Full home deep cleaning.' },
+    { id: 'sofa',    label: 'Sofa Cleaning',      desc: 'Professional sofa shampoo cleaning.' },
+  ],
+};
+
+export default function ProviderSkills() {
   const router = useRouter();
-  const [exp, setExp] = useState<string[]>(["3", "5", "7"]);
-  const [skills, setSkills] = useState<string[]>(SKILLS.filter((s) => s.defaultChecked).map((s) => s.id));
+  const [category, setCategory] = useState('Plumbing');
+  const [selected, setSelected] = useState<Set<string>>(new Set(['tap']));
+  const [experience, setExperience] = useState(5);
 
-  const toggleExp = (y: string) => setExp((prev) => prev.includes(y) ? prev.filter((e) => e !== y) : [...prev, y]);
-  const toggleSkill = (id: string) => setSkills((prev) => prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]);
+  const toggle = (id: string) =>
+    setSelected(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+
+  const skills = SKILLS_MAP[category] ?? [];
 
   return (
-    <View className="flex-1 bg-surface">
-      {/* AppBar */}
-      <View className="bg-appbar-bg pt-14 pb-5 px-5 flex-row items-center gap-3">
-        <TouchableOpacity onPress={() => router.back()} className="p-2 rounded-lg hover:bg-white/10" aria-label="Go back">
-          <ChevronLeft color="white" size={22} />
+    <View className="flex-1 bg-surface-container-lowest">
+      {/* Header */}
+      <View className="h-14 flex-row items-center justify-between px-4" style={{ backgroundColor: '#FF4500' }}>
+        <TouchableOpacity onPress={() => router.back()} className="p-2 -ml-2">
+          <ArrowLeft size={24} color="#fff" />
         </TouchableOpacity>
-        <Text className="text-white text-lg font-semibold flex-1 text-center">Plumbing</Text>
-        <View className="w-10" />
+        <Text className="text-white text-xl font-bold">Nearby Setup</Text>
+        <View style={{ width: 32 }} />
       </View>
 
-      <ScrollView className="flex-1 px-5 pt-5" showsVerticalScrollIndicator={false}>
-        {/* Progress */}
-        <View className="mb-6">
-          <View className="flex-row justify-between mb-1">
-            <Text className="text-on-surface-variant text-xs">Profile completion</Text>
-            <Text className="text-appbar-bg text-xs font-semibold">60%</Text>
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 90 }}>
+        {/* Title */}
+        <View className="px-4 pt-5 pb-3 items-center" style={{ gap: 6 }}>
+          <Text className="text-2xl font-bold text-text-primary">Select Your Skills</Text>
+          <Text className="text-sm text-text-secondary text-center">Tell us what you're good at. You can always change this later in your profile settings.</Text>
+        </View>
+
+        {/* Category Chips */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-4 pb-3" contentContainerStyle={{ gap: 8 }}>
+          {CATEGORIES.map(cat => (
+            <TouchableOpacity
+              key={cat}
+              style={{ paddingHorizontal: 24, paddingVertical: 10, borderRadius: 999, backgroundColor: category === cat ? '#FF4500' : '#fff', borderWidth: category === cat ? 0 : 1, borderColor: '#e7bdb2' }}
+              onPress={() => setCategory(cat)}
+              activeOpacity={0.85}
+            >
+              <Text style={{ color: category === cat ? '#fff' : '#757575', fontSize: 14, fontWeight: '600' }}>{cat}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+
+        {/* Experience Slider (simplified with +/-) */}
+        <View className="px-4 py-4 bg-white border-b border-outline-variant" style={{ gap: 10 }}>
+          <View className="flex-row justify-between items-center">
+            <Text className="text-sm font-semibold text-text-primary">Years of Experience</Text>
+            <View style={{ backgroundColor: '#FF4500', borderRadius: 999, paddingHorizontal: 10, paddingVertical: 2 }}>
+              <Text style={{ color: '#fff', fontSize: 12, fontWeight: '500' }}>{experience >= 20 ? '20+ Years' : `${experience} Years`}</Text>
+            </View>
           </View>
-          <View className="h-2 bg-surface-container-high rounded-full overflow-hidden">
-            <View className="h-full bg-appbar-bg rounded-full" style={{ width: "60%" }} />
+          <View className="flex-row items-center" style={{ gap: 12 }}>
+            <TouchableOpacity onPress={() => setExperience(e => Math.max(0, e - 1))} style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: '#ffe9e4', alignItems: 'center', justifyContent: 'center' }}>
+              <Text style={{ fontSize: 20, color: '#FF4500', fontWeight: '700' }}>−</Text>
+            </TouchableOpacity>
+            <View className="flex-1 bg-surface-container-high rounded-full" style={{ height: 4 }}>
+              <View style={{ height: 4, borderRadius: 2, backgroundColor: '#FF4500', width: `${(experience / 20) * 100}%` }} />
+            </View>
+            <TouchableOpacity onPress={() => setExperience(e => Math.min(20, e + 1))} style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: '#ffe9e4', alignItems: 'center', justifyContent: 'center' }}>
+              <Text style={{ fontSize: 20, color: '#FF4500', fontWeight: '700' }}>+</Text>
+            </TouchableOpacity>
+          </View>
+          <View className="flex-row justify-between">
+            {['0 yrs', '10 yrs', '20+ yrs'].map(l => (
+              <Text key={l} style={{ fontSize: 10, color: '#757575', fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5 }}>{l}</Text>
+            ))}
           </View>
         </View>
 
-        <Text className="text-on-surface text-base font-bold mb-3">Years of Experience</Text>
-        <View className="flex-row flex-wrap gap-2 mb-6">
-          {EXPERIENCE_YEARS.map((y) => {
-            const isActive = exp.includes(y);
+        {/* Skill Cards */}
+        <View className="px-4 pt-4" style={{ gap: 12 }}>
+          {skills.map(skill => {
+            const sel = selected.has(skill.id);
             return (
               <TouchableOpacity
-                key={y}
-                className={`px-4 py-2 rounded-xl border-2 ${isActive ? "bg-appbar-bg border-appbar-bg" : "border-outline-variant bg-surface-container-low"}`}
-                onPress={() => toggleExp(y)}
+                key={skill.id}
+                className="flex-row items-center bg-white rounded-xl p-4"
+                style={{ borderWidth: sel ? 2 : 1, borderColor: sel ? '#FF4500' : '#e7bdb2', gap: 16, backgroundColor: sel ? '#fff1ed' : '#fff', shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 3, elevation: 1 }}
+                onPress={() => toggle(skill.id)}
+                activeOpacity={0.85}
               >
-                <Text className={`text-sm font-semibold ${isActive ? "text-white" : "text-on-surface"}`}>{y}</Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-
-        <Text className="text-on-surface text-base font-bold mb-3">Your Skills</Text>
-        <View className="gap-2 mb-5">
-          {SKILLS.map(({ id, label }) => {
-            const isChecked = skills.includes(id);
-            return (
-              <TouchableOpacity
-                key={id}
-                className={`flex-row items-center gap-3 p-3.5 rounded-xl border ${isChecked ? "bg-surface-container-low border-appbar-bg/30" : "bg-surface-container-low border-transparent"}`}
-                onPress={() => toggleSkill(id)}
-              >
-                <View className={`w-5 h-5 rounded border-2 items-center justify-center ${isChecked ? "bg-appbar-bg border-appbar-bg" : "border-outline"}`}>
-                  {isChecked && <Text className="text-white text-xs font-bold">✓</Text>}
+                <View className="flex-1">
+                  <Text className="text-base font-semibold text-text-primary">{skill.label}</Text>
+                  <Text className="text-sm text-text-secondary mt-0.5">{skill.desc}</Text>
                 </View>
-                <Text className={`text-sm font-medium ${isChecked ? "text-appbar-bg" : "text-on-surface"}`}>{label}</Text>
+                {sel
+                  ? <CheckCircle2 size={22} color="#FF4500" fill="#FF4500" />
+                  : <Circle size={22} color="#e7bdb2" />
+                }
               </TouchableOpacity>
             );
           })}
-        </View>
-
-        <View className="bg-surface-container-low rounded-xl p-4 flex-row items-center gap-3 mb-8 border border-outline-variant">
-          <ShieldCheck color="#00A389" size={22} />
-          <View className="flex-1">
-            <Text className="text-on-surface text-sm font-semibold">Skill Verification</Text>
-            <Text className="text-on-surface-variant text-xs mt-0.5">Skills are cross-verified by our team post-registration</Text>
-          </View>
         </View>
       </ScrollView>
 
-      <View className="px-5 pb-8 pt-4 bg-surface-container-lowest border-t border-outline-variant">
-        <TouchableOpacity
-          className="bg-appbar-bg rounded-xl h-14 items-center justify-center"
-          style={{ shadowColor: "#FF4500", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.35, shadowRadius: 8, elevation: 6 }}
-          onPress={() => router.push("/onboarding/provider-preview")}
-        >
-          <Text className="text-white text-base font-bold">Save & Continue →</Text>
+      {/* Footer */}
+      <View className="absolute bottom-0 left-0 right-0 bg-surface-container-lowest border-t border-outline-variant px-4 py-4">
+        <TouchableOpacity className="w-full rounded-full py-4 items-center" style={{ backgroundColor: '#FF4500', shadowColor: '#FF4500', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 4 }} onPress={() => router.push('/onboarding/provider-preview')} activeOpacity={0.85}>
+          <Text className="text-white text-base font-semibold">Save & Continue</Text>
         </TouchableOpacity>
       </View>
     </View>

@@ -1,96 +1,126 @@
-import { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
-import { useRouter } from "expo-router";
-import { ChevronLeft, ShieldCheck, Fingerprint } from "lucide-react-native";
+import { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, Image } from 'react-native';
+import { useRouter } from 'expo-router';
+import { ArrowLeft, Lock, Camera } from 'lucide-react-native';
 
-export default function ProviderSignupScreen() {
+export default function ProviderSignup() {
   const router = useRouter();
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [agreed, setAgreed] = useState(false);
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [aadhaar, setAadhaar] = useState('');
 
-  const isValid = name.trim().length >= 2 && phone.replace(/\D/g, "").length === 10 && agreed;
+  const formatAadhaar = (val: string) => {
+    const digits = val.replace(/\D/g, '').slice(0, 12);
+    return digits.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+  };
 
   return (
-    <KeyboardAvoidingView className="flex-1 bg-surface" behavior={Platform.OS === "ios" ? "padding" : undefined}>
-      <ScrollView className="flex-1" keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-        {/* AppBar */}
-        <View className="bg-appbar-bg pt-14 pb-5 px-5 flex-row items-center gap-3">
-          <TouchableOpacity onPress={() => router.back()} className="p-2 rounded-lg hover:bg-white/10" aria-label="Go back">
-            <ChevronLeft color="white" size={22} />
-          </TouchableOpacity>
-          <Text className="text-white text-lg font-semibold flex-1 text-center">Nearby Technician</Text>
-          <View className="w-10" />
-        </View>
+    <KeyboardAvoidingView className="flex-1" behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      {/* AppBar — FIX: was WHITE in original, now ORANGE */}
+      <View className="h-14 flex-row items-center px-4" style={{ backgroundColor: '#FF4500' }}>
+        <TouchableOpacity onPress={() => router.back()} className="p-2 -ml-2">
+          <ArrowLeft size={24} color="#fff" />
+        </TouchableOpacity>
+        <Text className="flex-1 text-center text-white text-xl font-bold" style={{ marginRight: 32 }}>Provider Signup</Text>
+      </View>
 
-        <View className="px-6 pt-6 pb-8">
-          <Text className="text-on-surface text-2xl font-bold mb-1">Register as a Pro</Text>
-          <Text className="text-on-surface-variant text-sm mb-6">Start earning with your skills</Text>
+      <ScrollView className="flex-1 px-4 py-5" showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingBottom: 100 }}>
+        <View className="bg-surface-container-lowest rounded-xl border border-outline-variant p-5"
+          style={{ gap: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 4, elevation: 2 }}>
 
-          {/* Hero */}
-          <View className="bg-surface-container-low rounded-xl h-36 items-center justify-center mb-6 border border-outline-variant">
-            <View className="bg-appbar-bg rounded-xl px-4 py-2 flex-row items-center gap-2">
-              <Text className="text-white text-sm font-bold">10,000+ Pros Joined</Text>
+          {/* Personal Details */}
+          <View style={{ gap: 12 }}>
+            <Text className="text-lg font-bold text-on-background">Personal Details</Text>
+
+            <View style={{ gap: 6 }}>
+              <Text className="text-xs font-medium text-on-surface-variant">Full Legal Name</Text>
+              <TextInput
+                className="border border-outline-variant rounded-lg px-3.5 py-3 text-sm text-text-primary bg-surface-container-lowest"
+                style={{ height: 48 }}
+                placeholder="Enter your full name"
+                placeholderTextColor="#9CA3AF"
+                value={name}
+                onChangeText={setName}
+              />
             </View>
-            <Text className="text-appbar-bg/60 text-xs mt-2">Join the trusted professional network</Text>
-          </View>
 
-          {/* Full Name */}
-          <View className="mb-5">
-            <Text className="text-on-surface-variant text-xs font-semibold mb-1.5 uppercase tracking-wide">Full Name (as on Aadhaar)</Text>
-            <TextInput
-              className="h-12 px-4 rounded-xl border border-outline-variant bg-surface-container-lowest text-on-surface text-base"
-              placeholder="Enter your full name"
-              placeholderTextColor="#926f66"
-              value={name}
-              onChangeText={setName}
-              autoCapitalize="words"
-            />
-          </View>
-
-          {/* Mobile */}
-          <View className="mb-5">
-            <Text className="text-on-surface-variant text-xs font-semibold mb-1.5 uppercase tracking-wide">Mobile Number</Text>
-            <View className="h-12 flex-row items-center px-4 rounded-xl border border-outline-variant bg-surface-container-lowest">
-              <Text className="text-on-surface text-base font-medium mr-2">+91</Text>
-              <View className="w-px h-5 bg-outline-variant mr-2" />
-              <TextInput className="flex-1 text-on-surface text-base" placeholder="98765 43210" placeholderTextColor="#926f66" value={phone} onChangeText={(t) => setPhone(t.replace(/\D/g, "").slice(0, 10))} keyboardType="phone-pad" />
-            </View>
-          </View>
-
-          {/* Aadhaar trust card */}
-          <View className="bg-[#FFF8E7] border border-aadhaar-gold/30 rounded-xl p-4 flex-row items-center gap-3 mb-6">
-            <View className="w-10 h-10 rounded-xl bg-aadhaar-gold/15 items-center justify-center">
-              <Fingerprint color="#BF953F" size={22} />
-            </View>
-            <View className="flex-1">
-              <Text className="text-[#8B6914] text-sm font-semibold">Aadhaar Verification Required</Text>
-              <Text className="text-[#8B6914]/70 text-xs mt-0.5">Your identity will be verified via Aadhaar OTP</Text>
+            <View style={{ gap: 6 }}>
+              <Text className="text-xs font-medium text-on-surface-variant">Mobile Number</Text>
+              <View className="flex-row border border-outline-variant rounded-lg overflow-hidden bg-surface-container-lowest" style={{ height: 48 }}>
+                <View className="px-4 border-r border-outline-variant justify-center bg-surface-container-low">
+                  <Text className="text-sm font-semibold text-on-surface-variant">+91</Text>
+                </View>
+                <TextInput
+                  className="flex-1 px-3.5 text-sm text-text-primary"
+                  placeholder="10-digit mobile number"
+                  placeholderTextColor="#9CA3AF"
+                  keyboardType="phone-pad"
+                  maxLength={10}
+                  value={phone}
+                  onChangeText={setPhone}
+                />
+              </View>
             </View>
           </View>
 
-          {/* T&C */}
-          <TouchableOpacity className="flex-row items-start gap-3 mb-8" onPress={() => setAgreed(!agreed)}>
-            <View className={`w-5 h-5 rounded border-2 mt-0.5 items-center justify-center ${agreed ? "bg-appbar-bg border-appbar-bg" : "border-outline"}`}>
-              {agreed && <Text className="text-white text-xs font-bold">✓</Text>}
-            </View>
-            <Text className="flex-1 text-on-surface-variant text-sm leading-5">
-              I agree to the <Text className="text-appbar-bg font-medium">Terms of Service</Text> and <Text className="text-appbar-bg font-medium">Privacy Policy</Text>
-            </Text>
-          </TouchableOpacity>
+          {/* Divider */}
+          <View style={{ height: 1, backgroundColor: 'rgba(231,189,178,0.3)' }} />
 
-          <TouchableOpacity
-            className={`rounded-xl h-14 items-center justify-center ${isValid ? "bg-appbar-bg" : "bg-surface-container-high"}`}
-            style={isValid ? { shadowColor: "#FF4500", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.35, shadowRadius: 8, elevation: 6 } : {}}
-            disabled={!isValid}
-            onPress={() => router.push("/onboarding/provider-aadhaar")}
-          >
-            <Text className={`text-base font-bold ${isValid ? "text-white" : "text-on-surface-variant"}`}>
-              Continue to Verify →
-            </Text>
-          </TouchableOpacity>
+          {/* Verification */}
+          <View style={{ gap: 12 }}>
+            <Text className="text-lg font-bold text-on-background">Verification</Text>
+
+            <View style={{ gap: 6 }}>
+              <Text className="text-xs font-medium text-on-surface-variant">Aadhaar Number (12 Digits)</Text>
+              <View className="flex-row items-center border border-outline-variant rounded-lg bg-surface-container-lowest" style={{ height: 48 }}>
+                <Lock size={18} color="#757575" style={{ marginLeft: 14 }} />
+                <TextInput
+                  className="flex-1 px-3 text-sm text-text-primary"
+                  placeholder="XXXX XXXX XXXX"
+                  placeholderTextColor="#9CA3AF"
+                  keyboardType="numeric"
+                  maxLength={14}
+                  value={aadhaar}
+                  onChangeText={v => setAadhaar(formatAadhaar(v))}
+                  style={{ letterSpacing: 2 }}
+                />
+              </View>
+            </View>
+
+            {/* Photo Upload */}
+            <View style={{ gap: 8 }}>
+              <Text className="text-xs font-medium text-on-surface-variant">Upload Profile Photo (Required)</Text>
+              <TouchableOpacity
+                className="w-full items-center justify-center rounded-xl py-8"
+                style={{ borderWidth: 2, borderStyle: 'dashed', borderColor: '#e7bdb2', backgroundColor: '#fff1ed', gap: 10 }}
+                activeOpacity={0.8}
+              >
+                <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 3, elevation: 2 }}>
+                  <Camera size={22} color="#FF4500" />
+                </View>
+                <Text style={{ color: '#FF4500', fontSize: 14, fontWeight: '600' }}>Tap to upload photo</Text>
+                <Text className="text-xs text-text-secondary">Clear, front-facing face</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
       </ScrollView>
+
+      {/* Footer */}
+      <View className="px-4 pb-8 bg-surface-off-white border-t border-outline-variant pt-4">
+        <TouchableOpacity
+          className="w-full rounded-xl items-center justify-center"
+          style={{ backgroundColor: '#FF4500', height: 48, shadowColor: '#FF4500', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 4 }}
+          onPress={() => router.push('/onboarding/provider-aadhaar')}
+          activeOpacity={0.85}
+        >
+          <Text className="text-white text-base font-bold">Send OTP</Text>
+        </TouchableOpacity>
+        <Text className="text-center text-xs text-text-secondary mt-3">
+          By signing up, you agree to our{' '}
+          <Text style={{ color: '#FF4500', textDecorationLine: 'underline' }}>Terms & Conditions</Text>.
+        </Text>
+      </View>
     </KeyboardAvoidingView>
   );
 }
