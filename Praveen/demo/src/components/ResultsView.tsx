@@ -278,11 +278,14 @@ function ReviewCard({ review, idx, keywords = [] }: { review: ReviewItem; idx: n
 
 function highlightKeywords(text: string, keywords: string[]): React.ReactNode {
   if (!keywords.length || !text) return text;
-  const escaped = keywords.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  // Sort longest first so multi-word phrases match before their subwords
+  const sorted  = [...keywords].sort((a, b) => b.length - a.length);
+  const escaped = sorted.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
   const pattern = new RegExp(`(${escaped.join('|')})`, 'gi');
   const parts = text.split(pattern);
+  const kwSet = new Set(sorted.map(k => k.toLowerCase()));
   return parts.map((part, i) =>
-    keywords.some(k => k.toLowerCase() === part.toLowerCase())
+    kwSet.has(part.toLowerCase())
       ? <mark key={i} className="bg-warning-soft text-heading rounded px-0.5 not-italic font-semibold">{part}</mark>
       : part
   );
@@ -331,7 +334,7 @@ const TAG_KEYWORD_MAP: Record<string, string[]> = {
   'Good WiFi':          ['wifi', 'wi-fi', 'free wifi', 'internet', 'fast wifi', 'wifi available', 'good wifi', 'wifi working', 'internet access', 'high speed', 'connectivity'],
   // ── Hotels: Amenities & Food ─────────────────────────────────────────────
   'Good Amenities':     ['amenities', 'wifi', 'lift', 'pool', 'facilities', 'generator', 'power backup', 'all facilities', 'basic amenities', 'all amenities', 'tv', 'fridge', 'geyser', 'equipped', 'well equipped', 'elevator', 'ac'],
-  'In-House Restaurant':['in-house restaurant', 'hotel restaurant', 'hotel dining', 'dining hall', 'restaurant in hotel', 'food court', 'restaurant', 'dining', 'canteen', 'food available', 'meals served', 'room service', 'attached restaurant', 'food at hotel'],
+  'In-House Restaurant':['in-house restaurant', 'hotel restaurant', 'hotel dining', 'dining hall', 'restaurant in hotel', 'attached restaurant', 'food at hotel', 'hotel canteen', 'hotel food court', 'room service'],
   'Breakfast Included': ['breakfast included', 'complimentary breakfast', 'free breakfast', 'breakfast provided', 'breakfast', 'morning meal', 'breakfast was', 'breakfast served', 'buffet breakfast'],
   'Good Food':          ['food', 'tasty', 'delicious', 'good food', 'fresh food', 'recommend', 'amazing'],
   // ── Hotels: Value ────────────────────────────────────────────────────────
@@ -484,11 +487,6 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
         <div className="px-3 py-3 flex flex-col gap-1.5 cursor-pointer" onClick={() => setExpanded(v => !v)}>
           <div className="flex items-baseline gap-1.5 flex-wrap pr-9">
             <h3 className="font-display font-bold text-base text-heading leading-snug tracking-tight line-clamp-1" title={place.name}>{place.name}</h3>
-            {place.matchScore !== undefined && (
-              <span className={`text-xs font-bold shrink-0 ${place.matchScore >= 80 ? 'text-success-strong' : place.matchScore >= 55 ? 'text-brand' : 'text-muted'}`}>
-                {place.matchScore}%
-              </span>
-            )}
           </div>
           <div className="flex items-center gap-0.5">
             <StarRating rating={place.rating} size="xs" />
@@ -517,6 +515,15 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               {unconfirmed.slice(0, 1).map(t => (
                 <span key={t} className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-medium border bg-bg-app border-border-medium text-muted">~{t}</span>
               ))}
+            </div>
+          )}
+          {/* Filter evidence — shows highlighted review quote when a tag filter is active */}
+          {selectedTags.length > 0 && place.filterVerification && (
+            <div className="flex items-start gap-1.5 px-2 py-1.5 rounded-lg bg-brand-softer border border-brand-medium/30">
+              <CheckCircle className="w-3 h-3 text-brand shrink-0 mt-0.5" />
+              <p className="text-xs text-brand leading-snug line-clamp-2">
+                {highlightKeywords(place.filterVerification, reviewKeywords)}
+              </p>
             </div>
           )}
           {/* Sentiment — 2 lines so the AI summary is readable */}
@@ -643,11 +650,6 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
         <div className="flex-1 min-w-0 px-3 py-3 flex flex-col gap-1.5 cursor-pointer" onClick={() => setExpanded(v => !v)}>
           <div className="flex items-baseline gap-1.5 flex-wrap">
             <h3 className="font-display font-bold text-base text-heading leading-snug tracking-tight line-clamp-1" title={place.name}>{place.name}</h3>
-            {place.matchScore !== undefined && (
-              <span className={`text-xs font-bold shrink-0 ${place.matchScore >= 80 ? 'text-success-strong' : place.matchScore >= 55 ? 'text-brand' : 'text-muted'}`}>
-                {place.matchScore}% match
-              </span>
-            )}
           </div>
           <div className="flex items-center gap-0.5">
             <StarRating rating={place.rating} size="xs" />
@@ -665,6 +667,15 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                   ~{t}
                 </span>
               ))}
+            </div>
+          )}
+          {/* Filter evidence — shows highlighted review quote when a tag filter is active */}
+          {selectedTags.length > 0 && place.filterVerification && (
+            <div className="flex items-start gap-1.5 px-2.5 py-1.5 rounded-lg bg-brand-softer border border-brand-medium/30">
+              <CheckCircle className="w-3 h-3 text-brand shrink-0 mt-0.5" />
+              <p className="text-xs text-brand leading-snug line-clamp-2">
+                {highlightKeywords(place.filterVerification, reviewKeywords)}
+              </p>
             </div>
           )}
           {/* Sentiment + Map — pinned to bottom of info col to mirror Col 3 layout */}

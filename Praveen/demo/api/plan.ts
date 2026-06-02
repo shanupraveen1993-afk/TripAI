@@ -516,7 +516,7 @@ const TAG_TEXT_KEYWORDS: Record<string, string[]> = {
   'Hot Water':           ['hot water', 'geyser', 'hot shower', 'warm water', 'geyser working', 'hot bath', 'warm shower', 'all amenities', 'basic amenities', 'facilities available', 'well equipped', 'hot tap', 'warm tap'],
   'Good WiFi':           ['wifi', 'wi-fi', 'free wifi', 'internet', 'fast wifi', 'wifi available', 'good wifi', 'wifi working', 'wifi speed', 'high speed', 'internet access', 'broadband', 'connectivity'],
   'Good Amenities':      ['amenities', 'wifi', 'wi-fi', 'internet', 'lift', 'elevator', 'pool', 'facilities', 'generator', 'power backup', 'backup', 'ac', 'air conditioning', 'parking', 'well equipped', 'good facilities', 'all facilities', 'basic amenities', 'all amenities', 'tv', 'television', 'fridge', 'refrigerator', 'geyser', 'kettle', 'equipped'],
-  'In-House Restaurant': ['in-house restaurant', 'hotel restaurant', 'hotel dining', 'restaurant in hotel', 'dining hall', 'hotel has restaurant', 'restaurant facility', 'food court', 'restaurant', 'dining', 'canteen', 'breakfast served', 'meals served', 'food available', 'room service', 'attached restaurant', 'meals', 'food at hotel', 'food served'],
+  'In-House Restaurant': ['in-house restaurant', 'hotel restaurant', 'hotel dining', 'restaurant in hotel', 'dining hall', 'hotel has restaurant', 'restaurant facility', 'attached restaurant', 'food at hotel', 'room service', 'hotel canteen', 'hotel food court'],
   // ── Food & Value ─────────────────────────────────────────────────────────
   'Breakfast Included':  ['breakfast included', 'complimentary breakfast', 'free breakfast', 'breakfast provided', 'breakfast', 'morning meal', 'breakfast was', 'breakfast served', 'morning breakfast', 'breakfast available', 'buffet breakfast'],
   'Good Food':           ['food', 'tasty', 'delicious', 'good food', 'fresh food', 'recommend', 'recommended', 'excellent', 'amazing', 'wonderful', 'must visit'],
@@ -675,10 +675,10 @@ function scoreAllTagsForHotel(place: any, selectedTags: string[], cityKey: strin
     if (place.dineIn === false) return { score: 0.0, ev: 'No dine-in (Google ✓)' };
     const kws  = TAG_TEXT_KEYWORDS['In-House Restaurant'] ?? [];
     const hits = countHits(allText, kws);
-    // dineIn true boosts only when review also confirms (avoids scoring restaurants-named-hotels)
+    // dineIn true boosts only when review also confirms with a specific phrase — avoids generic food mentions
     if (place.dineIn === true && hits >= 1) return { score: 0.95, ev: 'Dine-in (Google ✓) + review confirms' };
-    if (place.dineIn === true)              return { score: 0.65, ev: 'Dine-in confirmed (Google ✓)' };
-    return { score: hits >= 2 ? 0.85 : hits === 1 ? 0.40 : 0.05, ev: hits > 0 ? '"in-house restaurant/dining hall" in reviews' : '' };
+    if (place.dineIn === true)              return { score: 0.45, ev: 'Dine-in flag only — no review phrase' };
+    return { score: hits >= 2 ? 0.85 : hits === 1 ? 0.50 : 0.05, ev: hits > 0 ? '"in-house restaurant/dining hall" in reviews' : '' };
   })();
   allTagScores['In-House Restaurant'] = scoreRestaurant.score;
   if (scoreRestaurant.ev) tagEvidence['In-House Restaurant'] = scoreRestaurant.ev;
