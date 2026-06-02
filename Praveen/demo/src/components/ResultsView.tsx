@@ -470,7 +470,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
 
         {/* Row 1: Full-width image on top — tap to expand */}
         <div
-          className="relative h-40 cursor-pointer"
+          className="relative h-44 cursor-pointer"
           role="button"
           tabIndex={0}
           aria-label={expanded ? 'Collapse details' : 'Expand details'}
@@ -606,10 +606,10 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
       </div>
 
       {/* ══ DESKTOP CARD LAYOUT (≥ sm) ══ */}
-      <div className="hidden sm:flex min-h-[140px]">
+      <div className="hidden sm:flex min-h-[170px]">
 
         {/* Col 1: Photo — square, click to expand */}
-        <div className="w-[160px] shrink-0 relative self-stretch cursor-pointer" onClick={() => setExpanded(v => !v)}>
+        <div className="w-[180px] shrink-0 relative self-stretch cursor-pointer" onClick={() => setExpanded(v => !v)}>
           <div className="absolute inset-0">
             <PlacePhoto
               color={place.photoColor}
