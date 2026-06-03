@@ -566,40 +566,60 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
   const [categorySticky, setCategorySticky] = useState(true);
   const ctaSentinelRef = useRef<HTMLDivElement>(null);
 
-  const uHero = (id: string) =>
-    `https://images.unsplash.com/photo-${id}?w=920&h=280&fit=crop&auto=format&q=80`;
-
-  const HOTEL_HERO_SLIDES = [
-    { name: 'Hotel Sangam',     sub: 'Pool View · Thanjavur',        badge: '4.8★ Most Booked',    img: uHero('1631049307264-da0ec9d70304') },
-    { name: 'Hotel Parisutham', sub: 'Heritage Stay · River View',    badge: '4.7★ Heritage Pick',  img: uHero('1590402494682-cd3fb53b1f70') },
-    { name: 'TTDC Hotel TN',    sub: 'Garden Suite · Near Temple',    badge: '4.5★ Best Value',     img: uHero('1582719478250-c89cae4dc2fb') },
-  ];
-  const FOOD_HERO_SLIDES = [
-    { name: 'Sathars Restaurant', sub: 'Dum Biryani · Thanjavur',      badge: '4.8★ Famous Biryani', img: uHero('1657981630164-769503f3a9a8') },
-    { name: 'Sri Muthu Hotel',    sub: 'South Indian Meals · Veg',     badge: '4.6★ Authentic Meals',img: uHero('1589301760014-d929f3979dbc') },
-    { name: 'Bhavani Restaurant', sub: 'Grand Thali · Heritage Recipe', badge: '4.7★ Grand Thali',   img: uHero('1711153419402-336ee48f2138') },
-  ];
-  const EXPLORE_HERO_SLIDES = [
-    { name: 'Brihadeeswarar Temple', sub: 'UNESCO · Built 1010 AD',       badge: 'World Heritage',      img: uHero('1587474260584-136574528ed5') },
-    { name: 'Thanjavur Palace',      sub: 'Saraswathi Mahal Library',     badge: '4.8★ Royal Museum',   img: uHero('1477587458883-47145ed94245') },
-    { name: 'Sivaganga Park',        sub: 'Boating · Sunset Spot',        badge: '4.5★ Scenic',         img: uHero('1622018135960-249abd263aeb') },
-  ];
+  // Real GBP photos — one per place, fetched once on mount
   type HeroSlide = { name: string; sub: string; badge: string; img: string };
-  const getHeroSlides = (tab: Tab): HeroSlide[] => {
-    if (tab === 'Hotels') return HOTEL_HERO_SLIDES;
-    if (tab === 'Food') return FOOD_HERO_SLIDES;
-    return EXPLORE_HERO_SLIDES;
+
+  const HERO_PLACES: Record<Tab, Omit<HeroSlide, 'img'>[]> = {
+    Hotels: [
+      { name: 'Hotel Sangam',          sub: 'Pool View · Thanjavur',        badge: '4.8★ Most Booked'    },
+      { name: 'Hotel Parisutham',      sub: 'Heritage Stay · River View',    badge: '4.7★ Heritage Pick'  },
+      { name: 'TTDC Hotel Tamil Nadu', sub: 'Garden Suite · Near Temple',    badge: '4.5★ Best Value'     },
+    ],
+    Food: [
+      { name: 'Sathars Restaurant',    sub: 'Dum Biryani · Thanjavur',       badge: '4.8★ Famous Biryani' },
+      { name: 'Sri Muthu Hotel',       sub: 'South Indian Meals · Veg',      badge: '4.6★ Authentic Meals'},
+      { name: 'Bhavani Restaurant',    sub: 'Grand Thali · Heritage Recipe',  badge: '4.7★ Grand Thali'   },
+    ],
+    Itinerary: [
+      { name: 'Brihadeeswarar Temple', sub: 'UNESCO · Built 1010 AD',        badge: 'World Heritage'      },
+      { name: 'Thanjavur Palace',      sub: 'Saraswathi Mahal Library',      badge: '4.8★ Royal Museum'   },
+      { name: 'Sivaganga Park',        sub: 'Boating · Sunset Spot',         badge: '4.5★ Scenic'         },
+    ],
+    Explore: [
+      { name: 'Brihadeeswarar Temple', sub: 'UNESCO · Built 1010 AD',        badge: 'World Heritage'      },
+      { name: 'Thanjavur Palace',      sub: 'Saraswathi Mahal Library',      badge: '4.8★ Royal Museum'   },
+      { name: 'Sivaganga Park',        sub: 'Boating · Sunset Spot',         badge: '4.5★ Scenic'         },
+    ],
   };
+
+  const [heroPhotos, setHeroPhotos] = useState<Partial<Record<Tab, (string | null)[]>>>({});
+
+  useEffect(() => {
+    // Fetch all 4 tabs' photos in parallel on mount — cached by browser + CDN after first load
+    (Object.keys(HERO_PLACES) as Tab[]).forEach(tab => {
+      Promise.all(
+        HERO_PLACES[tab].map(p =>
+          fetch(`/api/photo?placeName=${encodeURIComponent(p.name)}&city=Thanjavur`)
+            .then(r => r.json())
+            .then((d: { photoUri?: string }) => d.photoUri ?? null)
+            .catch(() => null)
+        )
+      ).then(imgs => setHeroPhotos(prev => ({ ...prev, [tab]: imgs })));
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const getHeroSlides = (tab: Tab): HeroSlide[] =>
+    HERO_PLACES[tab].map((p, i) => ({ ...p, img: heroPhotos[tab]?.[i] ?? '' }));
+
   const [heroSlide, setHeroSlide] = useState(0);
   const prevTabRef = useRef(activeTab);
   useEffect(() => {
     if (prevTabRef.current !== activeTab) { setHeroSlide(0); prevTabRef.current = activeTab; }
   }, [activeTab]);
   useEffect(() => {
-    const slides = getHeroSlides(activeTab);
-    const id = setInterval(() => setHeroSlide(i => (i + 1) % slides.length), 3800);
+    const id = setInterval(() => setHeroSlide(i => (i + 1) % 3), 3800);
     return () => clearInterval(id);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
   // Scroll to top and reset state on tab switch
@@ -1126,8 +1146,8 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       <div className="relative overflow-hidden rounded-2xl min-h-[220px]">
         {/* Gradient fallback always underneath */}
         <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg,var(--color-brand-active) 0%,var(--color-brand) 100%)' }} />
-        {/* All 3 slides pre-rendered — cross-fade via opacity */}
-        {getHeroSlides(activeTab).map((slide, i) => (
+        {/* GBP photos — only rendered once loaded; gradient shows while fetching */}
+        {getHeroSlides(activeTab).map((slide, i) => slide.img ? (
           <img
             key={`${activeTab}-${i}`}
             src={slide.img}
@@ -1138,7 +1158,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-500"
             style={{ opacity: i === heroSlide ? 1 : 0 }}
           />
-        ))}
+        ) : null)}
         <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.20) 50%, rgba(0,0,0,0.65) 100%)' }} />
         {/* Greeting */}
         {firstName && (
