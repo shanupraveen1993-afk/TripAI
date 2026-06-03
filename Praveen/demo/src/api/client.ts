@@ -95,6 +95,8 @@ export interface PlanResponse {
 }
 
 const API_TIMEOUT_MS = 25_000;
+const TAGS_TTL = 3_600_000;  // 1 hour
+const PLAN_TTL = 1_800_000;  // 30 min
 
 function fetchWithTimeout(url: string, options: RequestInit): Promise<Response> {
   const ctrl = new AbortController();
@@ -102,7 +104,35 @@ function fetchWithTimeout(url: string, options: RequestInit): Promise<Response> 
   return fetch(url, { ...options, signal: ctrl.signal }).finally(() => clearTimeout(tid));
 }
 
+function ssGet<T>(key: string): T | null {
+  try {
+    const raw = sessionStorage.getItem(key);
+    if (!raw) return null;
+    const { data, ts } = JSON.parse(raw) as { data: T; ts: number };
+    if (Date.now() - ts > PLAN_TTL) return null;
+    return data;
+  } catch { return null; }
+}
+
+function ssSet(key: string, data: unknown): void {
+  try { sessionStorage.setItem(key, JSON.stringify({ data, ts: Date.now() })); } catch {}
+}
+
+function ssGetTags<T>(key: string): T | null {
+  try {
+    const raw = sessionStorage.getItem(key);
+    if (!raw) return null;
+    const { data, ts } = JSON.parse(raw) as { data: T; ts: number };
+    if (Date.now() - ts > TAGS_TTL) return null;
+    return data;
+  } catch { return null; }
+}
+
 export async function fetchPlan(tab: string, seed = 0, filters: PlanFilters = {}, city = 'Thanjavur'): Promise<PlanResponse> {
+  const cacheKey = `plan:${tab}:${filters.city ?? city}:${seed}:${JSON.stringify(filters)}`;
+  const cached = ssGet<PlanResponse>(cacheKey);
+  if (cached) return cached;
+
   const r = await fetchWithTimeout('/api/plan', {
     method:  'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -110,7 +140,9 @@ export async function fetchPlan(tab: string, seed = 0, filters: PlanFilters = {}
   });
   if (!r.ok) throw new Error(`API error ${r.status}`);
   const data = await r.json() as PlanResponse;
-  return { results: data.results ?? [] };
+  const result: PlanResponse = { results: data.results ?? [] };
+  ssSet(cacheKey, result);
+  return result;
 }
 
 export async function fetchItinerary(
@@ -145,6 +177,10 @@ export async function fetchCityTags(
   city: string,
   tab: 'Hotels' | 'Food',
 ): Promise<CityTagsResult> {
+  const cacheKey = `tags:${city}:${tab}`;
+  const cached = ssGetTags<CityTagsResult>(cacheKey);
+  if (cached) return cached;
+
   try {
     const r = await fetch('/api/tags', {
       method:  'POST',
@@ -157,11 +193,13 @@ export async function fetchCityTags(
       segments?: Record<string, string[]>;
       groupA?:   string[];
     };
-    return {
+    const result: CityTagsResult = {
       tags:      (data.tags ?? []).map(t => t.tag),
       segments:  data.segments,
       groupA:    data.groupA,
     };
+    ssSet(cacheKey, result);
+    return result;
   } catch {
     return { tags: [] };
   }
@@ -189,13 +227,25 @@ export async function fetchAutocomplete(input: string, city: string): Promise<Au
   }
 }
 
-export async function fetchPhoto(photoRef: string): Promise<string | null> {
-  try {
-    const r = await fetch(`/api/photo?name=${encodeURIComponent(photoRef)}`);
-    if (!r.ok) return null;
-    const data = await r.json() as { photoUri?: string };
-    return data.photoUri ?? null;
-  } catch {
-    return null;
-  }
+const _photoCache: Map<string, string> = new Map();
+const _photoPending: Map<string, Promise<string | null>> = new Map();
+
+export function fetchPhoto(photoRef: string): Promise<string | null> {
+  const hit = _photoCache.get(photoRef);
+  if (hit) return Promise.resolve(hit);
+  const inflight = _photoPending.get(photoRef);
+  if (inflight) return inflight;
+
+  const p = fetch(`/api/photo?name=${encodeURIComponent(photoRef)}`)
+    .then(r => r.ok ? r.json() as Promise<{ photoUri?: string }> : null)
+    .then(data => {
+      const uri = data?.photoUri ?? null;
+      _photoPending.delete(photoRef);
+      if (uri) _photoCache.set(photoRef, uri);
+      return uri;
+    })
+    .catch(() => { _photoPending.delete(photoRef); return null; });
+
+  _photoPending.set(photoRef, p);
+  return p;
 }

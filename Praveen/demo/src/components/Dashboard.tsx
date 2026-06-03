@@ -566,24 +566,39 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
   const [categorySticky, setCategorySticky] = useState(true);
   const ctaSentinelRef = useRef<HTMLDivElement>(null);
 
-  // GBP hero photos per tab — iconic, photogenic Thanjavur locations per context
-  const TAB_HERO_PLACE: Record<Tab, string> = {
-    Hotels:    'Hotel Sangam Thanjavur Tamil Nadu',
-    Food:      'Chola Mess Thanjavur Tamil Nadu',
-    Itinerary: 'Brihadeeswarar Temple Thanjavur',
-    Explore:   'Thanjavur Maratha Palace Royal Museum',
+  const uHero = (id: string) =>
+    `https://images.unsplash.com/photo-${id}?w=920&h=280&fit=crop&auto=format&q=80`;
+
+  const HOTEL_HERO_SLIDES = [
+    { name: 'Hotel Sangam',     sub: 'Pool View · Thanjavur',        badge: '4.8★ Most Booked',    img: uHero('1631049307264-da0ec9d70304') },
+    { name: 'Hotel Parisutham', sub: 'Heritage Stay · River View',    badge: '4.7★ Heritage Pick',  img: uHero('1590402494682-cd3fb53b1f70') },
+    { name: 'TTDC Hotel TN',    sub: 'Garden Suite · Near Temple',    badge: '4.5★ Best Value',     img: uHero('1582719478250-c89cae4dc2fb') },
+  ];
+  const FOOD_HERO_SLIDES = [
+    { name: 'Sathars Restaurant', sub: 'Dum Biryani · Thanjavur',      badge: '4.8★ Famous Biryani', img: uHero('1657981630164-769503f3a9a8') },
+    { name: 'Sri Muthu Hotel',    sub: 'South Indian Meals · Veg',     badge: '4.6★ Authentic Meals',img: uHero('1589301760014-d929f3979dbc') },
+    { name: 'Bhavani Restaurant', sub: 'Grand Thali · Heritage Recipe', badge: '4.7★ Grand Thali',   img: uHero('1711153419402-336ee48f2138') },
+  ];
+  const EXPLORE_HERO_SLIDES = [
+    { name: 'Brihadeeswarar Temple', sub: 'UNESCO · Built 1010 AD',       badge: 'World Heritage',      img: uHero('1587474260584-136574528ed5') },
+    { name: 'Thanjavur Palace',      sub: 'Saraswathi Mahal Library',     badge: '4.8★ Royal Museum',   img: uHero('1477587458883-47145ed94245') },
+    { name: 'Sivaganga Park',        sub: 'Boating · Sunset Spot',        badge: '4.5★ Scenic',         img: uHero('1622018135960-249abd263aeb') },
+  ];
+  type HeroSlide = { name: string; sub: string; badge: string; img: string };
+  const getHeroSlides = (tab: Tab): HeroSlide[] => {
+    if (tab === 'Hotels') return HOTEL_HERO_SLIDES;
+    if (tab === 'Food') return FOOD_HERO_SLIDES;
+    return EXPLORE_HERO_SLIDES;
   };
-  const [heroPhotos, setHeroPhotos] = useState<Partial<Record<Tab, string>>>({});
-  const heroFetched = useRef<Set<Tab>>(new Set());
+  const [heroSlide, setHeroSlide] = useState(0);
+  const prevTabRef = useRef(activeTab);
   useEffect(() => {
-    if (heroFetched.current.has(activeTab)) return;
-    heroFetched.current.add(activeTab);
-    fetch(`/api/photo?placeName=${encodeURIComponent(TAB_HERO_PLACE[activeTab])}&city=Thanjavur&photoIndex=1`)
-      .then(r => r.json())
-      .then((d: { photoUri?: string }) => {
-        if (d.photoUri) setHeroPhotos(prev => ({ ...prev, [activeTab]: d.photoUri }));
-      })
-      .catch(() => {});
+    if (prevTabRef.current !== activeTab) { setHeroSlide(0); prevTabRef.current = activeTab; }
+  }, [activeTab]);
+  useEffect(() => {
+    const slides = getHeroSlides(activeTab);
+    const id = setInterval(() => setHeroSlide(i => (i + 1) % slides.length), 3800);
+    return () => clearInterval(id);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
@@ -1107,54 +1122,62 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       style={{ paddingTop: 0 }}
     >
 
-      {/* ── Hero — all tabs (no remount on tab switch, crossfade images) ─── */}
-      <div
-        className="relative overflow-hidden rounded-2xl min-h-[220px]"
-      >
-        {/* Gradient fallback — always underneath */}
+      {/* ── Hero slider — 3 Thanjavur-specific slides per tab ───────────── */}
+      <div className="relative overflow-hidden rounded-2xl min-h-[220px]">
+        {/* Gradient fallback always underneath */}
         <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg,var(--color-brand-active) 0%,var(--color-brand) 100%)' }} />
-        {/* All fetched tab photos kept mounted; opacity crossfade on tab switch */}
-        {/* H-04: descriptive alt text per tab context */}
-        {(Object.entries(heroPhotos) as [Tab, string][]).map(([tab, uri]) => {
-          const ALT_TEXT: Record<Tab, string> = {
-            Hotels:    `Hotel in ${destination || 'Thanjavur'} — exterior or lobby photo`,
-            Food:      `Restaurant dish in ${destination || 'Thanjavur'} — food photo`,
-            Itinerary: `Brihadeeswarar Temple, ${destination || 'Thanjavur'} — landmark photo`,
-            Explore:   `Thanjavur Maratha Palace — heritage site photo`,
-          };
-          return (
-            <img
-              key={tab}
-              src={uri}
-              alt={ALT_TEXT[tab]}
-              draggable={false}
-              decoding="async"
-              className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-500"
-              style={{ opacity: tab === activeTab ? 1 : 0 }}
-            />
-          );
-        })}
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.18) 40%, rgba(0,0,0,0.62) 100%)' }} />
+        {/* All 3 slides pre-rendered — cross-fade via opacity */}
+        {getHeroSlides(activeTab).map((slide, i) => (
+          <img
+            key={`${activeTab}-${i}`}
+            src={slide.img}
+            alt={slide.name}
+            draggable={false}
+            decoding="async"
+            loading={i === 0 ? 'eager' : 'lazy'}
+            className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-500"
+            style={{ opacity: i === heroSlide ? 1 : 0 }}
+          />
+        ))}
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.20) 50%, rgba(0,0,0,0.65) 100%)' }} />
         {/* Greeting */}
         {firstName && (
           <div className="absolute top-4 left-5 text-white/80 text-xs font-semibold">
             {greeting}, {firstName} <span aria-hidden="true">👋</span>
           </div>
         )}
-        {/* Hero text — animate on tab switch */}
+        {/* Slide name + badge */}
         <AnimatePresence mode="wait">
           <motion.div
-            key={activeTab + '-text'}
+            key={`${activeTab}-${heroSlide}`}
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.2, ease: 'easeOut' }}
-            className="absolute bottom-5 left-5 right-5"
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="absolute bottom-8 left-5 right-5"
           >
-            <p className="text-white font-display font-black text-lg leading-tight tracking-tight drop-shadow">{hero.headline}</p>
-            <p className="text-white/75 text-xs mt-0.5 leading-snug">{hero.sub}</p>
+            <span className="inline-block bg-white/15 backdrop-blur-sm border border-white/25 text-white text-[10px] font-bold px-2.5 py-1 rounded-full mb-1.5">
+              {getHeroSlides(activeTab)[heroSlide].badge}
+            </span>
+            <p className="text-white font-display font-black text-lg leading-tight tracking-tight drop-shadow">
+              {getHeroSlides(activeTab)[heroSlide].name}
+            </p>
+            <p className="text-white/75 text-xs mt-0.5">{getHeroSlides(activeTab)[heroSlide].sub}</p>
           </motion.div>
         </AnimatePresence>
+        {/* Dot indicators */}
+        <div className="absolute bottom-3 left-5 flex items-center gap-1.5">
+          {getHeroSlides(activeTab).map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setHeroSlide(i)}
+              className="focus-visible:outline-none"
+              aria-label={`Slide ${i + 1}`}
+            >
+              <span className={`block rounded-full transition-all duration-300 ${i === heroSlide ? 'w-5 h-1.5 bg-white' : 'w-1.5 h-1.5 bg-white/40 hover:bg-white/70'}`} />
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* ── Category selector ── */}

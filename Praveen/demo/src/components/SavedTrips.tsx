@@ -56,7 +56,7 @@ function TripCard({ trip, onDelete, onView }: { trip: SavedTrip; onDelete: () =>
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <div>
-            <h3 className="font-display font-bold text-sm text-heading group-hover:text-brand transition-colors truncate-1">
+            <h3 className="font-display font-bold text-sm text-heading group-hover:text-brand transition-colors line-clamp-1">
               {trip.tab} · {trip.destination}
             </h3>
             <div className="flex items-center gap-3 mt-1 text-xs text-muted flex-wrap">
