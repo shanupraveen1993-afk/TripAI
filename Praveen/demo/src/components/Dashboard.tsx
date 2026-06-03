@@ -603,7 +603,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
     (Object.keys(HERO_PLACES) as Tab[]).forEach(tab => {
       Promise.all(
         HERO_PLACES[tab].map(p =>
-          fetch(`/api/photo?placeName=${encodeURIComponent(p.placeName)}&city=Thanjavur&photoIndex=${p.photoIndex}&maxW=900&maxH=400`)
+          fetch(`/api/photo?placeName=${encodeURIComponent(p.placeName)}&city=Thanjavur&photoIndex=${p.photoIndex}&maxW=1200`)
             .then(r => r.json())
             .then((d: { photoUri?: string }) => d.photoUri ?? null)
             .catch(() => null)
@@ -1164,7 +1164,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
 
       {/* ── Hero slider — 3 Thanjavur-specific slides per tab ───────────── */}
       <div
-        className="relative overflow-hidden rounded-2xl min-h-[240px] cursor-zoom-in"
+        className="relative overflow-hidden rounded-2xl min-h-[360px] cursor-zoom-in"
         onClick={() => { const img = getHeroSlides(activeTab)[heroSlide]?.img; if (img) setLightboxImg(img); }}
         role="button"
         aria-label={`View full photo of ${getHeroSlides(activeTab)[heroSlide]?.name ?? ''}`}
