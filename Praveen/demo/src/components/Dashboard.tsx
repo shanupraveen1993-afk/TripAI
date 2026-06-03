@@ -569,37 +569,41 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
   // Real GBP photos — one per place, fetched once on mount
   type HeroSlide = { name: string; sub: string; badge: string; img: string };
 
-  const HERO_PLACES: Record<Tab, Omit<HeroSlide, 'img'>[]> = {
+  // placeName targets the specific photo context (room/food/landmark) for accurate GBP results
+  // photoIndex skips exterior shots: hotels 0=exterior→use 1 for lobby/room; food 0=dish for most
+  type HeroPlaceDef = Omit<HeroSlide, 'img'> & { placeName: string; photoIndex: number };
+
+  const HERO_PLACES: Record<Tab, HeroPlaceDef[]> = {
     Hotels: [
-      { name: 'Hotel Sangam',          sub: 'Pool View · Thanjavur',        badge: '4.8★ Most Booked'    },
-      { name: 'Hotel Parisutham',      sub: 'Heritage Stay · River View',    badge: '4.7★ Heritage Pick'  },
-      { name: 'TTDC Hotel Tamil Nadu', sub: 'Garden Suite · Near Temple',    badge: '4.5★ Best Value'     },
+      { name: 'Hotel Sangam',          sub: 'Pool View · Thanjavur',        badge: '4.8★ Most Booked',   placeName: 'Hotel Sangam Thanjavur room',          photoIndex: 1 },
+      { name: 'Hotel Parisutham',      sub: 'Heritage Stay · River View',    badge: '4.7★ Heritage Pick', placeName: 'Hotel Parisutham Thanjavur room',      photoIndex: 1 },
+      { name: 'TTDC Hotel Tamil Nadu', sub: 'Garden Suite · Near Temple',    badge: '4.5★ Best Value',    placeName: 'TTDC Hotel Tamil Nadu Thanjavur room', photoIndex: 1 },
     ],
     Food: [
-      { name: 'Sathars Restaurant',    sub: 'Dum Biryani · Thanjavur',       badge: '4.8★ Famous Biryani' },
-      { name: 'Sri Muthu Hotel',       sub: 'South Indian Meals · Veg',      badge: '4.6★ Authentic Meals'},
-      { name: 'Bhavani Restaurant',    sub: 'Grand Thali · Heritage Recipe',  badge: '4.7★ Grand Thali'   },
+      { name: "Sathar's Hotel",        sub: 'Dum Biryani · Thanjavur',       badge: '4.8★ Famous Biryani',placeName: "Sathar's Hotel Thanjavur biryani",      photoIndex: 0 },
+      { name: 'Sri Muthu Hotel',       sub: 'South Indian Meals · Veg',      badge: '4.6★ Authentic Meals',placeName: 'Sri Muthu Hotel Thanjavur food',       photoIndex: 0 },
+      { name: 'Bhavani Restaurant',    sub: 'Grand Thali · Heritage Recipe',  badge: '4.7★ Grand Thali',  placeName: 'Bhavani Restaurant Thanjavur thali',   photoIndex: 0 },
     ],
     Itinerary: [
-      { name: 'Brihadeeswarar Temple', sub: 'UNESCO · Built 1010 AD',        badge: 'World Heritage'      },
-      { name: 'Thanjavur Palace',      sub: 'Saraswathi Mahal Library',      badge: '4.8★ Royal Museum'   },
-      { name: 'Sivaganga Park',        sub: 'Boating · Sunset Spot',         badge: '4.5★ Scenic'         },
+      { name: 'Brihadeeswarar Temple', sub: 'UNESCO · Built 1010 AD',        badge: 'World Heritage',     placeName: 'Brihadeeswarar Temple Thanjavur',      photoIndex: 0 },
+      { name: 'Thanjavur Palace',      sub: 'Saraswathi Mahal Library',      badge: '4.8★ Royal Museum',  placeName: 'Thanjavur Maratha Palace',              photoIndex: 0 },
+      { name: 'Sivaganga Park',        sub: 'Boating · Sunset Spot',         badge: '4.5★ Scenic',        placeName: 'Sivaganga Park Thanjavur',              photoIndex: 0 },
     ],
     Explore: [
-      { name: 'Brihadeeswarar Temple', sub: 'UNESCO · Built 1010 AD',        badge: 'World Heritage'      },
-      { name: 'Thanjavur Palace',      sub: 'Saraswathi Mahal Library',      badge: '4.8★ Royal Museum'   },
-      { name: 'Sivaganga Park',        sub: 'Boating · Sunset Spot',         badge: '4.5★ Scenic'         },
+      { name: 'Brihadeeswarar Temple', sub: 'UNESCO · Built 1010 AD',        badge: 'World Heritage',     placeName: 'Brihadeeswarar Temple Thanjavur',      photoIndex: 0 },
+      { name: 'Thanjavur Palace',      sub: 'Saraswathi Mahal Library',      badge: '4.8★ Royal Museum',  placeName: 'Thanjavur Maratha Palace',              photoIndex: 0 },
+      { name: 'Sivaganga Park',        sub: 'Boating · Sunset Spot',         badge: '4.5★ Scenic',        placeName: 'Sivaganga Park Thanjavur',              photoIndex: 0 },
     ],
   };
 
   const [heroPhotos, setHeroPhotos] = useState<Partial<Record<Tab, (string | null)[]>>>({});
 
   useEffect(() => {
-    // Fetch all 4 tabs' photos in parallel on mount — cached by browser + CDN after first load
+    // Fetch all tabs on mount — landscape crop (900×400) matches the 4:1 banner aspect ratio
     (Object.keys(HERO_PLACES) as Tab[]).forEach(tab => {
       Promise.all(
         HERO_PLACES[tab].map(p =>
-          fetch(`/api/photo?placeName=${encodeURIComponent(p.name)}&city=Thanjavur`)
+          fetch(`/api/photo?placeName=${encodeURIComponent(p.placeName)}&city=Thanjavur&photoIndex=${p.photoIndex}&maxW=900&maxH=400`)
             .then(r => r.json())
             .then((d: { photoUri?: string }) => d.photoUri ?? null)
             .catch(() => null)
@@ -612,7 +616,8 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
   const getHeroSlides = (tab: Tab): HeroSlide[] =>
     HERO_PLACES[tab].map((p, i) => ({ ...p, img: heroPhotos[tab]?.[i] ?? '' }));
 
-  const [heroSlide, setHeroSlide] = useState(0);
+  const [heroSlide,   setHeroSlide]   = useState(0);
+  const [lightboxImg, setLightboxImg] = useState<string | null>(null);
   const prevTabRef = useRef(activeTab);
   useEffect(() => {
     if (prevTabRef.current !== activeTab) { setHeroSlide(0); prevTabRef.current = activeTab; }
@@ -1142,8 +1147,28 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       style={{ paddingTop: 0 }}
     >
 
+      {/* Lightbox — click hero photo to see full size */}
+      {lightboxImg && (
+        <div
+          className="fixed inset-0 z-[9999] bg-black/90 flex items-center justify-center cursor-zoom-out"
+          onClick={() => setLightboxImg(null)}
+        >
+          <img src={lightboxImg} alt="Full size" className="max-h-[90vh] max-w-[95vw] rounded-xl object-contain shadow-2xl" draggable={false} />
+          <button
+            className="absolute top-5 right-5 w-10 h-10 rounded-full bg-white/15 hover:bg-white/30 text-white text-lg flex items-center justify-center transition-colors"
+            onClick={() => setLightboxImg(null)}
+            aria-label="Close photo"
+          >✕</button>
+        </div>
+      )}
+
       {/* ── Hero slider — 3 Thanjavur-specific slides per tab ───────────── */}
-      <div className="relative overflow-hidden rounded-2xl min-h-[220px]">
+      <div
+        className="relative overflow-hidden rounded-2xl min-h-[240px] cursor-zoom-in"
+        onClick={() => { const img = getHeroSlides(activeTab)[heroSlide]?.img; if (img) setLightboxImg(img); }}
+        role="button"
+        aria-label={`View full photo of ${getHeroSlides(activeTab)[heroSlide]?.name ?? ''}`}
+      >
         {/* Gradient fallback always underneath */}
         <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg,var(--color-brand-active) 0%,var(--color-brand) 100%)' }} />
         {/* GBP photos — only rendered once loaded; gradient shows while fetching */}

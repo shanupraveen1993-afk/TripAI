@@ -12,10 +12,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const { name, placeName, city } = req.query;
 
+  const maxW = typeof req.query.maxW === 'string' ? req.query.maxW : '800';
+  const maxH = typeof req.query.maxH === 'string' ? `&maxHeightPx=${req.query.maxH}` : '';
+
   try {
     // Path A: direct photo resource name (used by live API results)
     if (name && typeof name === 'string') {
-      const url = `https://places.googleapis.com/v1/${name}/media?maxWidthPx=800&skipHttpRedirect=true&key=${key}`;
+      const url = `https://places.googleapis.com/v1/${name}/media?maxWidthPx=${maxW}${maxH}&skipHttpRedirect=true&key=${key}`;
       const r   = await fetch(url);
       const data = await r.json() as { photoUri?: string };
       return res.json({ photoUri: data.photoUri ?? null });
@@ -59,7 +62,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const photoName = photos[photoIdx]?.name ?? photos[0]?.name;
       if (!photoName) return res.json({ photoUri: null });
 
-      const mediaUrl  = `https://places.googleapis.com/v1/${photoName}/media?maxWidthPx=800&skipHttpRedirect=true&key=${key}`;
+      const mediaUrl  = `https://places.googleapis.com/v1/${photoName}/media?maxWidthPx=${maxW}${maxH}&skipHttpRedirect=true&key=${key}`;
       const mediaRes  = await fetch(mediaUrl);
       const mediaData = await mediaRes.json() as { photoUri?: string };
       return res.json({ photoUri: mediaData.photoUri ?? null });
