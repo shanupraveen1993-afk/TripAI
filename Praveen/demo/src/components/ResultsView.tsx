@@ -552,25 +552,25 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             const plM = getHotelPriceLabel(place.googleHotelsPrice, place.priceRange, place.priceLevel);
             return (
               <>
-                {/* Price + Map + Book Now */}
+                {/* Price row + Map + Book Now */}
                 <div className="border-t border-border">
-                  <div className="flex items-end gap-2 px-3 pb-3 pt-2">
+                  {(plM ?? place.priceLevel) && (
+                    <div className="flex justify-end px-3 pt-2 pb-1">
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-2xl font-black text-heading tabular-nums leading-tight">{plM ?? place.priceLevel}</span>
+                        {plM && <span className="text-xs text-muted font-medium">/night</span>}
+                      </div>
+                    </div>
+                  )}
+                  <div className="flex gap-2 px-3 pb-3 pt-1">
                     <a href={mapsHrefM} target="_blank" rel="noopener noreferrer"
                       className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-bold border border-border text-body active:scale-[0.97] shrink-0">
                       <Map className="w-3.5 h-3.5 shrink-0" />Map
                     </a>
-                    <div className="flex-1 flex flex-col items-end gap-0.5">
-                      {(plM ?? place.priceLevel) && (
-                        <div className="flex items-baseline gap-1">
-                          <span className="text-lg font-black text-heading tabular-nums leading-tight">{plM ?? place.priceLevel}</span>
-                          {plM && <span className="text-xs text-muted font-medium">/night</span>}
-                        </div>
-                      )}
-                      <a href={bookHrefM} target="_blank" rel="noopener noreferrer"
-                        className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-sm font-bold bg-brand text-white active:scale-[0.97] shadow-sm">
-                        <ExternalLink className="w-3.5 h-3.5 shrink-0" />Book Now
-                      </a>
-                    </div>
+                    <a href={bookHrefM} target="_blank" rel="noopener noreferrer"
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-sm font-bold bg-brand text-white active:scale-[0.97] shadow-sm">
+                      <ExternalLink className="w-3.5 h-3.5 shrink-0" />Book Now
+                    </a>
                   </div>
                 </div>
                 {/* Detailed Analysis */}
