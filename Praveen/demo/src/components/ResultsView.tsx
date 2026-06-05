@@ -483,10 +483,12 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             photoRef={place.photoRef ?? null}
             autoLoad={rank === 1}
           />
-          <span className={`absolute top-2 left-2 flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-semibold leading-none ${place.openNow ? 'bg-success/90 text-white' : 'bg-black/60 text-white/80'}`}>
-            <span className={`w-1 h-1 rounded-full shrink-0 ${place.openNow ? 'bg-white' : 'bg-white/60'}`} />
-            {place.openNow ? 'Open' : 'Closed'}
-          </span>
+          {tab !== 'Hotels' && (
+            <span className={`absolute top-2 left-2 flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-semibold leading-none ${place.openNow ? 'bg-success/90 text-white' : 'bg-black/60 text-white/80'}`}>
+              <span className={`w-1 h-1 rounded-full shrink-0 ${place.openNow ? 'bg-white' : 'bg-white/60'}`} />
+              {place.openNow ? 'Open' : 'Closed'}
+            </span>
+          )}
         </div>
 
         {/* Row 2: Info — tap to expand */}
@@ -620,11 +622,13 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               autoLoad={rank === 1}
             />
           </div>
-          {/* Open/Closed — top left of photo */}
-          <span className={`absolute top-2 left-2 flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-semibold leading-none ${place.openNow ? 'bg-success/90 text-white' : 'bg-black/60 text-white/80'}`}>
-            <span className={`w-1 h-1 rounded-full shrink-0 ${place.openNow ? 'bg-white' : 'bg-white/60'}`} />
-            {place.openNow ? 'Open' : 'Closed'}
-          </span>
+          {/* Open/Closed — Food only (hotels are 24/7) */}
+          {tab !== 'Hotels' && (
+            <span className={`absolute top-2 left-2 flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-semibold leading-none ${place.openNow ? 'bg-success/90 text-white' : 'bg-black/60 text-white/80'}`}>
+              <span className={`w-1 h-1 rounded-full shrink-0 ${place.openNow ? 'bg-white' : 'bg-white/60'}`} />
+              {place.openNow ? 'Open' : 'Closed'}
+            </span>
+          )}
         </div>
 
         {/* Col 2: Info — click to expand */}
