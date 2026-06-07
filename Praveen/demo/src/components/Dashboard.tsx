@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import {
   Search, ChevronDown, ChevronRight, Sparkles, MapPin, Navigation, X,
-  Hotel, Utensils, Route, Compass, Flame, Clock, AlertTriangle,
+  Hotel, Utensils, Route, Compass, Clock, AlertTriangle,
   Sunrise, Sun, Sunset,
 } from 'lucide-react';
 import { fetchCityTags, fetchAutocomplete, AutocompleteSuggestion, CityTagsResult } from '../api/client';
@@ -772,10 +772,11 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
           {hotelTagData.tags.length > 0 && (
             <div>
               {/* Header with counter + clear */}
-              <div className="mb-2.5">
+              <div className="mb-3">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-semibold text-heading">
-                    What matters to you?
+                  <label className="flex items-center gap-2 text-sm font-semibold text-heading">
+                    <span className="w-1 h-5 rounded-full bg-brand shrink-0" />
+                    Select your preference
                     {tagsLoading && <span role="status" aria-label="Loading tags" className="ml-1.5 inline-block w-2.5 h-2.5 border border-muted border-t-transparent rounded-full animate-spin align-middle" />}
                   </label>
                   {hotelTags.length > 0 ? (
@@ -790,11 +791,11 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               {/* Segmented tag display */}
               {hotelTagData.segments
                 ? Object.entries(hotelTagData.segments).map(([segName, segTags]) => (
-                  <div key={segName} className="mb-3">
-                    <div className="text-xs font-normal text-muted mb-1.5">
+                  <div key={segName} className="mb-4">
+                    <div className="text-xs font-bold text-brand uppercase tracking-wide mb-2">
                       {segName}
                     </div>
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="flex flex-wrap gap-2">
                       {segTags.map(tag => {
                         const isSelected = hotelTags.includes(tag);
                         const isMaxed    = hotelTags.length >= 2 && !isSelected;
@@ -887,9 +888,10 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
           {foodTagData.tags.length > 0 && (
             <div>
               {/* Header with counter + clear */}
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-sm font-semibold text-heading">
-                  What I'm looking for
+              <div className="flex items-center justify-between mb-3">
+                <label className="flex items-center gap-2 text-sm font-semibold text-heading">
+                  <span className="w-1 h-5 rounded-full bg-brand shrink-0" />
+                  Select your preference
                   {tagsLoading && <span role="status" aria-label="Loading tags" className="ml-1.5 inline-block w-2.5 h-2.5 border border-muted border-t-transparent rounded-full animate-spin align-middle" />}
                 </label>
                 {foodTags.length > 0 ? (
@@ -904,9 +906,9 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                 ? Object.entries(foodTagData.segments).map(([seg, tags]) => {
                   if (tags.length === 0) return null;
                   return (
-                  <div key={seg} className="mb-2">
-                    <p className="text-xs font-normal text-muted mb-1.5">{seg}</p>
-                    <div className="flex flex-wrap gap-1.5">
+                  <div key={seg} className="mb-4">
+                    <p className="text-xs font-bold text-brand uppercase tracking-wide mb-2">{seg}</p>
+                    <div className="flex flex-wrap gap-2">
                       {tags.map((tag: string) => {
                         const isVegBlocked = dietType === 'Pure Veg' && NON_VEG_ITEMS.includes(tag);
                         const isSelected   = foodTags.includes(tag);
@@ -987,11 +989,11 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               />
             </button>
             {advancedOpen && (
-              <div className="px-3 py-2.5 space-y-2.5 border-t border-border">
+              <div className="px-3 py-2.5 space-y-4 border-t border-border">
                 {FOOD_ADVANCED.map(({ group, items }) => (
                   <div key={group}>
-                    <p className="text-xs font-normal text-muted mb-1">{group}</p>
-                    <div className="flex flex-wrap gap-1.5">
+                    <p className="text-xs font-bold text-brand uppercase tracking-wide mb-2">{group}</p>
+                    <div className="flex flex-wrap gap-2">
                       {items.map(item => {
                         const isVegBlocked = dietType === 'Pure Veg' && NON_VEG_ITEMS.includes(item);
                         const isSelected   = foodTags.includes(item);
@@ -1447,7 +1449,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
 
         {(activeTab === 'Hotels' || activeTab === 'Food') ? (
           /* 2×2 equal grid for Hotels & Food */
-          <div className="grid grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-2 gap-3">
             {(activeTab === 'Hotels' ? HOTEL_BENTO : FOOD_BENTO).map(item => (
               <motion.button
                 key={item.label}
@@ -1497,7 +1499,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                 </motion.button>
               );
             })()}
-            {THANJAVUR_ACTIONS.slice(1).map(item => (
+            {THANJAVUR_ACTIONS.slice(1, 3).map(item => (
               <motion.button
                 key={item.tab}
                 whileTap={prefersReducedMotion ? {} : { scale: 0.97 }}
@@ -1665,32 +1667,6 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
         </div>
       </div>
 
-      {/* ── Trending chips — Hotels & Food only ──────────────────────────── */}
-      {(activeTab === 'Hotels' || activeTab === 'Food') && (
-        <div className="relative z-10 bg-surface rounded-2xl border border-border/60 shadow-sm p-4">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-1.5">
-              <Flame className="w-3.5 h-3.5 text-brand shrink-0" />
-              <h2 className="font-display font-bold text-lg text-heading tracking-tight">
-                Trending in {destination || 'your city'}
-              </h2>
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {meta.trending.map(topic => (
-              <motion.button
-                key={topic}
-                type="button"
-                whileTap={prefersReducedMotion ? {} : { scale: 0.97 }}
-                onClick={() => { const ov = TRENDING_OVERRIDES[topic] ?? { tab: activeTab }; onBentoAction ? onBentoAction(ov.tab ?? activeTab, ov) : triggerSearch(ov); }}
-                className="text-xs font-medium px-3 py-1.5 rounded-lg border border-border bg-surface text-body hover:border-brand hover:text-brand hover:bg-brand-softer motion-safe:active:scale-[0.97] transition-all duration-150 select-none min-h-[36px]"
-              >
-                {topic}
-              </motion.button>
-            ))}
-          </div>
-        </div>
-      )}
 
     </div>
   );
