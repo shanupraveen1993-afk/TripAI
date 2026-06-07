@@ -1449,15 +1449,15 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
 
         {(activeTab === 'Hotels' || activeTab === 'Food') ? (
           /* 2×2 equal grid for Hotels & Food */
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3" style={{ gridAutoRows: '144px' }}>
             {(activeTab === 'Hotels' ? HOTEL_BENTO : FOOD_BENTO).map(item => (
               <motion.button
                 key={item.label}
                 whileTap={prefersReducedMotion ? {} : { scale: 0.97 }}
                 type="button"
                 onClick={() => onBentoAction ? onBentoAction(item.overrides.tab!, item.overrides) : triggerSearch(item.overrides)}
-                className="relative overflow-hidden rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand group text-left"
-                style={{ height: 144, background: item.grad }}
+                className="relative overflow-hidden rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand group text-left w-full"
+                style={{ background: item.grad }}
               >
                 <img src={uImg(item.imgId, 440, 290)} alt={item.label}
                   width={440} height={290}
