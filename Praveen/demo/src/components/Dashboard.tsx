@@ -1439,7 +1439,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       )}
 
       {/* ══ SEGMENT 1 — Bento smart picks ══════════════════════════════════ */}
-      <div className="relative z-10 bg-surface rounded-2xl border border-border/60 shadow-sm p-4">
+      <div className="relative z-10 bg-surface rounded-2xl border border-border/60 shadow-sm p-4 overflow-hidden">
         <div className="flex items-center justify-between mb-3">
           <div>
             <h2 className="font-display font-black text-2xl text-heading tracking-tight">Plan your visit</h2>
