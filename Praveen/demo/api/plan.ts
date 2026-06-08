@@ -3553,19 +3553,24 @@ async function geminiLitePricing(
   if (!geminiKey || hotelNames.length === 0) return result;
 
   const tryModel = async (model: string, useGrounding: boolean): Promise<boolean> => {
+    // Separate prompts: grounding can search live; knowledge mode uses training data
+    const promptText = useGrounding
+      ? `Search MakeMyTrip, Goibibo, and OYO India for the nightly room rate in Indian Rupees (₹) for these hotels in ${city}, Tamil Nadu, India:
+${hotelNames.map((n, i) => `${i}. ${n}`).join('\n')}
+
+Return ONLY valid JSON, no markdown, no explanation:
+[{"idx":0,"price":"₹X,XXX/night"},{"idx":1,"price":"₹X,XXX/night"},...]
+Rules: INR only · one price per hotel · format ₹X,XXX/night`
+      : `You are a hotel pricing expert for ${city}, Tamil Nadu, India.
+Estimate the standard nightly room rate in Indian Rupees (₹) for each hotel based on your knowledge:
+${hotelNames.map((n, i) => `${i}. ${n}`).join('\n')}
+
+Price bands for ${city}: budget lodge ₹700–₹1,500 · mid-range ₹2,000–₹4,000 · 3-star ₹3,500–₹5,500 · premium ₹5,000–₹9,000.
+Return ONLY valid JSON, no markdown:
+[{"idx":0,"price":"₹X,XXX/night"},{"idx":1,"price":"₹X,XXX/night"},...]`;
+
     const body: any = {
-      contents: [{ parts: [{ text:
-        `Search Google for hotel prices in India using Indian booking sites (MakeMyTrip, Goibibo, OYO, Booking.com India). All prices must be in Indian Rupees (₹).
-
-Find the nightly room rate in ₹ (Indian Rupees) for each hotel in ${city}, Tamil Nadu, India:
-${hotelNames.map((n, i) => `${i}. ${n}, ${city}, India`).join('\n')}
-
-RULES:
-- Search: "${city} India hotel price per night rupees" to get Indian results
-- Return ONLY Indian Rupees (₹). Never return GBP, USD, EUR or any foreign currency
-- Use the standard double room rate, not promotional deals
-- Return ONLY valid JSON, no markdown:
-[{"idx":0,"price":"₹X,XXX/night"},{"idx":1,"price":"₹X,XXX/night"},...]` }] }],
+      contents: [{ parts: [{ text: promptText }] }],
     };
     if (useGrounding) body.tools = [{ google_search: {} }];
 
@@ -3573,18 +3578,22 @@ RULES:
       `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`,
       { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
     );
-    if (resp.status === 429) { console.log('[pricing] 429 rate limit', model); return false; }
+    if (resp.status === 429) { console.log('[pricing] 429', model); return false; }
     const data  = await resp.json() as any;
-    if (data?.error) { console.log('[pricing] API error', model, JSON.stringify(data.error)); return false; }
-    const raw   = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
-    console.log('[pricing] raw response', model, useGrounding, raw.slice(0, 300));
-    const clean = raw.replace(/```json|```/g, '').trim();
+    if (data?.error) { console.log('[pricing] error', model, data.error?.code, data.error?.message); return false; }
+    // Grounding can spread content across multiple parts — join all text parts
+    const parts = (data?.candidates?.[0]?.content?.parts ?? []) as Array<{ text?: string }>;
+    const raw   = parts.map(p => p.text ?? '').filter(Boolean).join('\n');
+    console.log('[pricing] raw', model, useGrounding, raw.slice(0, 400));
+    // Extract JSON — handle markdown fences and surrounding prose
+    const jsonMatch = raw.match(/\[[\s\S]*?\]/);
+    const clean = jsonMatch ? jsonMatch[0] : raw.replace(/```json|```/g, '').trim();
     let parsed: Array<{ idx: number; price: string }> = [];
-    try { parsed = clean ? JSON.parse(clean) : []; } catch (e) { console.log('[pricing] JSON parse fail', String(e), clean.slice(0, 200)); return false; }
+    try { parsed = clean ? JSON.parse(clean) : []; } catch (e) { console.log('[pricing] parse fail', String(e), clean.slice(0,150)); return false; }
     for (const item of parsed) {
       const name      = hotelNames[item.idx];
       const sanitised = sanitiseGeminiPrice(item.price ?? '');
-      console.log('[pricing] item', item.idx, item.price, '->', sanitised, '|', name);
+      console.log('[pricing]', item.idx, item.price, '->', sanitised ?? 'REJECTED', '|', name);
       if (name && sanitised) result.set(name, sanitised);
     }
     return result.size > 0;
