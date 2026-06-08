@@ -3604,17 +3604,29 @@ Reply with ONLY the price in this exact format: ₹X,XXX/night`;
     } catch (_) { clearTimeout(timer); return null; }
   };
 
+  // Concurrency limiter — max N parallel Gemini calls to avoid 429 rate limits
+  const runLimited = async (tasks: Array<() => Promise<string | null>>, concurrency: number): Promise<Array<string | null>> => {
+    const out: Array<string | null> = new Array(tasks.length).fill(null);
+    let next = 0;
+    const worker = async () => {
+      while (next < tasks.length) { const i = next++; out[i] = await tasks[i](); }
+    };
+    await Promise.all(Array.from({ length: Math.min(concurrency, tasks.length) }, worker));
+    return out;
+  };
+
   try {
-    // Pass 1: all hotels in parallel with Google Search grounding — real live prices
-    const grounded = await Promise.all(hotelNames.map(n => fetchPrice(n, true)));
+    const MAX = 5; // stay well under Gemini free-tier 15 RPM
+    // Pass 1: grounded search — live prices from Google Hotels / MakeMyTrip / Booking.com
+    const grounded = await runLimited(hotelNames.map(n => () => fetchPrice(n, true)), MAX);
     let count = 0;
     for (let i = 0; i < hotelNames.length; i++) {
       if (grounded[i]) { result.set(hotelNames[i], grounded[i]!); count++; }
     }
     if (count > 0) { result._dbg = `grounded-ok(${count}/${hotelNames.length})`; return result; }
 
-    // Pass 2: knowledge fallback for any still missing
-    const knowledge = await Promise.all(hotelNames.map(n => fetchPrice(n, false)));
+    // Pass 2: Gemini knowledge fallback (no web search — uses training data)
+    const knowledge = await runLimited(hotelNames.map(n => () => fetchPrice(n, false)), MAX);
     for (let i = 0; i < hotelNames.length; i++) {
       if (knowledge[i] && !result.has(hotelNames[i])) { result.set(hotelNames[i], knowledge[i]!); count++; }
     }
@@ -4132,7 +4144,7 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
       }));
 
       const filterScored  = applyFilterScoring(placesToRank, tab, filters);
-      const hotelNames    = placesToRank.map((p: any) => p.displayName?.text ?? '').filter(Boolean);
+      const hotelNames    = placesToRank.slice(0, 10).map((p: any) => p.displayName?.text ?? '').filter(Boolean);
       const pricingQuery  = selectedTags.length > 0 ? selectedTags.join(' ') : (filters.searchQuery || 'hotel');
       const [rankedAi, pricingMap] = await Promise.all([
         geminiRankAndAnalyse(placesToRank, tab, filters, filterScored.map(s => s.filterScore)),
