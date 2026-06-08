@@ -4313,7 +4313,7 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
         buildHotelResult(p, sorted[i] ?? {}, i)
       );
 
-      return res.json({ results: finalResults });
+      return res.json({ results: finalResults, _debug: { geminiPricedCount: pricingMap.size, hotelCount: hotelNames.length } });
     }
 
     // ═══════════════════════════════════════════════════════════════════════
