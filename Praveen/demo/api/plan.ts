@@ -3573,16 +3573,18 @@ RULES:
       `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`,
       { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
     );
-    if (resp.status === 429) return false;
+    if (resp.status === 429) { console.log('[pricing] 429 rate limit', model); return false; }
     const data  = await resp.json() as any;
-    if (data?.error) return false;
+    if (data?.error) { console.log('[pricing] API error', model, JSON.stringify(data.error)); return false; }
     const raw   = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+    console.log('[pricing] raw response', model, useGrounding, raw.slice(0, 300));
     const clean = raw.replace(/```json|```/g, '').trim();
     let parsed: Array<{ idx: number; price: string }> = [];
-    try { parsed = clean ? JSON.parse(clean) : []; } catch { return false; }
+    try { parsed = clean ? JSON.parse(clean) : []; } catch (e) { console.log('[pricing] JSON parse fail', String(e), clean.slice(0, 200)); return false; }
     for (const item of parsed) {
       const name      = hotelNames[item.idx];
       const sanitised = sanitiseGeminiPrice(item.price ?? '');
+      console.log('[pricing] item', item.idx, item.price, '->', sanitised, '|', name);
       if (name && sanitised) result.set(name, sanitised);
     }
     return result.size > 0;
