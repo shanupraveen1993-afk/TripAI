@@ -1242,7 +1242,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       </div>
 
       {/* Search card — fixed 120px overlap into hero regardless of card height */}
-      <div className={`relative z-20 -mt-[120px] px-3 lg:px-8${(activeTab === 'Itinerary' || activeTab === 'Explore') ? ' mb-6' : ''}`}>
+      <div className="relative z-20 -mt-[120px] px-3 lg:px-8">
         <div className="mx-auto max-w-[900px]">
           <motion.div
             key={activeTab}
@@ -1370,7 +1370,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       </div>}
 
       {/* ── Explore best hotels/food OR Discover Thanjavur ── */}
-      <div className="bg-surface border-b border-border/50 py-6">
+      <div className={`bg-surface border-b border-border/50 py-6${(activeTab === 'Itinerary' || activeTab === 'Explore') ? ' mt-6' : ''}`}>
         <div className="flex items-center justify-between px-4 lg:px-8 mb-4">
           <div>
             <h2 className="font-display font-bold text-xl text-heading tracking-tight">
