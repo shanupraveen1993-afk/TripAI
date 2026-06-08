@@ -3600,10 +3600,18 @@ Numbers only. No hotel names. No explanation.`;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), useGrounding ? 25000 : 15000);
     try {
-      const resp = await fetch(
+      let resp = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,
         { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: controller.signal }
       );
+      // Retry once on 429 after 5s
+      if (resp.status === 429) {
+        await new Promise(r => setTimeout(r, 5000));
+        resp = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,
+          { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
+        );
+      }
       clearTimeout(timer);
       if (!resp.ok) { result._dbg = `http-${resp.status}(${useGrounding?'g':'k'})`; return false; }
       const data = await resp.json() as any;
@@ -3632,11 +3640,12 @@ Numbers only. No hotel names. No explanation.`;
     if (ok1) { result._dbg = `grounded-ok(${result.size}/${hotelNames.length})`; return result; }
 
     // Pass 2: knowledge fallback
+    const dbg1 = result._dbg;
     result.clear();
     await callGemini(false);
     result._dbg = result.size > 0
       ? `knowledge-ok(${result.size}/${hotelNames.length})`
-      : `all-failed:${result._dbg}`;
+      : `all-failed|g:${dbg1}|k:${result._dbg}`;
   } catch (e) {
     result._dbg = `catch:${String(e).slice(0, 80)}`;
   }
