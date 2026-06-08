@@ -1218,11 +1218,17 @@ function mapPriceLevel(level: string): string {
 function extractPriceRange(place: any): string | null {
   const pr = place.priceRange;
   if (!pr) return null;
+  // Only trust units when Google confirms currency is INR — other currencies (GBP, USD, etc.)
+  // have wrong magnitudes for Indian hotel prices; let Gemini's ₹-denominated pricing win instead.
+  const currency = pr.startPrice?.currencyCode ?? pr.endPrice?.currencyCode ?? pr.lowerBound?.currencyCode ?? 'INR';
+  if (currency !== 'INR') return null;
   const start = pr.startPrice?.units ?? pr.lowerBound?.units;
   const end   = pr.endPrice?.units   ?? pr.upperBound?.units;
-  if (start && end)   return `₹${start}–₹${end}`;
-  if (start)          return `From ₹${start}`;
-  if (end)            return `Up to ₹${end}`;
+  if (!start && !end) return null;
+  const fmt = (u: string) => `₹${Number(u).toLocaleString('en-IN')}`;
+  if (start && end)   return `${fmt(start)}–${fmt(end)}`;
+  if (start)          return `From ${fmt(start)}`;
+  if (end)            return `Up to ${fmt(end)}`;
   return null;
 }
 
