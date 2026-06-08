@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import {
-  Search, ChevronDown, ChevronRight, Sparkles, MapPin, Navigation, X,
+  Search, ChevronDown, ChevronRight, MapPin, Navigation, X,
   Hotel, Utensils, Route, Compass, Clock, AlertTriangle,
   Sunrise, Sun, Sunset,
 } from 'lucide-react';
@@ -1175,7 +1175,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
 
           <div className="rounded-lg p-2.5 border border-border bg-success-soft">
             <p className="text-xs text-body leading-relaxed flex items-start gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-success-strong shrink-0 mt-0.5" />
+              <Route className="w-3.5 h-3.5 text-success-strong shrink-0 mt-0.5" />
               <span><span className="font-bold text-heading">AI Visit Guide</span> — Gemini reads real reviews and crowd data to build a time-specific plan for your chosen spot.</span>
             </p>
           </div>

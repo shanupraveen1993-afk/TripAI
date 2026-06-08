@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Sparkles, ChevronRight } from 'lucide-react';
+import { Zap, ChevronRight } from 'lucide-react';
 import { Button } from './ui/Button';
 
 interface CityLockScreenProps {
@@ -76,7 +76,7 @@ export function CityLockScreen({ destination, onBack, onTryThanjavur }: CityLock
         <Button
           variant="brand"
           size="lg"
-          icon={<Sparkles className="w-4 h-4" />}
+          icon={<Zap className="w-4 h-4" />}
           iconRight={<ChevronRight className="w-4 h-4" />}
           onClick={onTryThanjavur}
           className="rounded-lg px-8"

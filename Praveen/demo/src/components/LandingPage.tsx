@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useReducedMotion } from 'motion/react';
 import {
-  Compass, Search, MapPin, Star, Sparkles, ArrowRight,
+  Compass, Search, MapPin, Star, ArrowRight,
   Shield, Globe, CheckCircle, Zap, Quote, X,
 } from 'lucide-react';
 import { Button } from './ui/Button';
@@ -143,7 +143,7 @@ function HeroPhotoPanel({ active, setActive }: { active: number; setActive: (i: 
         <div className="hidden md:flex bg-white/8 backdrop-blur-xl border border-white/15 rounded-2xl p-4 items-start gap-3">
           <div className="w-9 h-9 bg-brand rounded-lg flex items-center justify-center shrink-0 mt-0.5"
             style={{ boxShadow: '0 0 16px rgba(28,100,242,0.55)' }}>
-            <Sparkles className="w-4 h-4 text-white" />
+            <Zap className="w-4 h-4 text-white" />
           </div>
           <div className="min-w-0 space-y-1">
             <p className="text-white/75 text-xs font-normal">AI Pick · Why ranked #1</p>
@@ -338,9 +338,9 @@ export function ExploreScene({ className = 'w-24 h-24' }: { className?: string }
 }
 
 /* ── 3D Tilt card ─────────────────────────────────────────────────────── */
-function TiltCard({ label, desc, glow, illustration, onClick, animDelay = 0 }: {
+function TiltCard({ label, desc, glow, image, onClick, animDelay = 0 }: {
   label: string; desc: string; glow: string;
-  illustration: React.ReactNode; onClick: () => void; animDelay?: number;
+  image: string; onClick: () => void; animDelay?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const mx  = useMotionValue(0);
@@ -378,35 +378,45 @@ function TiltCard({ label, desc, glow, illustration, onClick, animDelay = 0 }: {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: animDelay }}
         viewport={{ once: true, amount: 0.2 }}
-        className="cursor-pointer relative group rounded-2xl border border-white/10 p-7 flex flex-col items-center text-center gap-4 select-none h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+        className="cursor-pointer relative group rounded-2xl border border-white/10 overflow-hidden flex flex-col items-center text-center select-none h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
       >
-        {/* Top glow on hover */}
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none rounded-2xl"
-          style={{ background: `radial-gradient(ellipse at 50% -10%, ${glow}22 0%, transparent 65%)` }} />
+        {/* Full-bleed hero image */}
+        <div className="relative w-full h-44 shrink-0 overflow-hidden">
+          <img
+            src={image}
+            alt={label}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            loading="lazy"
+          />
+          {/* Dark gradient so text below stays readable */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+        </div>
+
+        {/* Content area */}
+        <div className="relative z-10 flex flex-col items-center text-center gap-3 p-6 flex-1">
+          {/* Top glow on hover */}
+          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none"
+            style={{ background: `radial-gradient(ellipse at 50% -10%, ${glow}22 0%, transparent 65%)` }} />
+
+          {/* Label */}
+          <h3 className="relative z-10 font-display font-bold text-xl text-white">{label}</h3>
+
+          {/* Desc */}
+          <p className="relative z-10 text-sm leading-relaxed" style={{ color: 'var(--color-on-dark-body)' }}>{desc}</p>
+
+          {/* CTA arrow */}
+          <div className="relative z-10 flex items-center gap-1 text-xs font-bold mt-auto opacity-0 group-hover:opacity-100 transition-all duration-300"
+            style={{ color: glow }}>
+            Search now <ArrowRight className="w-3.5 h-3.5" />
+          </div>
+        </div>
 
         {/* Top edge line */}
-        <div className="absolute top-0 left-[18%] right-[18%] h-px opacity-0 group-hover:opacity-100 transition-opacity duration-150"
+        <div className="absolute top-0 left-[18%] right-[18%] h-px opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-20"
           style={{ background: `linear-gradient(90deg, transparent, ${glow}, transparent)` }} />
 
-        {/* Illustration */}
-        <div className="relative z-10 transition-transform duration-300 group-hover:scale-110">
-          {illustration}
-        </div>
-
-        {/* Label */}
-        <h3 className="relative z-10 font-display font-bold text-xl text-white">{label}</h3>
-
-        {/* Desc */}
-        <p className="relative z-10 text-sm leading-relaxed" style={{ color: 'var(--color-on-dark-body)' }}>{desc}</p>
-
-        {/* CTA arrow */}
-        <div className="relative z-10 flex items-center gap-1 text-xs font-bold mt-auto opacity-0 group-hover:opacity-100 transition-all duration-300"
-          style={{ color: glow }}>
-          Search now <ArrowRight className="w-3.5 h-3.5" />
-        </div>
-
         {/* Bottom glow line */}
-        <div className="absolute bottom-0 left-[15%] right-[15%] h-px opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        <div className="absolute bottom-0 left-[15%] right-[15%] h-px opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-20"
           style={{ background: `linear-gradient(90deg, transparent, ${glow}70, transparent)` }} />
       </motion.div>
     </div>
@@ -414,11 +424,11 @@ function TiltCard({ label, desc, glow, illustration, onClick, animDelay = 0 }: {
 }
 
 /* ── Category metadata ────────────────────────────────────────────────── */
-const CATEGORIES: { label: Tab; desc: string; glow: string; illustration: React.ReactNode }[] = [
-  { label: 'Hotels',    glow: 'var(--color-brand)',     illustration: <HotelScene />,   desc: 'Not 150 unfiltered options. AI-ranked picks by budget, area, and what you care about — applied before you see a single result.' },
-  { label: 'Food',      glow: 'var(--color-brand)',      illustration: <FoodScene />,    desc: 'Worth the queue or skip it? Diet, vibe, and distance — filtered before you open another app.' },
-  { label: 'Itinerary', glow: 'var(--color-brand)', illustration: <ItinScene />,    desc: 'Your whole day, no backtracking. Stops sequenced around your hotel — so you\'re not zigzagging across the city like a tourist.' },
-  { label: 'Explore',   glow: 'var(--color-brand)',   illustration: <ExploreScene />, desc: 'Brihadeeswarar to Airavatesvara. Entry times, dress code, crowd patterns — so you don\'t figure it out after the 2km walk.' },
+const CATEGORIES: { label: Tab; desc: string; glow: string; image: string }[] = [
+  { label: 'Hotels',    glow: 'var(--color-brand)', image: '/hotel.webp',     desc: 'Not 150 unfiltered options. AI-ranked picks by budget, area, and what you care about — applied before you see a single result.' },
+  { label: 'Food',      glow: 'var(--color-brand)', image: '/food.webp',      desc: 'Worth the queue or skip it? Diet, vibe, and distance — filtered before you open another app.' },
+  { label: 'Itinerary', glow: 'var(--color-brand)', image: '/itinerary.webp', desc: 'Your whole day, no backtracking. Stops sequenced around your hotel — so you\'re not zigzagging across the city like a tourist.' },
+  { label: 'Explore',   glow: 'var(--color-brand)', image: '/explore.webp',   desc: 'Brihadeeswarar to Airavatesvara. Entry times, dress code, crowd patterns — so you don\'t figure it out after the 2km walk.' },
 ];
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -528,7 +538,6 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
               {/* Badge */}
               <div className="inline-flex items-center gap-2 border text-brand-soft text-xs font-bold px-3.5 py-1.5 rounded-full"
                 style={{ background: 'rgba(28,100,242,0.1)', borderColor: 'rgba(28,100,242,0.28)' }}>
-                <Sparkles className="w-3.5 h-3.5" />
                 AI that explains every pick
               </div>
 
@@ -668,7 +677,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
                 label={c.label}
                 desc={c.desc}
                 glow={c.glow}
-                illustration={c.illustration}
+                image={c.image}
                 onClick={() => handleCategoryClick(c.label)}
                 animDelay={i * 0.1}
               />
@@ -698,7 +707,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               { icon: <Globe className="w-6 h-6" />,    title: 'Real ratings, not old ones',   desc: 'Every result is pulled live from Google Places — actual hours, actual ratings, no reviews from 2019 telling you a place is "great."' },
-              { icon: <Sparkles className="w-6 h-6" />, title: 'AI that explains itself',      desc: 'Not just a ranked list. Every pick comes with the exact reason it matches you — so you book with zero second-guessing.' },
+              { icon: <CheckCircle className="w-6 h-6" />, title: 'AI that explains itself',      desc: 'Not just a ranked list. Every pick comes with the exact reason it matches you — so you book with zero second-guessing.' },
               { icon: <Shield className="w-6 h-6" />,   title: 'Your shortlist, not a search', desc: 'Save what the AI found. Compare options side by side. Share with whoever\'s joining. Revisit when plans change.' },
             ].map((f, i) => (
               <motion.div key={f.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="flex gap-4">

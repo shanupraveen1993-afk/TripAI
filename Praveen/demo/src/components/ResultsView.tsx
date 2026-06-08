@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   ArrowRight, Star, MapPin, Clock, Navigation, Share2, Compass,
-  ChevronRight, ChevronDown, Sparkles, Info, RefreshCw, Bookmark, BookmarkCheck,
+  ChevronRight, ChevronDown, Info, RefreshCw, Bookmark, BookmarkCheck,
   Utensils, CheckCircle, AlertTriangle, RotateCcw, Hotel, Route,
   ImageIcon, ExternalLink, Map, X, Lightbulb, DollarSign, Flame, TrendingUp, ThumbsUp, Ticket,
   Sunrise, Sun, Sunset, SquareParking,
@@ -622,7 +622,6 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                 <div className="border-t border-border">
                   <button onClick={() => setExpanded(v => !v)}
                     className="w-full flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-brand hover:text-brand/70 transition-colors active:scale-[0.97] min-h-[44px]">
-                    <Sparkles className="w-3 h-3 shrink-0" />
                     Detailed Analysis
                     <ChevronDown className={`w-3 h-3 shrink-0 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
                   </button>
@@ -645,7 +644,6 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               <div className="border-t border-border">
                 <button onClick={() => setExpanded(v => !v)}
                   className="w-full flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-brand hover:text-brand/70 transition-colors active:scale-[0.97] min-h-[44px]">
-                  <Sparkles className="w-3 h-3 shrink-0" />
                   Detailed Analysis
                   <ChevronDown className={`w-3 h-3 shrink-0 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
                 </button>
@@ -780,7 +778,6 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                   onClick={() => setExpanded(v => !v)}
                   className="w-full flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-brand hover:text-brand/70 transition-colors active:scale-[0.97] min-h-[44px]"
                 >
-                  <Sparkles className="w-3 h-3 shrink-0" />
                   Detailed Analysis
                   <ChevronDown className={`w-3 h-3 shrink-0 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
                 </button>
@@ -810,7 +807,14 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                     <div className="w-6 h-6 rounded-lg bg-brand-soft flex items-center justify-center shrink-0">
                       <CheckCircle className="w-3.5 h-3.5 text-brand" />
                     </div>
-                    <span className="text-xs font-bold uppercase tracking-wide text-brand">Why This Fits</span>
+                    <span className="text-xs font-bold uppercase tracking-wide text-brand">
+                      {tab === 'Hotels' ? 'Why This Fits' : 'Best Foods'}
+                    </span>
+                    {tab !== 'Hotels' && (place.tags.includes('Pure Veg') || place.tags.includes('Pure Veg Hotel')) && (
+                      <span className="ml-auto flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-semibold border bg-success-soft border-success-medium text-success-strong">
+                        <CheckCircle className="w-2.5 h-2.5" />Pure Veg
+                      </span>
+                    )}
                   </div>
                   <div className="flex flex-col gap-1.5 mb-2">
                     {(() => {
@@ -969,7 +973,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                 </div>
               )}
 
-              {/* ── Share + Save ── */}
+              {/* ── Share + primary CTA ── */}
               <div className="px-3 py-3 border-t border-border flex gap-2">
                 <button
                   onClick={share}
@@ -977,13 +981,23 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                 >
                   <Share2 className="w-3.5 h-3.5" />Share
                 </button>
-                <button
-                  onClick={toggleBookmark}
-                  className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold rounded-lg border transition-colors active:scale-[0.97] ${bookmarked ? 'bg-brand border-brand text-white' : 'text-brand border-brand bg-brand-softer hover:bg-brand-soft'}`}
-                >
-                  <Bookmark className={`w-3.5 h-3.5 ${bookmarked ? 'fill-white' : ''}`} />
-                  {bookmarked ? 'Saved' : 'Save'}
-                </button>
+                {tab === 'Hotels' ? (
+                  <button
+                    onClick={() => place.mapUrl && window.open(place.mapUrl, '_blank')}
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold rounded-lg bg-brand text-white hover:bg-brand-dark transition-colors active:scale-[0.97]"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />Book Now
+                  </button>
+                ) : (
+                  <a
+                    href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold rounded-lg bg-brand text-white hover:bg-brand-dark transition-colors active:scale-[0.97]"
+                  >
+                    <Navigation className="w-3.5 h-3.5" />Get Directions
+                  </a>
+                )}
               </div>
 
             </div>
@@ -1342,7 +1356,7 @@ function ExploreView({ place, visitTime = 'Morning', onBack }: { place: ExploreR
             {/* AI Insight */}
             <div className="rounded-lg p-3.5 border bg-brand-softer border-brand-medium">
               <div className="flex items-center gap-1.5 mb-2">
-                <Sparkles className="w-3.5 h-3.5 text-brand" />
+                <Lightbulb className="w-3.5 h-3.5 text-brand" />
                 <span className="text-xs font-bold uppercase tracking-wide text-brand">AI Insight</span>
               </div>
               <p className="text-sm text-body leading-relaxed">"{place.insight}"</p>
@@ -1642,7 +1656,7 @@ export function ResultsView({
               <span className="text-sm text-muted tabular-nums">{results!.length} results</span>
             </div>
             <span className="flex items-center gap-1 text-xs font-semibold text-brand ml-2">
-              <Sparkles className="w-3 h-3 shrink-0" />AI Ranked
+              <ArrowRight className="w-3 h-3 shrink-0" />AI Ranked
             </span>
           </div>
           {/* Active tag chips — below context row */}
@@ -1676,7 +1690,7 @@ export function ResultsView({
             <span className="text-sm text-muted tabular-nums">{itinerary.length} stops</span>
           </div>
           <span className="flex items-center gap-1 text-xs font-semibold text-brand ml-2">
-            <Sparkles className="w-3 h-3 shrink-0" />AI Planned
+            <Route className="w-3 h-3 shrink-0" />AI Planned
           </span>
         </div>
       )}
@@ -1688,7 +1702,7 @@ export function ResultsView({
             <span className="text-sm text-muted truncate">{explore.name}</span>
           </div>
           <span className="flex items-center gap-1 text-xs font-semibold text-brand shrink-0 ml-2">
-            <Sparkles className="w-3 h-3 shrink-0" />AI Guide
+            <Compass className="w-3 h-3 shrink-0" />AI Guide
           </span>
         </div>
       )}
