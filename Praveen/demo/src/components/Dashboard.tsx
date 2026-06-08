@@ -1242,7 +1242,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
       </div>
 
       {/* Search card — fixed 120px overlap into hero regardless of card height */}
-      <div className="relative z-20 -mt-[120px] px-3 lg:px-8">
+      <div className={`relative z-20 -mt-[120px] px-3 lg:px-8${(activeTab === 'Itinerary' || activeTab === 'Explore') ? ' mb-6' : ''}`}>
         <div className="mx-auto max-w-[900px]">
           <motion.div
             key={activeTab}
