@@ -983,7 +983,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                 </button>
                 {tab === 'Hotels' ? (
                   <button
-                    onClick={() => place.mapUrl && window.open(place.mapUrl, '_blank')}
+                    onClick={() => place.googleMapsUri && window.open(place.googleMapsUri, '_blank')}
                     className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold rounded-lg bg-brand text-white hover:bg-brand-dark transition-colors active:scale-[0.97]"
                   >
                     <ExternalLink className="w-3.5 h-3.5" />Book Now
