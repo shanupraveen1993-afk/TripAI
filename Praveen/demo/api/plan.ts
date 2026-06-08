@@ -1218,17 +1218,33 @@ function mapPriceLevel(level: string): string {
 function extractPriceRange(place: any): string | null {
   const pr = place.priceRange;
   if (!pr) return null;
-  // Only trust units when Google confirms currency is INR — other currencies (GBP, USD, etc.)
-  // have wrong magnitudes for Indian hotel prices; let Gemini's ₹-denominated pricing win instead.
+  // Vercel functions run in US (iad1) so Google Places returns USD prices — convert to INR
   const currency = pr.startPrice?.currencyCode ?? pr.endPrice?.currencyCode ?? pr.lowerBound?.currencyCode ?? 'INR';
-  if (currency !== 'INR') return null;
+
+  const toInr = (units: string): number | null => {
+    const n = Number(units);
+    if (!n || n <= 0) return null;
+    if (currency === 'INR') return Math.round(n);
+    if (currency === 'USD') return Math.round(n * 84);
+    if (currency === 'GBP') return Math.round(n * 107);
+    if (currency === 'EUR') return Math.round(n * 90);
+    return null;
+  };
+
   const start = pr.startPrice?.units ?? pr.lowerBound?.units;
   const end   = pr.endPrice?.units   ?? pr.upperBound?.units;
-  if (!start && !end) return null;
-  const fmt = (u: string) => `₹${Number(u).toLocaleString('en-IN')}`;
-  if (start && end)   return `${fmt(start)}–${fmt(end)}`;
-  if (start)          return `From ${fmt(start)}`;
-  if (end)            return `Up to ${fmt(end)}`;
+
+  const sInr = start ? toInr(start) : null;
+  const eInr = end   ? toInr(end)   : null;
+
+  // Sanity band: realistic Thanjavur hotel nightly rate ₹500–₹40,000
+  const ok = (n: number | null): n is number => n !== null && n >= 500 && n <= 40000;
+  if (!ok(sInr) && !ok(eInr)) return null;
+
+  const fmt = (n: number) => `₹${n.toLocaleString('en-IN')}`;
+  if (ok(sInr) && ok(eInr) && sInr !== eInr) return `${fmt(sInr)}–${fmt(eInr)}/night`;
+  if (ok(sInr)) return `${fmt(sInr)}/night`;
+  if (ok(eInr)) return `${fmt(eInr)}/night`;
   return null;
 }
 
@@ -4109,6 +4125,8 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
       const reorderedPlaces = pinNameMatchToTop(geminiOrdered, filters.searchQuery ?? '');
 
       const buildHotelResult = (p: any, ai: any, globalIdx: number) => {
+        const placesPrice = extractPriceRange(p);           // Google Places USD/INR → converted to INR
+        const geminiPrice = pricingMap.get(p.displayName?.text ?? '');  // Gemini grounded price
         const mTags      = (p._matchedTags   ?? []) as string[];
         const cTags      = (p._confirmedTags ?? []) as string[];
         const tEvid      = (p._tagEvidence   ?? {}) as Record<string, string>;
@@ -4261,8 +4279,8 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
           photoRef:           p.photos?.[0]?.name ?? null,
           websiteUri:         p.websiteUri    ?? null,
           googleMapsUri:      p.googleMapsUri ?? null,
-          googleHotelsPrice:  pricingMap.get(p.displayName?.text ?? '') ?? hotelPriceFromLevel(p.priceLevel ?? '', p.displayName?.text ?? ''),
-          priceFromGemini:    pricingMap.has(p.displayName?.text ?? ''),
+          googleHotelsPrice:  placesPrice ?? geminiPrice ?? hotelPriceFromLevel(p.priceLevel ?? '', p.displayName?.text ?? ''),
+          priceFromGemini:    !!(placesPrice ?? geminiPrice),
           aiDetail: {
             whyOverOthers: ai.whyOverOthers || whyOverOthersFB,
             dataPoints,
