@@ -431,7 +431,7 @@ function LocationBar({ value, onChange, placeholder, autoDetect, mockResolvedLoc
           : placeholder
         }
         readOnly={detecting}
-        className={`w-full pl-9 pr-28 py-2.5 border rounded-lg text-base focus:outline-none transition-all duration-300 ${
+        className={`w-full pl-9 pr-28 py-2 border rounded-lg text-sm focus:outline-none transition-all duration-300 ${
           phase === 'locating'
             ? 'border-brand bg-brand-softer text-brand italic'
             : 'border-border focus:ring-2 focus:ring-brand-soft focus:border-brand'
@@ -1155,7 +1155,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               <select
                 value={exploreTarget}
                 onChange={e => { setExploreTarget(e.target.value); setShowExploreError(false); }}
-                className={`w-full pl-9 pr-8 py-2 border rounded-lg text-xs focus:outline-none focus:ring-2 bg-surface appearance-none transition-colors ${showExploreError ? 'border-danger focus:ring-danger/30' : 'border-border focus:ring-brand-soft focus:border-brand'}`}
+                className={`w-full pl-9 pr-8 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 bg-surface appearance-none transition-colors ${showExploreError ? 'border-danger focus:ring-danger/30' : 'border-border focus:ring-brand-soft focus:border-brand'}`}
               >
                 <option value="">Select a location…</option>
                 <option value="Brihadeeswarar Temple">Brihadeeswarar Temple (Big Temple)</option>
@@ -1191,39 +1191,49 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
   const firstName = userName?.split(' ')[0] || '';
 
-  const TAB_HERO: Record<Tab, { headline: string; sub: string }> = {
-    Hotels:    { headline: 'Find your perfect stay', sub: 'AI-ranked by price, distance & reviews' },
-    Food:      { headline: 'Discover the best eats',  sub: 'Authentic Thanjavur cuisine, ranked for you' },
-    Itinerary: { headline: 'Plan your perfect day',   sub: 'AI-routed itinerary, timed to perfection' },
-    Explore:   { headline: 'Explore every landmark',  sub: 'Deep-dive guides powered by real reviews' },
+  const TAB_HERO: Record<Tab, { headline: string; sub: string; img: string }> = {
+    Hotels:    { headline: 'Find your perfect stay',  sub: 'AI-ranked by price, distance & reviews',   img: '/hotel.png'     },
+    Food:      { headline: 'Discover the best eats',  sub: 'Authentic cuisine, ranked for you',         img: '/food.webp'     },
+    Itinerary: { headline: 'Plan your perfect day',   sub: 'AI-routed itinerary, timed to perfection', img: '/itinerary.jpg' },
+    Explore:   { headline: 'Explore every landmark',  sub: 'Deep-dive guides powered by real reviews', img: '/explore.webp'  },
   };
   const hero = TAB_HERO[activeTab];
 
   return (
     <div className="w-full pb-10 lg:pb-6">
 
-      {/* ── HERO — full bleed, static hotel photo ── */}
-      <div className="relative w-full min-h-[400px] lg:min-h-[460px] flex flex-col items-center justify-center">
-        {/* Static hotel photo — never changes regardless of tab or city */}
-        <img
-          src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1920&q=80"
-          alt="Luxury hotel"
-          className="absolute inset-0 w-full h-full object-cover object-center"
-          loading="eager"
-          decoding="async"
+      {/* ── HERO — photo background, same height across all 4 tabs ── */}
+      <div className="relative w-full min-h-[300px] flex flex-col items-center justify-center overflow-hidden">
+
+        {/* Photo — cross-fades on tab switch */}
+        <AnimatePresence mode="wait">
+          <motion.img
+            key={activeTab}
+            src={hero.img}
+            alt={activeTab}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        </AnimatePresence>
+
+        {/* Dark gradient overlay — bottom-heavy so text pops */}
+        <div
+          className="absolute inset-0 z-10"
+          style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.55) 60%, rgba(0,0,0,0.78) 100%)' }}
         />
-        {/* Dark gradient overlay for text legibility */}
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom,rgba(0,0,0,0.30) 0%,rgba(0,0,0,0.52) 55%,rgba(0,0,0,0.72) 100%)' }} />
 
         {/* Headline */}
-        <div className="relative z-10 text-center px-6">
+        <div className="relative z-20 text-center px-6">
           {firstName && (
-            <p className="text-white/80 text-sm font-medium mb-3">{greeting}, {firstName} 👋</p>
+            <p className="text-white/80 text-sm font-medium mb-2">{greeting}, {firstName} 👋</p>
           )}
-          <h1 className="text-white font-display font-black text-3xl lg:text-5xl leading-tight tracking-tight drop-shadow-lg">
+          <h1 className="text-white font-display font-black text-3xl lg:text-4xl leading-tight tracking-tight drop-shadow-md">
             {destination ? `Explore ${destination}` : 'Discover Thanjavur'}
           </h1>
-          <p className="text-white/70 text-sm lg:text-base mt-2.5">Hotels · Food · Itinerary · Places — AI-powered</p>
+          <p className="text-white/70 text-sm mt-2 drop-shadow-sm">Hotels · Food · Itinerary · Places — AI-powered</p>
         </div>
       </div>
 
@@ -1239,7 +1249,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             style={{ border: '1px solid rgba(0,0,0,0.07)' }}
           >
             {/* 4 tabs */}
-            <div className="p-2">
+            <div className="p-2 mt-2">
               <CategorySelector active={activeTab} onChange={t => { setActiveTab(t); setSearchQuery(''); onTabChange?.(t); }} />
             </div>
             {/* Per-tab title block */}
