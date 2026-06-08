@@ -783,6 +783,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') handleSearch(); }}
               placeholder="Search for hotel, stay…"
               className="w-full pl-8 pr-3 py-2 rounded-lg bg-bg-app border border-border text-sm text-body placeholder:text-muted focus:outline-none focus:border-brand transition-colors"
             />
@@ -905,6 +906,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') handleSearch(); }}
               placeholder="Search for food, restaurant…"
               className="w-full pl-8 pr-3 py-2 rounded-lg bg-bg-app border border-border text-sm text-body placeholder:text-muted focus:outline-none focus:border-brand transition-colors"
             />
