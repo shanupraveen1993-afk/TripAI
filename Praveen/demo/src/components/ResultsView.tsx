@@ -763,7 +763,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                   const isRange = (raw.includes('–') || (raw.includes('-') && raw.length > 5));
                   const display = isRange ? raw.split(/–|-/).shift()!.trim() : raw;
                   const trivagoUrl = !place.priceFromGemini
-                    ? `https://www.trivago.in/?query=${encodeURIComponent((place.name || '') + ' ' + (searchArea || 'Thanjavur'))}`
+                    ? `https://www.trivago.in/?query=${encodeURIComponent((place.name || '') + ' ' + (refLabel || 'Thanjavur'))}`
                     : undefined;
                   return <PriceBadge display={display} isRange={isRange} trivagoUrl={trivagoUrl} />;
                 })()}
