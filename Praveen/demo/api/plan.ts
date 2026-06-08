@@ -1674,7 +1674,8 @@ async function fetchPlaces(
   const body: Record<string, unknown> = {
     textQuery:      prefix + query,
     maxResultCount: 20,
-    languageCode:   'en',
+    languageCode:   'en-IN',   // India locale → Google Places returns INR priceRange
+    regionCode:     'IN',       // bias currency + results to India
     rankPreference,
     ...locationParam,
   };
@@ -3554,22 +3555,17 @@ async function geminiLitePricing(
   const tryModel = async (model: string, useGrounding: boolean): Promise<boolean> => {
     const body: any = {
       contents: [{ parts: [{ text:
-        `You are a hotel pricing expert for ${city}, Tamil Nadu, India.
+        `Search Google for hotel prices in India using Indian booking sites (MakeMyTrip, Goibibo, OYO, Booking.com India). All prices must be in Indian Rupees (₹).
 
-CRITICAL RULES:
-1. Return prices in INDIAN RUPEES (₹) ONLY. NEVER use GBP (£), USD ($), EUR (€) or any other currency.
-2. If you find foreign-currency prices, convert to INR before responding.
-3. Provide the STANDARD RACK RATE for a standard double room — NOT promotional deals, flash sales, or last-minute discounts from OTAs.
-4. Price bands for ${city}: budget lodge ₹800–₹1,500 · mid-range ₹2,000–₹4,000 · good 3-star ₹3,500–₹5,500 · premium 4-star ₹5,000–₹9,000 per night.
-5. DO NOT return prices below ₹1,500 unless the hotel name clearly indicates budget/OYO/lodge.
+Find the nightly room rate in ₹ (Indian Rupees) for each hotel in ${city}, Tamil Nadu, India:
+${hotelNames.map((n, i) => `${i}. ${n}, ${city}, India`).join('\n')}
 
-For the query "${query}", provide the standard nightly rack rate for each hotel:
-${hotelNames.map((n, i) => `${i}. ${n}`).join('\n')}
-
-Return ONLY valid JSON — no markdown, no explanation:
-[{"idx":0,"price":"₹X,XXX/night"},{"idx":1,"price":"₹X,XXX/night"},...]
-
-Rules: one price per hotel · INR only · standard rack rate · format ₹X,XXX/night` }] }],
+RULES:
+- Search: "${city} India hotel price per night rupees" to get Indian results
+- Return ONLY Indian Rupees (₹). Never return GBP, USD, EUR or any foreign currency
+- Use the standard double room rate, not promotional deals
+- Return ONLY valid JSON, no markdown:
+[{"idx":0,"price":"₹X,XXX/night"},{"idx":1,"price":"₹X,XXX/night"},...]` }] }],
     };
     if (useGrounding) body.tools = [{ google_search: {} }];
 
