@@ -1204,7 +1204,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
           >
             {/* 4 tabs */}
             <div className="p-2">
-              <CategorySelector active={activeTab} onChange={t => { setActiveTab(t); onTabChange?.(t); }} />
+              <CategorySelector active={activeTab} onChange={t => { setActiveTab(t); setSearchQuery(''); onTabChange?.(t); }} />
             </div>
             {/* Per-tab title block */}
             <div className="px-4 pt-2 pb-1">
