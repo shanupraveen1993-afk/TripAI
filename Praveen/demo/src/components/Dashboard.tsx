@@ -892,6 +892,23 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             </div>
           )}
 
+          {/* Recent searches */}
+          {recentSearches.filter(r => r.tab === 'Hotels' && r.tag).length > 0 && (
+            <div className="pt-1">
+              <p className="text-[10px] font-semibold text-muted uppercase tracking-wide mb-2">Recent</p>
+              <div className="flex flex-wrap gap-1.5">
+                {recentSearches.filter(r => r.tab === 'Hotels' && r.tag).slice(0, 5).map((r, i) => (
+                  <button key={i} type="button"
+                    onClick={() => triggerSearch({ tab: 'Hotels', hotelTag: r.tag })}
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-border bg-bg-app text-xs text-muted hover:border-brand hover:text-brand transition-colors">
+                    <Clock className="w-3 h-3 shrink-0" />
+                    {r.tag}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
         </div>
       );
 
@@ -1053,6 +1070,23 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               </div>
             )}
           </div>
+
+          {/* Recent searches */}
+          {recentSearches.filter(r => r.tab === 'Food' && r.tag).length > 0 && (
+            <div className="pt-1">
+              <p className="text-[10px] font-semibold text-muted uppercase tracking-wide mb-2">Recent</p>
+              <div className="flex flex-wrap gap-1.5">
+                {recentSearches.filter(r => r.tab === 'Food' && r.tag).slice(0, 5).map((r, i) => (
+                  <button key={i} type="button"
+                    onClick={() => triggerSearch({ tab: 'Food', foodTag: r.tag })}
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-border bg-bg-app text-xs text-muted hover:border-brand hover:text-brand transition-colors">
+                    <Clock className="w-3 h-3 shrink-0" />
+                    {r.tag}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
         </div>
       );
@@ -1260,9 +1294,6 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
                   activeTab === 'Itinerary' ? 'Build Day Plan' : 'Get Visit Guide'
                 )}
               </Button>
-              {!canSearch && (activeTab === 'Hotels' || activeTab === 'Food') && (
-                <p className="text-xs text-muted mt-2 text-center">Select a tag above to search</p>
-              )}
             </div>
             <div ref={ctaSentinelRef} className="h-px" />
           </motion.div>
