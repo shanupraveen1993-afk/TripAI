@@ -4113,7 +4113,7 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
         const kTagSource = selectedTags.length > 0 || mTags.length > 0
           ? [...selectedTags, ...mTags]
           : (p.types ?? []).slice(0, 3).map((t: string) => t.replace(/_/g, ' '));
-        const allHotelKws: string[] = [...new Set(
+        const allHotelKws: string[] = [...new Set<string>(
           kTagSource.flatMap((t: string) => (TAG_TEXT_KEYWORDS[t] ?? [t.toLowerCase()]).map((k: string) => k.toLowerCase()))
         )];
         const displayReviews = filterReviewsForDisplay(p.reviews ?? []);
