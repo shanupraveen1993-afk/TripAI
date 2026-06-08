@@ -3550,7 +3550,8 @@ async function geminiLitePricing(
   geminiKey: string
 ): Promise<Map<string, string>> {
   const result = new Map<string, string>();
-  if (!geminiKey || hotelNames.length === 0) return result;
+  console.log('[pricing] called hotels=', hotelNames.length, 'keySet=', !!geminiKey, 'keyLen=', geminiKey.length);
+  if (!geminiKey || hotelNames.length === 0) { console.log('[pricing] early exit'); return result; }
 
   const tryModel = async (model: string, useGrounding: boolean): Promise<boolean> => {
     // Separate prompts: grounding can search live; knowledge mode uses training data
