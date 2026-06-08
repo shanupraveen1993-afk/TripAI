@@ -3570,13 +3570,13 @@ Rules: one price per hotel · INR only · format ₹X,XXX/night` }] }],
   };
 
   try {
-    // Level 1: flash-lite + Google Search grounding → real-time prices, sanitised to INR
-    const ok1 = await tryModel('gemini-2.0-flash-lite', true);
+    // Level 1: flash + Google Search grounding → real-time Google Hotels prices, sanitised to INR
+    const ok1 = await tryModel('gemini-2.0-flash', true);
     if (ok1) return result;
 
-    // Level 2: flash-lite without grounding → Gemini knowledge, sanitised to INR
+    // Level 2: flash without grounding → Gemini knowledge, sanitised to INR
     result.clear();
-    await tryModel('gemini-2.0-flash-lite', false);
+    await tryModel('gemini-2.0-flash', false);
   } catch {
     // Level 3 fallback: review extraction + priceLevel (handled by caller)
   }
@@ -4254,7 +4254,8 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
           photoRef:           p.photos?.[0]?.name ?? null,
           websiteUri:         p.websiteUri    ?? null,
           googleMapsUri:      p.googleMapsUri ?? null,
-          googleHotelsPrice:  pricingMap.get(p.displayName?.text ?? '') ?? extractHotelPriceFromReviews(p.reviews ?? []) ?? hotelPriceFromLevel(p.priceLevel ?? '', p.displayName?.text ?? ''),
+          googleHotelsPrice:  pricingMap.get(p.displayName?.text ?? '') ?? hotelPriceFromLevel(p.priceLevel ?? '', p.displayName?.text ?? ''),
+          priceFromGemini:    pricingMap.has(p.displayName?.text ?? ''),
           aiDetail: {
             whyOverOthers: ai.whyOverOthers || whyOverOthersFB,
             dataPoints,

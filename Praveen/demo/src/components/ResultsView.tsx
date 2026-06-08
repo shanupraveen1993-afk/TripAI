@@ -393,7 +393,7 @@ function getHotelPriceLabel(googleHotelsPrice?: string, priceRange?: string, pri
   return null;
 }
 
-function PriceBadge({ display, isRange }: { display: string; isRange: boolean }) {
+function PriceBadge({ display, isRange, trivagoUrl }: { display: string; isRange: boolean; trivagoUrl?: string }) {
   const [tip, setTip] = React.useState(false);
   return (
     <div className="text-right leading-tight">
@@ -417,6 +417,12 @@ function PriceBadge({ display, isRange }: { display: string; isRange: boolean })
         </div>
       </div>
       <p className="text-[10px] text-muted font-medium mt-0.5">{isRange ? 'onwards · per night' : 'per night'}</p>
+      {trivagoUrl && (
+        <a href={trivagoUrl} target="_blank" rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-[10px] text-brand font-semibold mt-1 hover:underline">
+          <ExternalLink className="w-2.5 h-2.5 shrink-0" />Compare on Trivago
+        </a>
+      )}
     </div>
   );
 }
@@ -756,7 +762,10 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                   const raw = plD ?? place.priceLevel ?? '';
                   const isRange = (raw.includes('–') || (raw.includes('-') && raw.length > 5));
                   const display = isRange ? raw.split(/–|-/).shift()!.trim() : raw;
-                  return <PriceBadge display={display} isRange={isRange} />;
+                  const trivagoUrl = !place.priceFromGemini
+                    ? `https://www.trivago.in/?query=${encodeURIComponent((place.name || '') + ' ' + (searchArea || 'Thanjavur'))}`
+                    : undefined;
+                  return <PriceBadge display={display} isRange={isRange} trivagoUrl={trivagoUrl} />;
                 })()}
                 {tab === 'Hotels' && (
                   <a href={bookHref} target="_blank" rel="noopener noreferrer"
