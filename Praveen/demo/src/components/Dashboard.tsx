@@ -6,10 +6,6 @@ import {
   Sunrise, Sun, Sunset,
 } from 'lucide-react';
 import { fetchCityTags, fetchAutocomplete, AutocompleteSuggestion, CityTagsResult } from '../api/client';
-import heroHotel    from '../assets/hotel.png';
-import heroFood     from '../assets/food.webp';
-import heroItin     from '../assets/itinerary.jpg';
-import heroExplore  from '../assets/explore.webp';
 import { Tab } from './ui/Tabs';
 import { Button } from './ui/Button';
 import { isThanjavurCity } from '../utils/city';
@@ -1196,10 +1192,10 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
   const firstName = userName?.split(' ')[0] || '';
 
   const TAB_HERO: Record<Tab, { headline: string; sub: string; img: string }> = {
-    Hotels:    { headline: 'Find your perfect stay',  sub: 'AI-ranked by price, distance & reviews',   img: heroHotel   },
-    Food:      { headline: 'Discover the best eats',  sub: 'Authentic cuisine, ranked for you',         img: heroFood    },
-    Itinerary: { headline: 'Plan your perfect day',   sub: 'AI-routed itinerary, timed to perfection', img: heroItin    },
-    Explore:   { headline: 'Explore every landmark',  sub: 'Deep-dive guides powered by real reviews', img: heroExplore },
+    Hotels:    { headline: 'Find your perfect stay',  sub: 'AI-ranked by price, distance & reviews',   img: '/hotel.png'     },
+    Food:      { headline: 'Discover the best eats',  sub: 'Authentic cuisine, ranked for you',         img: '/food.webp'     },
+    Itinerary: { headline: 'Plan your perfect day',   sub: 'AI-routed itinerary, timed to perfection', img: '/itinerary.jpg' },
+    Explore:   { headline: 'Explore every landmark',  sub: 'Deep-dive guides powered by real reviews', img: '/explore.webp'  },
   };
   const hero = TAB_HERO[activeTab];
 
