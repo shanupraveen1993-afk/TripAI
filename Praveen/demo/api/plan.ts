@@ -3548,10 +3548,9 @@ async function geminiLitePricing(
   query: string,
   city: string,
   geminiKey: string
-): Promise<Map<string, string>> {
-  const result = new Map<string, string>();
-  console.log('[pricing] called hotels=', hotelNames.length, 'keySet=', !!geminiKey, 'keyLen=', geminiKey.length);
-  if (!geminiKey || hotelNames.length === 0) { console.log('[pricing] early exit'); return result; }
+): Promise<Map<string, string> & { _dbg?: string }> {
+  const result: Map<string, string> & { _dbg?: string } = new Map<string, string>();
+  if (!geminiKey || hotelNames.length === 0) { result._dbg = `no-key-or-hotels(key=${!!geminiKey},n=${hotelNames.length})`; return result; }
 
   const tryModel = async (model: string, useGrounding: boolean): Promise<boolean> => {
     // Separate prompts: grounding can search live; knowledge mode uses training data
@@ -3585,40 +3584,39 @@ Return ONLY valid JSON, no markdown:
         `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`,
         { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: controller.signal }
       );
-    } catch (e) { console.log('[pricing] fetch fail', model, String(e)); clearTimeout(timer); return false; }
+    } catch (e) { result._dbg = `fetch-fail(${useGrounding?'grnd':'know'}):${String(e).slice(0,80)}`; clearTimeout(timer); return false; }
     clearTimeout(timer);
-    if (resp.status === 429) { console.log('[pricing] 429', model); return false; }
+    if (resp.status === 429) { result._dbg = `rate-limited:429(${useGrounding?'grnd':'know'})`; return false; }
+    if (!resp.ok) { result._dbg = `http-err:${resp.status}(${useGrounding?'grnd':'know'})`; return false; }
     const data  = await resp.json() as any;
-    if (data?.error) { console.log('[pricing] error', model, data.error?.code, data.error?.message); return false; }
+    if (data?.error) { result._dbg = `api-err:${data.error?.code}:${String(data.error?.message ?? '').slice(0,60)}`; return false; }
     void apiVersion;
     // Grounding can spread content across multiple parts — join all text parts
     const parts = (data?.candidates?.[0]?.content?.parts ?? []) as Array<{ text?: string }>;
     const raw   = parts.map(p => p.text ?? '').filter(Boolean).join('\n');
-    console.log('[pricing] raw', model, useGrounding, raw.slice(0, 400));
     // Extract JSON — handle markdown fences and surrounding prose
     const jsonMatch = raw.match(/\[[\s\S]*?\]/);
     const clean = jsonMatch ? jsonMatch[0] : raw.replace(/```json|```/g, '').trim();
+    if (!clean) { result._dbg = `no-json(${useGrounding?'grnd':'know'}):raw=${raw.slice(0,80)}`; return false; }
     let parsed: Array<{ idx: number; price: string }> = [];
-    try { parsed = clean ? JSON.parse(clean) : []; } catch (e) { console.log('[pricing] parse fail', String(e), clean.slice(0,150)); return false; }
+    try { parsed = JSON.parse(clean); } catch (e) { result._dbg = `parse-fail(${useGrounding?'grnd':'know'}):${String(e).slice(0,40)}:${clean.slice(0,80)}`; return false; }
     for (const item of parsed) {
       const name      = hotelNames[item.idx];
       const sanitised = sanitiseGeminiPrice(item.price ?? '');
-      console.log('[pricing]', item.idx, item.price, '->', sanitised ?? 'REJECTED', '|', name);
       if (name && sanitised) result.set(name, sanitised);
     }
+    if (result.size === 0) result._dbg = `zero-prices(${useGrounding?'grnd':'know'}):parsed=${parsed.length}:sample=${JSON.stringify(parsed[0]??{})}`;
     return result.size > 0;
   };
 
   try {
-    // Level 1: flash + Google Search grounding → real-time Google Hotels prices, sanitised to INR
     const ok1 = await tryModel('gemini-2.0-flash', true);
-    if (ok1) return result;
-
-    // Level 2: flash without grounding → Gemini knowledge, sanitised to INR
+    if (ok1) { result._dbg = `gemini-grounded(${result.size})`; return result; }
     result.clear();
     await tryModel('gemini-2.0-flash', false);
-  } catch {
-    // Level 3 fallback: review extraction + priceLevel (handled by caller)
+    result._dbg = `gemini-knowledge(${result.size})`;
+  } catch (e) {
+    result._dbg = `catch:${String(e).slice(0,80)}`;
   }
   return result;
 }
@@ -4313,7 +4311,7 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
         buildHotelResult(p, sorted[i] ?? {}, i)
       );
 
-      return res.json({ results: finalResults, _debug: { geminiPricedCount: pricingMap.size, hotelCount: hotelNames.length } });
+      return res.json({ results: finalResults, _debug: { geminiPricedCount: pricingMap.size, hotelCount: hotelNames.length, geminiDbg: (pricingMap as any)._dbg ?? null } });
     }
 
     // ═══════════════════════════════════════════════════════════════════════
