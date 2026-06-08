@@ -4198,7 +4198,7 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
               const bBucket = Math.round(b.dist * 2) / 2;
               return aBucket !== bBucket ? aBucket - bBucket : a.geminiRank - b.geminiRank;
             })
-            .map(x => { x.p._locDist = Math.round(x.dist * 100) / 100; return x.p; });
+            .map(x => x.p);
         }
       }
 
@@ -4361,7 +4361,6 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
           googleMapsUri:      p.googleMapsUri ?? null,
           googleHotelsPrice:  placesPrice ?? geminiPrice ?? hotelPriceFromLevel(p.priceLevel ?? '', p.displayName?.text ?? ''),
           priceFromGemini:    !!(placesPrice ?? geminiPrice),
-          _priceSource:       placesPrice ? `places(${p.priceRange?.startPrice?.currencyCode ?? '?'})` : geminiPrice ? 'gemini' : `fallback(lvl=${p.priceLevel ?? 'none'})`,
           aiDetail: {
             whyOverOthers: ai.whyOverOthers || whyOverOthersFB,
             dataPoints,
@@ -4376,7 +4375,7 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
         buildHotelResult(p, aiByPlaceId.get(p?.id ?? '') ?? sorted[i] ?? {}, i)
       );
 
-      return res.json({ results: finalResults, _debug: { geminiPricedCount: pricingMap.size, hotelCount: hotelNames.length, geminiDbg: (pricingMap as any)._dbg ?? null } });
+      return res.json({ results: finalResults });
     }
 
     // ═══════════════════════════════════════════════════════════════════════
