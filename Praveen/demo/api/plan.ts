@@ -3462,14 +3462,19 @@ function extractHotelPriceFromReviews(reviews: any[]): string | null {
 
 function hotelPriceFromLevel(rawPriceLevel: string, name: string): string {
   const lower = name.toLowerCase();
-  if (/oyo|lodge|inn|residency|budget|economy/.test(lower))  return '₹900/night';
-  if (/palace|heritage|resort|spa|boutique/.test(lower))     return '₹5,000/night';
-  if (/sangam|parisutham|ideal|river view|raj park/.test(lower)) return '₹4,500/night';
-  if (rawPriceLevel === 'PRICE_LEVEL_FREE' || rawPriceLevel === 'PRICE_LEVEL_INEXPENSIVE') return '₹900/night';
-  if (rawPriceLevel === 'PRICE_LEVEL_MODERATE')       return '₹2,200/night';
-  if (rawPriceLevel === 'PRICE_LEVEL_EXPENSIVE')      return '₹4,500/night';
-  if (rawPriceLevel === 'PRICE_LEVEL_VERY_EXPENSIVE') return '₹8,000/night';
-  return '₹2,500/night'; // raised default — unknown mid-range Thanjavur hotel
+  // Budget/economy — may appear in budget-filter searches
+  if (/oyo|lodge|inn|residency|budget|economy/.test(lower))          return '₹1,200/night';
+  // Premium / heritage tier
+  if (/palace|heritage|resort|spa|boutique/.test(lower))             return '₹5,500/night';
+  // Known Thanjavur quality hotels — standard rack rates
+  if (/sangam|parisutham|ideal|river view|raj park/.test(lower))     return '₹4,500/night';
+  if (/sundex|grand|fortune|sterling|golden|tower|saradharam/.test(lower)) return '₹4,000/night';
+  // Google Places price levels — hotels here passed AI quality ranking
+  if (rawPriceLevel === 'PRICE_LEVEL_FREE' || rawPriceLevel === 'PRICE_LEVEL_INEXPENSIVE') return '₹1,200/night';
+  if (rawPriceLevel === 'PRICE_LEVEL_MODERATE')       return '₹3,500/night';
+  if (rawPriceLevel === 'PRICE_LEVEL_EXPENSIVE')      return '₹5,000/night';
+  if (rawPriceLevel === 'PRICE_LEVEL_VERY_EXPENSIVE') return '₹8,500/night';
+  return '₹3,500/night'; // AI-ranked results are quality hotels — floor is ₹3,500
 }
 
 // Converts any currency Gemini may return into a valid ₹X,XXX/night string.
@@ -3482,11 +3487,11 @@ function sanitiseGeminiPrice(raw: string): string | null {
   const inr = (n: number): string =>
     `₹${Math.round(n / 100) * 100}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '/night';
 
-  // Already INR (₹)
+  // Already INR (₹) — floor ₹1,500: below that is likely a per-person/meal/promo rate
   const inrM = s.match(/₹\s*([\d,]+)/);
   if (inrM) {
     const n = parseInt(inrM[1].replace(/,/g, ''), 10);
-    return (n >= 400 && n <= 60000) ? `₹${n.toLocaleString('en-IN')}/night` : null;
+    return (n >= 1500 && n <= 60000) ? `₹${n.toLocaleString('en-IN')}/night` : null;
   }
 
   // GBP (£) — 1 GBP ≈ 107 INR
@@ -3536,17 +3541,19 @@ async function geminiLitePricing(
         `You are a hotel pricing expert for ${city}, Tamil Nadu, India.
 
 CRITICAL RULES:
-1. Return prices in INDIAN RUPEES (₹) ONLY. NEVER use GBP (£), USD ($), EUR (€) or any foreign currency.
-2. If you find foreign-currency prices on booking sites, convert them to INR before responding.
-3. Typical ${city} hotel price bands: budget lodge ₹600–₹1,200 · mid-range ₹1,500–₹3,500 · 3-star ₹2,500–₹5,000 · 4-star/premium ₹4,000–₹8,000 per night.
+1. Return prices in INDIAN RUPEES (₹) ONLY. NEVER use GBP (£), USD ($), EUR (€) or any other currency.
+2. If you find foreign-currency prices, convert to INR before responding.
+3. Provide the STANDARD RACK RATE for a standard double room — NOT promotional deals, flash sales, or last-minute discounts from OTAs.
+4. Price bands for ${city}: budget lodge ₹800–₹1,500 · mid-range ₹2,000–₹4,000 · good 3-star ₹3,500–₹5,500 · premium 4-star ₹5,000–₹9,000 per night.
+5. DO NOT return prices below ₹1,500 unless the hotel name clearly indicates budget/OYO/lodge.
 
-For the query "${query}", provide the approximate nightly room rate for each hotel:
+For the query "${query}", provide the standard nightly rack rate for each hotel:
 ${hotelNames.map((n, i) => `${i}. ${n}`).join('\n')}
 
 Return ONLY valid JSON — no markdown, no explanation:
 [{"idx":0,"price":"₹X,XXX/night"},{"idx":1,"price":"₹X,XXX/night"},...]
 
-Rules: one price per hotel · INR only · format ₹X,XXX/night` }] }],
+Rules: one price per hotel · INR only · standard rack rate · format ₹X,XXX/night` }] }],
     };
     if (useGrounding) body.tools = [{ google_search: {} }];
 
