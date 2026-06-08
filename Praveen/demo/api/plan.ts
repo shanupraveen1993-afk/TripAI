@@ -4182,7 +4182,8 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
       const LOCATION_SORT_TAGS = ['Near Railway Station', 'Near Big Temple', 'Near Bus Stand', 'City Centre', 'Central & Walkable'];
       const activeLandmarkTag  = selectedTags.find(t => LOCATION_SORT_TAGS.includes(t));
       if (activeLandmarkTag) {
-        const lm = landmarks.find(l => l.tags.includes(activeLandmarkTag));
+        const cityLandmarks = CITY_LANDMARKS[cityKey] ?? CITY_LANDMARKS['thanjavur'] ?? [];
+        const lm = cityLandmarks.find(l => l.tags.includes(activeLandmarkTag));
         if (lm) {
           geminiOrdered = geminiOrdered
             .map((p: any, geminiRank: number) => {
