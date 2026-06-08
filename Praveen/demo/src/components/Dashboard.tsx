@@ -1210,7 +1210,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
           key={activeTab}
           src={hero.img}
           alt={activeTab}
-          className="absolute inset-0 w-full h-full object-contain"
+          className="absolute inset-0 w-full h-full object-cover"
         />
 
         {/* Dark gradient overlay — bottom-heavy so text pops */}
