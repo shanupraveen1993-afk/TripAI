@@ -4178,7 +4178,7 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
 
       let geminiOrdered = sorted.map((ai: any) => placesToRank[ai.originalIdx ?? 0] ?? placesToRank[0]);
 
-      // Location tags: re-sort by distance bands so nearest hotels always rank first
+      // Location tags: sort nearest-first. Within 0.5km gap, prefer higher Gemini quality.
       const LOCATION_SORT_TAGS = ['Near Railway Station', 'Near Big Temple', 'Near Bus Stand', 'City Centre', 'Central & Walkable'];
       const activeLandmarkTag  = selectedTags.find(t => LOCATION_SORT_TAGS.includes(t));
       if (activeLandmarkTag) {
@@ -4189,11 +4189,14 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
               const lat = p.location?.latitude;
               const lng = p.location?.longitude;
               const dist = (lat != null && lng != null) ? haversineKm(lat, lng, lm.lat, lm.lng) : 999;
-              // Band 0 = within 1.5km (walking), 1 = 1.5–3km, 2 = 3–5km, 3 = farther
-              const band = dist <= 1.5 ? 0 : dist <= 3 ? 1 : dist <= 5 ? 2 : 3;
-              return { p, band, geminiRank };
+              return { p, dist, geminiRank };
             })
-            .sort((a, b) => a.band !== b.band ? a.band - b.band : a.geminiRank - b.geminiRank)
+            // Round to nearest 0.5km so hotels at similar distance keep Gemini quality order
+            .sort((a, b) => {
+              const aBucket = Math.round(a.dist * 2) / 2;
+              const bBucket = Math.round(b.dist * 2) / 2;
+              return aBucket !== bBucket ? aBucket - bBucket : a.geminiRank - b.geminiRank;
+            })
             .map(x => x.p);
         }
       }
