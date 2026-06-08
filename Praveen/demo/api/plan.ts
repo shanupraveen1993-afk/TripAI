@@ -3557,7 +3557,7 @@ function sanitiseGeminiPrice(raw: string): string | null {
   return null;
 }
 
-// ── Gemini-lite pricing — separate quota from main flash call ─────────────────
+// ── Gemini pricing — one call for all hotels, Google Hotels grounding ─────────
 async function geminiLitePricing(
   hotelNames: string[],
   _query: string,
@@ -3570,67 +3570,73 @@ async function geminiLitePricing(
     return result;
   }
 
-  // One focused Gemini call per hotel — grounding searches Google Hotels / MakeMyTrip live
-  const fetchPrice = async (hotelName: string, useGrounding: boolean): Promise<string | null> => {
+  const callGemini = async (useGrounding: boolean): Promise<boolean> => {
+    const list = hotelNames.map((n, i) => `${i}. ${n}`).join('\n');
+
     const prompt = useGrounding
-      ? `Search Google Hotels, MakeMyTrip, Booking.com, or Goibibo for the current nightly room rate for "${hotelName}" in ${city}, Tamil Nadu, India.
+      ? `Search Google Hotels for the nightly room price for each hotel in ${city}, Tamil Nadu, India:
+${list}
 
-Reply with ONLY the price in this exact format: ₹X,XXX/night
-One price. No explanation. No range. No extra text.`
+Reply with one price per line, in this exact format (number. ₹price):
+0. ₹X,XXX
+1. ₹X,XXX
+...
+Numbers only. INR only. No hotel names. No extra text.`
       : `You are a hotel pricing expert for Tamil Nadu, India.
-What is the standard nightly room rate (in Indian Rupees) for "${hotelName}" in ${city}?
+Estimate the standard nightly room rate in Indian Rupees for each hotel in ${city}:
+${list}
 
-Price guide: budget lodge ₹800–1,500 · standard hotel ₹2,000–4,000 · 3-star ₹4,000–6,000 · premium ₹6,000+
+Price reference: budget/lodge ₹800–1,500 · mid-range ₹2,000–4,000 · 3-star ₹4,000–6,000 · premium ₹6,000+
 
-Reply with ONLY the price in this exact format: ₹X,XXX/night`;
+Reply with one price per line in this exact format:
+0. ₹X,XXX
+1. ₹X,XXX
+...
+Numbers only. No hotel names. No explanation.`;
 
     const body: any = { contents: [{ parts: [{ text: prompt }] }] };
     if (useGrounding) body.tools = [{ google_search: {} }];
 
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), useGrounding ? 18000 : 12000);
+    const timer = setTimeout(() => controller.abort(), useGrounding ? 25000 : 15000);
     try {
       const resp = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,
         { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: controller.signal }
       );
       clearTimeout(timer);
-      if (!resp.ok) return null;
+      if (!resp.ok) { result._dbg = `http-${resp.status}(${useGrounding?'g':'k'})`; return false; }
       const data = await resp.json() as any;
-      if (data?.error) return null;
+      if (data?.error) { result._dbg = `api-err:${data.error?.code}(${useGrounding?'g':'k'})`; return false; }
       const parts = (data?.candidates?.[0]?.content?.parts ?? []) as Array<{ text?: string }>;
-      const raw = parts.map(p => p.text ?? '').filter(Boolean).join('').trim();
-      return sanitiseGeminiPrice(raw);
-    } catch (_) { clearTimeout(timer); return null; }
-  };
+      const raw = parts.map(p => p.text ?? '').filter(Boolean).join('\n');
+      result._dbg = `raw(${useGrounding?'g':'k'}):${raw.slice(0, 120)}`;
 
-  // Concurrency limiter — max N parallel Gemini calls to avoid 429 rate limits
-  const runLimited = async (tasks: Array<() => Promise<string | null>>, concurrency: number): Promise<Array<string | null>> => {
-    const out: Array<string | null> = new Array(tasks.length).fill(null);
-    let next = 0;
-    const worker = async () => {
-      while (next < tasks.length) { const i = next++; out[i] = await tasks[i](); }
-    };
-    await Promise.all(Array.from({ length: Math.min(concurrency, tasks.length) }, worker));
-    return out;
+      // Parse "0. ₹2,500" or "0. 2500" or "0. Rs 2500" lines
+      let added = 0;
+      for (const line of raw.split('\n')) {
+        const m = line.match(/^(\d+)[.):\s]+(.+)/);
+        if (!m) continue;
+        const idx = parseInt(m[1], 10);
+        const name = hotelNames[idx];
+        const price = sanitiseGeminiPrice(m[2].trim());
+        if (name && price) { result.set(name, price); added++; }
+      }
+      return added > 0;
+    } catch (e) { clearTimeout(timer); result._dbg = `err(${useGrounding?'g':'k'}):${String(e).slice(0,60)}`; return false; }
   };
 
   try {
-    const MAX = 5; // stay well under Gemini free-tier 15 RPM
-    // Pass 1: grounded search — live prices from Google Hotels / MakeMyTrip / Booking.com
-    const grounded = await runLimited(hotelNames.map(n => () => fetchPrice(n, true)), MAX);
-    let count = 0;
-    for (let i = 0; i < hotelNames.length; i++) {
-      if (grounded[i]) { result.set(hotelNames[i], grounded[i]!); count++; }
-    }
-    if (count > 0) { result._dbg = `grounded-ok(${count}/${hotelNames.length})`; return result; }
+    // Pass 1: Google Hotels grounding — real live prices
+    const ok1 = await callGemini(true);
+    if (ok1) { result._dbg = `grounded-ok(${result.size}/${hotelNames.length})`; return result; }
 
-    // Pass 2: Gemini knowledge fallback (no web search — uses training data)
-    const knowledge = await runLimited(hotelNames.map(n => () => fetchPrice(n, false)), MAX);
-    for (let i = 0; i < hotelNames.length; i++) {
-      if (knowledge[i] && !result.has(hotelNames[i])) { result.set(hotelNames[i], knowledge[i]!); count++; }
-    }
-    result._dbg = count > 0 ? `knowledge-ok(${count}/${hotelNames.length})` : `all-failed(n=${hotelNames.length})`;
+    // Pass 2: knowledge fallback
+    result.clear();
+    await callGemini(false);
+    result._dbg = result.size > 0
+      ? `knowledge-ok(${result.size}/${hotelNames.length})`
+      : `all-failed:${result._dbg}`;
   } catch (e) {
     result._dbg = `catch:${String(e).slice(0, 80)}`;
   }
