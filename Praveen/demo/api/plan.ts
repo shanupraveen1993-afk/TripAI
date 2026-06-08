@@ -4166,8 +4166,38 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
         geminiLitePricing(hotelNames, pricingQuery, city, GEMINI_KEY),
       ]);
 
-      const sorted          = [...rankedAi].sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99));
-      const geminiOrdered   = sorted.map((ai: any) => placesToRank[ai.originalIdx ?? 0] ?? placesToRank[0]);
+      const sorted = [...rankedAi].sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99));
+
+      // Map AI data by place ID so re-sorting doesn't break the index mapping
+      const aiByPlaceId = new Map<string, any>(
+        sorted.map((ai: any) => {
+          const p = placesToRank[ai.originalIdx ?? 0] ?? placesToRank[0];
+          return [p?.id ?? String(ai.originalIdx), ai];
+        })
+      );
+
+      let geminiOrdered = sorted.map((ai: any) => placesToRank[ai.originalIdx ?? 0] ?? placesToRank[0]);
+
+      // Location tags: re-sort by distance bands so nearest hotels always rank first
+      const LOCATION_SORT_TAGS = ['Near Railway Station', 'Near Big Temple', 'Near Bus Stand', 'City Centre', 'Central & Walkable'];
+      const activeLandmarkTag  = selectedTags.find(t => LOCATION_SORT_TAGS.includes(t));
+      if (activeLandmarkTag) {
+        const lm = landmarks.find(l => l.tags.includes(activeLandmarkTag));
+        if (lm) {
+          geminiOrdered = geminiOrdered
+            .map((p: any, geminiRank: number) => {
+              const lat = p.location?.latitude;
+              const lng = p.location?.longitude;
+              const dist = (lat != null && lng != null) ? haversineKm(lat, lng, lm.lat, lm.lng) : 999;
+              // Band 0 = within 1.5km (walking), 1 = 1.5–3km, 2 = 3–5km, 3 = farther
+              const band = dist <= 1.5 ? 0 : dist <= 3 ? 1 : dist <= 5 ? 2 : 3;
+              return { p, band, geminiRank };
+            })
+            .sort((a, b) => a.band !== b.band ? a.band - b.band : a.geminiRank - b.geminiRank)
+            .map(x => x.p);
+        }
+      }
+
       const reorderedPlaces = pinNameMatchToTop(geminiOrdered, filters.searchQuery ?? '');
 
       const buildHotelResult = (p: any, ai: any, globalIdx: number) => {
@@ -4339,7 +4369,7 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
       };
 
       const finalResults = reorderedPlaces.map((p: any, i: number) =>
-        buildHotelResult(p, sorted[i] ?? {}, i)
+        buildHotelResult(p, aiByPlaceId.get(p?.id ?? '') ?? sorted[i] ?? {}, i)
       );
 
       return res.json({ results: finalResults, _debug: { geminiPricedCount: pricingMap.size, hotelCount: hotelNames.length, geminiDbg: (pricingMap as any)._dbg ?? null } });
