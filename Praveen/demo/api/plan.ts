@@ -4197,7 +4197,7 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
               const bBucket = Math.round(b.dist * 2) / 2;
               return aBucket !== bBucket ? aBucket - bBucket : a.geminiRank - b.geminiRank;
             })
-            .map(x => x.p);
+            .map(x => { x.p._locDist = Math.round(x.dist * 100) / 100; return x.p; });
         }
       }
 
