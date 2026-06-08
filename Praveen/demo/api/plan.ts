@@ -3574,13 +3574,22 @@ Return ONLY valid JSON, no markdown:
     };
     if (useGrounding) body.tools = [{ google_search: {} }];
 
-    const resp = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`,
-      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
-    );
+    // Use v1beta for grounding (beta feature), v1 for knowledge-only (stable)
+    const apiVersion = useGrounding ? 'v1beta' : 'v1';
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 12000);
+    let resp: Response;
+    try {
+      resp = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`,
+        { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: controller.signal }
+      );
+    } catch (e) { console.log('[pricing] fetch fail', model, String(e)); clearTimeout(timer); return false; }
+    clearTimeout(timer);
     if (resp.status === 429) { console.log('[pricing] 429', model); return false; }
     const data  = await resp.json() as any;
     if (data?.error) { console.log('[pricing] error', model, data.error?.code, data.error?.message); return false; }
+    void apiVersion;
     // Grounding can spread content across multiple parts — join all text parts
     const parts = (data?.candidates?.[0]?.content?.parts ?? []) as Array<{ text?: string }>;
     const raw   = parts.map(p => p.text ?? '').filter(Boolean).join('\n');
