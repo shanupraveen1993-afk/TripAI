@@ -1192,10 +1192,10 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
   const firstName = userName?.split(' ')[0] || '';
 
   const TAB_HERO: Record<Tab, { headline: string; sub: string; img: string }> = {
-    Hotels:    { headline: 'Find your perfect stay',  sub: 'AI-ranked by price, distance & reviews',   img: '/hotel.png'     },
-    Food:      { headline: 'Discover the best eats',  sub: 'Authentic cuisine, ranked for you',         img: '/food.webp'     },
-    Itinerary: { headline: 'Plan your perfect day',   sub: 'AI-routed itinerary, timed to perfection', img: '/itinerary.jpg' },
-    Explore:   { headline: 'Explore every landmark',  sub: 'Deep-dive guides powered by real reviews', img: '/explore.webp'  },
+    Hotels:    { headline: 'Find your perfect stay',  sub: 'AI-ranked by price, distance & reviews',   img: '/hotel.webp'     },
+    Food:      { headline: 'Discover the best eats',  sub: 'Authentic cuisine, ranked for you',         img: '/food.webp'      },
+    Itinerary: { headline: 'Plan your perfect day',   sub: 'AI-routed itinerary, timed to perfection', img: '/itinerary.webp' },
+    Explore:   { headline: 'Explore every landmark',  sub: 'Deep-dive guides powered by real reviews', img: '/explore.webp'   },
   };
   const hero = TAB_HERO[activeTab];
 
@@ -1203,21 +1203,15 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
     <div className="w-full pb-10 lg:pb-6">
 
       {/* ── HERO — photo background, same height across all 4 tabs ── */}
-      <div className="relative w-full min-h-[300px] flex flex-col items-center justify-center overflow-hidden">
+      <div className="relative w-full min-h-[300px] flex flex-col items-center justify-center overflow-hidden bg-black">
 
-        {/* Photo — cross-fades on tab switch */}
-        <AnimatePresence mode="wait">
-          <motion.img
-            key={activeTab}
-            src={hero.img}
-            alt={activeTab}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-        </AnimatePresence>
+        {/* Photo — instant swap, no AnimatePresence glitch */}
+        <img
+          key={activeTab}
+          src={hero.img}
+          alt={activeTab}
+          className="absolute inset-0 w-full h-full object-contain"
+        />
 
         {/* Dark gradient overlay — bottom-heavy so text pops */}
         <div
