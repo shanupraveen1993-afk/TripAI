@@ -774,27 +774,33 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
 
       /* ── Hotels ─────────────────────────────────────────────── */
       case 'Hotels': return (
-        <div className="space-y-4">
+        <div className="space-y-3">
+
+          {/* Search field */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted pointer-events-none" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="Search for hotel, stay…"
+              className="w-full pl-8 pr-3 py-2 rounded-lg bg-bg-app border border-border text-sm text-body placeholder:text-muted focus:outline-none focus:border-brand transition-colors"
+            />
+          </div>
 
           {/* Hotel keyword tags — multi-select up to 2, segmented */}
           {hotelTagData.tags.length > 0 && (
             <div>
-              {/* Header with counter + clear */}
-              <div className="mb-3">
-                <div className="flex items-center justify-between">
-                  <label className="flex items-center gap-2 text-sm font-semibold text-heading">
-                    <span className="w-1 h-5 rounded-full bg-brand shrink-0" />
-                    Select your preference
-                    {tagsLoading && <span role="status" aria-label="Loading tags" className="ml-1.5 inline-block w-2.5 h-2.5 border border-muted border-t-transparent rounded-full animate-spin align-middle" />}
-                  </label>
-                  {hotelTags.length > 0 ? (
-                    <button type="button" onClick={() => setHotelTags([])}
-                      className="text-xs font-semibold text-brand underline underline-offset-2">
-                      Clear ({hotelTags.length}/2)
-                    </button>
-                  ) : null}
+              {/* Clear button — floated right, visible only when tags selected */}
+              {hotelTags.length > 0 && (
+                <div className="flex justify-end mb-2">
+                  {tagsLoading && <span role="status" aria-label="Loading tags" className="mr-2 inline-block w-2.5 h-2.5 border border-muted border-t-transparent rounded-full animate-spin align-middle self-center" />}
+                  <button type="button" onClick={() => setHotelTags([])}
+                    className="text-xs font-semibold text-brand underline underline-offset-2">
+                    Clear ({hotelTags.length}/2)
+                  </button>
                 </div>
-              </div>
+              )}
 
               {/* Segmented tag display */}
               {hotelTagData.segments
@@ -890,25 +896,33 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
 
       /* ── Food ───────────────────────────────────────────────── */
       case 'Food': return (
-        <div className="space-y-4">
+        <div className="space-y-3">
+
+          {/* Search field */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted pointer-events-none" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="Search for food, restaurant…"
+              className="w-full pl-8 pr-3 py-2 rounded-lg bg-bg-app border border-border text-sm text-body placeholder:text-muted focus:outline-none focus:border-brand transition-colors"
+            />
+          </div>
 
           {/* Segmented food tags — multi-select up to 3, 5×5 from real review data */}
           {foodTagData.tags.length > 0 && (
             <div>
-              {/* Header with counter + clear */}
-              <div className="flex items-center justify-between mb-3">
-                <label className="flex items-center gap-2 text-sm font-semibold text-heading">
-                  <span className="w-1 h-5 rounded-full bg-brand shrink-0" />
-                  Select your preference
-                  {tagsLoading && <span role="status" aria-label="Loading tags" className="ml-1.5 inline-block w-2.5 h-2.5 border border-muted border-t-transparent rounded-full animate-spin align-middle" />}
-                </label>
-                {foodTags.length > 0 ? (
+              {/* Clear button — floated right, visible only when tags selected */}
+              {foodTags.length > 0 && (
+                <div className="flex justify-end mb-2">
+                  {tagsLoading && <span role="status" aria-label="Loading tags" className="mr-2 inline-block w-2.5 h-2.5 border border-muted border-t-transparent rounded-full animate-spin align-middle self-center" />}
                   <button type="button" onClick={() => setFoodTags([])}
                     className="text-xs font-semibold text-brand underline underline-offset-2">
                     Clear ({foodTags.length}/2)
                   </button>
-                ) : null}
-              </div>
+                </div>
+              )}
 
               {foodTagData.segments && Object.keys(foodTagData.segments).length > 0
                 ? Object.entries(foodTagData.segments).map(([seg, tags]) => {
@@ -1192,41 +1206,41 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
             <div className="p-2">
               <CategorySelector active={activeTab} onChange={t => { setActiveTab(t); onTabChange?.(t); }} />
             </div>
-            {/* Per-tab illustration banner */}
-            <div className="mx-3 mt-2 mb-1 rounded-xl overflow-hidden" style={{ height: 60 }}>
+            {/* Per-tab title block */}
+            <div className="px-4 pt-2 pb-1">
               {activeTab === 'Hotels' && (
-                <div className="relative w-full h-full" style={{ background: 'linear-gradient(135deg,#0c2461 0%,#1d4ed8 100%)' }}>
-                  <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.6) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.6) 1px,transparent 1px)', backgroundSize: '18px 18px' }} />
-                  <div className="relative z-10 h-full flex items-center px-4 gap-3">
-                    <span className="text-3xl shrink-0">🏨</span>
-                    <div><p className="text-white font-display font-bold text-sm leading-tight">130+ Hotels in Thanjavur</p><p className="text-white/65 text-xs mt-0.5">Heritage · Budget · Premium · River View</p></div>
+                <div className="flex items-center gap-2">
+                  <Hotel className="w-4 h-4 text-brand shrink-0" />
+                  <div>
+                    <p className="text-sm font-semibold text-heading leading-tight">Best Stays</p>
+                    <p className="text-[10px] text-muted mt-0.5">Pick up to 2 preferences</p>
                   </div>
                 </div>
               )}
               {activeTab === 'Food' && (
-                <div className="relative w-full h-full" style={{ background: 'linear-gradient(135deg,#0c2461 0%,#1d4ed8 100%)' }}>
-                  <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.6) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.6) 1px,transparent 1px)', backgroundSize: '18px 18px' }} />
-                  <div className="relative z-10 h-full flex items-center px-4 gap-3">
-                    <span className="text-3xl shrink-0">🍛</span>
-                    <div><p className="text-white font-display font-bold text-sm leading-tight">400+ Restaurants in Thanjavur</p><p className="text-white/65 text-xs mt-0.5">Thali · Biryani · Chettinad · Café · Pure Veg</p></div>
+                <div className="flex items-center gap-2">
+                  <Utensils className="w-4 h-4 text-brand shrink-0" />
+                  <div>
+                    <p className="text-sm font-semibold text-heading leading-tight">Best Eats</p>
+                    <p className="text-[10px] text-muted mt-0.5">Pick up to 2 preferences</p>
                   </div>
                 </div>
               )}
               {activeTab === 'Itinerary' && (
-                <div className="relative w-full h-full" style={{ background: 'linear-gradient(135deg,#0c2461 0%,#1d4ed8 100%)' }}>
-                  <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.6) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.6) 1px,transparent 1px)', backgroundSize: '18px 18px' }} />
-                  <div className="relative z-10 h-full flex items-center px-4 gap-3">
-                    <span className="text-3xl shrink-0">🗺️</span>
-                    <div><p className="text-white font-display font-bold text-sm leading-tight">AI-Planned Day Itinerary</p><p className="text-white/65 text-xs mt-0.5">Time-optimised · Route planned · Traffic aware</p></div>
+                <div className="flex items-center gap-2">
+                  <Route className="w-4 h-4 text-brand shrink-0" />
+                  <div>
+                    <p className="text-sm font-semibold text-heading leading-tight">Plan Your Day</p>
+                    <p className="text-[10px] text-muted mt-0.5">Set a start point · pick a time slot</p>
                   </div>
                 </div>
               )}
               {activeTab === 'Explore' && (
-                <div className="relative w-full h-full" style={{ background: 'linear-gradient(135deg,#0c2461 0%,#1d4ed8 100%)' }}>
-                  <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.6) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.6) 1px,transparent 1px)', backgroundSize: '18px 18px' }} />
-                  <div className="relative z-10 h-full flex items-center px-4 gap-3">
-                    <span className="text-3xl shrink-0">🏛️</span>
-                    <div><p className="text-white font-display font-bold text-sm leading-tight">19+ UNESCO & Heritage Sites</p><p className="text-white/65 text-xs mt-0.5">Big Temple · Palace · Saraswathi Mahal · Darasuram</p></div>
+                <div className="flex items-center gap-2">
+                  <Compass className="w-4 h-4 text-brand shrink-0" />
+                  <div>
+                    <p className="text-sm font-semibold text-heading leading-tight">Explore Thanjavur</p>
+                    <p className="text-[10px] text-muted mt-0.5">Choose a landmark to visit</p>
                   </div>
                 </div>
               )}
