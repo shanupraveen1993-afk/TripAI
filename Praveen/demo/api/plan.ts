@@ -3566,112 +3566,61 @@ async function geminiLitePricing(
 ): Promise<Map<string, string> & { _dbg?: string }> {
   const result: Map<string, string> & { _dbg?: string } = new Map<string, string>();
   if (!geminiKey || hotelNames.length === 0) {
-    result._dbg = `no-key-or-hotels(key=${!!geminiKey},n=${hotelNames.length})`;
+    result._dbg = `no-key(${!!geminiKey},n=${hotelNames.length})`;
     return result;
   }
 
-  // Balanced-bracket JSON array extractor — handles markdown fences, prose, nested arrays
-  const extractJsonArray = (text: string): string | null => {
-    const s = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '');
-    const start = s.indexOf('[');
-    if (start === -1) return null;
-    let depth = 0;
-    for (let i = start; i < s.length; i++) {
-      if (s[i] === '[') depth++;
-      else if (s[i] === ']') { depth--; if (depth === 0) return s.slice(start, i + 1); }
-    }
-    return null;
-  };
+  // One focused Gemini call per hotel — grounding searches Google Hotels / MakeMyTrip live
+  const fetchPrice = async (hotelName: string, useGrounding: boolean): Promise<string | null> => {
+    const prompt = useGrounding
+      ? `Search Google Hotels, MakeMyTrip, Booking.com, or Goibibo for the current nightly room rate for "${hotelName}" in ${city}, Tamil Nadu, India.
 
-  // Prose fallback: "0. ₹2,500" / "0. Hotel Name - Rs 2500" patterns
-  const extractFromProse = (text: string, baseIdx: number, names: string[]): number => {
-    let added = 0;
-    const lines = text.split('\n');
-    for (const line of lines) {
-      const idxM = line.match(/^(\d+)[.):\-\s]/);
-      if (!idxM) continue;
-      const relIdx = parseInt(idxM[1], 10) - baseIdx;
-      const name = names[relIdx];
-      if (!name) continue;
-      const sanitised = sanitiseGeminiPrice(line);
-      if (sanitised && !result.has(name)) { result.set(name, sanitised); added++; }
-    }
-    return added;
-  };
+Reply with ONLY the price in this exact format: ₹X,XXX/night
+One price. No explanation. No range. No extra text.`
+      : `You are a hotel pricing expert for Tamil Nadu, India.
+What is the standard nightly room rate (in Indian Rupees) for "${hotelName}" in ${city}?
 
-  // Call Gemini with a batch of hotels (baseIdx = absolute offset into hotelNames)
-  const callBatch = async (batchNames: string[], baseIdx: number, useGrounding: boolean): Promise<boolean> => {
-    const numbered = batchNames.map((n, i) => `${baseIdx + i}. ${n}`).join('\n');
-    const promptText = useGrounding
-      ? `Search MakeMyTrip or Goibibo for current nightly room prices in Indian Rupees for these hotels in ${city}, Tamil Nadu, India:\n${numbered}\n\nRespond ONLY with this JSON array (no text before or after):\n[{"idx":${baseIdx},"price":"₹X,XXX/night"},{"idx":${baseIdx + 1},"price":"₹X,XXX/night"},...]`
-      : `You are a hotel pricing expert. Estimate the nightly room rate in Indian Rupees (₹) for each hotel in ${city}, Tamil Nadu, India:\n${numbered}\n\nPrice guide: budget/lodge ₹800–1,500 · mid-range ₹2,000–4,000 · 3-star ₹4,000–6,000 · premium ₹6,000+\n\nRespond ONLY with this JSON array:\n[{"idx":${baseIdx},"price":"₹X,XXX/night"},{"idx":${baseIdx + 1},"price":"₹X,XXX/night"},...]`;
+Price guide: budget lodge ₹800–1,500 · standard hotel ₹2,000–4,000 · 3-star ₹4,000–6,000 · premium ₹6,000+
 
-    const body: any = { contents: [{ parts: [{ text: promptText }] }] };
+Reply with ONLY the price in this exact format: ₹X,XXX/night`;
+
+    const body: any = { contents: [{ parts: [{ text: prompt }] }] };
     if (useGrounding) body.tools = [{ google_search: {} }];
 
-    const timeout = useGrounding ? 22000 : 16000;
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeout);
-    let resp: Response;
+    const timer = setTimeout(() => controller.abort(), useGrounding ? 18000 : 12000);
     try {
-      resp = await fetch(
+      const resp = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,
         { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: controller.signal }
       );
-    } catch (e) { result._dbg = `fetch-fail(${useGrounding?'g':'k'}):${String(e).slice(0,60)}`; clearTimeout(timer); return false; }
-    clearTimeout(timer);
-    if (resp.status === 429) { result._dbg = `429`; return false; }
-    if (!resp.ok) { result._dbg = `http-${resp.status}`; return false; }
-    const data = await resp.json() as any;
-    if (data?.error) { result._dbg = `api-err:${data.error?.code}:${String(data.error?.message ?? '').slice(0,50)}`; return false; }
-    const parts = (data?.candidates?.[0]?.content?.parts ?? []) as Array<{ text?: string }>;
-    const raw = parts.map(p => p.text ?? '').filter(Boolean).join('\n');
-
-    // Strategy 1: balanced-bracket JSON extraction
-    const jsonStr = extractJsonArray(raw);
-    if (jsonStr) {
-      try {
-        const parsed: Array<{ idx: number; price: string }> = JSON.parse(jsonStr);
-        let added = 0;
-        for (const item of parsed) {
-          const name = hotelNames[item.idx];
-          const sanitised = sanitiseGeminiPrice(item.price ?? '');
-          if (name && sanitised) { result.set(name, sanitised); added++; }
-        }
-        if (added > 0) return true;
-        // JSON parsed but 0 prices valid — try prose on same raw
-        result._dbg = `zero-json(${useGrounding?'g':'k'}):n=${parsed.length}:s0=${JSON.stringify(parsed[0]??{})}`;
-      } catch (_) { result._dbg = `parse-fail(${useGrounding?'g':'k'}):${raw.slice(0,80)}`; }
-    } else {
-      result._dbg = `no-json(${useGrounding?'g':'k'}):raw=${raw.slice(0,80)}`;
-    }
-
-    // Strategy 2: line-by-line ₹ extraction for prose-style responses
-    const proseAdded = extractFromProse(raw, baseIdx, batchNames);
-    if (proseAdded > 0) return true;
-
-    return false;
+      clearTimeout(timer);
+      if (!resp.ok) return null;
+      const data = await resp.json() as any;
+      if (data?.error) return null;
+      const parts = (data?.candidates?.[0]?.content?.parts ?? []) as Array<{ text?: string }>;
+      const raw = parts.map(p => p.text ?? '').filter(Boolean).join('').trim();
+      return sanitiseGeminiPrice(raw);
+    } catch (_) { clearTimeout(timer); return null; }
   };
 
   try {
-    const BATCH = 6;
-    // Pass 1: grounded search (live prices from MakeMyTrip/Goibibo)
-    for (let i = 0; i < hotelNames.length; i += BATCH) {
-      const batch = hotelNames.slice(i, i + BATCH);
-      await callBatch(batch, i, true);
+    // Pass 1: all hotels in parallel with Google Search grounding — real live prices
+    const grounded = await Promise.all(hotelNames.map(n => fetchPrice(n, true)));
+    let count = 0;
+    for (let i = 0; i < hotelNames.length; i++) {
+      if (grounded[i]) { result.set(hotelNames[i], grounded[i]!); count++; }
     }
-    if (result.size > 0) { result._dbg = `grounded-ok(${result.size})`; return result; }
+    if (count > 0) { result._dbg = `grounded-ok(${count}/${hotelNames.length})`; return result; }
 
-    // Pass 2: knowledge-only fallback
-    const dbg1 = result._dbg;
-    for (let i = 0; i < hotelNames.length; i += BATCH) {
-      const batch = hotelNames.slice(i, i + BATCH);
-      await callBatch(batch, i, false);
+    // Pass 2: knowledge fallback for any still missing
+    const knowledge = await Promise.all(hotelNames.map(n => fetchPrice(n, false)));
+    for (let i = 0; i < hotelNames.length; i++) {
+      if (knowledge[i] && !result.has(hotelNames[i])) { result.set(hotelNames[i], knowledge[i]!); count++; }
     }
-    if (result.size > 0) { result._dbg = `knowledge-ok(${result.size})`; return result; }
-    result._dbg = `all-failed|grnd:${dbg1}|know:${result._dbg}`;
+    result._dbg = count > 0 ? `knowledge-ok(${count}/${hotelNames.length})` : `all-failed(n=${hotelNames.length})`;
   } catch (e) {
-    result._dbg = `catch:${String(e).slice(0,80)}`;
+    result._dbg = `catch:${String(e).slice(0, 80)}`;
   }
   return result;
 }
