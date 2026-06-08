@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  ArrowLeft, ArrowRight, Star, MapPin, Clock, Navigation, Share2, Compass,
+  ArrowRight, Star, MapPin, Clock, Navigation, Share2, Compass,
   ChevronRight, ChevronDown, Sparkles, Info, RefreshCw, Bookmark, BookmarkCheck,
   Utensils, CheckCircle, AlertTriangle, RotateCcw, Hotel, Route,
   ImageIcon, ExternalLink, Map, X, Lightbulb, DollarSign, Flame, TrendingUp, ThumbsUp, Ticket,
@@ -255,7 +255,7 @@ function ReviewCard({ review, idx, keywords = [] }: { review: ReviewItem; idx: n
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-1 mb-1">
             <div className="flex items-center gap-1 min-w-0">
-              <span className="text-xs font-semibold text-heading truncate">{review.author}</span>
+              <span className="text-sm font-semibold text-heading truncate">{review.author}</span>
               <span className="text-xs text-muted shrink-0">· {review.location}</span>
             </div>
             <span className="text-xs text-muted shrink-0">{review.ago}</span>
@@ -268,7 +268,7 @@ function ReviewCard({ review, idx, keywords = [] }: { review: ReviewItem; idx: n
             </div>
             {positiveBadge}
           </div>
-          <p className="text-xs text-body leading-relaxed italic">"{highlightKeywords(review.text, kws)}"</p>
+          <p className="text-sm text-body leading-relaxed italic">"{highlightKeywords(review.text, kws)}"</p>
           <p className="text-xs text-muted mt-1.5 font-medium">via Google Reviews</p>
         </div>
       </div>
@@ -385,44 +385,44 @@ function scoreReviewForTime(text: string, timeSlot: string): number {
   return kws.reduce((n, kw) => n + (lower.includes(kw) ? 1 : 0), 0);
 }
 
-// Returns the price NUMBER only (no /night suffix) — caller adds the "per night" label
+// Returns the price label — "-" means explicitly no price found, null means no data at all
 function getHotelPriceLabel(googleHotelsPrice?: string, priceRange?: string, priceLevel?: string): string | null {
+  if (googleHotelsPrice === '-') return '-';
   if (googleHotelsPrice) return googleHotelsPrice.replace(/\/night.*/i, '').trim();
   if (priceRange)        return priceRange.replace(/\/night.*/i, '').trim();
-  if (priceLevel && priceLevel !== 'Free') return priceLevel; // ₹ / ₹₹ / ₹₹₹ / ₹₹₹₹ as fallback
+  if (priceLevel && priceLevel !== 'Free') return priceLevel;
   return null;
 }
 
-function PriceBadge({ display, isRange, trivagoUrl }: { display: string; isRange: boolean; trivagoUrl?: string }) {
+function PriceBadge({ display, isRange }: { display: string; isRange: boolean }) {
   const [tip, setTip] = React.useState(false);
+  const isDash = display === '-';
   return (
     <div className="text-right leading-tight">
       <div className="flex items-start justify-end gap-1.5">
-        <p className={`font-black text-heading tabular-nums ${display.length > 7 ? 'text-lg' : 'text-2xl'}`}>{display}</p>
-        <div className="relative mt-1 shrink-0">
-          <button
-            type="button"
-            onMouseEnter={() => setTip(true)}
-            onMouseLeave={() => setTip(false)}
-            onClick={e => { e.stopPropagation(); setTip(v => !v); }}
-            className="w-[18px] h-[18px] rounded-full bg-brand-softer border border-brand/20 text-brand flex items-center justify-center text-[10px] font-black leading-none"
-            aria-label="Price info"
-          >i</button>
-          {tip && (
-            <div className="absolute right-0 top-6 w-56 bg-gray-900 text-white text-[11px] rounded-xl px-3 py-2.5 z-50 leading-relaxed shadow-2xl pointer-events-none">
-              <p className="font-bold mb-0.5">Approximate price</p>
-              <p className="text-white/75">Starting from {display}/night. Confirm the final rate on Google before booking.</p>
-            </div>
-          )}
-        </div>
+        <p className={`font-black tabular-nums ${isDash ? 'text-xl text-muted' : `text-heading ${display.length > 7 ? 'text-lg' : 'text-2xl'}`}`}>{display}</p>
+        {!isDash && (
+          <div className="relative mt-1 shrink-0">
+            <button
+              type="button"
+              onMouseEnter={() => setTip(true)}
+              onMouseLeave={() => setTip(false)}
+              onClick={e => { e.stopPropagation(); setTip(v => !v); }}
+              className="w-[18px] h-[18px] rounded-full bg-brand-softer border border-brand/20 text-brand flex items-center justify-center text-[10px] font-black leading-none"
+              aria-label="Price info"
+            >i</button>
+            {tip && (
+              <div className="absolute right-0 top-6 w-56 bg-gray-900 text-white text-[11px] rounded-xl px-3 py-2.5 z-50 leading-relaxed shadow-2xl pointer-events-none">
+                <p className="font-bold mb-0.5">Live price</p>
+                <p className="text-white/75">Starting from {display}/night via Google Hotels. Confirm final rate before booking.</p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
-      <p className="text-[10px] text-muted font-medium mt-0.5">{isRange ? 'onwards · per night' : 'per night'}</p>
-      {trivagoUrl && (
-        <a href={trivagoUrl} target="_blank" rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-[10px] text-brand font-semibold mt-1 hover:underline">
-          <ExternalLink className="w-2.5 h-2.5 shrink-0" />Compare on Trivago
-        </a>
-      )}
+      <p className="text-[10px] text-muted font-medium mt-0.5">
+        {isDash ? 'price unavailable' : isRange ? 'onwards · per night' : 'per night'}
+      </p>
     </div>
   );
 }
@@ -621,7 +621,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                 {/* Detailed Analysis */}
                 <div className="border-t border-border">
                   <button onClick={() => setExpanded(v => !v)}
-                    className="w-full flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-brand active:scale-[0.97] min-h-[44px]">
+                    className="w-full flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-brand hover:text-brand/70 transition-colors active:scale-[0.97] min-h-[44px]">
                     <Sparkles className="w-3 h-3 shrink-0" />
                     Detailed Analysis
                     <ChevronDown className={`w-3 h-3 shrink-0 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
@@ -644,7 +644,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               </div>
               <div className="border-t border-border">
                 <button onClick={() => setExpanded(v => !v)}
-                  className="w-full flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-brand active:scale-[0.97] min-h-[44px]">
+                  className="w-full flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-brand hover:text-brand/70 transition-colors active:scale-[0.97] min-h-[44px]">
                   <Sparkles className="w-3 h-3 shrink-0" />
                   Detailed Analysis
                   <ChevronDown className={`w-3 h-3 shrink-0 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
@@ -762,10 +762,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                   const raw = plD ?? place.priceLevel ?? '';
                   const isRange = (raw.includes('–') || (raw.includes('-') && raw.length > 5));
                   const display = isRange ? raw.split(/–|-/).shift()!.trim() : raw;
-                  const trivagoUrl = !place.priceFromGemini
-                    ? `https://www.trivago.in/?query=${encodeURIComponent((place.name || '') + ' ' + (refLabel || 'Thanjavur'))}`
-                    : undefined;
-                  return <PriceBadge display={display} isRange={isRange} trivagoUrl={trivagoUrl} />;
+                  return <PriceBadge display={display} isRange={isRange} />;
                 })()}
                 {tab === 'Hotels' && (
                   <a href={bookHref} target="_blank" rel="noopener noreferrer"
@@ -781,7 +778,7 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                 )}
                 <button
                   onClick={() => setExpanded(v => !v)}
-                  className="w-full flex items-center justify-center gap-1 py-2 text-xs font-semibold text-brand hover:text-brand/70 transition-colors active:scale-[0.97]"
+                  className="w-full flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-brand hover:text-brand/70 transition-colors active:scale-[0.97] min-h-[44px]"
                 >
                   <Sparkles className="w-3 h-3 shrink-0" />
                   Detailed Analysis
@@ -1111,7 +1108,7 @@ function ItineraryView({ stops, onExploreStop }: {
                 {/* ── Info + CTA row ─────────────────────── */}
                 <div className="bg-surface px-3.5 pt-3 pb-3.5 space-y-3 cursor-pointer" onClick={() => toggleStop(idx)}>
                   {/* AI tip */}
-                  <p className="text-xs text-body leading-relaxed italic border-l-2 border-brand/30 pl-2.5">
+                  <p className="text-sm text-body leading-relaxed italic border-l-2 border-brand/30 pl-2.5">
                     "{stop.tip}"
                   </p>
 
@@ -1183,8 +1180,8 @@ function ItineraryView({ stops, onExploreStop }: {
                         <div className="flex items-start gap-2 p-2.5 rounded-lg border bg-danger-soft border-danger-medium/50">
                           <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-danger-strong" />
                           <div>
-                            <span className="text-xs font-bold block mb-0.5 text-danger-strong">Avoid</span>
-                            <p className="text-xs leading-snug text-danger">{stop.avoidNote}</p>
+                            <span className="text-xs font-bold uppercase tracking-wide block mb-0.5 text-danger-strong">Avoid</span>
+                            <p className="text-sm leading-snug text-danger">{stop.avoidNote}</p>
                           </div>
                         </div>
                       )}
@@ -1325,7 +1322,7 @@ function ExploreView({ place, visitTime = 'Morning', onBack }: { place: ExploreR
             role="tab"
             aria-selected={activeTab === t}
             onClick={() => setActiveTab(t)}
-            className={`flex-1 py-2 min-h-[36px] text-xs font-bold rounded-lg transition-colors ${
+            className={`flex-1 py-2 min-h-[36px] text-sm font-bold rounded-lg transition-colors ${
               activeTab === t
                 ? 'bg-brand text-white shadow-sm'
                 : 'text-muted hover:text-heading hover:bg-border/30'
@@ -1346,23 +1343,23 @@ function ExploreView({ place, visitTime = 'Morning', onBack }: { place: ExploreR
             <div className="rounded-lg p-3.5 border bg-brand-softer border-brand-medium">
               <div className="flex items-center gap-1.5 mb-2">
                 <Sparkles className="w-3.5 h-3.5 text-brand" />
-                <span className="text-xs font-semibold text-brand">AI Insight</span>
+                <span className="text-xs font-bold uppercase tracking-wide text-brand">AI Insight</span>
               </div>
-              <p className="text-xs text-body leading-relaxed">"{place.insight}"</p>
+              <p className="text-sm text-body leading-relaxed">"{place.insight}"</p>
             </div>
 
             {/* Stat pills */}
             <div className="grid grid-cols-2 gap-2">
               <div className="rounded-lg border border-border bg-surface p-3 flex flex-col gap-1">
-                <span className="text-xs text-muted font-medium">Google Rating</span>
+                <span className="text-sm text-muted font-medium">Google Rating</span>
                 <div className="flex items-center gap-1">
                   <Star className="w-3.5 h-3.5 fill-warning-strong text-warning-strong" />
                   <span className="text-base font-black text-heading">{place.rating}</span>
                 </div>
               </div>
               <div className="rounded-lg border border-border bg-surface p-3 flex flex-col gap-1">
-                <span className="text-xs text-muted font-medium">Hours</span>
-                <span className="text-xs font-bold text-heading leading-snug">{place.openingHours}</span>
+                <span className="text-sm text-muted font-medium">Hours</span>
+                <span className="text-sm font-bold text-heading">{place.openingHours}</span>
               </div>
             </div>
 
@@ -1384,8 +1381,8 @@ function ExploreView({ place, visitTime = 'Morning', onBack }: { place: ExploreR
                   <Clock className="w-3.5 h-3.5 text-brand" />
                 </div>
                 <div>
-                  <span className="text-xs font-bold text-brand block mb-0.5">Best Time to Visit</span>
-                  <p className="text-xs leading-snug text-body">{place.bestTime}</p>
+                  <span className="text-xs font-bold uppercase tracking-wide text-brand block mb-0.5">Best Time to Visit</span>
+                  <p className="text-sm leading-snug text-body">{place.bestTime}</p>
                 </div>
               </div>
             )}
@@ -1396,9 +1393,9 @@ function ExploreView({ place, visitTime = 'Morning', onBack }: { place: ExploreR
                 <div className="w-6 h-6 rounded-md bg-success/15 flex items-center justify-center shrink-0">
                   <Navigation className="w-3 h-3 text-success-strong" />
                 </div>
-                <span className="text-xs font-bold text-success-strong">Visit Guide</span>
+                <span className="text-xs font-bold uppercase tracking-wide text-success-strong">Visit Guide</span>
               </div>
-              <p className="text-xs text-body leading-relaxed whitespace-pre-line">{place.flow}</p>
+              <p className="text-sm text-body leading-relaxed whitespace-pre-line">{place.flow}</p>
             </div>
 
             {/* Good to Know */}
@@ -1407,9 +1404,9 @@ function ExploreView({ place, visitTime = 'Morning', onBack }: { place: ExploreR
                 <div className="w-6 h-6 rounded-md bg-warning/15 flex items-center justify-center shrink-0">
                   <Info className="w-3 h-3 text-muted" />
                 </div>
-                <span className="text-xs font-bold text-muted">Good to Know</span>
+                <span className="text-xs font-bold uppercase tracking-wide text-warning-strong">Good to Know</span>
               </div>
-              <p className="text-xs text-body leading-relaxed">{place.preparation}</p>
+              <p className="text-sm text-body leading-relaxed">{place.preparation}</p>
             </div>
 
             {/* Avoid These */}
@@ -1419,8 +1416,8 @@ function ExploreView({ place, visitTime = 'Morning', onBack }: { place: ExploreR
                   <AlertTriangle className="w-3.5 h-3.5 text-danger-strong" />
                 </div>
                 <div>
-                  <span className="text-xs font-bold block mb-0.5 text-danger-strong">Avoid These</span>
-                  <p className="text-xs leading-snug text-danger">{place.avoidNote}</p>
+                  <span className="text-xs font-bold uppercase tracking-wide block mb-0.5 text-danger-strong">Avoid These</span>
+                  <p className="text-sm leading-snug text-danger">{place.avoidNote}</p>
                 </div>
               </div>
             )}
@@ -1432,12 +1429,12 @@ function ExploreView({ place, visitTime = 'Morning', onBack }: { place: ExploreR
           <motion.div key="reviews" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.15 }} className="space-y-2">
 
             {sortedReviews.length === 0 ? (
-              <p className="text-xs text-muted text-center py-6">No reviews available yet.</p>
+              <p className="text-sm text-muted text-center py-6">No reviews available yet.</p>
             ) : (
               <>
                 <div className="flex items-center gap-2 mb-1">
                   <Star className="w-3 h-3 fill-warning-strong text-warning-strong" />
-                  <span className="text-xs font-semibold text-heading">What visitors say</span>
+                  <span className="text-sm font-semibold text-heading">What visitors say</span>
                   <span className="ml-auto text-xs font-semibold text-brand bg-brand-softer px-2 py-0.5 rounded-full border border-brand-medium/40">{visitTime}</span>
                 </div>
                 {sortedReviews.map((r, i) => (
@@ -1475,7 +1472,7 @@ function StopInfoTabs({
           </div>
           <span className="text-xs font-bold uppercase tracking-wide text-brand">Timing &amp; Crowd</span>
         </div>
-        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-body">
+        <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-body">
           <span className="flex items-center gap-1">
             <span aria-hidden="true">🕐</span>
             <span className="font-semibold">{stop.time}</span>
@@ -1508,7 +1505,7 @@ function StopInfoTabs({
           </div>
           <span className="text-xs font-bold uppercase tracking-wide text-warning-strong">Good to Know</span>
         </div>
-        <p className="text-xs text-body leading-relaxed">
+        <p className="text-sm text-body leading-relaxed">
           {stop.cautionNote || stop.reachNote || 'Plan to arrive a few minutes before your scheduled time.'}
         </p>
       </div>
@@ -1605,7 +1602,7 @@ export function ResultsView({
             onClick={onBack}
             className="flex items-center gap-2 px-4 py-2.5 bg-brand hover:bg-brand-strong text-white text-sm font-semibold rounded-lg transition-colors duration-150"
           >
-            <ArrowLeft className="w-4 h-4" /> Adjust filters
+            Adjust filters
           </button>
         </motion.div>
       )}
@@ -1630,7 +1627,7 @@ export function ResultsView({
             onClick={onBack}
             className="flex items-center gap-2 px-4 py-2.5 rounded-lg border-2 border-brand text-brand text-sm font-bold hover:bg-brand hover:text-white transition-all"
           >
-            <ArrowLeft className="w-4 h-4" /> Adjust filters
+            Adjust filters
           </button>
         </motion.div>
       )}
@@ -1639,17 +1636,11 @@ export function ResultsView({
       {(tab === 'Hotels' || tab === 'Food') && (results?.length ?? 0) > 0 && (
         <>
           <div className="flex items-center mb-2">
-            <button
-              type="button"
-              onClick={onBack}
-              className="flex items-center gap-1.5 min-h-[36px] -ml-1 pr-2 text-heading hover:text-brand transition-colors"
-              aria-label="Go back"
-            >
-              <ArrowLeft className="w-4 h-4 shrink-0" />
-              <span className="text-sm font-bold">{tab}</span>
+            <div className="flex items-center gap-1.5 min-h-[36px] -ml-1 pr-2">
+              <span className="text-sm font-bold text-heading">{tab}</span>
               <span className="text-sm text-muted">·</span>
               <span className="text-sm text-muted tabular-nums">{results!.length} results</span>
-            </button>
+            </div>
             <span className="flex items-center gap-1 text-xs font-semibold text-brand ml-2">
               <Sparkles className="w-3 h-3 shrink-0" />AI Ranked
             </span>
@@ -1679,17 +1670,11 @@ export function ResultsView({
       )}
       {tab === 'Itinerary' && itinerary && (
         <div className="flex items-center mb-2">
-          <button
-            type="button"
-            onClick={onBack}
-            className="flex items-center gap-1.5 min-h-[36px] -ml-1 pr-2 text-heading hover:text-brand transition-colors"
-            aria-label="Go back"
-          >
-            <ArrowLeft className="w-4 h-4 shrink-0" />
-            <span className="text-sm font-bold">Itinerary</span>
+          <div className="flex items-center gap-1.5 min-h-[36px] -ml-1 pr-2">
+            <span className="text-sm font-bold text-heading">Itinerary</span>
             <span className="text-sm text-muted">·</span>
             <span className="text-sm text-muted tabular-nums">{itinerary.length} stops</span>
-          </button>
+          </div>
           <span className="flex items-center gap-1 text-xs font-semibold text-brand ml-2">
             <Sparkles className="w-3 h-3 shrink-0" />AI Planned
           </span>
@@ -1697,17 +1682,11 @@ export function ResultsView({
       )}
       {tab === 'Explore' && explore && (
         <div className="flex items-center mb-3 min-w-0">
-          <button
-            type="button"
-            onClick={onBack}
-            className="flex items-center gap-1.5 min-h-[36px] -ml-1 pr-2 text-heading hover:text-brand transition-colors min-w-0"
-            aria-label="Go back"
-          >
-            <ArrowLeft className="w-4 h-4 shrink-0" />
-            <span className="text-sm font-bold shrink-0">Explore</span>
+          <div className="flex items-center gap-1.5 min-h-[36px] -ml-1 pr-2 min-w-0">
+            <span className="text-sm font-bold text-heading shrink-0">Explore</span>
             <span className="text-sm text-muted shrink-0">·</span>
             <span className="text-sm text-muted truncate">{explore.name}</span>
-          </button>
+          </div>
           <span className="flex items-center gap-1 text-xs font-semibold text-brand shrink-0 ml-2">
             <Sparkles className="w-3 h-3 shrink-0" />AI Guide
           </span>
@@ -1752,7 +1731,7 @@ export function ResultsView({
               onClick={onBack}
               className="flex items-center gap-2 px-4 py-2.5 rounded-lg border-2 border-brand text-brand text-sm font-bold hover:bg-brand hover:text-white transition-all"
             >
-              <ArrowLeft className="w-4 h-4" /> Pick another spot
+              Pick another spot
             </button>
           </motion.div>
         )}

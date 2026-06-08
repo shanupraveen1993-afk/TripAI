@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { ArrowLeft, Sparkles, ChevronRight } from 'lucide-react';
+import { Sparkles, ChevronRight } from 'lucide-react';
 import { Button } from './ui/Button';
 
 interface CityLockScreenProps {
@@ -15,21 +15,6 @@ export function CityLockScreen({ destination, onBack, onTryThanjavur }: CityLock
       className="w-full relative overflow-hidden flex flex-col items-center justify-center min-h-[calc(100dvh-57px)] px-5 py-12"
       style={{ background: 'linear-gradient(160deg,#06080F 0%,#0B0F1E 50%,#100816 100%)' }}
     >
-      {/* Back button — min 44px touch target */}
-      <button
-        onClick={onBack}
-        aria-label="Go back"
-        className="absolute top-4 left-4 flex items-center gap-1.5 px-3 min-h-[44px] rounded-lg text-xs font-semibold transition-colors z-20 motion-safe:active:opacity-70"
-        style={{
-          background: 'rgba(255,255,255,0.07)',
-          border: '1px solid rgba(255,255,255,0.12)',
-          color: 'rgba(255,255,255,0.65)',
-        }}
-      >
-        <ArrowLeft className="w-3.5 h-3.5" />
-        Back
-      </button>
-
       {/* Dot grid */}
       <div className="absolute inset-0 pointer-events-none" style={{
         backgroundImage: 'radial-gradient(circle, rgba(28,100,242,0.15) 1px, transparent 1px)',

@@ -257,9 +257,9 @@ const HOW = [
    SVG Mood Illustrations
 ══════════════════════════════════════════════════════════════════════ */
 
-function HotelScene() {
+export function HotelScene({ className = 'w-24 h-24' }: { className?: string }) {
   return (
-    <svg viewBox="0 0 100 100" className="w-24 h-24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 100 100" className={className} aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
       <ellipse cx="50" cy="94" rx="26" ry="3" fill="rgba(96,165,250,.25)"/>
       <rect x="22" y="28" width="56" height="62" rx="2" fill="rgba(28,100,242,.22)" stroke="rgba(96,165,250,.75)" strokeWidth="1.5"/>
       <rect x="30" y="18" width="40" height="12" rx="1" fill="rgba(28,100,242,.30)" stroke="rgba(96,165,250,.60)" strokeWidth="1"/>
@@ -279,9 +279,9 @@ function HotelScene() {
   );
 }
 
-function FoodScene() {
+export function FoodScene({ className = 'w-24 h-24' }: { className?: string }) {
   return (
-    <svg viewBox="0 0 100 100" className="w-24 h-24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 100 100" className={className} aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
       <ellipse cx="50" cy="90" rx="20" ry="2.5" fill="rgba(96,165,250,.30)"/>
       <path className="fs1" d="M37 46 Q39 39 37 32" stroke="rgba(147,197,253,.90)" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
       <path className="fs2" d="M50 43 Q52 36 50 29" stroke="rgba(147,197,253,.90)" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
@@ -296,9 +296,9 @@ function FoodScene() {
   );
 }
 
-function ItinScene() {
+export function ItinScene({ className = 'w-24 h-24' }: { className?: string }) {
   return (
-    <svg viewBox="0 0 100 100" className="w-24 h-24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 100 100" className={className} aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
       <rect x="12" y="18" width="76" height="64" rx="4" fill="rgba(28,100,242,.18)" stroke="rgba(96,165,250,.45)" strokeWidth="1"/>
       <line x1="12" y1="37" x2="88" y2="37" stroke="rgba(96,165,250,.22)" strokeWidth=".5"/>
       <line x1="12" y1="56" x2="88" y2="56" stroke="rgba(96,165,250,.22)" strokeWidth=".5"/>
@@ -316,9 +316,9 @@ function ItinScene() {
   );
 }
 
-function ExploreScene() {
+export function ExploreScene({ className = 'w-24 h-24' }: { className?: string }) {
   return (
-    <svg viewBox="0 0 100 100" className="w-24 h-24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 100 100" className={className} aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
       <circle className="er1" cx="50" cy="50" r="36" stroke="rgba(96,165,250,.55)" strokeWidth="1" fill="none"/>
       <circle className="er2" cx="50" cy="50" r="27" stroke="rgba(96,165,250,.65)" strokeWidth="1" fill="none"/>
       <circle cx="50" cy="50" r="22" fill="rgba(28,100,242,.20)" stroke="rgba(96,165,250,.80)" strokeWidth="1.5"/>
@@ -542,7 +542,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
               </p>
 
               {/* Tab selector */}
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex gap-2 flex-wrap mt-2">
                 {(['Hotels', 'Food', 'Itinerary', 'Explore'] as Tab[]).map(tab => (
                   <button
                     key={tab}
@@ -595,8 +595,7 @@ export function LandingPage({ onTabSelect, isLoggedIn, onAuthSuccess, onNonThanj
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -4 }}
                       transition={{ duration: 0.18 }}
-                      className="flex items-center gap-1.5 text-xs font-medium"
-                      style={{ color: '#F05252' }}
+                      className="flex items-center gap-1.5 text-xs font-medium text-danger"
                     >
                       <X className="w-3.5 h-3.5 shrink-0" />
                       {cityInputError}
