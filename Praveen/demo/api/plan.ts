@@ -3504,11 +3504,11 @@ function sanitiseGeminiPrice(raw: string): string | null {
   const inr = (n: number): string =>
     `₹${Math.round(n / 100) * 100}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '/night';
 
-  // Already INR (₹) — floor ₹1,500: below that is likely a per-person/meal/promo rate
+  // Already INR (₹) — floor ₹600: below that is likely a per-person/meal/service charge
   const inrM = s.match(/₹\s*([\d,]+)/);
   if (inrM) {
     const n = parseInt(inrM[1].replace(/,/g, ''), 10);
-    return (n >= 1500 && n <= 60000) ? `₹${n.toLocaleString('en-IN')}/night` : null;
+    return (n >= 600 && n <= 60000) ? `₹${n.toLocaleString('en-IN')}/night` : null;
   }
 
   // GBP (£) — 1 GBP ≈ 107 INR
@@ -4277,6 +4277,7 @@ RULES: crowdLevel ONLY "Low"/"Moderate"/"High". Entry fees ONLY from GROUND TRUT
           googleMapsUri:      p.googleMapsUri ?? null,
           googleHotelsPrice:  placesPrice ?? geminiPrice ?? hotelPriceFromLevel(p.priceLevel ?? '', p.displayName?.text ?? ''),
           priceFromGemini:    !!(placesPrice ?? geminiPrice),
+          _priceSource:       placesPrice ? `places(${p.priceRange?.startPrice?.currencyCode ?? '?'})` : geminiPrice ? 'gemini' : `fallback(lvl=${p.priceLevel ?? 'none'})`,
           aiDetail: {
             whyOverOthers: ai.whyOverOthers || whyOverOthersFB,
             dataPoints,
