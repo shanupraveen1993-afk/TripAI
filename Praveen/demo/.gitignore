@@ -11,11 +11,7 @@ tripai.db
 # Screenshots and planning docs
 screenshots/
 Screenshot*
-*.png
-!src/assets/hotel.png
-!public/hotel.png
-!public/icon-192.png
-!public/icon-512.png
+Screenshot*.png
 APP_DEVELOPMENT_PLAN.md
 INTEGRATIONS.md
 ROADMAP.md
