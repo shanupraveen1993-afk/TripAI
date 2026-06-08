@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Compass, ArrowRight } from 'lucide-react';
-import { Input } from './ui/Input';
 import { Button } from './ui/Button';
 
 interface AuthFormProps {
@@ -23,26 +22,14 @@ function GoogleLogo({ size = 18 }: { size?: number }) {
 }
 
 export function AuthForm({ onSuccess, onBack, asModal = false }: AuthFormProps) {
-  const [name, setName]       = useState('');
-  const [nameError, setNameError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleGoogleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) {
-      setNameError('Please enter your name to continue');
-      return;
-    }
-    setNameError('');
     setLoading(true);
-    /* ── Phase 1 mock ──────────────────────────────────────────────────────
-       Phase 2: replace this block with real Google OAuth token verification.
-       Install @react-oauth/google, wrap app with GoogleOAuthProvider,
-       call useGoogleLogin() here and pass the credential to /api/auth/google.
-    ─────────────────────────────────────────────────────────────────────── */
     await new Promise(r => setTimeout(r, 900));
     setLoading(false);
-    onSuccess({ name: name.trim(), email: 'demo@gmail.com' });
+    onSuccess({ name: 'Traveller', email: 'demo@gmail.com' });
   };
 
   const wrapper = asModal
@@ -82,18 +69,6 @@ export function AuthForm({ onSuccess, onBack, asModal = false }: AuthFormProps) 
             </div>
 
             <form onSubmit={handleGoogleSignIn} className="space-y-4">
-              {/* Name field */}
-              <Input
-                label="Your name"
-                type="text"
-                placeholder="e.g. Praveen"
-                value={name}
-                autoFocus
-                onChange={e => { setName(e.target.value); setNameError(''); }}
-                error={nameError}
-              />
-
-              {/* Google Sign-In button */}
               <Button
                 type="submit"
                 variant="brand"
@@ -103,7 +78,7 @@ export function AuthForm({ onSuccess, onBack, asModal = false }: AuthFormProps) 
                 iconRight={!loading ? <ArrowRight className="w-3.5 h-3.5" /> : undefined}
                 className="justify-between"
               >
-                {loading ? 'Signing in…' : 'Continue (Demo)'}
+                {loading ? 'Signing in…' : 'Continue with Google'}
               </Button>
             </form>
 

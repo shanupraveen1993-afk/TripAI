@@ -393,6 +393,34 @@ function getHotelPriceLabel(googleHotelsPrice?: string, priceRange?: string, pri
   return null;
 }
 
+function PriceBadge({ display, isRange }: { display: string; isRange: boolean }) {
+  const [tip, setTip] = React.useState(false);
+  return (
+    <div className="text-right leading-tight">
+      <div className="flex items-start justify-end gap-1.5">
+        <p className={`font-black text-heading tabular-nums ${display.length > 7 ? 'text-lg' : 'text-2xl'}`}>{display}</p>
+        <div className="relative mt-1 shrink-0">
+          <button
+            type="button"
+            onMouseEnter={() => setTip(true)}
+            onMouseLeave={() => setTip(false)}
+            onClick={e => { e.stopPropagation(); setTip(v => !v); }}
+            className="w-[18px] h-[18px] rounded-full bg-brand-softer border border-brand/20 text-brand flex items-center justify-center text-[10px] font-black leading-none"
+            aria-label="Price info"
+          >i</button>
+          {tip && (
+            <div className="absolute right-0 top-6 w-56 bg-gray-900 text-white text-[11px] rounded-xl px-3 py-2.5 z-50 leading-relaxed shadow-2xl pointer-events-none">
+              <p className="font-bold mb-0.5">Approximate price</p>
+              <p className="text-white/75">Starting from {display}/night. Confirm the final rate on Google before booking.</p>
+            </div>
+          )}
+        </div>
+      </div>
+      <p className="text-[10px] text-muted font-medium mt-0.5">{isRange ? 'onwards · per night' : 'per night'}</p>
+    </div>
+  );
+}
+
 function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -510,10 +538,12 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           {(confirmed.length > 0 || unconfirmed.length > 0) && (
             <div className="flex gap-1 flex-wrap">
               {confirmed.slice(0, 2).map((t, i) => (
-                <span key={t} className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-medium border ${
-                  i === 0
-                    ? 'bg-success text-white border-success'
-                    : 'bg-success-soft border-success-medium text-success-strong'
+                <span key={t} className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-medium border transition-all duration-150 ${
+                  (t === 'Pure Veg' || t === 'Pure Veg Hotel')
+                    ? 'bg-success-soft border-success-medium text-success-strong hover:bg-success hover:text-white hover:border-success hover:shadow-md active:opacity-80 cursor-default'
+                    : i === 0
+                      ? 'bg-success text-white border-success'
+                      : 'bg-success-soft border-success-medium text-success-strong'
                 }`}>
                   <CheckCircle className="w-2 h-2" />{t}
                 </span>
@@ -522,6 +552,17 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                 <span key={t} className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-medium border bg-bg-app border-border-medium text-muted">~{t}</span>
               ))}
             </div>
+          )}
+          {place.address && (
+            <a
+              href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={e => e.stopPropagation()}
+              className="text-xs text-muted hover:text-brand transition-colors underline-offset-2 hover:underline"
+            >
+              {place.address}
+            </a>
           )}
           {/* Sentiment — 2 lines so the AI summary is readable */}
           {(() => {
@@ -552,21 +593,19 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             const plM = getHotelPriceLabel(place.googleHotelsPrice, place.priceRange, place.priceLevel);
             return (
               <>
-                {/* Price row + Map + Book Now */}
+                {/* Price row + Direction + Book Now */}
                 <div className="border-t border-border">
-                  {(plM ?? place.priceLevel) && (
-                    <div className="flex justify-end px-3 pt-2 pb-1">
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-2xl font-black text-heading tabular-nums leading-tight">{plM ?? place.priceLevel}</span>
-                        {plM && <span className="text-xs text-muted font-medium">/night</span>}
+                  {(plM ?? place.priceLevel) && (() => {
+                    const raw = plM ?? place.priceLevel ?? '';
+                    const isRange = (raw.includes('–') || (raw.includes('-') && raw.length > 5));
+                    const display = isRange ? raw.split(/–|-/).shift()!.trim() : raw;
+                    return (
+                      <div className="flex justify-end px-3 pt-2 pb-1">
+                        <PriceBadge display={display} isRange={isRange} />
                       </div>
-                    </div>
-                  )}
+                    );
+                  })()}
                   <div className="flex gap-2 px-3 pb-3 pt-1">
-                    <a href={mapsHrefM} target="_blank" rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-bold border border-border text-body active:scale-[0.97] shrink-0">
-                      <Map className="w-3.5 h-3.5 shrink-0" />Map
-                    </a>
                     <a href={bookHrefM} target="_blank" rel="noopener noreferrer"
                       className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-sm font-bold bg-brand text-white active:scale-[0.97] shadow-sm">
                       <ExternalLink className="w-3.5 h-3.5 shrink-0" />Book Now
@@ -586,14 +625,16 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
             );
           }
 
-          /* Food: Direction → Detailed Analysis */
+          /* Food: Get Directions + Detailed Analysis */
           return (
             <>
-              <div className="border-t border-border px-3 py-2.5">
-                <a href={mapsHrefM} target="_blank" rel="noopener noreferrer"
-                  className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-sm font-bold bg-brand text-white active:scale-[0.97] shadow-sm">
-                  <Navigation className="w-3.5 h-3.5 shrink-0" />Direction
-                </a>
+              <div className="border-t border-border">
+                <div className="flex gap-2 px-3 pb-3 pt-3">
+                  <a href={mapsHrefM} target="_blank" rel="noopener noreferrer"
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-sm font-bold bg-brand text-white active:scale-[0.97] shadow-sm">
+                    <Navigation className="w-3.5 h-3.5 shrink-0" />Get Directions
+                  </a>
+                </div>
               </div>
               <div className="border-t border-border">
                 <button onClick={() => setExpanded(v => !v)}
@@ -643,7 +684,11 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
           {(confirmed.length > 0 || unconfirmed.length > 0) && (
             <div className="flex gap-1 flex-wrap">
               {confirmed.slice(0, 2).map(t => (
-                <span key={t} className="flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs font-medium border bg-success-soft border-success-medium text-success-strong">
+                <span key={t} className={`flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs font-medium border transition-all duration-150 ${
+                  (t === 'Pure Veg' || t === 'Pure Veg Hotel')
+                    ? 'bg-success-soft border-success-medium text-success-strong hover:bg-success hover:text-white hover:border-success hover:shadow-md active:opacity-80 cursor-default'
+                    : 'bg-success-soft border-success-medium text-success-strong'
+                }`}>
                   <CheckCircle className="w-2.5 h-2.5" />{t}
                 </span>
               ))}
@@ -654,7 +699,18 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               ))}
             </div>
           )}
-          {/* Sentiment + Map — pinned to bottom of info col */}
+          {place.address && (
+            <a
+              href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={e => e.stopPropagation()}
+              className="text-xs text-muted hover:text-brand transition-colors underline-offset-2 hover:underline w-fit"
+            >
+              {place.address}
+            </a>
+          )}
+          {/* Sentiment — pinned to bottom of info col */}
           <div className="mt-auto flex flex-col gap-2.5">
             {(() => {
               function agoToDaysCo(ago: string): number {
@@ -673,15 +729,6 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
                 </div>
               );
             })()}
-            {tab === 'Hotels' && (
-              <a
-                href={place.googleMapsUri ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}`}
-                target="_blank" rel="noopener noreferrer"
-                className="self-start inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold border border-border text-body hover:border-brand hover:text-brand transition-colors active:scale-[0.97]"
-              >
-                <Map className="w-3 h-3 shrink-0" />Map
-              </a>
-            )}
           </div>
         </div>
 
@@ -705,22 +752,22 @@ function PlaceCard({ place, tab, rank = 0, animDelay = 0, defaultCollapsed = fal
               <div className="flex flex-col gap-2.5">
                 {tab === 'Hotels' && (() => {
                   const plD = getHotelPriceLabel(place.googleHotelsPrice, place.priceRange, place.priceLevel);
-                  return (plD ?? place.priceLevel) ? (
-                    <div className="flex items-baseline justify-end gap-1">
-                      <span className="text-2xl font-black text-heading tabular-nums leading-tight">{plD ?? place.priceLevel}</span>
-                      {plD && <span className="text-xs text-muted font-medium">/night</span>}
-                    </div>
-                  ) : null;
+                  if (!(plD ?? place.priceLevel)) return null;
+                  const raw = plD ?? place.priceLevel ?? '';
+                  const isRange = (raw.includes('–') || (raw.includes('-') && raw.length > 5));
+                  const display = isRange ? raw.split(/–|-/).shift()!.trim() : raw;
+                  return <PriceBadge display={display} isRange={isRange} />;
                 })()}
-                {tab === 'Hotels' ? (
+                {tab === 'Hotels' && (
                   <a href={bookHref} target="_blank" rel="noopener noreferrer"
                     className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-sm font-bold bg-brand text-white active:scale-[0.97] shadow-sm">
                     <ExternalLink className="w-3 h-3 shrink-0" />Book Now
                   </a>
-                ) : (
+                )}
+                {tab === 'Food' && (
                   <a href={bookHref} target="_blank" rel="noopener noreferrer"
                     className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-sm font-bold bg-brand text-white active:scale-[0.97] shadow-sm">
-                    <Navigation className="w-3 h-3 shrink-0" />Direction
+                    <Navigation className="w-3 h-3 shrink-0" />Get Directions
                   </a>
                 )}
                 <button

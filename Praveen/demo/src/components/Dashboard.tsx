@@ -292,16 +292,24 @@ const SMART_PICKS: Record<string, SmartPick[]> = {
 interface BentoCard { label: string; desc: string; imgId: string; grad: string; overrides: QuickOverride }
 
 const HOTEL_BENTO: BentoCard[] = [
-  { label: 'Near Big Temple', desc: 'Walking distance · Heritage stay',  imgId: '1686310894901-d326b8722c13', grad: 'linear-gradient(135deg,#1e3a8a,#1d4ed8)',                              overrides: { tab: 'Hotels', hotelTag: 'Near Big Temple',    usePreset: true } },
-  { label: 'City Centre',     desc: 'Best connectivity · Top rated',     imgId: '1566915682737-3e97a7eed93b', grad: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-strong))',  overrides: { tab: 'Hotels', hotelTag: 'City Centre',        usePreset: true } },
-  { label: 'Heritage Hotels', desc: 'Authentic Thanjavur character',     imgId: '1523544261025-3159599b1fc3', grad: 'linear-gradient(135deg,#78350F,#92400E)',                              overrides: { tab: 'Hotels', hotelTag: 'Heritage',           usePreset: true } },
-  { label: 'Good Amenities',  desc: 'Pool · WiFi · Parking',             imgId: '1602216056096-3b40cc0c9944', grad: 'linear-gradient(135deg,#065f46,#059669)',                              overrides: { tab: 'Hotels', hotelTag: 'Good Amenities',     usePreset: true } },
+  { label: 'Near Big Temple',        desc: 'Walking distance · Heritage stay',      imgId: '1686310894901-d326b8722c13', grad: 'linear-gradient(135deg,#1e3a8a,#1d4ed8)',         overrides: { tab: 'Hotels', hotelTag: 'Near Big Temple',       usePreset: true } },
+  { label: 'City Centre',            desc: 'Best connectivity · Top rated',         imgId: '1566915682737-3e97a7eed93b', grad: 'linear-gradient(135deg,#1d4ed8,#2563eb)',         overrides: { tab: 'Hotels', hotelTag: 'City Centre',           usePreset: true } },
+  { label: 'Heritage Hotels',        desc: 'Authentic Thanjavur character',         imgId: '1523544261025-3159599b1fc3', grad: 'linear-gradient(135deg,#78350F,#92400E)',         overrides: { tab: 'Hotels', hotelTag: 'Heritage',              usePreset: true } },
+  { label: 'Good Amenities',         desc: 'Pool · WiFi · Parking',                 imgId: '1602216056096-3b40cc0c9944', grad: 'linear-gradient(135deg,#065f46,#059669)',         overrides: { tab: 'Hotels', hotelTag: 'Good Amenities',        usePreset: true } },
+  { label: 'Near Railway Station',   desc: 'Convenient transit stay',               imgId: '1611270629280-fd6fd2734b67', grad: 'linear-gradient(135deg,#312e81,#4338ca)',         overrides: { tab: 'Hotels', hotelTag: 'Near Railway Station',  usePreset: true } },
+  { label: 'Budget Stay',            desc: 'Clean · Affordable · Value',            imgId: '1584132967334-10e028bd69f7', grad: 'linear-gradient(135deg,#164e63,#0891b2)',         overrides: { tab: 'Hotels', hotelTag: 'Budget Stay',           usePreset: true } },
+  { label: 'Premium Stay',           desc: 'Luxury · Top-rated amenities',          imgId: '1571896349842-33c89424de2d', grad: 'linear-gradient(135deg,#713f12,#ca8a04)',         overrides: { tab: 'Hotels', hotelTag: 'Premium Stay',          usePreset: true } },
+  { label: 'Breakfast Included',     desc: 'Start your day right',                  imgId: '1414235077428-338989a2e8c0', grad: 'linear-gradient(135deg,#7f1d1d,#dc2626)',         overrides: { tab: 'Hotels', hotelTag: 'Breakfast Included',    usePreset: true } },
 ];
 const FOOD_BENTO: BentoCard[] = [
-  { label: 'Mess & Meals',   desc: 'Traditional thali · Banana leaf',   imgId: '1711153419402-336ee48f2138', grad: 'linear-gradient(135deg,var(--color-brand-active),var(--color-brand))', overrides: { tab: 'Food', foodTag: 'Mess & Meals',          usePreset: true } },
-  { label: 'Biryani',        desc: 'Ambur-style · Bold flavours',        imgId: '1589302168068-964664d93dc0', grad: 'linear-gradient(135deg,#92400E,#78350F)',                              overrides: { tab: 'Food', foodTag: 'Biryani',               usePreset: true } },
-  { label: 'Filter Coffee',  desc: 'Strong · South Indian style',        imgId: '1509042239860-f550ce710b93', grad: 'linear-gradient(135deg,#1e3a8a,#1d4ed8)',                              overrides: { tab: 'Food', foodTag: 'Cafe & Drinks',         usePreset: true } },
-  { label: 'Pure Veg',       desc: 'Vegetarian only · Family dining',    imgId: '1546833999-b9f581a1996d',   grad: 'linear-gradient(135deg,#065f46,#059669)',                              overrides: { tab: 'Food', foodTag: 'Pure Veg', dietType: 'Pure Veg' as DietType, usePreset: true } },
+  { label: 'Mess & Meals',   desc: 'Traditional thali · Banana leaf',   imgId: '1711153419402-336ee48f2138', grad: 'linear-gradient(135deg,#92400E,#d97706)',         overrides: { tab: 'Food', foodTag: 'Mess & Meals',    usePreset: true } },
+  { label: 'Biryani',        desc: 'Ambur-style · Bold flavours',        imgId: '1589302168068-964664d93dc0', grad: 'linear-gradient(135deg,#7f1d1d,#b91c1c)',         overrides: { tab: 'Food', foodTag: 'Biryani',          usePreset: true } },
+  { label: 'Filter Coffee',  desc: 'Strong · South Indian decoction',    imgId: '1509042239860-f550ce710b93', grad: 'linear-gradient(135deg,#1c1917,#44403c)',         overrides: { tab: 'Food', foodTag: 'Cafe & Drinks',   usePreset: true } },
+  { label: 'Pure Veg',       desc: 'Vegetarian only · Family dining',    imgId: '1546833999-b9f581a1996d',   grad: 'linear-gradient(135deg,#065f46,#059669)',         overrides: { tab: 'Food', foodTag: 'Pure Veg', dietType: 'Pure Veg' as DietType, usePreset: true } },
+  { label: 'South Indian',   desc: 'Idli · Dosa · Vada · Sambar',        imgId: '1631515243349-e0cb75fb8d3a', grad: 'linear-gradient(135deg,#78350f,#ea580c)',        overrides: { tab: 'Food', foodTag: 'South Indian',    usePreset: true } },
+  { label: 'Chettinad',      desc: 'Bold spices · Authentic curry',      imgId: '1624791596524-d989400f3241', grad: 'linear-gradient(135deg,#450a0a,#991b1b)',        overrides: { tab: 'Food', foodTag: 'Chettinad',        usePreset: true } },
+  { label: 'Fine Dining',    desc: 'AC · Multi-cuisine · Premium',       imgId: '1414235077428-338989a2e8c0', grad: 'linear-gradient(135deg,#1e1b4b,#3730a3)',        overrides: { tab: 'Food', foodTag: 'Fine Dining',      usePreset: true } },
+  { label: 'Family Dining',  desc: 'Spacious · All-day · Veg & Non-veg', imgId: '1540189549336-e7fcd4e29d69', grad: 'linear-gradient(135deg,#14532d,#16a34a)',        overrides: { tab: 'Food', foodTag: 'Family Dining',    usePreset: true } },
 ];
 
 /* ── Unsplash photo IDs for hotel & food explore cards ──────────────── */
@@ -317,6 +325,15 @@ const PLACE_PHOTO_IDS: Record<string, string> = {
   'Bombay Bakes & Café':       '1509042239860-f550ce710b93',
   'Kannapa Restaurant':        '1624791596524-d989400f3241',
   'Hotel Ramnath':             '1611270629280-fd6fd2734b67',
+  'Hotel Oriental Towers':     '1590490360182-c33d57733427',
+  'Hotel Valli':               '1584132967334-10e028bd69f7',
+  'Raj Park Hotel':            '1512918728672-8fea8328f5c2',
+  'Sri Priya Hotel':           '1522798514-97ceb8c4f1c8',
+  'Hotel Vijay':               '1535827841776-24afc1e255ac',
+  'Venkatramana Bhavan':       '1546833999-b9f581a1996d',
+  'Sri Annapoorna Restaurant': '1631515243349-e0cb75fb8d3a',
+  'Shri Krishna Bhavan':       '1711153419402-336ee48f2138',
+  'Hotel Grand Durbar':        '1540189549336-e7fcd4e29d69',
 };
 
 function getSmartPicks(destination: string): SmartPick[] {
@@ -596,16 +613,7 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
     Hotels: [null, null, null], Explore: [null, null, null],
   });
 
-  useEffect(() => {
-    const fetchGroup = (key: 'Hotels'|'Explore', places: HeroPlaceDef[]) =>
-      Promise.all(places.map(p =>
-        fetch(`/api/photo?placeName=${encodeURIComponent(p.placeName)}&city=Thanjavur&photoIndex=${p.photoIndex}&maxW=1200`)
-          .then(r => r.json()).then((d: { photoUri?: string }) => d.photoUri ?? null).catch(() => null)
-      )).then(imgs => setHeroPhotos(prev => ({ ...prev, [key]: imgs })));
-    fetchGroup('Hotels',  HOTEL_PLACES);
-    fetchGroup('Explore', EXPLORE_PLACES);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // Hero photos removed — new design uses static illustration
 
   const getHeroSlides = (tab: Tab): HeroSlide[] => {
     if (tab === 'Food') return FOOD_SLIDES;
@@ -1142,484 +1150,217 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
   const hero = TAB_HERO[activeTab];
 
   return (
-    <div
-      className="w-full max-w-[920px] mx-auto pb-10 lg:pb-4 px-4 space-y-4"
-      style={{ paddingTop: 0 }}
-    >
+    <div className="w-full pb-10 lg:pb-6">
 
-      {/* Lightbox — click hero photo to see full size */}
-      {lightboxImg && (
-        <div
-          className="fixed inset-0 z-[9999] bg-black/90 flex items-center justify-center cursor-zoom-out"
-          onClick={() => setLightboxImg(null)}
-        >
-          <img src={lightboxImg} alt="Full size" className="max-h-[90vh] max-w-[95vw] rounded-xl object-contain shadow-2xl" draggable={false} />
-          <button
-            className="absolute top-5 right-5 w-10 h-10 rounded-full bg-white/15 hover:bg-white/30 text-white text-lg flex items-center justify-center transition-colors"
-            onClick={() => setLightboxImg(null)}
-            aria-label="Close photo"
-          >✕</button>
+      {/* ── HERO — full bleed, static hotel photo ── */}
+      <div className="relative w-full min-h-[400px] lg:min-h-[460px] flex flex-col items-center justify-center">
+        {/* Static hotel photo — never changes regardless of tab or city */}
+        <img
+          src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1920&q=80"
+          alt="Luxury hotel"
+          className="absolute inset-0 w-full h-full object-cover object-center"
+          loading="eager"
+          decoding="async"
+        />
+        {/* Dark gradient overlay for text legibility */}
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom,rgba(0,0,0,0.30) 0%,rgba(0,0,0,0.52) 55%,rgba(0,0,0,0.72) 100%)' }} />
+
+        {/* Headline */}
+        <div className="relative z-10 text-center px-6">
+          {firstName && (
+            <p className="text-white/80 text-sm font-medium mb-3">{greeting}, {firstName} 👋</p>
+          )}
+          <h1 className="text-white font-display font-black text-3xl lg:text-5xl leading-tight tracking-tight drop-shadow-lg">
+            {destination ? `Explore ${destination}` : 'Discover Thanjavur'}
+          </h1>
+          <p className="text-white/70 text-sm lg:text-base mt-2.5">Hotels · Food · Itinerary · Places — AI-powered</p>
         </div>
-      )}
+      </div>
 
-      {/* ── Hero slider — 3 Thanjavur-specific slides per tab ───────────── */}
-      <div
-        className="relative overflow-hidden rounded-2xl min-h-[360px] cursor-zoom-in"
-        onClick={() => { const img = getHeroSlides(activeTab)[heroSlide]?.img; if (img) setLightboxImg(img); }}
-        role="button"
-        aria-label={`View full photo of ${getHeroSlides(activeTab)[heroSlide]?.name ?? ''}`}
-      >
-        {/* Gradient fallback always underneath */}
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg,var(--color-brand-active) 0%,var(--color-brand) 100%)' }} />
-        {/* GBP photos — only rendered once loaded; gradient shows while fetching */}
-        {getHeroSlides(activeTab).map((slide, i) => slide.img ? (
-          <img
-            key={`${activeTab}-${i}`}
-            src={slide.img}
-            alt={slide.name}
-            draggable={false}
-            decoding="async"
-            loading={i === 0 ? 'eager' : 'lazy'}
-            className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-500"
-            style={{ opacity: i === heroSlide ? 1 : 0 }}
-          />
-        ) : null)}
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.20) 50%, rgba(0,0,0,0.65) 100%)' }} />
-        {/* Greeting */}
-        {firstName && (
-          <div className="absolute top-4 left-5 text-white/80 text-xs font-semibold">
-            {greeting}, {firstName} <span aria-hidden="true">👋</span>
-          </div>
-        )}
-        {/* Slide name + badge */}
-        <AnimatePresence mode="wait">
+      {/* Search card — fixed 120px overlap into hero regardless of card height */}
+      <div className="relative z-20 -mt-[120px] px-3 lg:px-8">
+        <div className="mx-auto max-w-[900px]">
           <motion.div
-            key={`${activeTab}-${heroSlide}`}
-            initial={{ opacity: 0, y: 6 }}
+            key={activeTab}
+            initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.25, ease: 'easeOut' }}
-            className="absolute bottom-8 left-5 right-5"
+            transition={{ duration: 0.18 }}
+            className="bg-white rounded-2xl shadow-2xl overflow-hidden"
+            style={{ border: '1px solid rgba(0,0,0,0.07)' }}
           >
-            <span className="inline-block bg-white/15 backdrop-blur-sm border border-white/25 text-white text-[10px] font-bold px-2.5 py-1 rounded-full mb-1.5">
-              {getHeroSlides(activeTab)[heroSlide].badge}
-            </span>
-            <p className="text-white font-display font-black text-lg leading-tight tracking-tight drop-shadow">
-              {getHeroSlides(activeTab)[heroSlide].name}
-            </p>
-            <p className="text-white/75 text-xs mt-0.5">{getHeroSlides(activeTab)[heroSlide].sub}</p>
-          </motion.div>
-        </AnimatePresence>
-        {/* Dot indicators */}
-        <div className="absolute bottom-3 left-5 flex items-center gap-1.5">
-          {getHeroSlides(activeTab).map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setHeroSlide(i)}
-              className="focus-visible:outline-none"
-              aria-label={`Slide ${i + 1}`}
-            >
-              <span className={`block rounded-full transition-all duration-300 ${i === heroSlide ? 'w-5 h-1.5 bg-white' : 'w-1.5 h-1.5 bg-white/40 hover:bg-white/70'}`} />
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Category selector ── */}
-      <div className="relative z-20 pb-2 pt-1">
-        <CategorySelector active={activeTab} onChange={t => setActiveTab(t)} />
-      </div>
-
-      {/* ── Filter card — white below ──────────────────────────── */}
-      <motion.div
-        key={activeTab}
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -4 }}
-        transition={{ duration: 0.18, ease: 'easeOut' }}
-        className="rounded-xl relative z-10 bg-surface"
-        style={{ border: '1px solid var(--color-border)' }}
-      >
-        {/* Search override — Hotels + Food only */}
-        {(activeTab === 'Hotels' || activeTab === 'Food') && (() => {
-          const SUGGESTIONS: Record<string, string[]> = {
-            Hotels: [
-              'hotel near new bus stand',
-              'hotel near big temple',
-              'hotel near railway station',
-              'budget hotel in Thanjavur',
-              'hotel near city centre',
-              'AC hotel near palace',
-              'family hotel Thanjavur',
-              'hotel with parking near temple',
-            ],
-            Food: [
-              'biryani near bus stand',
-              'pure veg restaurant Thanjavur',
-              'breakfast tiffin centre',
-              'mutton biryani near railway station',
-              'filter coffee cafe',
-              'south indian thali lunch',
-              'Chettinad restaurant',
-              'family restaurant with AC',
-            ],
-          };
-          const suggestions = (SUGGESTIONS[activeTab] ?? []).filter(s =>
-            !searchQuery || s.toLowerCase().includes(searchQuery.toLowerCase())
-          );
-          const showSuggestions = searchFocused && suggestions.length > 0 && !(!searchQuery && false);
-          return (
-            <div className="px-4 pt-3 pb-2 relative">
-              <div className={`flex items-center gap-2 rounded-lg px-3 py-2 transition-all ${searchQuery ? 'ring-2 ring-brand' : 'ring-1 ring-border'}`} style={{ background: 'var(--color-bg-app)' }}>
-                <Search className="w-3.5 h-3.5 shrink-0 text-muted" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  onFocus={() => setSearchFocused(true)}
-                  onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
-                  onKeyDown={e => { if (e.key === 'Enter' && searchQuery.trim()) { setSearchFocused(false); handleSearch(); } }}
-                  placeholder={activeTab === 'Hotels' ? "Try 'best hotel in thanjavur'…" : "Try 'best veg restaurant in thanjavur'…"}
-                  className="flex-1 bg-transparent text-sm text-heading placeholder-muted outline-none min-w-0"
-                />
-                {searchQuery && (
-                  <button type="button" onClick={() => setSearchQuery('')} className="shrink-0 p-2 -mr-1 text-muted hover:text-heading transition-colors rounded" aria-label="Clear search">
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
-              </div>
-              {showSuggestions && (
-                <div className="absolute left-4 right-4 top-full z-50 mt-0.5 rounded-lg overflow-hidden" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-m)' }}>
-                  {suggestions.slice(0, 6).map(s => (
-                    <button
-                      key={s}
-                      type="button"
-                      onMouseDown={() => { setSearchQuery(s); setSearchFocused(false); }}
-                      className="w-full flex items-center gap-2 px-3 py-2.5 text-left text-sm text-heading hover:bg-brand-softer transition-colors"
-                    >
-                      <Search className="w-3 h-3 shrink-0 text-muted" />
-                      <span>{s}</span>
-                    </button>
-                  ))}
+            {/* 4 tabs */}
+            <div className="p-2">
+              <CategorySelector active={activeTab} onChange={t => { setActiveTab(t); onTabChange?.(t); }} />
+            </div>
+            {/* Per-tab illustration banner */}
+            <div className="mx-3 mt-2 mb-1 rounded-xl overflow-hidden" style={{ height: 60 }}>
+              {activeTab === 'Hotels' && (
+                <div className="relative w-full h-full" style={{ background: 'linear-gradient(135deg,#0c2461 0%,#1d4ed8 100%)' }}>
+                  <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.6) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.6) 1px,transparent 1px)', backgroundSize: '18px 18px' }} />
+                  <div className="relative z-10 h-full flex items-center px-4 gap-3">
+                    <span className="text-3xl shrink-0">🏨</span>
+                    <div><p className="text-white font-display font-bold text-sm leading-tight">130+ Hotels in Thanjavur</p><p className="text-white/65 text-xs mt-0.5">Heritage · Budget · Premium · River View</p></div>
+                  </div>
+                </div>
+              )}
+              {activeTab === 'Food' && (
+                <div className="relative w-full h-full" style={{ background: 'linear-gradient(135deg,#0c2461 0%,#1d4ed8 100%)' }}>
+                  <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.6) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.6) 1px,transparent 1px)', backgroundSize: '18px 18px' }} />
+                  <div className="relative z-10 h-full flex items-center px-4 gap-3">
+                    <span className="text-3xl shrink-0">🍛</span>
+                    <div><p className="text-white font-display font-bold text-sm leading-tight">400+ Restaurants in Thanjavur</p><p className="text-white/65 text-xs mt-0.5">Thali · Biryani · Chettinad · Café · Pure Veg</p></div>
+                  </div>
+                </div>
+              )}
+              {activeTab === 'Itinerary' && (
+                <div className="relative w-full h-full" style={{ background: 'linear-gradient(135deg,#0c2461 0%,#1d4ed8 100%)' }}>
+                  <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.6) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.6) 1px,transparent 1px)', backgroundSize: '18px 18px' }} />
+                  <div className="relative z-10 h-full flex items-center px-4 gap-3">
+                    <span className="text-3xl shrink-0">🗺️</span>
+                    <div><p className="text-white font-display font-bold text-sm leading-tight">AI-Planned Day Itinerary</p><p className="text-white/65 text-xs mt-0.5">Time-optimised · Route planned · Traffic aware</p></div>
+                  </div>
+                </div>
+              )}
+              {activeTab === 'Explore' && (
+                <div className="relative w-full h-full" style={{ background: 'linear-gradient(135deg,#0c2461 0%,#1d4ed8 100%)' }}>
+                  <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.6) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.6) 1px,transparent 1px)', backgroundSize: '18px 18px' }} />
+                  <div className="relative z-10 h-full flex items-center px-4 gap-3">
+                    <span className="text-3xl shrink-0">🏛️</span>
+                    <div><p className="text-white font-display font-bold text-sm leading-tight">19+ UNESCO & Heritage Sites</p><p className="text-white/65 text-xs mt-0.5">Big Temple · Palace · Saraswathi Mahal · Darasuram</p></div>
+                  </div>
                 </div>
               )}
             </div>
-          );
-        })()}
-
-        {/* Header — shown on all tabs */}
-        <div className="px-4 py-3 flex items-center gap-3 border-b border-border bg-bg-app">
-          <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: meta.accent }}>
-            <span style={{ color: 'var(--color-surface)' }}>{meta.icon}</span>
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="font-display font-semibold text-sm text-heading leading-tight">{meta.headline}</p>
-            <p className="text-xs text-muted mt-0.5 truncate" title={meta.sub}>{meta.sub}</p>
-          </div>
-          {activeTab === 'Food' ? (
-            <button
-              type="button"
-              onClick={() => {
-                const next = dietType === 'Pure Veg' ? 'Any' : 'Pure Veg';
-                setDietType(next);
-                if (next === 'Pure Veg')
-                  setFoodTags(prev => prev.filter(t => !NON_VEG_ITEMS.includes(t)));
-              }}
-              className="ml-auto shrink-0 text-xs font-bold px-3 py-1.5 rounded-full transition-all min-h-[36px] flex items-center"
-              style={dietType === 'Pure Veg'
-                ? { background: 'var(--color-success-soft)', color: 'var(--color-success-strong)', border: '1.5px solid var(--color-success-medium)' }
-                : { background: 'var(--color-bg-app)', color: 'var(--color-muted)', border: '1.5px solid var(--color-border)' }}
-            >
-              Pure Veg
-            </button>
-          ) : (
-            <Sparkles className="w-3.5 h-3.5 ml-auto shrink-0 text-brand" />
-          )}
-        </div>
-
-        <div className="p-4">
-          {renderFilters()}
-        </div>
-
-        {/* ── CTA inside card ───────────────────────────────────── */}
-        <div className="px-4 pt-3 pb-5 border-t border-border">
-          <Button
-            variant="brand"
-            size="md"
-            onClick={handleSearch}
-            loading={loading}
-            disabled={!canSearch}
-            icon={<Search className="w-4 h-4" />}
-            className="w-full"
-          >
-            {loading ? 'AI is on it…' : (
-              searchQuery.trim() && activeTab === 'Hotels'  ? `Search "${searchQuery.trim()}"` :
-              searchQuery.trim() && activeTab === 'Food'    ? `Search "${searchQuery.trim()}"` :
-              activeTab === 'Hotels'    ? 'Search Hotels' :
-              activeTab === 'Food'      ? 'Search Food' :
-              activeTab === 'Itinerary' ? 'Build Day Plan' :
-              'Get Visit Guide'
-            )}
-          </Button>
-        </div>
-        {!canSearch && (activeTab === 'Hotels' || activeTab === 'Food') && (
-          <p className="text-xs text-muted text-center mt-1.5">Select a filter tag or enter a search term</p>
-        )}
-        {/* sentinel — category bar unsticks once this exits top of viewport */}
-        <div ref={ctaSentinelRef} className="h-px" />
-      </motion.div>
-
-      {/* ── Popular searches / Recent / Social proof / Trending — Hotels & Food only ── */}
-      {(activeTab === 'Hotels' || activeTab === 'Food') && (
-        <>
-          {/* Popular searches */}
-          <div className="relative z-10">
-            <p className="text-xs font-semibold text-heading mb-2 flex items-center gap-1.5">
-              <Search className="w-3 h-3" /> People also search for
-            </p>
-            <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 no-scrollbar [mask-image:linear-gradient(to_right,black_calc(100%-40px),transparent)]">
-              {(activeTab === 'Hotels' ? HOTEL_QUERIES : FOOD_QUERIES).map((q, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => onBentoAction ? onBentoAction(q.overrides.tab!, q.overrides) : triggerSearch(q.overrides)}
-                  className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-surface text-xs font-medium text-body hover:border-brand hover:text-brand transition-colors min-h-[36px]"
-                >
-                  <Search className="w-3 h-3 text-muted shrink-0" />
-                  {q.label}
-                </button>
-              ))}
+            {/* Tab-specific filters */}
+            <div className="px-4 pt-2 pb-2">
+              {renderFilters()}
             </div>
-          </div>
-
-          {/* Recent searches — filtered to active tab */}
-          {recentSearches.filter(s => s.tab === activeTab).length > 0 && (
-            <div className="relative z-10">
-              <p className="text-xs font-semibold text-heading mb-2 flex items-center gap-1.5">
-                <Clock className="w-3 h-3" /> Recent
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                {recentSearches.filter(s => s.tab === activeTab).map((s, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    onClick={() => {
-                      if (!s.tag) onDestinationSelect?.(s.destination);
-                      triggerSearch({
-                        tab: s.tab,
-                        destination: s.destination,
-                        ...(s.tag && s.tab === 'Hotels' ? { hotelTag: s.tag } : {}),
-                        ...(s.tag && s.tab === 'Food'   ? { foodTag:  s.tag } : {}),
-                      });
-                    }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-surface text-xs font-medium text-body hover:border-brand hover:text-brand transition-colors min-h-[36px]"
-                  >
-                    <Clock className="w-3 h-3 text-muted shrink-0" />
-                    {s.tag ?? s.destination}
-                  </button>
-                ))}
-              </div>
+            {/* CTA */}
+            <div className="px-4 pb-4 pt-2 border-t border-border">
+              <Button variant="brand" size="md" onClick={handleSearch} loading={loading} disabled={!canSearch} icon={<Search className="w-4 h-4" />} className="w-full">
+                {loading ? 'AI is on it…' : (
+                  activeTab === 'Hotels'    ? 'Search Hotels' :
+                  activeTab === 'Food'      ? 'Search Food'   :
+                  activeTab === 'Itinerary' ? 'Build Day Plan' : 'Get Visit Guide'
+                )}
+              </Button>
+              {!canSearch && (activeTab === 'Hotels' || activeTab === 'Food') && (
+                <p className="text-xs text-muted mt-2 text-center">Select a tag above to search</p>
+              )}
             </div>
-          )}
-
-          {/* Social proof */}
-          <div className="flex items-center gap-2 py-1 px-1 relative z-10">
-            <div className="flex -space-x-1.5">
-              {['var(--color-brand)','var(--color-brand-active)','var(--color-brand-border)'].map((c,i) => (
-                <div key={i} aria-hidden="true" className="w-5 h-5 rounded-full border-2 border-white flex items-center justify-center text-white text-xs font-black" style={{ background: c }}>
-                  {['K','P','R'][i]}
-                </div>
-              ))}
-            </div>
-            <p className="text-xs text-muted">
-              <span className="text-heading font-bold tabular-nums">127 AI trip plans</span> generated today in {destination || 'Thanjavur'}
-            </p>
-          </div>
-        </>
-      )}
-
-      {/* ══ SEGMENT 1 — Bento smart picks ══════════════════════════════════ */}
-      <div className="relative z-10 bg-surface rounded-2xl border border-border/60 shadow-sm p-4 overflow-hidden">
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <h2 className="font-display font-black text-2xl text-heading tracking-tight">Plan your visit</h2>
-            <p className="text-sm text-muted mt-0.5">Tap a card — AI builds your shortlist</p>
-          </div>
+            <div ref={ctaSentinelRef} className="h-px" />
+          </motion.div>
         </div>
-
-        {(activeTab === 'Hotels' || activeTab === 'Food') ? (
-          /* 2×2 equal grid for Hotels & Food */
-          <div className="grid grid-cols-2 gap-3" style={{ gridAutoRows: '144px' }}>
-            {(activeTab === 'Hotels' ? HOTEL_BENTO : FOOD_BENTO).map(item => (
-              <motion.button
-                key={item.label}
-                whileTap={prefersReducedMotion ? {} : { scale: 0.97 }}
-                type="button"
-                onClick={() => onBentoAction ? onBentoAction(item.overrides.tab!, item.overrides) : triggerSearch(item.overrides)}
-                className="relative overflow-hidden rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand group text-left w-full"
-                style={{ background: item.grad }}
-              >
-                <img src={uImg(item.imgId, 440, 290)} alt={item.label}
-                  width={440} height={290}
-                  loading="lazy" decoding="async"
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent rounded-2xl" />
-                <div className="absolute bottom-0 left-0 right-0 p-3 z-10">
-                  <p className="text-white font-sans font-black text-sm leading-tight drop-shadow line-clamp-1">{item.label}</p>
-                  <p className="text-white/70 text-xs mt-0.5 leading-tight line-clamp-2">{item.desc}</p>
-                </div>
-              </motion.button>
-            ))}
-          </div>
-        ) : (
-          /* Hero + 3 smaller cards for Itinerary & Explore */
-          <div className="grid grid-cols-2 gap-2.5">
-            {THANJAVUR_ACTIONS[0] && (() => {
-              const item = THANJAVUR_ACTIONS[0];
-              return (
-                <motion.button
-                  key="bento-hero"
-                  whileTap={prefersReducedMotion ? {} : { scale: 0.97 }}
-                  type="button"
-                  onClick={() => onBentoAction ? onBentoAction(item.tab, item.overrides) : triggerSearch(item.overrides)}
-                  className="col-span-2 relative overflow-hidden rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand group text-left"
-                  style={{ height: 180, background: item.grad }}
-                >
-                  <img src={uImg(item.imgId, 800, 360)} alt={item.label}
-                    width={800} height={360}
-                    loading="lazy" decoding="async"
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent rounded-2xl" />
-                  <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
-                    <p className="text-white font-display font-black text-lg leading-tight drop-shadow line-clamp-1">{item.label}</p>
-                    <p className="text-white/70 text-xs mt-0.5 line-clamp-2">{item.desc}</p>
-                  </div>
-                </motion.button>
-              );
-            })()}
-            {THANJAVUR_ACTIONS.slice(1, 3).map(item => (
-              <motion.button
-                key={item.tab}
-                whileTap={prefersReducedMotion ? {} : { scale: 0.97 }}
-                type="button"
-                onClick={() => onBentoAction ? onBentoAction(item.tab, item.overrides) : triggerSearch(item.overrides)}
-                className="relative overflow-hidden rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand group text-left"
-                style={{ height: 138, background: item.grad }}
-              >
-                <img src={uImg(item.imgId, 440, 280)} alt={item.label}
-                  width={440} height={280}
-                  loading="lazy" decoding="async"
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent rounded-2xl" />
-                <div className="absolute bottom-0 left-0 right-0 p-3 z-10">
-                  <p className="text-white font-sans font-black text-sm leading-tight drop-shadow line-clamp-1">{item.label}</p>
-                  <p className="text-white/70 text-xs mt-0.5 leading-tight line-clamp-2">{item.desc}</p>
-                </div>
-              </motion.button>
-            ))}
-          </div>
-        )}
       </div>
 
-      {/* ══ SEGMENT 2 — Explore best hotels/food (Hotels & Food) OR Discover Thanjavur (others) ══ */}
-      {(activeTab === 'Hotels' || activeTab === 'Food') ? (
-        <div className="relative z-10 bg-surface rounded-2xl border border-border/60 shadow-sm pt-4 pb-2">
-          <div className="flex items-center justify-between mb-3 px-4">
+
+      {/* ── Tag bento picks — Hotels + Food only ── */}
+      {(activeTab === 'Hotels' || activeTab === 'Food') && (
+        <div className="bg-surface border-b border-border/50 py-6 mt-6">
+          <div className="flex items-center justify-between px-4 lg:px-8 mb-4">
             <div>
-              <h2 className="font-display font-bold text-lg text-heading tracking-tight">
-                {activeTab === 'Hotels' ? 'Explore best hotels' : 'Explore best food'}
+              <h2 className="font-display font-bold text-xl text-heading tracking-tight">
+                {activeTab === 'Hotels' ? 'Find your stay' : 'Find your food'}
               </h2>
-              <p className="text-sm text-muted mt-0.5">Top picks in Thanjavur</p>
+              <p className="text-xs text-muted mt-0.5">Tap a card · AI builds your shortlist instantly</p>
             </div>
-            <button
-              type="button"
-              onClick={() => triggerSearch({ tab: activeTab, usePreset: true })}
-              className="text-xs font-semibold text-brand flex items-center gap-0.5 shrink-0 hover:underline"
-            >
+            <span className="text-xs text-muted flex items-center gap-0.5">Swipe <ChevronRight className="w-3 h-3" /></span>
+          </div>
+          <div className="flex gap-3 pb-2 no-scrollbar px-4 lg:px-8" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+            {(activeTab === 'Hotels' ? HOTEL_BENTO : FOOD_BENTO).map(item => (
+              <button
+                key={item.label}
+                type="button"
+                onClick={() => onBentoAction ? onBentoAction(item.overrides.tab!, item.overrides) : triggerSearch(item.overrides)}
+                className="shrink-0 relative overflow-hidden rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand group text-left active:scale-[0.97] transition-transform duration-150"
+                style={{ width: 220, height: 210, background: item.grad }}
+              >
+                <img src={uImg(item.imgId, 440, 420)} alt={item.label} loading="lazy" decoding="async"
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
+                  <p className="text-white font-display font-black text-base leading-tight drop-shadow line-clamp-2">{item.label}</p>
+                  <p className="text-white/70 text-xs mt-1 leading-tight line-clamp-2">{item.desc}</p>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── Insights strip — Hotels + Food only ── */}
+      {(activeTab === 'Hotels' || activeTab === 'Food') && <div className="bg-bg-app border-b border-border/50 py-5 px-4">
+        <div className="flex items-center justify-center gap-6 sm:gap-14 lg:gap-24">
+          {([
+            { n: '130+', l: 'Hotels',         icon: '🏨' },
+            { n: '400+', l: 'Restaurants',    icon: '🍛' },
+            { n: '19+',  l: 'Tourist Places', icon: '🏛️' },
+          ] as { n: string; l: string; icon: string }[]).map((s, i, arr) => (
+            <React.Fragment key={s.l}>
+              <div className="text-center">
+                <p className="font-display font-black text-2xl lg:text-3xl" style={{ color: 'var(--color-brand)' }}>{s.n}</p>
+                <p className="text-xs text-muted mt-0.5">{s.icon} {s.l}</p>
+              </div>
+              {i < arr.length - 1 && <div className="w-px h-10 bg-border" />}
+            </React.Fragment>
+          ))}
+        </div>
+      </div>}
+
+      {/* ── Explore best hotels/food OR Discover Thanjavur ── */}
+      <div className="bg-surface border-b border-border/50 py-6">
+        <div className="flex items-center justify-between px-4 lg:px-8 mb-4">
+          <div>
+            <h2 className="font-display font-bold text-xl text-heading tracking-tight">
+              {activeTab === 'Hotels' ? 'Explore best hotels' : activeTab === 'Food' ? 'Explore best food' : 'Discover Thanjavur'}
+            </h2>
+            <p className="text-sm text-muted mt-0.5">
+              {(activeTab === 'Hotels' || activeTab === 'Food') ? 'Top picks in Thanjavur' : 'Must-see landmarks · Opens Explore'}
+            </p>
+          </div>
+          {(activeTab === 'Hotels' || activeTab === 'Food') ? (
+            <button type="button" onClick={() => triggerSearch({ tab: activeTab, usePreset: true })} className="text-xs font-semibold text-brand flex items-center gap-0.5 shrink-0 hover:underline">
               View all <ChevronRight className="w-3 h-3" />
             </button>
-          </div>
-          <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar -mx-4 px-4">
+          ) : (
+            <span className="text-xs text-muted shrink-0 flex items-center gap-0.5">Swipe <ChevronRight className="w-3 h-3" /></span>
+          )}
+        </div>
+        {(activeTab === 'Hotels' || activeTab === 'Food') ? (
+          <div className="flex gap-3 pb-2 no-scrollbar px-4 lg:px-8" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
             {(activeTab === 'Hotels' ? MOCK_HOTELS : MOCK_FOOD).map(item => {
               const imgId = PLACE_PHOTO_IDS[item.name];
               return (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => triggerSearch({ tab: activeTab, searchQuery: item.name })}
-                  className="shrink-0 w-[180px] h-[150px] rounded-2xl overflow-hidden relative focus:outline-none focus-visible:ring-2 focus-visible:ring-brand group"
-                  style={{ background: 'var(--color-brand)' }}
-                >
-                  {imgId ? (
-                    <img
-                      src={uImg(imgId, 360, 300)}
-                      alt={item.name}
-                      loading="lazy" decoding="async"
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                      onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-                    />
-                  ) : (
-                    <div className={`absolute inset-0 ${item.photoColor}`} />
-                  )}
+                <button key={item.id} type="button" onClick={() => triggerSearch({ tab: activeTab, searchQuery: item.name })}
+                  className="shrink-0 w-[180px] h-[160px] rounded-2xl overflow-hidden relative focus:outline-none focus-visible:ring-2 focus-visible:ring-brand group"
+                  style={{ background: 'var(--color-brand)' }}>
+                  {imgId ? <img src={uImg(imgId, 360, 320)} alt={item.name} loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} /> : <div className={`absolute inset-0 ${item.photoColor}`} />}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
                   <div className="absolute top-2.5 right-2.5 z-10">
-                    <span className="text-white text-xs font-bold tabular-nums px-1.5 py-0.5 rounded-full" style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(6px)' }}>
-                      {item.rating}★
-                    </span>
+                    <span className="text-white text-xs font-bold tabular-nums px-1.5 py-0.5 rounded-full" style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(6px)' }}>{item.rating}★</span>
                   </div>
                   <div className="absolute bottom-0 left-0 right-0 p-3 z-10">
                     <p className="text-white font-display font-black text-sm leading-tight drop-shadow line-clamp-1">{item.name}</p>
-                    <p className="text-white/70 text-xs mt-0.5 leading-tight line-clamp-1">{item.priceRange ?? item.priceLevel}</p>
+                    {activeTab === 'Hotels' && <p className="text-white/70 text-xs mt-0.5 leading-tight line-clamp-1">{item.priceRange ?? item.priceLevel}</p>}
                   </div>
                 </button>
               );
             })}
           </div>
-        </div>
-      ) : (
-        <div className="relative z-10 bg-surface rounded-2xl border border-border/60 shadow-sm pt-4 pb-2">
-          <div className="flex items-center justify-between mb-3 px-4">
-            <div>
-              <h2 className="font-display font-bold text-lg text-heading tracking-tight">Discover Thanjavur</h2>
-              <p className="text-sm text-muted mt-0.5">Must-see landmarks · Opens Explore</p>
-            </div>
-            <span className="text-xs text-muted shrink-0 flex items-center gap-0.5">Swipe <ChevronRight className="w-3 h-3" /></span>
-          </div>
-          <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar -mx-4 px-4">
+        ) : (
+          <div className="flex gap-3 pb-2 no-scrollbar px-4 lg:px-8" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
             {INSPIRATION_CITIES.map(c => (
-              <button
-                key={c.city}
-                type="button"
-                disabled={c.comingSoon}
+              <button key={c.city} type="button" disabled={c.comingSoon}
                 onClick={c.comingSoon ? undefined : () => triggerSearch({ tab: 'Explore', exploreTarget: c.exploreTarget })}
-                className={`shrink-0 w-[220px] h-[150px] rounded-2xl overflow-hidden relative focus:outline-none focus-visible:ring-2 focus-visible:ring-brand group ${c.comingSoon ? 'cursor-not-allowed' : ''}`}
-                style={{ background: c.grad }}
-              >
-                {c.imgId && (
-                  <img
-                    src={uImg(c.imgId, 440, 300)}
-                    alt={c.city}
-                    loading="lazy" decoding="async"
-                    className={`absolute inset-0 w-full h-full object-cover transition-transform duration-300 ${c.comingSoon ? 'opacity-60' : 'group-hover:scale-105'}`}
-                    onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-                  />
-                )}
+                className={`shrink-0 w-[210px] h-[160px] rounded-2xl overflow-hidden relative focus:outline-none focus-visible:ring-2 focus-visible:ring-brand group ${c.comingSoon ? 'cursor-not-allowed' : ''}`}
+                style={{ background: c.grad }}>
+                {c.imgId && <img src={uImg(c.imgId, 440, 320)} alt={c.city} loading="lazy" decoding="async" className={`absolute inset-0 w-full h-full object-cover transition-transform duration-300 ${c.comingSoon ? 'opacity-60' : 'group-hover:scale-105'}`} onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
                 <div className="absolute top-3 right-3 z-10">
-                  {c.comingSoon ? (
-                    <span className="text-xs font-semibold uppercase tracking-wide px-2 py-1 rounded backdrop-blur-sm"
-                      style={{ background: 'var(--color-warning-soft)', border: '1px solid var(--color-warning-medium)', color: 'var(--color-warning-strong)' }}>
-                      Coming Soon
-                    </span>
-                  ) : (
-                    <span className="text-white text-xs font-black uppercase tracking-wide px-2 py-1 rounded-full"
-                      style={{ background: TAB_META.Explore.accent }}>
-                      Explore
-                    </span>
-                  )}
+                  {c.comingSoon
+                    ? <span className="text-xs font-semibold uppercase tracking-wide px-2 py-1 rounded backdrop-blur-sm" style={{ background: 'var(--color-warning-soft)', border: '1px solid var(--color-warning-medium)', color: 'var(--color-warning-strong)' }}>Coming Soon</span>
+                    : <span className="text-white text-xs font-black uppercase tracking-wide px-2 py-1 rounded-full" style={{ background: TAB_META.Explore.accent }}>Explore</span>}
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
                   <p className="text-white font-display font-black text-xl leading-tight drop-shadow line-clamp-1">{c.city}</p>
@@ -1628,45 +1369,34 @@ export function Dashboard({ destination, initialTab = 'Hotels', onSearch, loadin
               </button>
             ))}
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
-      {/* ══ SEGMENT 3 — Plan another city (destination scroll) ═════════════ */}
-      <div className="relative z-10 bg-surface rounded-2xl border border-border/60 shadow-sm pt-4 pb-2">
-        <div className="flex items-center justify-between mb-3 px-4">
+      {/* ── Plan another city ── */}
+      <div className="bg-surface py-6">
+        <div className="flex items-center justify-between px-4 lg:px-8 mb-4">
           <div>
-            <h2 className="font-display font-bold text-lg text-heading tracking-tight">Plan another city</h2>
+            <h2 className="font-display font-bold text-xl text-heading tracking-tight">Plan another city</h2>
             <p className="text-xs text-muted mt-0.5">Tap to switch destination</p>
           </div>
           <span className="text-xs text-muted shrink-0 flex items-center gap-0.5">Swipe <ChevronRight className="w-3 h-3" /></span>
         </div>
-        <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar -mx-4 px-4">
+        <div className="flex gap-3 pb-2 no-scrollbar px-4 lg:px-8" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
           {POPULAR_DESTINATIONS.map(c => (
-            <motion.button
-              key={c.city}
-              whileTap={prefersReducedMotion ? {} : { scale: 0.97 }}
-              type="button"
+            <button key={c.city} type="button"
               onClick={() => onDestinationSelect?.(c.city)}
-              className="shrink-0 w-[220px] h-[150px] rounded-2xl overflow-hidden relative focus:outline-none focus-visible:ring-2 focus-visible:ring-brand group"
-            >
-              <img
-                src={uImg(c.imgId, 440, 300)}
-                alt={c.city}
-                loading="lazy" decoding="async"
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-              />
+              className="shrink-0 w-[210px] h-[160px] rounded-2xl overflow-hidden relative focus:outline-none focus-visible:ring-2 focus-visible:ring-brand group active:scale-[0.97] transition-transform duration-150">
+              <img src={uImg(c.imgId, 440, 320)} alt={c.city} loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
               <div className="absolute inset-0" style={{ background: c.grad, opacity: 0.3 }} />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
                 <p className="text-white font-display font-black text-xl leading-tight drop-shadow line-clamp-1">{c.city}</p>
                 <p className="text-white/75 text-xs mt-0.5 leading-tight line-clamp-2">{c.sub}</p>
               </div>
-            </motion.button>
+            </button>
           ))}
         </div>
       </div>
-
 
     </div>
   );

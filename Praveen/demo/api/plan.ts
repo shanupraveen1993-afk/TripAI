@@ -3462,14 +3462,62 @@ function extractHotelPriceFromReviews(reviews: any[]): string | null {
 
 function hotelPriceFromLevel(rawPriceLevel: string, name: string): string {
   const lower = name.toLowerCase();
-  if (/oyo|lodge|inn|residency|budget|economy/.test(lower)) return '₹800/night';
-  if (/palace|heritage|resort|spa|boutique/.test(lower))    return '₹5,000/night';
-  // Accept raw PRICE_LEVEL_* values from Google Places API
+  if (/oyo|lodge|inn|residency|budget|economy/.test(lower))  return '₹900/night';
+  if (/palace|heritage|resort|spa|boutique/.test(lower))     return '₹5,000/night';
+  if (/sangam|parisutham|ideal|river view|raj park/.test(lower)) return '₹4,500/night';
   if (rawPriceLevel === 'PRICE_LEVEL_FREE' || rawPriceLevel === 'PRICE_LEVEL_INEXPENSIVE') return '₹900/night';
-  if (rawPriceLevel === 'PRICE_LEVEL_MODERATE') return '₹1,800/night';
-  if (rawPriceLevel === 'PRICE_LEVEL_EXPENSIVE') return '₹4,500/night';
+  if (rawPriceLevel === 'PRICE_LEVEL_MODERATE')       return '₹2,200/night';
+  if (rawPriceLevel === 'PRICE_LEVEL_EXPENSIVE')      return '₹4,500/night';
   if (rawPriceLevel === 'PRICE_LEVEL_VERY_EXPENSIVE') return '₹8,000/night';
-  return '₹1,500/night';
+  return '₹2,500/night'; // raised default — unknown mid-range Thanjavur hotel
+}
+
+// Converts any currency Gemini may return into a valid ₹X,XXX/night string.
+// Returns null if the price is unrecognisable or outside a realistic INR band.
+function sanitiseGeminiPrice(raw: string): string | null {
+  if (!raw) return null;
+  const s = raw.trim();
+
+  // Helper: format a numeric INR amount
+  const inr = (n: number): string =>
+    `₹${Math.round(n / 100) * 100}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '/night';
+
+  // Already INR (₹)
+  const inrM = s.match(/₹\s*([\d,]+)/);
+  if (inrM) {
+    const n = parseInt(inrM[1].replace(/,/g, ''), 10);
+    return (n >= 400 && n <= 60000) ? `₹${n.toLocaleString('en-IN')}/night` : null;
+  }
+
+  // GBP (£) — 1 GBP ≈ 107 INR
+  const gbpM = s.match(/£\s*([\d,.]+)/);
+  if (gbpM) {
+    const n = parseFloat(gbpM[1].replace(/,/g, '')) * 107;
+    return (n >= 400 && n <= 60000) ? inr(n) : null;
+  }
+
+  // USD ($) — 1 USD ≈ 84 INR
+  const usdM = s.match(/\$\s*([\d,.]+)/);
+  if (usdM) {
+    const n = parseFloat(usdM[1].replace(/,/g, '')) * 84;
+    return (n >= 400 && n <= 60000) ? inr(n) : null;
+  }
+
+  // EUR (€) — 1 EUR ≈ 90 INR
+  const eurM = s.match(/€\s*([\d,.]+)/);
+  if (eurM) {
+    const n = parseFloat(eurM[1].replace(/,/g, '')) * 90;
+    return (n >= 400 && n <= 60000) ? inr(n) : null;
+  }
+
+  // Bare number — assume INR if in realistic range
+  const numM = s.match(/^[\d,]+/);
+  if (numM) {
+    const n = parseInt(numM[0].replace(/,/g, ''), 10);
+    return (n >= 400 && n <= 60000) ? inr(n) : null;
+  }
+
+  return null;
 }
 
 // ── Gemini-lite pricing — separate quota from main flash call ─────────────────
@@ -3485,15 +3533,20 @@ async function geminiLitePricing(
   const tryModel = async (model: string, useGrounding: boolean): Promise<boolean> => {
     const body: any = {
       contents: [{ parts: [{ text:
-        `You are a hotel pricing expert for ${city}, India. For the query "${query}", provide the current nightly room rate for each hotel below. Use Google Hotels data where available, otherwise use your knowledge of ${city} hotel prices.
+        `You are a hotel pricing expert for ${city}, Tamil Nadu, India.
 
-Hotels (respond in exact same order):
+CRITICAL RULES:
+1. Return prices in INDIAN RUPEES (₹) ONLY. NEVER use GBP (£), USD ($), EUR (€) or any foreign currency.
+2. If you find foreign-currency prices on booking sites, convert them to INR before responding.
+3. Typical ${city} hotel price bands: budget lodge ₹600–₹1,200 · mid-range ₹1,500–₹3,500 · 3-star ₹2,500–₹5,000 · 4-star/premium ₹4,000–₹8,000 per night.
+
+For the query "${query}", provide the approximate nightly room rate for each hotel:
 ${hotelNames.map((n, i) => `${i}. ${n}`).join('\n')}
 
-Return ONLY valid JSON array, no markdown:
+Return ONLY valid JSON — no markdown, no explanation:
 [{"idx":0,"price":"₹X,XXX/night"},{"idx":1,"price":"₹X,XXX/night"},...]
 
-Give each hotel a distinct single price (not a range). Format: ₹X,XXX/night` }] }],
+Rules: one price per hotel · INR only · format ₹X,XXX/night` }] }],
     };
     if (useGrounding) body.tools = [{ google_search: {} }];
 
@@ -3506,24 +3559,26 @@ Give each hotel a distinct single price (not a range). Format: ₹X,XXX/night` }
     if (data?.error) return false;
     const raw   = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
     const clean = raw.replace(/```json|```/g, '').trim();
-    const parsed: Array<{ idx: number; price: string }> = clean ? JSON.parse(clean) : [];
+    let parsed: Array<{ idx: number; price: string }> = [];
+    try { parsed = clean ? JSON.parse(clean) : []; } catch { return false; }
     for (const item of parsed) {
-      const name = hotelNames[item.idx];
-      if (name && item.price) result.set(name, item.price);
+      const name      = hotelNames[item.idx];
+      const sanitised = sanitiseGeminiPrice(item.price ?? '');
+      if (name && sanitised) result.set(name, sanitised);
     }
     return result.size > 0;
   };
 
   try {
-    // Level 1: flash-lite + Google Search grounding → real Google Hotels prices
+    // Level 1: flash-lite + Google Search grounding → real-time prices, sanitised to INR
     const ok1 = await tryModel('gemini-2.0-flash-lite', true);
     if (ok1) return result;
 
-    // Level 2: flash-lite without grounding → Gemini knowledge estimates
+    // Level 2: flash-lite without grounding → Gemini knowledge, sanitised to INR
     result.clear();
     await tryModel('gemini-2.0-flash-lite', false);
   } catch {
-    // Level 3 fallback handled by caller (review extraction + priceLevel)
+    // Level 3 fallback: review extraction + priceLevel (handled by caller)
   }
   return result;
 }
